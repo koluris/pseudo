@@ -14,6 +14,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		420AD1BC2063B8B7006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
+		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		42B9957920626481009B67BE /* R3000A.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = R3000A.cpp; sourceTree = "<group>"; };
 		42B9957A20626481009B67BE /* R3000A.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = R3000A.h; sourceTree = "<group>"; };
 		42EBBCCE2062482200824B95 /* PSeudo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PSeudo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -35,20 +37,48 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		42B9957820626481009B67BE /* Source */ = {
+		420AD1BE2063BA32006C22D9 /* GUI */ = {
+			isa = PBXGroup;
+			children = (
+				420AD1BF2063BA43006C22D9 /* Main */,
+				420AD1BC2063B8B7006C22D9 /* Global.h */,
+			);
+			name = GUI;
+			sourceTree = "<group>";
+		};
+		420AD1BF2063BA43006C22D9 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				42EBBCD22062482200824B95 /* Main.m */,
+				42EBBCD12062482200824B95 /* Main.h */,
+			);
+			name = Main;
+			sourceTree = "<group>";
+		};
+		420AD1C12063BB0F006C22D9 /* R3000A */ = {
 			isa = PBXGroup;
 			children = (
 				42B9957920626481009B67BE /* R3000A.cpp */,
 				42B9957A20626481009B67BE /* R3000A.h */,
 			);
+			name = R3000A;
+			sourceTree = "<group>";
+		};
+		42B9957820626481009B67BE /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				420AD1C12063BB0F006C22D9 /* R3000A */,
+				420AD1C22063BB24006C22D9 /* Global.h */,
+			);
 			name = Source;
-			path = ../../../Source;
+			path = ../../Source;
 			sourceTree = "<group>";
 		};
 		42EBBCC52062482200824B95 = {
 			isa = PBXGroup;
 			children = (
-				42EBBCD02062482200824B95 /* Source */,
+				42B9957820626481009B67BE /* Source */,
+				420AD1BE2063BA32006C22D9 /* GUI */,
 				42EBBCE22062487F00824B95 /* Resources */,
 				42EBBCCF2062482200824B95 /* Products */,
 			);
@@ -60,16 +90,6 @@
 				42EBBCCE2062482200824B95 /* PSeudo.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		42EBBCD02062482200824B95 /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				42B9957820626481009B67BE /* Source */,
-				42EBBCD22062482200824B95 /* Main.m */,
-				42EBBCD12062482200824B95 /* Main.h */,
-			);
-			path = Source;
 			sourceTree = "<group>";
 		};
 		42EBBCE22062487F00824B95 /* Resources */ = {

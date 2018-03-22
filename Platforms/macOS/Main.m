@@ -1,9 +1,9 @@
-#import "Main.h"
-//#import "../../../Source/R3000A.h"
+#import "Global.h"
+
 
 @implementation Main
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+- (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -11,6 +11,7 @@
 
 @end
 
+// Startup
 int main() {
     return NSApplicationMain(0, nil);
 }
