@@ -1,4 +1,4 @@
-//#include <stdint.h>
+#include <string.h>
 
 typedef unsigned int uw;
 
