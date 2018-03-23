@@ -10,9 +10,6 @@ public:
         ram.ptr = new ub[ram.size = 0x200000];
         rom.ptr = new ub[rom.size = 0x80000];
         hwr.ptr = new ub[hwr.size = 0x4000];
-        
-        ram.ptr[0x100] = 5;
-        hwr.ptr[0x100] = 5;
     }
     
     ~CstrMem() {

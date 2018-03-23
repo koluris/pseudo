@@ -5,7 +5,8 @@
 @implementation Main
 
 - (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
-    psx.reset();
+    //NSURL *uri = [[NSBundle mainBundle] bundleURL];
+    psx.init([@"/Users/dk/Downloads/scph1001.bin" UTF8Chars]);
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {

@@ -1,6 +1,6 @@
 class CstrPSeudo {
 public:
-    void reset();
+    void init(const char *), reset();
 };
 
 extern CstrPSeudo psx;
