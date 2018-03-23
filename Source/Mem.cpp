@@ -7,7 +7,7 @@ CstrMem mem;
     *(dt *)&mem.ptr[addr&(mem.size-1)]
 
 void CstrMem::reset() {
-    // Do not reset ROM, it contains the BIOS
+    // Leave ROM intact, contains BIOS
     memset(ram.ptr, 0, ram.size);
     memset(hwr.ptr, 0, hwr.size);
 }
