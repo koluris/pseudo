@@ -3,14 +3,20 @@
 
 CstrMem mem;
 
-void CstrMem::init() {
-    ram = (ub *)malloc(0x200000);
-    rom = (ub *)malloc(0x80000);
-    hwr = (ub *)malloc(0x4000);
+void CstrMem::reset() {
+    // Do not reset ROM, it contains the BIOS
+    memset(ram.ptr, 0, ram.size);
+    memset(hwr.ptr, 0, hwr.size);
 }
 
-void CstrMem::reset() {
-    memset(&ram, 0, sizeof(ram));
-    memset(&rom, 0, sizeof(rom));
-    memset(&hwr, 0, sizeof(hwr));
+uw CstrMem::read32(uw addr) {
+    switch(addr) {
+        // ROM
+        case 0xbfc00000 ... 0xbfc80000-1:
+            return *(uw *)&rom.ptr[addr&(rom.size-1)];
+    }
+    printf("Unknown Mem Read 32 -> 0x%08x\n", addr);
+    exit(0);
+    
+    return 0;
 }
