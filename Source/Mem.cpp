@@ -7,7 +7,7 @@ CstrMem mem;
     *(dt *)&mem.ptr[addr&(mem.size-1)]
 
 void CstrMem::reset() {
-    // Leave ROM intact, contains BIOS
+    // Leave ROM intact, it contains BIOS
     memset(ram.ptr, 0, ram.size);
     memset(hwr.ptr, 0, hwr.size);
 }
@@ -24,7 +24,6 @@ void CstrMem::write32(uw addr, uw data) {
 
 uw CstrMem::read32(uw addr) {
     switch(addr) {
-        // ROM
         case 0xbfc00000 ... 0xbfc80000-1: // ROM
             return accessMem(rom, uw);
     }
