@@ -1,4 +1,4 @@
-#include "Global.h"
+#import "Global.h"
 
 
 CstrMips cpu;

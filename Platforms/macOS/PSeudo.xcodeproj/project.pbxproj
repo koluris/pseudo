@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		429C3EBD206500B500915293 /* Mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBB206500B500915293 /* Mem.cpp */; };
 		42B9957B20626481009B67BE /* R3000A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B9957920626481009B67BE /* R3000A.cpp */; };
 		42EBBCD32062482200824B95 /* Main.m in Sources */ = {isa = PBXBuildFile; fileRef = 42EBBCD22062482200824B95 /* Main.m */; };
 		42EBBCD52062482200824B95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42EBBCD42062482200824B95 /* Assets.xcassets */; };
@@ -16,6 +17,8 @@
 /* Begin PBXFileReference section */
 		420AD1BC2063B8B7006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
+		429C3EBB206500B500915293 /* Mem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mem.cpp; sourceTree = "<group>"; };
+		429C3EBC206500B500915293 /* Mem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mem.h; sourceTree = "<group>"; };
 		42B9957920626481009B67BE /* R3000A.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = R3000A.cpp; sourceTree = "<group>"; };
 		42B9957A20626481009B67BE /* R3000A.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = R3000A.h; sourceTree = "<group>"; };
 		42EBBCCE2062482200824B95 /* PSeudo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PSeudo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,9 +67,19 @@
 			name = R3000A;
 			sourceTree = "<group>";
 		};
+		429C3EBA2064FDC500915293 /* Mem */ = {
+			isa = PBXGroup;
+			children = (
+				429C3EBB206500B500915293 /* Mem.cpp */,
+				429C3EBC206500B500915293 /* Mem.h */,
+			);
+			name = Mem;
+			sourceTree = "<group>";
+		};
 		42B9957820626481009B67BE /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				429C3EBA2064FDC500915293 /* Mem */,
 				420AD1C12063BB0F006C22D9 /* R3000A */,
 				420AD1C22063BB24006C22D9 /* Global.h */,
 			);
@@ -172,6 +185,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				429C3EBD206500B500915293 /* Mem.cpp in Sources */,
 				42EBBCD32062482200824B95 /* Main.m in Sources */,
 				42B9957B20626481009B67BE /* R3000A.cpp in Sources */,
 			);

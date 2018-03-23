@@ -1,5 +1,8 @@
-#include <string.h>
+#import <stdlib.h>
+#import <string.h>
 
-typedef unsigned int uw;
+typedef unsigned int  uw;
+typedef unsigned char ub;
 
-#include "R3000A.h"
+#import "Mem.h"
+#import "R3000A.h"
