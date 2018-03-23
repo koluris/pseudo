@@ -19,7 +19,8 @@ public:
     }
     
     void reset();
-    uw read32(uw);
+    
+    uw read32(uw); void write32(uw, uw);
 };
 
 extern CstrMem mem;

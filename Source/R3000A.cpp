@@ -45,12 +45,15 @@ void CstrMips::reset() {
     step();
     step();
     step();
+    step();
 }
 
 void CstrMips::step() {
     uw code = mem.read32(pc);
-    printf("PC: 0x%08x, Code: 0x%08x\n", pc, code);
+    
+    printf("PC: 0x%x, Code: 0x%x\n", pc, code);
     printf("%d\n", op);
+    
     pc += 4;
     base[0] = 0;
     
@@ -64,7 +67,7 @@ void CstrMips::step() {
             return;
             
         case 43: // SW
-            printf("Vaddr: 0x%x, Data: 0x%x\n", (base[rs]+(sh)code), base[rt]);
+            mem.write32(base[rs] + (sh)code, base[rt]);
             return;
     }
     
