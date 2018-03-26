@@ -1,3 +1,6 @@
+#define accessMem(mem, dt)\
+    *(dt *)&mem.ptr[addr&(mem.size-1)]
+
 class CstrMem {
     struct heap {
         ub *ptr; uw size;
@@ -9,7 +12,7 @@ public:
     CstrMem() {
         ram.ptr = new ub[ram.size = 0x200000];
         rom.ptr = new ub[rom.size = 0x80000];
-        hwr.ptr = new ub[hwr.size = 0x4000];
+        hwr.ptr = new ub[hwr.size = 0x2000];
     }
     
     ~CstrMem() {

@@ -1,5 +1,5 @@
 struct CstrMips {
-    uw base[32], pc, lo, hi;
+    uw base[32], pc, lo, hi, nopCounter;
     
     void reset();
     void step();

@@ -3,9 +3,6 @@
 
 CstrMem mem;
 
-#define accessMem(mem, dt)\
-    *(dt *)&mem.ptr[addr&(mem.size-1)]
-
 void CstrMem::reset() {
     // Leave ROM intact, it contains BIOS
     memset(ram.ptr, 0, ram.size);
@@ -19,10 +16,10 @@ void CstrMem::write32(uw addr, uw data) {
             //return;
             
         case 0x1f801000 ... 0x1f803000-1: // Hardware
+            io.write32(addr, data);
             return;
     }
-    printf("Unknown Mem Write 32: 0x%x <- 0x%x\n", addr, data);
-    exit(0);
+    printx("Unknown Mem Write 32: 0x%x <- 0x%x\n", addr, data);
 }
 
 uw CstrMem::read32(uw addr) {
@@ -30,8 +27,7 @@ uw CstrMem::read32(uw addr) {
         case 0xbfc00000 ... 0xbfc80000-1: // ROM
             return accessMem(rom, uw);
     }
-    printf("Unknown Mem Read 32: 0x%x\n", addr);
-    exit(0);
+    printx("Unknown Mem Read 32: 0x%x\n", addr);
     
     return 0;
 }

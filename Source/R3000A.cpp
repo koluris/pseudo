@@ -39,8 +39,13 @@ CstrMips cpu;
 
 void CstrMips::reset() {
     memset(base, 0, sizeof(base));
-    pc = 0xbfc00000;
     
+    pc = 0xbfc00000;
+    lo = 0;
+    hi = 0;
+    nopCounter = 0;
+    
+    step();
     step();
     step();
     step();
@@ -51,11 +56,16 @@ void CstrMips::reset() {
 void CstrMips::step() {
     uw code = mem.read32(pc);
     
-    printf("PC: 0x%x, Code: 0x%x\n", pc, code);
-    printf("%d\n", op);
+    printf("PC: 0x%08x, Code: 0x%08x, OP: 0x%08x\n", pc, code, op);
     
     pc += 4;
     base[0] = 0;
+    
+    // No operation counter
+    if (code == 0) {
+        nopCounter++;
+        return;
+    }
     
     switch(op) {
         case 13: // ORI
@@ -70,6 +80,4 @@ void CstrMips::step() {
             mem.write32(base[rs] + (sh)code, base[rt]);
             return;
     }
-    
-    exit(0);
 }

@@ -21,7 +21,7 @@
 		420AD1BC2063B8B7006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		42587A862068BEFF0054BEC8 /* Hardware.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Hardware.cpp; sourceTree = "<group>"; };
-		42587A872068BEFF0054BEC8 /* Hardware.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Hardware.hpp; sourceTree = "<group>"; };
+		42587A872068BEFF0054BEC8 /* Hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Hardware.h; sourceTree = "<group>"; };
 		429C3EBB206500B500915293 /* Mem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mem.cpp; sourceTree = "<group>"; };
 		429C3EBC206500B500915293 /* Mem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mem.h; sourceTree = "<group>"; };
 		429C3EBF20650CB400915293 /* PSeudo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PSeudo.cpp; sourceTree = "<group>"; };
@@ -81,7 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				42587A862068BEFF0054BEC8 /* Hardware.cpp */,
-				42587A872068BEFF0054BEC8 /* Hardware.hpp */,
+				42587A872068BEFF0054BEC8 /* Hardware.h */,
 			);
 			name = Hardware;
 			sourceTree = "<group>";
