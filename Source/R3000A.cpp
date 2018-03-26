@@ -78,9 +78,6 @@ void CstrMips::branch(uw addr) {
 
 void CstrMips::step(bool inslot) {
     uw code = mem.read32(pc);
-    
-    printf("$%08x -> $%08x | %d\n", pc, code, op);
-    
     pc += 4;
     base[0] = 0;
     
@@ -99,7 +96,7 @@ void CstrMips::step(bool inslot) {
                     base[rd] = base[rs] | base[rt];
                     return;
             }
-            printx("Unknown Special opcode -> %d\n", (code & 63));
+            printx("$%08x | Unknown special opcode $%08x | %d\n", pc, code, (code & 63));
             return;
             
         case 2: // J
@@ -118,9 +115,13 @@ void CstrMips::step(bool inslot) {
             base[rt] = immu << 16;
             return;
             
+        case 16: // COP0
+            printx("$%08x | Unknown cop0 opcode $%08x | %d\n", pc, code, rs);
+            return;
+            
         case 43: // SW
             mem.write32(base[rs] + (sh)code, base[rt]);
             return;
     }
-    exit(0);
+    printx("$%08x | Unknown basic opcode $%08x | %d\n", pc, code, op);
 }

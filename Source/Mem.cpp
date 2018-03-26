@@ -18,6 +18,10 @@ void CstrMem::write32(uw addr, uw data) {
         case 0x1f801000 ... 0x1f803000-1: // Hardware
             io.write32(addr, data);
             return;
+            
+        case 0xfffe0130: // $804
+            printf("$fffe0130 <- $%x\n", data);
+            return;
     }
     printx("Unknown Mem Write 32: $%x <- $%x\n", addr, data);
 }
