@@ -19,7 +19,7 @@ void CstrMem::write32(uw addr, uw data) {
             io.write32(addr, data);
             return;
     }
-    printx("Unknown Mem Write 32: 0x%x <- 0x%x\n", addr, data);
+    printx("Unknown Mem Write 32: $%x <- $%x\n", addr, data);
 }
 
 uw CstrMem::read32(uw addr) {
@@ -27,7 +27,7 @@ uw CstrMem::read32(uw addr) {
         case 0xbfc00000 ... 0xbfc80000-1: // ROM
             return accessMem(rom, uw);
     }
-    printx("Unknown Mem Read 32: 0x%x\n", addr);
+    printx("Unknown Mem Read 32: $%x\n", addr);
     
     return 0;
 }

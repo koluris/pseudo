@@ -3,21 +3,42 @@
 
 CstrMips cpu;
 
+/*  5-bit */
+#define rd\
+    ((code >> 11) & 31)
+
+#define rt\
+    ((code >> 16) & 31)
+
+#define rs\
+    ((code >> 21) & 31)
+
 /*  6-bit */
 #define op\
     ((code >> 26) & 63)
 
-/*  5-bit */
-#define rt\
-    ((code >> 16) & 31)
-
-/*  5-bit */
-#define rs\
-    ((code >> 21) & 31)
-
 /* 16-bit */
 #define imm\
+    ((sh)code)
+
+#define immu\
     (code & 0xffff)
+
+/* 32-bit */
+#define saddr\
+    ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
+
+// J
+//
+// 32 | 16 |  8 |  4 |  2 |  1 |
+// ---|----|----|----|----|----| -> 2
+//  0 |  0 |  0 |  0 |  1 |  0 |
+
+// ADDIU
+//
+// 32 | 16 |  8 |  4 |  2 |  1 |
+// ---|----|----|----|----|----| -> 9
+//  0 |  0 |  1 |  0 |  0 |  1 |
 
 // ORI
 //
@@ -46,37 +67,60 @@ void CstrMips::reset() {
     nopCounter = 0;
     
     while(1) {
-        step();
+        step(false);
     }
 }
 
-void CstrMips::step() {
+void CstrMips::branch(uw addr) {
+    step(true);
+    pc = addr;
+}
+
+void CstrMips::step(bool inslot) {
     uw code = mem.read32(pc);
     
-    printf("PC: 0x%08x, Code: 0x%08x, OP: 0x%08x\n", pc, code, op);
+    printf("$%08x -> $%08x | %d\n", pc, code, op);
     
     pc += 4;
     base[0] = 0;
     
     // No operation counter
     if (code == 0) {
-        if (++nopCounter == 10) {
+        if (++nopCounter == 30) {
             printx("%d unknown operations, abort.\n", nopCounter);
         };
         return;
     }
     
     switch(op) {
+        case 0: // SPECIAL
+            switch(code & 63) {
+                case 37: // OR
+                    base[rd] = base[rs] | base[rt];
+                    return;
+            }
+            printx("Unknown Special opcode -> %d\n", (code & 63));
+            return;
+            
+        case 2: // J
+            branch(saddr);
+            return;
+            
+        case 9: // ADDIU
+            base[rt] = base[rs] + imm;
+            return;
+            
         case 13: // ORI
-            base[rt] = base[rs] | imm;
+            base[rt] = base[rs] | immu;
             return;
             
         case 15: // LUI
-            base[rt] = imm << 16;
+            base[rt] = immu << 16;
             return;
             
         case 43: // SW
             mem.write32(base[rs] + (sh)code, base[rt]);
             return;
     }
+    exit(0);
 }
