@@ -63,7 +63,7 @@ void CstrMips::step() {
             return;
             
         case 15: // LUI
-            base[rt] = imm >> 16;
+            base[rt] = imm << 16;
             return;
             
         case 43: // SW
