@@ -45,12 +45,9 @@ void CstrMips::reset() {
     hi = 0;
     nopCounter = 0;
     
-    step();
-    step();
-    step();
-    step();
-    step();
-    step();
+    while(1) {
+        step();
+    }
 }
 
 void CstrMips::step() {
@@ -63,7 +60,9 @@ void CstrMips::step() {
     
     // No operation counter
     if (code == 0) {
-        nopCounter++;
+        if (++nopCounter == 10) {
+            printx("%d unknown operations, abort.\n", nopCounter);
+        };
         return;
     }
     
