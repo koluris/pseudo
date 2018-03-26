@@ -26,7 +26,6 @@
 		429C3EBC206500B500915293 /* Mem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mem.h; sourceTree = "<group>"; };
 		429C3EBF20650CB400915293 /* PSeudo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PSeudo.cpp; sourceTree = "<group>"; };
 		429C3EC020650CB400915293 /* PSeudo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PSeudo.h; sourceTree = "<group>"; };
-		429C3EC32065186800915293 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		429C3EC52065189C00915293 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		42B9957920626481009B67BE /* R3000A.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = R3000A.cpp; sourceTree = "<group>"; };
 		42B9957A20626481009B67BE /* R3000A.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = R3000A.h; sourceTree = "<group>"; };
@@ -108,7 +107,6 @@
 			isa = PBXGroup;
 			children = (
 				429C3EC52065189C00915293 /* AppKit.framework */,
-				429C3EC32065186800915293 /* Foundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -132,8 +130,8 @@
 				42B9957820626481009B67BE /* Source */,
 				420AD1BE2063BA32006C22D9 /* GUI */,
 				42EBBCE22062487F00824B95 /* Resources */,
-				42EBBCCF2062482200824B95 /* Products */,
 				429C3EC22065186800915293 /* Frameworks */,
+				42EBBCCF2062482200824B95 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
