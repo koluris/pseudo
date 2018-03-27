@@ -23,7 +23,9 @@ public:
     
     void reset();
     
-    uw read32(uw); void write32(uw, uw);
+    uw read32(uw);
+    void write32(uw, uw);
+    void write16(uw, uh);
 };
 
 extern CstrMem mem;

@@ -34,11 +34,11 @@ CstrMips cpu;
 #define saddr\
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-// LW
+// SH
 //
 // 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 35
-//  1 |  0 |  0 |  0 |  1 |  1 |
+// ---|----|----|----|----|----| -> 41
+//  1 |  0 |  0 |  0 |  0 |  1 |
 
 void CstrMips::reset() {
     memset(base, 0, sizeof(base));
@@ -49,7 +49,7 @@ void CstrMips::reset() {
     hi = 0;
     nopCounter = 0;
     
-    while(1) {
+    while(pc != 0x80030000) {
         step(false);
     }
 }
@@ -66,8 +66,8 @@ void CstrMips::step(bool inslot) {
     
     // No operation counter
     if (code == 0) {
-        if (++nopCounter == 40) {
-            printx("%d unknown operations, abort\n", nopCounter);
+        if (++nopCounter == 200) {
+            //printx("%d unknown operations, abort\n", nopCounter);
         };
         return;
     }
@@ -75,8 +75,16 @@ void CstrMips::step(bool inslot) {
     switch(op) {
         case 0: // SPECIAL
             switch(code & 63) {
+                case 33: // ADDU
+                    base[rd] = base[rs] + base[rt];
+                    return;
+                    
                 case 37: // OR
                     base[rd] = base[rs] | base[rt];
+                    return;
+                    
+                case 43: // SLTU
+                    base[rd] = base[rs] < base[rt];
                     return;
             }
             printx("$%08x | Unknown special opcode $%08x | %d\n", pc, code, (code & 63));
@@ -120,6 +128,10 @@ void CstrMips::step(bool inslot) {
             
         case 35: // LW
             base[rt] = mem.read32(ob);
+            return;
+            
+        case 41: // SH
+            mem.write16(ob, base[rt]);
             return;
             
         case 43: // SW

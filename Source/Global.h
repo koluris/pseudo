@@ -3,8 +3,9 @@
 #import <string.h>
 
 
-typedef unsigned int  uw;
-typedef unsigned char ub;
+typedef unsigned int   uw;
+typedef unsigned short uh;
+typedef unsigned char  ub;
 
 typedef short sh;
 

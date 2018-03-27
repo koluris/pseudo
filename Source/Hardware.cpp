@@ -21,3 +21,16 @@ void CstrHardware::write32(uw addr, uw data) {
     }
     printx("Unknown Hardware Write 32: $%x <- $%x\n", addr, data);
 }
+
+void CstrHardware::write16(uw addr, uh data) {
+    switch(addr & 0xffff) {
+        /* unused */
+        case 0x1d80:
+        case 0x1d82:
+        case 0x1d84:
+        case 0x1d86:
+            accessMem(mem.hwr, uh) = data;
+            return;
+    }
+    printx("Unknown Hardware Write 16: $%x <- $%x\n", addr, data);
+}
