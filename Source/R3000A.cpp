@@ -4,6 +4,9 @@
 CstrMips cpu;
 
 /*  5-bit */
+#define sa\
+    ((code >>  6) & 31)
+
 #define rd\
     ((code >> 11) & 31)
 
@@ -34,7 +37,7 @@ CstrMips cpu;
 #define saddr\
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-// JR
+// ADD
 //
 // 32 | 16 |  8 |  4 |  2 |  1 |
 // ---|----|----|----|----|----| -> 32
@@ -75,12 +78,24 @@ void CstrMips::step(bool inslot) {
     switch(op) {
         case 0: // SPECIAL
             switch(code & 63) {
+                case 0: // SLL
+                    base[rd] = base[rt] << sa;
+                    return;
+                    
                 case 8: // JR
                     branch(base[rs]); // Remember to print the output
                     return;
                     
+                case 32: // ADD
+                    base[rd] = base[rs] + base[rt];
+                    return;
+                    
                 case 33: // ADDU
                     base[rd] = base[rs] + base[rt];
+                    return;
+                    
+                case 36: // AND
+                    base[rd] = base[rs] & base[rt];
                     return;
                     
                 case 37: // OR
@@ -101,6 +116,12 @@ void CstrMips::step(bool inslot) {
         case 3: // JAL
             base[31] = pc + 4;
             branch(saddr);
+            return;
+            
+        case 4: // BEQ
+            if (base[rs] == base[rt]) {
+                branch(baddr);
+            }
             return;
             
         case 5: // BNE
@@ -131,9 +152,12 @@ void CstrMips::step(bool inslot) {
             
         case 16: // COP0
             switch(rs) {
+                case 0: // MFC0
+                    base[rt] = copr[rd];
+                    return;
+                    
                 case 4: // MTC0
                     copr[rd] = base[rt];
-                    printf("COP0[%d] <- $%x\n", rd, base[rt]);
                     return;
             }
             printx("$%08x | Unknown cop0 opcode $%08x | %d\n", pc, code, rs);
