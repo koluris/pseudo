@@ -9,6 +9,8 @@ public:
     void write32(uw, uw);
     void write16(uw, uh);
     void write08(uw, ub);
+    
+    uw read32(uw);
 };
 
 extern CstrHardware io;

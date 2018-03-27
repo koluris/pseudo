@@ -37,11 +37,11 @@ CstrMips cpu;
 #define saddr\
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-// SLTI
+// SLTIU
 //
 // 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 10
-//  0 |  0 |  1 |  0 |  1 |  0 |
+// ---|----|----|----|----|----| -> 11
+//  0 |  0 |  1 |  0 |  1 |  1 |
 
 void CstrMips::reset() {
     memset(base, 0, sizeof(base));
@@ -74,6 +74,14 @@ void CstrMips::step(bool inslot) {
                     }
                     return;
                     
+                case 2: // SRL
+                    base[rd] = base[rt] >> sa;
+                    return;
+                    
+                case 3: // SRA
+                    base[rd] = (sw)base[rt] >> sa;
+                    return;
+                    
                 case 8: // JR
                     branch(base[rs]); // Remember to print the output
                     return;
@@ -83,12 +91,27 @@ void CstrMips::step(bool inslot) {
                     branch(base[rs]);
                     return;
                     
+                case 18: // MFLO
+                    base[rd] = lo;
+                    return;
+                    
+                case 26: // DIV
+                    if (base[rt]) {
+                        lo = (sw)base[rs] / (sw)base[rt];
+                        hi = (sw)base[rs] % (sw)base[rt];
+                    }
+                    return;
+                    
                 case 32: // ADD
                     base[rd] = base[rs] + base[rt];
                     return;
                     
                 case 33: // ADDU
                     base[rd] = base[rs] + base[rt];
+                    return;
+                    
+                case 35: // SUBU
+                    base[rd] = base[rs] - base[rt];
                     return;
                     
                 case 36: // AND
@@ -110,6 +133,12 @@ void CstrMips::step(bool inslot) {
             switch(rt) {
                 case 0: // BLTZ
                     if ((sw)base[rs] < 0) {
+                        branch(baddr);
+                    }
+                    return;
+                    
+                case 1: // BGEZ
+                    if ((sw)base[rs] >= 0) {
                         branch(baddr);
                     }
                     return;
@@ -145,7 +174,7 @@ void CstrMips::step(bool inslot) {
             return;
             
         case 7: // BGTZ
-            if ((sw)base[rs] >= 0) {
+            if ((sw)base[rs] > 0) {
                 branch(baddr);
             }
             return;
@@ -160,6 +189,10 @@ void CstrMips::step(bool inslot) {
             
         case 10: // SLTI
             base[rd] = (sw)base[rs] < imm;
+            return;
+            
+        case 11: // SLTIU
+            base[rd] = base[rs] < immu;
             return;
             
         case 12: // ANDI

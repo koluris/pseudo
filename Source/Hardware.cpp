@@ -49,3 +49,14 @@ void CstrHardware::write08(uw addr, ub data) {
     }
     printx("Unknown Hardware Write 08: $%x <- $%x\n", addr, data);
 }
+
+uw CstrHardware::read32(uw addr) {
+    switch(addr & 0xffff) {
+        /* unused */
+        case 0x1074:
+            return accessMem(mem.hwr, uw);
+    }
+    printx("Unknown Hardware Read 32: $%x\n", addr);
+    
+    return 0;
+}
