@@ -37,11 +37,11 @@ CstrMips cpu;
 #define saddr\
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-// ADD
+// SLTI
 //
 // 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 32
-//  1 |  0 |  0 |  0 |  0 |  0 |
+// ---|----|----|----|----|----| -> 10
+//  0 |  0 |  1 |  0 |  1 |  0 |
 
 void CstrMips::reset() {
     memset(base, 0, sizeof(base));
@@ -50,7 +50,6 @@ void CstrMips::reset() {
     pc = 0xbfc00000;
     lo = 0;
     hi = 0;
-    nopCounter = 0;
     
     while(pc != 0x80030000) {
         step(false);
@@ -67,11 +66,8 @@ void CstrMips::step(bool inslot) {
     pc += 4;
     base[0] = 0;
     
-    // No operation counter
+    // No operation
     if (code == 0) {
-        if (++nopCounter == 200) {
-            //printx("%d unknown operations, abort\n", nopCounter);
-        };
         return;
     }
     
@@ -84,6 +80,11 @@ void CstrMips::step(bool inslot) {
                     
                 case 8: // JR
                     branch(base[rs]); // Remember to print the output
+                    return;
+                    
+                case 9: // JALR
+                    base[rd] = pc + 4;
+                    branch(base[rs]);
                     return;
                     
                 case 32: // ADD
@@ -109,6 +110,17 @@ void CstrMips::step(bool inslot) {
             printx("$%08x | Unknown special opcode $%08x | %d\n", pc, code, (code & 63));
             return;
             
+        case 1: // REGIMM
+            switch(rt) {
+                case 0: // BLTZ
+                    if ((sw)base[rs] < 0) {
+                        branch(baddr);
+                    }
+                    return;
+            }
+            printx("$%08x | Unknown bcond opcode $%08x | %d\n", pc, code, rt);
+            return;
+            
         case 2: // J
             branch(saddr);
             return;
@@ -130,12 +142,28 @@ void CstrMips::step(bool inslot) {
             }
             return;
             
+        case 6: // BLEZ
+            if ((sw)base[rs] <= 0) {
+                branch(baddr);
+            }
+            return;
+            
+        case 7: // BGTZ
+            if ((sw)base[rs] >= 0) {
+                branch(baddr);
+            }
+            return;
+            
         case 8: // ADDI
             base[rt] = base[rs] + imm;
             return;
             
         case 9: // ADDIU
             base[rt] = base[rs] + imm;
+            return;
+            
+        case 10: // SLTI
+            base[rd] = (sw)base[rs] < imm;
             return;
             
         case 12: // ANDI
@@ -164,11 +192,15 @@ void CstrMips::step(bool inslot) {
             return;
             
         case 32: // LB
-            base[rt] = mem.read08(ob);
+            base[rt] = (sb)mem.read08(ob);
             return;
             
         case 35: // LW
             base[rt] = mem.read32(ob);
+            return;
+            
+        case 36: // LBU
+            base[rt] = mem.read08(ob);
             return;
             
         case 40: // SB

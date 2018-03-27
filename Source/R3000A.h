@@ -1,5 +1,5 @@
 class CstrMips {
-    uw lo, hi, nopCounter;
+    uw lo, hi;
     
     void branch(uw);
     void step(bool);

@@ -7,7 +7,9 @@ typedef unsigned int   uw;
 typedef unsigned short uh;
 typedef unsigned char  ub;
 
+typedef int   sw;
 typedef short sh;
+typedef char  sb;
 
 #import "Hardware.h"
 #import "Mem.h"

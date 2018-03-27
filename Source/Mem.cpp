@@ -41,7 +41,8 @@ void CstrMem::write16(uw addr, uh data) {
 
 void CstrMem::write08(uw addr, ub data) {
     switch(addr) {
-        case 0x80000000 ... 0x80200000-1: // RAM
+        case 0x00000000 ... 0x00200000-1: // RAM
+        case 0x80000000 ... 0x80200000-1:
             accessMem(ram, ub) = data;
             return;
             
