@@ -23,12 +23,14 @@ public:
     
     void reset();
     
-    uw read32(uw);
-    ub read08(uw);
-    
+    // Store
     void write32(uw, uw);
     void write16(uw, uh);
     void write08(uw, ub);
+    
+    // Load
+    uw read32(uw);
+    ub read08(uw);
 };
 
 extern CstrMem mem;

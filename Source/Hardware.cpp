@@ -3,8 +3,11 @@
 
 CstrHardware io;
 
+#define hob(addr)\
+    (addr & 0xffff)
+
 void CstrHardware::write32(uw addr, uw data) {
-    switch(addr & 0xffff) {
+    switch(hob(addr)) {
         case 0x1070:
             data32 &= data & mask32;
             return;
@@ -28,7 +31,7 @@ void CstrHardware::write32(uw addr, uw data) {
 }
 
 void CstrHardware::write16(uw addr, uh data) {
-    switch(addr & 0xffff) {
+    switch(hob(addr)) {
         /* unused */
         case 0x1d80:
         case 0x1d82:
@@ -41,7 +44,7 @@ void CstrHardware::write16(uw addr, uh data) {
 }
 
 void CstrHardware::write08(uw addr, ub data) {
-    switch(addr & 0xffff) {
+    switch(hob(addr)) {
         /* unused */
         case 0x2041:
             accessMem(mem.hwr, ub) = data;
@@ -51,7 +54,7 @@ void CstrHardware::write08(uw addr, ub data) {
 }
 
 uw CstrHardware::read32(uw addr) {
-    switch(addr & 0xffff) {
+    switch(hob(addr)) {
         /* unused */
         case 0x1074:
             return accessMem(mem.hwr, uw);

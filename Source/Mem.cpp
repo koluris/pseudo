@@ -14,6 +14,7 @@ void CstrMem::write32(uw addr, uw data) {
         case 0x00000000 ... 0x00200000-1: // RAM
         case 0x80000000 ... 0x80200000-1:
         case 0xa0000000 ... 0xa0200000-1:
+            // A shorter alternative to allow mem write
             if (!(cpu.copr[12] & 0x10000)) {
                 accessMem(ram, uw) = data;
             }
@@ -23,7 +24,7 @@ void CstrMem::write32(uw addr, uw data) {
             io.write32(addr, data);
             return;
             
-        case 0xfffe0130: // $804
+        case 0xfffe0130: // Possible values: $804, $800, $1e988
             printf("$fffe0130 <- $%x\n", data);
             return;
     }
