@@ -62,20 +62,16 @@ void CstrMips::branch(uw addr) {
 }
 
 void CstrMips::step(bool inslot) {
-    uw code = mem.read32(pc);
-    pc += 4;
+    uw code = mem.read32(pc); pc += 4;
     base[0] = 0;
-    
-    // No operation
-    if (code == 0) {
-        return;
-    }
     
     switch(op) {
         case 0: // SPECIAL
             switch(code & 63) {
                 case 0: // SLL
-                    base[rd] = base[rt] << sa;
+                    if (code) { // No operation?
+                        base[rd] = base[rt] << sa;
+                    }
                     return;
                     
                 case 8: // JR
