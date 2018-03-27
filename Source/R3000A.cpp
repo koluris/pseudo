@@ -25,41 +25,24 @@ CstrMips cpu;
     (code & 0xffff)
 
 /* 32-bit */
+#define ob\
+    (base[rs] + imm)
+
+#define baddr\
+    (pc + (imm << 2))
+
 #define saddr\
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-// J
+// LW
 //
 // 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 2
-//  0 |  0 |  0 |  0 |  1 |  0 |
-
-// ADDIU
-//
-// 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 9
-//  0 |  0 |  1 |  0 |  0 |  1 |
-
-// ORI
-//
-// 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 13
-//  0 |  0 |  1 |  1 |  0 |  1 |
-
-// LUI
-//
-// 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 15
-//  0 |  0 |  1 |  1 |  1 |  1 |
-
-// SW
-//
-// 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 43
-//  1 |  0 |  1 |  0 |  1 |  1 |
+// ---|----|----|----|----|----| -> 35
+//  1 |  0 |  0 |  0 |  1 |  1 |
 
 void CstrMips::reset() {
     memset(base, 0, sizeof(base));
+    memset(copr, 0, sizeof(copr));
     
     pc = 0xbfc00000;
     lo = 0;
@@ -83,8 +66,8 @@ void CstrMips::step(bool inslot) {
     
     // No operation counter
     if (code == 0) {
-        if (++nopCounter == 30) {
-            printx("%d unknown operations, abort.\n", nopCounter);
+        if (++nopCounter == 40) {
+            printx("%d unknown operations, abort\n", nopCounter);
         };
         return;
     }
@@ -103,6 +86,16 @@ void CstrMips::step(bool inslot) {
             branch(saddr);
             return;
             
+        case 5: // BNE
+            if (base[rs] != base[rt]) {
+                branch(baddr);
+            }
+            return;
+            
+        case 8: // ADDI
+            base[rt] = base[rs] + imm;
+            return;
+            
         case 9: // ADDIU
             base[rt] = base[rs] + imm;
             return;
@@ -116,11 +109,21 @@ void CstrMips::step(bool inslot) {
             return;
             
         case 16: // COP0
+            switch(rs) {
+                case 4: // MTC0
+                    copr[rd] = base[rt];
+                    printf("COP0[%d] <- $%x\n", rd, base[rt]);
+                    return;
+            }
             printx("$%08x | Unknown cop0 opcode $%08x | %d\n", pc, code, rs);
             return;
             
+        case 35: // LW
+            base[rt] = mem.read32(ob);
+            return;
+            
         case 43: // SW
-            mem.write32(base[rs] + (sh)code, base[rt]);
+            mem.write32(ob, base[rt]);
             return;
     }
     printx("$%08x | Unknown basic opcode $%08x | %d\n", pc, code, op);

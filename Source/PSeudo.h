@@ -4,8 +4,10 @@
     exit(0)
 
 class CstrPSeudo {
+    void reset();
+    
 public:
-    void init(const char *), reset();
+    void init(const char *);
 };
 
 extern CstrPSeudo psx;
