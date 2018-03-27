@@ -34,11 +34,11 @@ CstrMips cpu;
 #define saddr\
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-// SH
+// JR
 //
 // 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 41
-//  1 |  0 |  0 |  0 |  0 |  1 |
+// ---|----|----|----|----|----| -> 32
+//  1 |  0 |  0 |  0 |  0 |  0 |
 
 void CstrMips::reset() {
     memset(base, 0, sizeof(base));
@@ -75,6 +75,10 @@ void CstrMips::step(bool inslot) {
     switch(op) {
         case 0: // SPECIAL
             switch(code & 63) {
+                case 8: // JR
+                    branch(base[rs]); // Remember to print the output
+                    return;
+                    
                 case 33: // ADDU
                     base[rd] = base[rs] + base[rt];
                     return;
@@ -94,6 +98,11 @@ void CstrMips::step(bool inslot) {
             branch(saddr);
             return;
             
+        case 3: // JAL
+            base[31] = pc + 4;
+            branch(saddr);
+            return;
+            
         case 5: // BNE
             if (base[rs] != base[rt]) {
                 branch(baddr);
@@ -106,6 +115,10 @@ void CstrMips::step(bool inslot) {
             
         case 9: // ADDIU
             base[rt] = base[rs] + imm;
+            return;
+            
+        case 12: // ANDI
+            base[rt] = base[rs] & immu;
             return;
             
         case 13: // ORI
@@ -126,8 +139,16 @@ void CstrMips::step(bool inslot) {
             printx("$%08x | Unknown cop0 opcode $%08x | %d\n", pc, code, rs);
             return;
             
+        case 32: // LB
+            base[rt] = mem.read08(ob);
+            return;
+            
         case 35: // LW
             base[rt] = mem.read32(ob);
+            return;
+            
+        case 40: // SB
+            mem.write08(ob, base[rt]);
             return;
             
         case 41: // SH

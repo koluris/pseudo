@@ -39,15 +39,35 @@ void CstrMem::write16(uw addr, uh data) {
     printx("Unknown Mem Write 16: $%x <- $%x\n", addr, data);
 }
 
+void CstrMem::write08(uw addr, ub data) {
+    switch(addr) {
+        case 0x1f801000 ... 0x1f803000-1: // Hardware
+            io.write08(addr, data);
+            return;
+    }
+    printx("Unknown Mem Write 08: $%x <- $%x\n", addr, data);
+}
+
 uw CstrMem::read32(uw addr) {
     switch(addr) {
-        case 0xa0000000 ... 0xa0200000-1: // RAM
+        case 0x80000000 ... 0x80200000-1: // RAM
+        case 0xa0000000 ... 0xa0200000-1:
             return accessMem(ram, uw);
             
         case 0xbfc00000 ... 0xbfc80000-1: // ROM
             return accessMem(rom, uw);
     }
     printx("Unknown Mem Read 32: $%x\n", addr);
+    
+    return 0;
+}
+
+ub CstrMem::read08(uw addr) {
+    switch(addr) {
+        case 0xbfc00000 ... 0xbfc80000-1: // ROM
+            return accessMem(rom, ub);
+    }
+    printx("Unknown Mem Read 08: $%x\n", addr);
     
     return 0;
 }

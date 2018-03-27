@@ -16,5 +16,6 @@
 
 // Startup
 int main() {
-    return NSApplicationMain(0, nil);
+    const char *b[] = {};
+    return NSApplicationMain(0, b);
 }
