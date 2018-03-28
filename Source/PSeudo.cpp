@@ -15,3 +15,25 @@ void CstrPSeudo::reset() {
     mem.reset();
     cpu.reset();
 }
+
+//#define NSChars             NSString
+//#define charsWithFormat     stringWithFormat
+
+//void CstrPSeudo::console(uw *r, uw addr) {
+//    if (addr == 0xb0) {
+//        if (r[9] == 59 || r[9] == 61) {
+//            char put = toupper(r[4]&0xff);
+//
+//#ifdef MAC_OS_X
+//            NSString *text = [NSString stringWithFormat:@"%c", put];
+////            printf("%s", text);
+//
+////            dispatch_ASYNC(dispatch_main_queue(), ^{
+////                NSAttributedChars *attr = [[NSAttributedChars alloc] initWithChars:text];
+////                [[output textStore] appendAttributedChars:attr];
+////            });
+//#endif
+//        }
+//    }
+//}
+

@@ -20,14 +20,14 @@
 /* Begin PBXFileReference section */
 		420AD1BC2063B8B7006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
-		42587A862068BEFF0054BEC8 /* Hardware.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Hardware.cpp; sourceTree = "<group>"; };
+		42587A862068BEFF0054BEC8 /* Hardware.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Hardware.cpp; sourceTree = "<group>"; };
 		42587A872068BEFF0054BEC8 /* Hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Hardware.h; sourceTree = "<group>"; };
-		429C3EBB206500B500915293 /* Mem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mem.cpp; sourceTree = "<group>"; };
+		429C3EBB206500B500915293 /* Mem.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Mem.cpp; sourceTree = "<group>"; };
 		429C3EBC206500B500915293 /* Mem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mem.h; sourceTree = "<group>"; };
-		429C3EBF20650CB400915293 /* PSeudo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PSeudo.cpp; sourceTree = "<group>"; };
+		429C3EBF20650CB400915293 /* PSeudo.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = PSeudo.cpp; sourceTree = "<group>"; };
 		429C3EC020650CB400915293 /* PSeudo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PSeudo.h; sourceTree = "<group>"; };
 		429C3EC52065189C00915293 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		42B9957920626481009B67BE /* R3000A.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = R3000A.cpp; sourceTree = "<group>"; };
+		42B9957920626481009B67BE /* R3000A.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = R3000A.cpp; sourceTree = "<group>"; };
 		42B9957A20626481009B67BE /* R3000A.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = R3000A.h; sourceTree = "<group>"; };
 		42EBBCCE2062482200824B95 /* PSeudo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PSeudo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EBBCD12062482200824B95 /* Main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
@@ -345,6 +345,11 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					MAC_OS_X,
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
@@ -362,6 +367,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				GCC_PREPROCESSOR_DEFINITIONS = MAC_OS_X;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;

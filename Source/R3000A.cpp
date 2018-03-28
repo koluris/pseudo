@@ -54,6 +54,7 @@ void CstrMips::reset() {
     while(pc != 0x80030000) {
         step(false);
     }
+    printf("Bootstrap completed\n");
 }
 
 void CstrMips::branch(uw addr) {
@@ -84,8 +85,9 @@ void CstrMips::step(bool inslot) {
                     
                 case 8: // JR
                     branch(base[rs]); // Remember to print the output
-#ifdef TARGET_OS_MAC
-                    //app
+                    //psx.console(base, pc);
+#ifdef MAC_OS_X
+                    [app hi];
 #endif
                     return;
                     
