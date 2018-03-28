@@ -11,17 +11,16 @@
     
     // NSTextView
     self.consoleView.textContainerInset = NSMakeSize(8.0f, 8.0f);
-    self.consoleView.string = @"psx";
+    self.consoleView.textColor = [NSColor whiteColor];
     
-    //psx.setConsoleView(self.consoleView);
     psx.init([@"/Users/dk/Downloads/scph1001.bin" UTF8Chars]);
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
 }
 
-- (void)hi {
-    printf("hi\n");
+- (void)printConsole:(char)text {
+    self.consoleView.string = [NSString stringWithFormat:@"%@%c", self.consoleView.string, text];
 }
 
 @end

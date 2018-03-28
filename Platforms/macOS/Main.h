@@ -2,7 +2,7 @@
 
 @prop (unsafe_unretained) IBOutlet NSTextView *consoleView;
 
-- (void)hi;
+- (void)printConsole:(char)text;
 
 @end
 

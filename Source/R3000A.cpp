@@ -85,10 +85,7 @@ void CstrMips::step(bool inslot) {
                     
                 case 8: // JR
                     branch(base[rs]); // Remember to print the output
-                    //psx.console(base, pc);
-#ifdef MAC_OS_X
-                    [app hi];
-#endif
+                    psx.console(base, pc);
                     return;
                     
                 case 9: // JALR

@@ -8,14 +8,7 @@ class CstrPSeudo {
     
 public:
     void init(const char *);
-//    void console(uw *, uw);
-    
-//#ifdef TARGET_OS_MAC
-//    NSTextView *output;
-//    void setConsoleView(NSTextView *textView) {
-//        output = textView;
-//    }
-//#endif
+    void console(uw *, uw);
 };
 
 extern CstrPSeudo psx;
