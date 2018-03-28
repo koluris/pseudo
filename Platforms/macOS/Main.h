@@ -1,5 +1,7 @@
 @interface Main : NSOb <NSApplicationListener>
 
-@prop (unsafe_unretained) IBOutlet NSTextView *consoleText;
+@property (unsafe_unretained) IBOutlet NSTextView *consoleView;
 
 @end
+
+extern Main *app;

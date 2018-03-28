@@ -84,6 +84,9 @@ void CstrMips::step(bool inslot) {
                     
                 case 8: // JR
                     branch(base[rs]); // Remember to print the output
+#ifdef TARGET_OS_MAC
+                    //app
+#endif
                     return;
                     
                 case 9: // JALR
