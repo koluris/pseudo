@@ -32,6 +32,18 @@ void CstrHardware::write32(uw addr, uw data) {
 
 void CstrHardware::write16(uw addr, uh data) {
     switch(hob(addr)) {
+        case 0x1100: // Rootcounters
+        case 0x1104:
+        case 0x1108:
+        case 0x1110:
+        case 0x1114:
+        case 0x1118:
+        case 0x1120:
+        case 0x1124:
+        case 0x1128:
+            accessMem(mem.hwr, uh) = data;
+            return;
+            
         /* unused */
         case 0x1d80:
         case 0x1d82:
