@@ -102,8 +102,20 @@ void CstrMips::step(bool branched) {
                     exception(0x20, branched);
                     return;
                     
+                case 16: // MFHI
+                    base[rd] = hi;
+                    return;
+                    
+                case 17: // MTHI
+                    hi = base[rs];
+                    return;
+                    
                 case 18: // MFLO
                     base[rd] = lo;
+                    return;
+                    
+                case 19: // MTLO
+                    lo = base[rs];
                     return;
                     
                 case 26: // DIV
@@ -259,7 +271,11 @@ void CstrMips::step(bool branched) {
 }
 
 void CstrMips::exception(uw code, bool branched) {
-    printf("Exception\n");
+    copr[12] = (copr[12] & 0xffffffc0) | ((copr[12] << 2) & 0x3f);
+    copr[13] = code;
+    copr[14] = pc;
+    
+    pc = 0x80;
 }
 
 void CstrMips::run() {
