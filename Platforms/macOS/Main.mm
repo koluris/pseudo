@@ -5,13 +5,13 @@
 @implementation Main
 
 - (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
-    app = (Main *)[[NSApplication sharedApplication] delegate];
+    app = (Main *)[[NSApplication sharedApplication] del];
     
     //NSURL *uri = [[NSBundle mainBundle] bundleURL];
     
     // NSTextView
-    self.consoleView.textContainerInset = NSMakeSize(8.0f, 8.0f);
-    self.consoleView.textColor = [NSColor whiteColor];
+    self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
+    //self.consoleView.textColor = [NSColor whiteColor];
     
     psx.init([@"/Users/dk/Downloads/scph1001.bin" UTF8Chars]);
 }
@@ -20,7 +20,15 @@
 }
 
 - (void)printConsole:(char)text {
-    self.consoleView.string = [NSString stringWithFormat:@"%@%c", self.consoleView.string, text];
+    static bool once = true;
+    
+    if (once) {
+        self.consoleView.contents = @"";
+        once = false;
+        return;
+    }
+    
+    self.consoleView.contents = [NSChars charsWithFormat:@"%@%c", self.consoleView.contents, text];
 }
 
 @end

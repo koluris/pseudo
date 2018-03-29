@@ -129,15 +129,15 @@
                                                     <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="0K0-FQ-qW4">
                                                         <rect key="frame" x="0.0" y="0.0" width="318" height="238"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <color key="textColor" red="0.95415609140000002" green="0.95415609140000002" blue="0.95415609140000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <color key="backgroundColor" red="0.2323723033" green="0.2323723033" blue="0.2323723033" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <color key="textColor" red="0.9882352941176471" green="0.61176470588235299" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <color key="backgroundColor" red="0.011764705882352941" green="0.074509803921568626" blue="0.10980392156862745" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <size key="minSize" width="318" height="238"/>
                                                         <size key="maxSize" width="463" height="10000000"/>
                                                         <attributedString key="textStorage">
-                                                            <fragment content="-">
+                                                            <fragment content=" ">
                                                                 <attributes>
-                                                                    <color key="NSColor" red="0.95415609140000002" green="0.95415609140000002" blue="0.95415609140000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                    <font key="NSFont" metaFont="smallSystem"/>
+                                                                    <color key="NSColor" red="0.9882352941176471" green="0.61176470588235299" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                    <font key="NSFont" metaFont="systemMedium" size="11"/>
                                                                     <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                                 </attributes>
                                                             </fragment>

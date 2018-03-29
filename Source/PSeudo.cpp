@@ -26,4 +26,3 @@ void CstrPSeudo::console(uw *r, uw addr) {
         }
     }
 }
-
