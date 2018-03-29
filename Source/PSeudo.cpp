@@ -12,6 +12,11 @@ void CstrPSeudo::init(const char *path) {
 }
 
 void CstrPSeudo::reset() {
+#ifdef MAC_OS_X
+    [app consoleClear];
+    [app consolePrint:@"PSeudo startup\n"];
+#endif
+    
     mem.reset();
     cpu.reset();
 }
@@ -21,7 +26,7 @@ void CstrPSeudo::console(uw *r, uw addr) {
         if (r[9] == 59 || r[9] == 61) {
             char put = toupper(r[4]&0xff);
 #ifdef MAC_OS_X
-            [app printConsole:put];
+            [app consolePrint:[NSChars charsWithFormat:@"%c", put]];
 #endif
         }
     }

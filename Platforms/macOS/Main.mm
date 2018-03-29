@@ -5,11 +5,8 @@
 @implementation Main
 
 - (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
-    app = (Main *)[[NSApplication sharedApplication] del];
-    
     //NSURL *uri = [[NSBundle mainBundle] bundleURL];
-    
-    // NSTextView
+    app = (Main *)[[NSApplication sharedApplication] del];
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
     
     psx.init([@"/Users/dk/Downloads/scph1001.bin" UTF8Chars]);
@@ -18,20 +15,20 @@
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
 }
 
+// Menu
 - (IBAction)menuShell:(id)sender {
-    printf("hi\n");
+    dispatch_asinc(dispatch_main_queue(), ^{
+        cpu.run();
+    });
 }
 
-- (void)printConsole:(char)text {
-    static bool once = true;
-    
-    if (once) {
-        self.consoleView.contents = @"";
-        once = false;
-        return;
-    }
-    
-    self.consoleView.contents = [NSChars charsWithFormat:@"%@%c", self.consoleView.contents, text];
+// Console
+- (void)consoleClear {
+    self.consoleView.contents = @"";
+}
+
+- (void)consolePrint:(NSChars *)text {
+    self.consoleView.contents = [NSChars charsWithFormat:@"%@%@", self.consoleView.contents, text];
 }
 
 @end

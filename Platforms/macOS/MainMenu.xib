@@ -137,7 +137,7 @@
                                                         <size key="minSize" width="318" height="238"/>
                                                         <size key="maxSize" width="463" height="10000000"/>
                                                         <attributedString key="textStorage">
-                                                            <fragment content=" ">
+                                                            <fragment content="-">
                                                                 <attributes>
                                                                     <color key="NSColor" red="0.9882352941176471" green="0.61176470588235299" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     <font key="NSFont" metaFont="systemMedium" size="11"/>

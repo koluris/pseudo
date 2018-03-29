@@ -48,8 +48,8 @@ void CstrMips::reset() {
     memset(copr, 0, sizeof(copr));
     
     pc = 0xbfc00000;
-    lo = 0;
-    hi = 0;
+    lo = hi = 0;
+    stop = false;
     
     while(pc != 0x80030000) {
         step(false);
@@ -91,6 +91,10 @@ void CstrMips::step(bool inslot) {
                 case 9: // JALR
                     base[rd] = pc + 4;
                     branch(base[rs]);
+                    return;
+                    
+                case 12: // SYSCALL
+                    exception(0x20);
                     return;
                     
                 case 18: // MFLO
@@ -247,4 +251,14 @@ void CstrMips::step(bool inslot) {
             return;
     }
     printx("$%08x | Unknown basic opcode $%08x | %d\n", pc, code, op);
+}
+
+void CstrMips::exception(uw code) {
+    printf("haha\n");
+}
+
+void CstrMips::run() {
+    while(!stop) {
+        step(false);
+    }
 }

@@ -33,6 +33,10 @@ void CstrMem::write32(uw addr, uw data) {
 
 void CstrMem::write16(uw addr, uh data) {
     switch(addr) {
+        case 0x80000000 ... 0x80200000-1: // RAM
+            accessMem(ram, uh) = data;
+            return;
+            
         case 0x1f801000 ... 0x1f803000-1: // Hardware
             io.write16(addr, data);
             return;
