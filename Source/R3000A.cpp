@@ -56,6 +56,7 @@ void CstrMips::reset() {
     pc = 0xbfc00000;
     stop = false;
     
+    // Bootstrap
     while(pc != 0x80030000) {
         step(false);
     }
@@ -66,7 +67,7 @@ void CstrMips::branch(uw addr) {
     pc = addr;
 }
 
-void CstrMips::step(bool inslot) {
+void CstrMips::step(bool branched) {
     uw code = mem.read32(pc); pc += 4;
     base[0] = 0;
     
@@ -98,7 +99,7 @@ void CstrMips::step(bool inslot) {
                     return;
                     
                 case 12: // SYSCALL
-                    exception(0x20);
+                    exception(0x20, branched);
                     return;
                     
                 case 18: // MFLO
@@ -257,7 +258,7 @@ void CstrMips::step(bool inslot) {
     printx("$%08x | Unknown basic opcode $%08x | %d\n", pc, code, op);
 }
 
-void CstrMips::exception(uw code) {
+void CstrMips::exception(uw code, bool branched) {
     printf("Exception\n");
 }
 

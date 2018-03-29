@@ -3,7 +3,7 @@ class CstrMips {
     
     void branch(uw);
     void step(bool);
-    void exception(uw);
+    void exception(uw, bool);
     
 public:
     uw base[34], copr[16], pc;
