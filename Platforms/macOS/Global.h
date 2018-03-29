@@ -9,8 +9,6 @@
 #define NSChars                     NSString
 #define charsWithFormat             stringWithFormat
 #define del                         delegate
-#define destination                 toTarget
-#define withOb                      withObject
 #define dispatch_asinc              dispatch_async
 #define dispatch_main_queue         dispatch_get_main_queue
 

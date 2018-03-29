@@ -53,6 +53,9 @@ void CstrMips::reset() {
     memset(base, 0, sizeof(base));
     memset(copr, 0, sizeof(copr));
     
+    copr[12] = 0x10900000;
+    copr[15] = 0x2; // Co-processor Revision
+    
     pc = 0xbfc00000;
     stop = false;
     
@@ -149,7 +152,7 @@ void CstrMips::step(bool branched) {
                     base[rd] = base[rs] < base[rt];
                     return;
             }
-            printx("$%08x | Unknown special opcode $%08x | %d\n", pc, code, (code & 63));
+            printx("$%08x | Unknown special opcode $%08x | %d", pc, code, (code & 63));
             return;
             
         case 1: // REGIMM
@@ -166,7 +169,7 @@ void CstrMips::step(bool branched) {
                     }
                     return;
             }
-            printx("$%08x | Unknown bcond opcode $%08x | %d\n", pc, code, rt);
+            printx("$%08x | Unknown bcond opcode $%08x | %d", pc, code, rt);
             return;
             
         case 2: // J
@@ -239,8 +242,15 @@ void CstrMips::step(bool branched) {
                 case 4: // MTC0
                     copr[rd] = base[rt];
                     return;
+                    
+                case 16: // RFE (Return From Exception)
+                    // SR ← SR[31..4] || SR[5..2] /// 31..4 means 32-4 = 28-bits, also 5..2 means 6-2 = 4-bits, etc
+                    printf("RFE -> 0x%x\n", (copr[12]&0xfffffff0) | ((copr[12]>>2)&0xf));
+                    printf("RFE -> 0x%x\n", ((copr[12]>>4)&0xfffffff) | ((copr[12]>>2)&0xf));
+                    copr[12] = ((copr[12]>>4)&0xfffffff) | ((copr[12]>>2)&0xf);
+                    return;
             }
-            printx("$%08x | Unknown cop0 opcode $%08x | %d\n", pc, code, rs);
+            printx("$%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
             return;
             
         case 32: // LB
@@ -267,7 +277,7 @@ void CstrMips::step(bool branched) {
             mem.write32(ob, base[rt]);
             return;
     }
-    printx("$%08x | Unknown basic opcode $%08x | %d\n", pc, code, op);
+    printx("$%08x | Unknown basic opcode $%08x | %d", pc, code, op);
 }
 
 void CstrMips::exception(uw code, bool branched) {

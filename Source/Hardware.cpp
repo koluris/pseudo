@@ -27,7 +27,7 @@ void CstrHardware::write32(uw addr, uw data) {
             accessMem(mem.hwr, uw) = data;
             return;
     }
-    printx("Unknown Hardware Write 32: $%x <- $%x\n", addr, data);
+    printx("Unknown Hardware Write 32: $%x <- $%x", addr, data);
 }
 
 void CstrHardware::write16(uw addr, uh data) {
@@ -52,7 +52,7 @@ void CstrHardware::write16(uw addr, uh data) {
             accessMem(mem.hwr, uh) = data;
             return;
     }
-    printx("Unknown Hardware Write 16: $%x <- $%x\n", addr, data);
+    printx("Unknown Hardware Write 16: $%x <- $%x", addr, data);
 }
 
 void CstrHardware::write08(uw addr, ub data) {
@@ -62,7 +62,7 @@ void CstrHardware::write08(uw addr, ub data) {
             accessMem(mem.hwr, ub) = data;
             return;
     }
-    printx("Unknown Hardware Write 08: $%x <- $%x\n", addr, data);
+    printx("Unknown Hardware Write 08: $%x <- $%x", addr, data);
 }
 
 uw CstrHardware::read32(uw addr) {
@@ -71,7 +71,7 @@ uw CstrHardware::read32(uw addr) {
         case 0x1074:
             return accessMem(mem.hwr, uw);
     }
-    printx("Unknown Hardware Read 32: $%x\n", addr);
+    printx("Unknown Hardware Read 32: $%x", addr);
     
     return 0;
 }

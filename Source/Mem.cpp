@@ -28,7 +28,7 @@ void CstrMem::write32(uw addr, uw data) {
             printf("$fffe0130 <- $%x\n", data);
             return;
     }
-    printx("Unknown Mem Write 32: $%x <- $%x\n", addr, data);
+    printx("Unknown Mem Write 32: $%x <- $%x", addr, data);
 }
 
 void CstrMem::write16(uw addr, uh data) {
@@ -41,7 +41,7 @@ void CstrMem::write16(uw addr, uh data) {
             io.write16(addr, data);
             return;
     }
-    printx("Unknown Mem Write 16: $%x <- $%x\n", addr, data);
+    printx("Unknown Mem Write 16: $%x <- $%x", addr, data);
 }
 
 void CstrMem::write08(uw addr, ub data) {
@@ -56,7 +56,7 @@ void CstrMem::write08(uw addr, ub data) {
             io.write08(addr, data);
             return;
     }
-    printx("Unknown Mem Write 08: $%x <- $%x\n", addr, data);
+    printx("Unknown Mem Write 08: $%x <- $%x", addr, data);
 }
 
 uw CstrMem::read32(uw addr) {
@@ -72,7 +72,7 @@ uw CstrMem::read32(uw addr) {
         case 0x1f801000 ... 0x1f803000-1: // Hardware
             return io.read32(addr);
     }
-    printx("Unknown Mem Read 32: $%x\n", addr);
+    printx("Unknown Mem Read 32: $%x", addr);
     
     return 0;
 }
@@ -89,7 +89,7 @@ ub CstrMem::read08(uw addr) {
         case 0x1f000084: // Serial?
             return 0;
     }
-    printx("Unknown Mem Read 08: $%x\n", addr);
+    printx("Unknown Mem Read 08: $%x", addr);
     
     return 0;
 }
