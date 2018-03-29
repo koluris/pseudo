@@ -3,6 +3,12 @@
 
 CstrMips cpu;
 
+#define lo\
+    base[32]
+
+#define hi\
+    base[33]
+
 /*  5-bit */
 #define sa\
     ((code >>  6) & 31)
@@ -48,13 +54,11 @@ void CstrMips::reset() {
     memset(copr, 0, sizeof(copr));
     
     pc = 0xbfc00000;
-    lo = hi = 0;
     stop = false;
     
     while(pc != 0x80030000) {
         step(false);
     }
-    printf("Bootstrap completed\n");
 }
 
 void CstrMips::branch(uw addr) {
@@ -254,7 +258,7 @@ void CstrMips::step(bool inslot) {
 }
 
 void CstrMips::exception(uw code) {
-    printf("haha\n");
+    printf("Exception\n");
 }
 
 void CstrMips::run() {

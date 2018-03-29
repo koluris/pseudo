@@ -1,5 +1,4 @@
 class CstrMips {
-    uw lo, hi;
     bool stop;
     
     void branch(uw);
@@ -7,7 +6,7 @@ class CstrMips {
     void exception(uw);
     
 public:
-    uw base[32], copr[16], pc;
+    uw base[34], copr[16], pc;
     
     void reset();
     void run();
