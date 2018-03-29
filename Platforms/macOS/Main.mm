@@ -11,12 +11,15 @@
     
     // NSTextView
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
-    //self.consoleView.textColor = [NSColor whiteColor];
     
     psx.init([@"/Users/dk/Downloads/scph1001.bin" UTF8Chars]);
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
+}
+
+- (IBAction)menuShell:(id)sender {
+    printf("hi\n");
 }
 
 - (void)printConsole:(char)text {
