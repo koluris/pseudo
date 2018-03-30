@@ -148,6 +148,14 @@ void CstrMips::step(bool branched) {
                     lo = base[rs];
                     return;
                     
+                case 25: // MULTU
+                    {
+                        uint64_t res = base[rs] * base[rt];
+                        lo = res & 0xffffffff;
+                        hi = res >> 32;
+                    }
+                    return;
+                    
                 case 26: // DIV
                     if (base[rt]) {
                         lo = (sw)base[rs] / (sw)base[rt];

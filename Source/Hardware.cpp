@@ -33,19 +33,11 @@ void CstrHardware::write32(uw addr, uw data) {
 
 void CstrHardware::write16(uw addr, uh data) {
     switch(hob(addr)) {
-        case 0x1100: // Rootcounters
-        case 0x1104:
-        case 0x1108:
-        case 0x1110:
-        case 0x1114:
-        case 0x1118:
-        case 0x1120:
-        case 0x1124:
-        case 0x1128:
+        /* unused */
+        case 0x1100 ... 0x1128: // Rootcounters
             accessMem(mem.hwr, uh) = data;
             return;
             
-        /* unused */
         case 0x1c00 ... 0x1dfe: // Audio
             accessMem(mem.hwr, uh) = data;
             return;
@@ -78,7 +70,7 @@ uw CstrHardware::read32(uw addr) {
 uh CstrHardware::read16(uw addr) {
     switch(hob(addr)) {
         /* unused */
-        case 0x1d88 ... 0x1dae: // Audio
+        case 0x1c0c ... 0x1dae: // Audio
             return accessMem(mem.hwr, uh);
     }
     printx("Unknown Hardware Read 16: $%x", addr);
