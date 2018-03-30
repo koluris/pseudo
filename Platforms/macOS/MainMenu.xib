@@ -70,8 +70,7 @@
                         <items>
                             <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9"/>
                             <menuItem isSeparatorItem="YES" id="TNu-9g-461"/>
-                            <menuItem title="BIOS Shell" id="c5s-Xh-2Pr">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="BIOS Shell" keyEquivalent="b" id="c5s-Xh-2Pr">
                                 <connections>
                                     <action selector="menuShell:" target="xoS-kU-Nao" id="Ack-I5-8UQ"/>
                                 </connections>
@@ -109,7 +108,7 @@
         <window title="PSeudo™ : Alpha" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="Fcb-bg-8vx">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="131" y="158" width="362" height="298"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="b8H-mq-hnx">
                 <rect key="frame" x="0.0" y="0.0" width="362" height="298"/>
                 <autoresizingMask key="autoresizingMask"/>

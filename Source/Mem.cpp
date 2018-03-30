@@ -78,6 +78,13 @@ uw CstrMem::read32(uw addr) {
 }
 
 uh CstrMem::read16(uw addr) {
+    switch(addr) {
+        case 0x80000000 ... 0x80200000-1: // RAM
+            return accessMem(ram, uh);
+            
+        case 0x1f801000 ... 0x1f803000-1: // Hardware
+            return io.read16(addr);
+    }
     printx("Unknown Mem Read 16: $%x", addr);
     
     return 0;

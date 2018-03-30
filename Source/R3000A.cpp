@@ -23,7 +23,7 @@ CstrMips cpu;
     ((code >> 21) & 31)
 
 /*  6-bit */
-#define op\
+#define opcode\
     ((code >> 26) & 63)
 
 /* 16-bit */
@@ -43,11 +43,11 @@ CstrMips cpu;
 #define saddr\
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-// DIVU
+// SLLV
 //
 // 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 27
-//  0 |  1 |  1 |  0 |  1 |  1 |
+// ---|----|----|----|----|----| -> 4
+//  0 |  0 |  0 |  1 |  0 |  0 |
 
 void CstrMips::reset() {
     memset(base, 0, sizeof(base));
@@ -72,19 +72,15 @@ void CstrMips::branch(uw addr) {
     step(true);
     pc = addr;
     
-//    if (opcodeCount >= PSX_CYCLE) {
-//        if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
-//            data16 |= (1<<0);
-//        }
-//
-//        // Exceptions
-//        if (data32 & mask32) {
-//            if ((copr[12] & 0x401) == 0x401) {
-//                exception(0x400, false);
-//            }
-//        }
-//        opcodeCount %= PSX_CYCLE;
-//    }
+    if (opcodeCount >= PSX_CYCLE) {
+        // Exceptions
+        if (data32 & mask32) {
+            if ((copr[12] & 0x401) == 0x401) {
+                exception(0x400, false);
+            }
+        }
+        opcodeCount %= PSX_CYCLE;
+    }
 }
 
 void CstrMips::step(bool branched) {
@@ -92,7 +88,7 @@ void CstrMips::step(bool branched) {
     base[0] = 0;
     opcodeCount++;
     
-    switch(op) {
+    switch(opcode) {
         case 0: // SPECIAL
             switch(code & 63) {
                 case 0: // SLL
@@ -107,6 +103,18 @@ void CstrMips::step(bool branched) {
                     
                 case 3: // SRA
                     base[rd] = (sw)base[rt] >> sa;
+                    return;
+                    
+                case 4: // SLLV
+                    base[rd] = base[rt] << (base[rs] & 0x1f);
+                    return;
+                    
+                case 6: // SRLV
+                    base[rd] = base[rt] >> (base[rs] & 0x1f);
+                    return;
+                    
+                case 7: // SRAV
+                    base[rd] = (sw)base[rt] >> (base[rs] & 0x1f);
                     return;
                     
                 case 8: // JR
@@ -172,6 +180,10 @@ void CstrMips::step(bool branched) {
                     
                 case 37: // OR
                     base[rd] = base[rs] | base[rt];
+                    return;
+                    
+                case 39: // NOR
+                    base[rd] = ~(base[rs] | base[rt]);
                     return;
                     
                 case 42: // SLT
@@ -275,9 +287,6 @@ void CstrMips::step(bool branched) {
                     
                 case 16: // RFE (Return From Exception)
                     // SR ← SR[31..4] || SR[5..2] /// 31..4 means 32-4 = 28-bits, also 5..2 means 6-2 = 4-bits, etc
-                    printf("RFE -> 0x%x\n", (copr[12]&0xfffffff0)|((copr[12]>>2)&0xf));
-                    printf("RFE -> 0x%x\n", ((copr[12]>>4)&0xfffffff)|((copr[12]>>2)&0xf));
-                    
                     copr[12] = (copr[12] & 0xfffffff0) | ((copr[12] >> 2) & 0xf);
                     return;
             }
@@ -286,6 +295,10 @@ void CstrMips::step(bool branched) {
             
         case 32: // LB
             base[rt] = (sb)mem.read08(ob);
+            return;
+            
+        case 33: // LH
+            base[rt] = (sh)mem.read16(ob);
             return;
             
         case 35: // LW
@@ -312,7 +325,7 @@ void CstrMips::step(bool branched) {
             mem.write32(ob, base[rt]);
             return;
     }
-    printx("$%08x | Unknown basic opcode $%08x | %d", pc, code, op);
+    printx("$%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
 }
 
 void CstrMips::exception(uw code, bool branched) {

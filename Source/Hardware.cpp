@@ -46,11 +46,7 @@ void CstrHardware::write16(uw addr, uh data) {
             return;
             
         /* unused */
-        case 0x1d80:
-        case 0x1d82:
-        case 0x1d84:
-        case 0x1d86:
-        case 0x1daa:
+        case 0x1c00 ... 0x1dfe: // Audio
             accessMem(mem.hwr, uh) = data;
             return;
     }
@@ -75,6 +71,17 @@ uw CstrHardware::read32(uw addr) {
             return accessMem(mem.hwr, uw);
     }
     printx("Unknown Hardware Read 32: $%x", addr);
+    
+    return 0;
+}
+
+uh CstrHardware::read16(uw addr) {
+    switch(hob(addr)) {
+        /* unused */
+        case 0x1d88 ... 0x1dae: // Audio
+            return accessMem(mem.hwr, uh);
+    }
+    printx("Unknown Hardware Read 16: $%x", addr);
     
     return 0;
 }

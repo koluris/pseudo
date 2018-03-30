@@ -16,6 +16,7 @@ public:
     
     // Load
     uw read32(uw);
+    uh read16(uw);
 };
 
 extern CstrHardware io;
