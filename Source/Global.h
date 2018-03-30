@@ -23,3 +23,4 @@ typedef char  sb;
 #import "Mem.h"
 #import "PSeudo.h"
 #import "R3000A.h"
+#import "Rootcounters.h"

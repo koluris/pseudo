@@ -25,7 +25,7 @@ void CstrMem::write32(uw addr, uw data) {
             return;
             
         case 0xfffe0130: // Possible values: $804, $800, $1e988
-            printf("$fffe0130 <- $%x\n", data);
+            //printf("$fffe0130 <- $%x\n", data);
             return;
     }
     printx("Unknown Mem Write 32: $%x <- $%x", addr, data);
@@ -73,6 +73,12 @@ uw CstrMem::read32(uw addr) {
             return io.read32(addr);
     }
     printx("Unknown Mem Read 32: $%x", addr);
+    
+    return 0;
+}
+
+uh CstrMem::read16(uw addr) {
+    printx("Unknown Mem Read 16: $%x", addr);
     
     return 0;
 }

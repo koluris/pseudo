@@ -12,6 +12,7 @@
 		429C3EC120650CB400915293 /* PSeudo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBF20650CB400915293 /* PSeudo.cpp */; };
 		429C3EC62065189C00915293 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429C3EC52065189C00915293 /* AppKit.framework */; };
 		42B9957B20626481009B67BE /* R3000A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B9957920626481009B67BE /* R3000A.cpp */; };
+		42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CB1D6C206E34680023337A /* Rootcounters.cpp */; };
 		42EBBCD32062482200824B95 /* Main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42EBBCD22062482200824B95 /* Main.mm */; };
 		42EBBCD52062482200824B95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42EBBCD42062482200824B95 /* Assets.xcassets */; };
 		42EBBCE42062494200824B95 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42EBBCE32062494200824B95 /* MainMenu.xib */; };
@@ -29,6 +30,8 @@
 		429C3EC52065189C00915293 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		42B9957920626481009B67BE /* R3000A.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = R3000A.cpp; sourceTree = "<group>"; };
 		42B9957A20626481009B67BE /* R3000A.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = R3000A.h; sourceTree = "<group>"; };
+		42CB1D6C206E34680023337A /* Rootcounters.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Rootcounters.cpp; sourceTree = "<group>"; };
+		42CB1D6D206E34680023337A /* Rootcounters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rootcounters.h; sourceTree = "<group>"; };
 		42EBBCCE2062482200824B95 /* PSeudo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PSeudo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EBBCD12062482200824B95 /* Main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
 		42EBBCD22062482200824B95 /* Main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Main.mm; sourceTree = "<group>"; };
@@ -118,10 +121,20 @@
 				429C3EBA2064FDC500915293 /* Mem */,
 				429C3EBE20650C9B00915293 /* PSeudo */,
 				420AD1C12063BB0F006C22D9 /* R3000A */,
+				42CB1D6B206E344A0023337A /* Rootcounters */,
 				420AD1C22063BB24006C22D9 /* Global.h */,
 			);
 			name = Source;
 			path = ../../Source;
+			sourceTree = "<group>";
+		};
+		42CB1D6B206E344A0023337A /* Rootcounters */ = {
+			isa = PBXGroup;
+			children = (
+				42CB1D6C206E34680023337A /* Rootcounters.cpp */,
+				42CB1D6D206E34680023337A /* Rootcounters.h */,
+			);
+			name = Rootcounters;
 			sourceTree = "<group>";
 		};
 		42EBBCC52062482200824B95 = {
@@ -227,6 +240,7 @@
 				429C3EBD206500B500915293 /* Mem.cpp in Sources */,
 				42EBBCD32062482200824B95 /* Main.mm in Sources */,
 				42B9957B20626481009B67BE /* R3000A.cpp in Sources */,
+				42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */,
 				429C3EC120650CB400915293 /* PSeudo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

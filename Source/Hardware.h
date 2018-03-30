@@ -1,8 +1,11 @@
 #define data32\
-    *(ub *)&mem.hwr.ptr[0x1070]
+    *(uw *)&mem.hwr.ptr[0x1070]
 
 #define mask32\
-    *(ub *)&mem.hwr.ptr[0x1074]
+    *(uw *)&mem.hwr.ptr[0x1074]
+
+#define data16\
+    *(uh *)&mem.hwr.ptr[0x1070]
 
 class CstrHardware {
 public:

@@ -1,5 +1,6 @@
 class CstrMips {
     bool stop;
+    uw opcodeCount;
     
     void branch(uw);
     void step(bool);

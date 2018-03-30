@@ -43,11 +43,11 @@ CstrMips cpu;
 #define saddr\
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-// SLTIU
+// DIVU
 //
 // 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 11
-//  0 |  0 |  1 |  0 |  1 |  1 |
+// ---|----|----|----|----|----| -> 27
+//  0 |  1 |  1 |  0 |  1 |  1 |
 
 void CstrMips::reset() {
     memset(base, 0, sizeof(base));
@@ -58,6 +58,7 @@ void CstrMips::reset() {
     
     pc = 0xbfc00000;
     stop = false;
+    opcodeCount = 0;
     
     // Bootstrap
     while(pc != 0x80030000) {
@@ -65,14 +66,31 @@ void CstrMips::reset() {
     }
 }
 
+uw vbk = 0;
+
 void CstrMips::branch(uw addr) {
     step(true);
     pc = addr;
+    
+//    if (opcodeCount >= PSX_CYCLE) {
+//        if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
+//            data16 |= (1<<0);
+//        }
+//
+//        // Exceptions
+//        if (data32 & mask32) {
+//            if ((copr[12] & 0x401) == 0x401) {
+//                exception(0x400, false);
+//            }
+//        }
+//        opcodeCount %= PSX_CYCLE;
+//    }
 }
 
 void CstrMips::step(bool branched) {
     uw code = mem.read32(pc); pc += 4;
     base[0] = 0;
+    opcodeCount++;
     
     switch(op) {
         case 0: // SPECIAL
@@ -102,6 +120,7 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 12: // SYSCALL
+                    pc -= 4;
                     exception(0x20, branched);
                     return;
                     
@@ -128,6 +147,13 @@ void CstrMips::step(bool branched) {
                     }
                     return;
                     
+                case 27: // DIVU
+                    if (base[rt]) {
+                        lo = base[rs] / base[rt];
+                        hi = base[rs] % base[rt];
+                    }
+                    return;
+                    
                 case 32: // ADD
                     base[rd] = base[rs] + base[rt];
                     return;
@@ -146,6 +172,10 @@ void CstrMips::step(bool branched) {
                     
                 case 37: // OR
                     base[rd] = base[rs] | base[rt];
+                    return;
+                    
+                case 42: // SLT
+                    base[rd] = (sw)base[rs] < (sw)base[rt];
                     return;
                     
                 case 43: // SLTU
@@ -214,11 +244,11 @@ void CstrMips::step(bool branched) {
             return;
             
         case 10: // SLTI
-            base[rd] = (sw)base[rs] < imm;
+            base[rt] = (sw)base[rs] < imm;
             return;
             
         case 11: // SLTIU
-            base[rd] = base[rs] < immu;
+            base[rt] = base[rs] < immu;
             return;
             
         case 12: // ANDI
@@ -230,7 +260,7 @@ void CstrMips::step(bool branched) {
             return;
             
         case 15: // LUI
-            base[rt] = immu << 16;
+            base[rt] = code << 16;
             return;
             
         case 16: // COP0
@@ -245,9 +275,10 @@ void CstrMips::step(bool branched) {
                     
                 case 16: // RFE (Return From Exception)
                     // SR ← SR[31..4] || SR[5..2] /// 31..4 means 32-4 = 28-bits, also 5..2 means 6-2 = 4-bits, etc
-                    printf("RFE -> 0x%x\n", (copr[12]&0xfffffff0) | ((copr[12]>>2)&0xf));
-                    printf("RFE -> 0x%x\n", ((copr[12]>>4)&0xfffffff) | ((copr[12]>>2)&0xf));
-                    copr[12] = ((copr[12]>>4)&0xfffffff) | ((copr[12]>>2)&0xf);
+                    printf("RFE -> 0x%x\n", (copr[12]&0xfffffff0)|((copr[12]>>2)&0xf));
+                    printf("RFE -> 0x%x\n", ((copr[12]>>4)&0xfffffff)|((copr[12]>>2)&0xf));
+                    
+                    copr[12] = (copr[12] & 0xfffffff0) | ((copr[12] >> 2) & 0xf);
                     return;
             }
             printx("$%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
@@ -263,6 +294,10 @@ void CstrMips::step(bool branched) {
             
         case 36: // LBU
             base[rt] = mem.read08(ob);
+            return;
+            
+        case 37: // LHU
+            base[rt] = mem.read16(ob);
             return;
             
         case 40: // SB

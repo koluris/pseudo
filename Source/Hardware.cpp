@@ -24,6 +24,7 @@ void CstrHardware::write32(uw addr, uw data) {
         case 0x1020: // COM
         case 0x1060: // RAM Size
         case 0x1074:
+        case 0x10f0:
             accessMem(mem.hwr, uw) = data;
             return;
     }
@@ -49,6 +50,7 @@ void CstrHardware::write16(uw addr, uh data) {
         case 0x1d82:
         case 0x1d84:
         case 0x1d86:
+        case 0x1daa:
             accessMem(mem.hwr, uh) = data;
             return;
     }
@@ -69,6 +71,7 @@ uw CstrHardware::read32(uw addr) {
     switch(hob(addr)) {
         /* unused */
         case 0x1074:
+        case 0x10f0:
             return accessMem(mem.hwr, uw);
     }
     printx("Unknown Hardware Read 32: $%x", addr);
