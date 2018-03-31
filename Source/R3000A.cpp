@@ -49,10 +49,9 @@ void CstrMips::reset() {
     
     copr[12] = 0x10900000;
     copr[15] = 0x2; // Co-processor Revision
-    
-    pc = 0xbfc00000;
-    stop = false;
-    opcodeCount = 0;
+          pc = 0xbfc00000;
+     res.u64 = opcodeCount = 0;
+        stop = false;
     
     // Bootstrap
     while(pc != 0x80030000) {
@@ -98,15 +97,15 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 4: // SLLV
-                    base[rd] = base[rt] << (base[rs] & 0x1f);
+                    base[rd] = base[rt] << (base[rs] & 31);
                     return;
                     
                 case 6: // SRLV
-                    base[rd] = base[rt] >> (base[rs] & 0x1f);
+                    base[rd] = base[rt] >> (base[rs] & 31);
                     return;
                     
                 case 7: // SRAV
-                    base[rd] = (sw)base[rt] >> (base[rs] & 0x1f);
+                    base[rd] = (sw)base[rt] >> (base[rs] & 31);
                     return;
                     
                 case 8: // JR
@@ -144,8 +143,8 @@ void CstrMips::step(bool branched) {
                     {
                         // Example: 0xdeadc0decafebabe
                         //
-                        // LO ← t 31 ...  0 | lo order, LSB 0xcafebabe
-                        // HI ← t 63 ... 32 | hi order, MSB 0xdeadc0de
+                        // LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
+                        // HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
                         
                         res.u64 = base[rs] * base[rt];
                     }

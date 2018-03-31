@@ -1,6 +1,6 @@
 class CstrMips {
     union orderbits { // Made for multiplication/division
-        ud u64; uw u32[2];
+        ud u64; uw u32[2]; // lo, hi
     };
     
     orderbits res;
