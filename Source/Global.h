@@ -10,13 +10,15 @@
 #endif
 
 // Data
-typedef unsigned int   uw;
-typedef unsigned short uh;
-typedef unsigned char  ub;
+typedef uint64_t ud; // uns doubleword
+typedef uint32_t uw; // uns word
+typedef uint16_t uh; // uns halfword
+typedef uint8_t  ub; // uns bite
 
-typedef int   sw;
-typedef short sh;
-typedef char  sb;
+typedef int64_t sd; // doubleword
+typedef int32_t sw; // word
+typedef int16_t sh; // halfword
+typedef int8_t  sb; // bite
 
 // User imports
 #import "Hardware.h"

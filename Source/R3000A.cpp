@@ -4,10 +4,10 @@
 CstrMips cpu;
 
 #define lo\
-    base[32]
+    0
 
 #define hi\
-    base[33]
+    1
 
 /*  5-bit */
 #define sa\
@@ -65,8 +65,6 @@ void CstrMips::reset() {
         step(false);
     }
 }
-
-uw vbk = 0;
 
 void CstrMips::branch(uw addr) {
     step(true);
@@ -137,36 +135,39 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 17: // MTHI
-                    hi = base[rs];
+                    res.u32[hi] = base[rs];
                     return;
                     
                 case 18: // MFLO
-                    base[rd] = lo;
+                    base[rd] = res.u32[lo];
                     return;
                     
                 case 19: // MTLO
-                    lo = base[rs];
+                    res.u32[lo] = base[rs];
                     return;
                     
                 case 25: // MULTU
                     {
-                        uint64_t res = base[rs] * base[rt];
-                        lo = res & 0xffffffff;
-                        hi = res >> 32;
+                        // Example: 0xdeadc0decafebabe
+                        //
+                        // LO ← t 31 ...  0 | lo order, LSB 0xcafebabe
+                        // HI ← t 63 ... 32 | hi order, MSB 0xdeadc0de
+                        
+                        res.u64 = base[rs] * base[rt];
                     }
                     return;
                     
                 case 26: // DIV
                     if (base[rt]) {
-                        lo = (sw)base[rs] / (sw)base[rt];
-                        hi = (sw)base[rs] % (sw)base[rt];
+                        res.u32[lo] = (sw)base[rs] / (sw)base[rt];
+                        res.u32[hi] = (sw)base[rs] % (sw)base[rt];
                     }
                     return;
                     
                 case 27: // DIVU
                     if (base[rt]) {
-                        lo = base[rs] / base[rt];
-                        hi = base[rs] % base[rt];
+                        res.u32[lo] = base[rs] / base[rt];
+                        res.u32[hi] = base[rs] % base[rt];
                     }
                     return;
                     
