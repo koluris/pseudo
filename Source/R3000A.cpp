@@ -3,12 +3,6 @@
 
 CstrMips cpu;
 
-#define lo\
-    0
-
-#define hi\
-    1
-
 /*  5-bit */
 #define sa\
     ((code >>  6) & 31)
@@ -131,19 +125,19 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 16: // MFHI
-                    base[rd] = hi;
+                    base[rd] = res.u32[1];
                     return;
                     
                 case 17: // MTHI
-                    res.u32[hi] = base[rs];
+                    res.u32[1] = base[rs];
                     return;
                     
                 case 18: // MFLO
-                    base[rd] = res.u32[lo];
+                    base[rd] = res.u32[0];
                     return;
                     
                 case 19: // MTLO
-                    res.u32[lo] = base[rs];
+                    res.u32[0] = base[rs];
                     return;
                     
                 case 25: // MULTU
@@ -159,15 +153,15 @@ void CstrMips::step(bool branched) {
                     
                 case 26: // DIV
                     if (base[rt]) {
-                        res.u32[lo] = (sw)base[rs] / (sw)base[rt];
-                        res.u32[hi] = (sw)base[rs] % (sw)base[rt];
+                        res.u32[0] = (sw)base[rs] / (sw)base[rt];
+                        res.u32[1] = (sw)base[rs] % (sw)base[rt];
                     }
                     return;
                     
                 case 27: // DIVU
                     if (base[rt]) {
-                        res.u32[lo] = base[rs] / base[rt];
-                        res.u32[hi] = base[rs] % base[rt];
+                        res.u32[0] = base[rs] / base[rt];
+                        res.u32[1] = base[rs] % base[rt];
                     }
                     return;
                     

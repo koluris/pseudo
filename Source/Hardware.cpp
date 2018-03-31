@@ -3,11 +3,12 @@
 
 CstrHardware io;
 
-#define hob(addr)\
+// Low order bits
+#define lob(addr)\
     (addr & 0xffff)
 
 void CstrHardware::write32(uw addr, uw data) {
-    switch(hob(addr)) {
+    switch(lob(addr)) {
         case 0x1070:
             data32 &= data & mask32;
             return;
@@ -32,7 +33,7 @@ void CstrHardware::write32(uw addr, uw data) {
 }
 
 void CstrHardware::write16(uw addr, uh data) {
-    switch(hob(addr)) {
+    switch(lob(addr)) {
         /* unused */
         case 0x1100 ... 0x1128: // Rootcounters
             accessMem(mem.hwr, uh) = data;
@@ -46,7 +47,7 @@ void CstrHardware::write16(uw addr, uh data) {
 }
 
 void CstrHardware::write08(uw addr, ub data) {
-    switch(hob(addr)) {
+    switch(lob(addr)) {
         /* unused */
         case 0x2041:
             accessMem(mem.hwr, ub) = data;
@@ -56,7 +57,7 @@ void CstrHardware::write08(uw addr, ub data) {
 }
 
 uw CstrHardware::read32(uw addr) {
-    switch(hob(addr)) {
+    switch(lob(addr)) {
         /* unused */
         case 0x1074:
         case 0x10f0:
@@ -68,7 +69,7 @@ uw CstrHardware::read32(uw addr) {
 }
 
 uh CstrHardware::read16(uw addr) {
-    switch(hob(addr)) {
+    switch(lob(addr)) {
         /* unused */
         case 0x1c0c ... 0x1dae: // Audio
             return accessMem(mem.hwr, uh);
