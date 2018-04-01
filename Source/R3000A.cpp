@@ -49,9 +49,8 @@ void CstrMips::reset() {
     
     copr[12] = 0x10900000;
     copr[15] = 0x2; // Co-processor Revision
-          pc = 0xbfc00000;
-     res.u64 = opcodeCount = 0;
-        stop = false;
+    pc = 0xbfc00000;
+    res.u64 = opcodeCount = 0;
     
     // Bootstrap
     while(pc != 0x80030000) {
@@ -75,7 +74,8 @@ void CstrMips::branch(uw addr) {
 }
 
 void CstrMips::step(bool branched) {
-    uw code = mem.read32(pc); pc += 4;
+    uw code = mem.read32(pc);
+    pc += 4;
     base[0] = 0;
     opcodeCount++;
     
@@ -339,7 +339,15 @@ void CstrMips::exception(uw code, bool branched) {
 }
 
 void CstrMips::run() {
-    while(!stop) {
+    // Reset state
+    stopped = false;
+    
+    // Go!
+    while(!stopped) {
         step(false);
     }
+}
+
+void CstrMips::stop() {
+    stopped = true;
 }

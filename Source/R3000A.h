@@ -4,8 +4,8 @@ class CstrMips {
     };
     
     orderbits res;
-    bool stop;
     uw opcodeCount;
+    bool stopped;
     
     void branch(uw);
     void step(bool);
@@ -16,6 +16,7 @@ public:
     
     void reset();
     void run();
+    void stop();
 };
 
 extern CstrMips cpu;
