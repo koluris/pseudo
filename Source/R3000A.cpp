@@ -49,6 +49,7 @@ void CstrMips::reset() {
     
     copr[12] = 0x10900000;
     copr[15] = 0x2; // Co-processor Revision
+    
     pc = 0xbfc00000;
     res.u64 = opcodeCount = 0;
     
@@ -74,8 +75,7 @@ void CstrMips::branch(uw addr) {
 }
 
 void CstrMips::step(bool branched) {
-    uw code = mem.read32(pc);
-    pc += 4;
+    uw code = mem.read32(pc); pc += 4;
     base[0] = 0;
     opcodeCount++;
     

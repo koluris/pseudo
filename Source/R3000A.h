@@ -1,9 +1,8 @@
 class CstrMips {
-    union orderbits { // Made for multiplication/division
-        ud u64; uw u32[2]; // lo, hi
-    };
+    union { // Product & quotient (lo, hi)
+        ud u64; uw u32[2];
+    } res;
     
-    orderbits res;
     uw opcodeCount;
     bool stopped;
     
