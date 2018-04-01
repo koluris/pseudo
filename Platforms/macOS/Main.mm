@@ -7,6 +7,13 @@
 - (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
     //NSURL *uri = [[NSBundle mainBundle] bundleURL];
     app = (Main *)[[NSApplication sharedApplication] del];
+    
+    // OpenGL
+    //[[self.openGLView openGLContext] makeCurrentContext];
+    //glClearColor(1, 0, 1, 1);
+    //glFlush();
+    
+    // Console
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
     
     psx.init([@"/Users/dk/Downloads/scph1001.bin" UTF8Chars]);

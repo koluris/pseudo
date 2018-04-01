@@ -3,6 +3,7 @@
 #import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
+#import <OpenGL/gl.h>
 
 // Apple macOS
 #ifdef MAC_OS_X

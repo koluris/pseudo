@@ -1,5 +1,6 @@
 @interface Main : NSOb <NSApplicationListener>
 
+@prop (weak) IBOutlet NSOpenGLView *openGLView;
 @prop (unsafe_unretained) IBOutlet NSTextView *consoleView;
 
 // Console

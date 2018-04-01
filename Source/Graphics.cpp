@@ -13,6 +13,9 @@ void CstrGraphics::reset() {
 
 void CstrGraphics::dataMemWrite(uw *ptr, sw size) {
     ret.data = *ptr;
+    ptr++;
+    
+    printx("GPU Data Write -> 0x%x", (GPU_COMMAND(ret.data)));
 }
 
 void CstrGraphics::dataWrite(uw data) {

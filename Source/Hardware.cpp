@@ -14,11 +14,11 @@ void CstrHardware::write32(uw addr, uw data) {
             return;
             
         case 0x1810:
-            vs.statusWrite(data);
+            vs.dataWrite(data);
             return;
             
         case 0x1814:
-            vs.dataWrite(data);
+            vs.statusWrite(data);
             return;
             
         /* unused */

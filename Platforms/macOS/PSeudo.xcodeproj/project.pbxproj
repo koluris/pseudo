@@ -14,6 +14,7 @@
 		42B9957B20626481009B67BE /* R3000A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B9957920626481009B67BE /* R3000A.cpp */; };
 		42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CB1D6C206E34680023337A /* Rootcounters.cpp */; };
 		42DB69702070DF0800000D08 /* Graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42DB696E2070DF0800000D08 /* Graphics.cpp */; };
+		42DE0D5920711EA200EEB549 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42DE0D5820711EA200EEB549 /* OpenGL.framework */; };
 		42EBBCD32062482200824B95 /* Main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42EBBCD22062482200824B95 /* Main.mm */; };
 		42EBBCD52062482200824B95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42EBBCD42062482200824B95 /* Assets.xcassets */; };
 		42EBBCE42062494200824B95 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42EBBCE32062494200824B95 /* MainMenu.xib */; };
@@ -35,6 +36,7 @@
 		42CB1D6D206E34680023337A /* Rootcounters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rootcounters.h; sourceTree = "<group>"; };
 		42DB696E2070DF0800000D08 /* Graphics.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Graphics.cpp; sourceTree = "<group>"; };
 		42DB696F2070DF0800000D08 /* Graphics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Graphics.h; sourceTree = "<group>"; };
+		42DE0D5820711EA200EEB549 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		42EBBCCE2062482200824B95 /* PSeudo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PSeudo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EBBCD12062482200824B95 /* Main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
 		42EBBCD22062482200824B95 /* Main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Main.mm; sourceTree = "<group>"; };
@@ -49,6 +51,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				429C3EC62065189C00915293 /* AppKit.framework in Frameworks */,
+				42DE0D5920711EA200EEB549 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				429C3EC52065189C00915293 /* AppKit.framework */,
+				42DE0D5820711EA200EEB549 /* OpenGL.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
