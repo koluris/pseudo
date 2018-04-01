@@ -13,6 +13,14 @@ void CstrHardware::write32(uw addr, uw data) {
             data32 &= data & mask32;
             return;
             
+        case 0x1810:
+            vs.statusWrite(data);
+            return;
+            
+        case 0x1814:
+            vs.dataWrite(data);
+            return;
+            
         /* unused */
         case 0x1000:
         case 0x1004:
@@ -58,6 +66,9 @@ void CstrHardware::write08(uw addr, ub data) {
 
 uw CstrHardware::read32(uw addr) {
     switch(lob(addr)) {
+        case 0x1814:
+            return vs.statusRead();
+            
         /* unused */
         case 0x1074:
         case 0x10f0:

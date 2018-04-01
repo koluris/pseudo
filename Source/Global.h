@@ -21,6 +21,7 @@ typedef int16_t sh; // halfword
 typedef int8_t  sb; // bite
 
 // User imports
+#import "Graphics.h"
 #import "Hardware.h"
 #import "Mem.h"
 #import "PSeudo.h"
