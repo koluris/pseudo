@@ -18,7 +18,7 @@ void CstrGraphics::reset() {
 void draw(uw addr, uw *data) {
     // Operations
     switch(addr) {
-        case 0xe1: // TEXTURE PAGE
+        case 0xe1: // TODO: TEXTURE PAGE
             return;
     }
     printx("GPU Data Write -> 0x%x", (GPU_COMMAND(data[0])));
@@ -56,7 +56,7 @@ void CstrGraphics::dataMemWrite(uw *ptr, sw size) {
 }
 
 void CstrGraphics::dataWrite(uw data) {
-    dataMemWrite(&data, 1);
+    dataMemWrite(&data, 1); // TODO: Sizes > 1
 }
 
 void CstrGraphics::statusWrite(uw data) {

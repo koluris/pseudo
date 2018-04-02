@@ -29,7 +29,7 @@ void CstrMips::branch(uw addr) {
     step(true);
     pc = addr;
     
-    if (opcodeCount >= PSX_CYCLE) {
+    if (opcodeCount >= PSX_CYCLE) { // TODO: Rootcounters, interrupts
         // Exceptions
         if (data32 & mask32) {
             if ((copr[12] & 0x401) == 0x401) {
@@ -75,7 +75,7 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 8: // JR
-                    branch(base[rs]); // Remember to print the output
+                    branch(base[rs]); // TODO: Print the output
                     psx.console(base, pc);
                     return;
                     
