@@ -109,7 +109,7 @@
         <window title="PSeudo™ : Alpha" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="Fcb-bg-8vx">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="131" y="158" width="362" height="298"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="b8H-mq-hnx">
                 <rect key="frame" x="0.0" y="0.0" width="362" height="298"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -139,6 +139,12 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
+                            <tabViewItem label="Audio" identifier="" id="hCI-ov-WoO">
+                                <view key="view" id="JsK-3r-p2I">
+                                    <rect key="frame" x="10" y="33" width="336" height="248"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                            </tabViewItem>
                             <tabViewItem label="Console" identifier="" id="8pK-4f-Ppk">
                                 <view key="view" id="Mlx-g2-35J">
                                     <rect key="frame" x="10" y="33" width="336" height="248"/>
@@ -150,17 +156,17 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="0K0-FQ-qW4">
+                                                    <textView editable="NO" selectable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="0K0-FQ-qW4">
                                                         <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <color key="textColor" red="0.9882352941176471" green="0.61176470588235299" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <color key="backgroundColor" red="0.011764705882352941" green="0.074509803921568626" blue="0.10980392156862745" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <color key="textColor" red="0.78823529411764703" green="0.43172059724606032" blue="0.24659169111640664" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <color key="backgroundColor" red="0.22042812842141946" green="0.17520558343192014" blue="0.11858264809769019" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <size key="minSize" width="320" height="240"/>
                                                         <size key="maxSize" width="463" height="10000000"/>
                                                         <attributedString key="textStorage">
                                                             <fragment content="-">
                                                                 <attributes>
-                                                                    <color key="NSColor" red="0.9882352941176471" green="0.61176470588235299" blue="0.086274509803921567" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                    <color key="NSColor" red="0.78823529411764703" green="0.43172059724606032" blue="0.24659169111640664" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     <font key="NSFont" metaFont="systemMedium" size="11"/>
                                                                     <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                                 </attributes>
@@ -203,7 +209,7 @@
                     <constraint firstItem="qRh-jH-wcj" firstAttribute="top" secondItem="b8H-mq-hnx" secondAttribute="top" constant="10" id="Yms-p7-gJX"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-500" y="98"/>
+            <point key="canvasLocation" x="-523" y="85"/>
         </window>
     </objects>
 </document>

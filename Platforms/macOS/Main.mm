@@ -15,6 +15,7 @@
     
     // Console
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
+    self.consoleView.textColor = [NSColor RGBA(201, 110, 63)];
     
     psx.init([@"/Users/dk/Downloads/scph1001.bin" UTF8Chars]);
 }
