@@ -8,14 +8,20 @@
 CstrGraphics vs;
 
 void CstrGraphics::reset() {
+    memset(& ret, 0, sizeof(ret));
+    memset(&pipe, 0, sizeof(pipe));
+    
     ret.data   = 0x400;
     ret.status = 0x14802000;
-    
-    // Command buffer
-    memset(pipe.data, 0, sizeof(pipe.data));
-    pipe.prim = 0;
-    pipe.size = 0;
-    pipe.row  = 0;
+}
+
+void draw(uw addr, uw *data) {
+    // Operations
+    switch(addr) {
+        case 0xe1: // TEXTURE PAGE
+            return;
+    }
+    printx("GPU Data Write -> 0x%x", (GPU_COMMAND(data[0])));
 }
 
 void CstrGraphics::dataMemWrite(uw *ptr, sw size) {
@@ -32,6 +38,9 @@ void CstrGraphics::dataMemWrite(uw *ptr, sw size) {
             pipe.size = count;
             pipe.row  = 1;
         }
+        else {
+            return;
+        }
     }
     else {
         pipe.data[pipe.row] = ret.data;
@@ -42,7 +51,7 @@ void CstrGraphics::dataMemWrite(uw *ptr, sw size) {
         pipe.size = 0;
         pipe.row  = 0;
         
-        printx("GPU Data Write -> 0x%x", (GPU_COMMAND(ret.data)));
+        draw(pipe.prim, pipe.data);
     }
 }
 
