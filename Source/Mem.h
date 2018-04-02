@@ -1,3 +1,10 @@
+#define kBaseAddrUser       0x00000000
+#define kBaseAddrScratchpad 0x1f800000
+#define kBaseAddrHardware   0x1f801000
+#define kBaseAddrUserKSEG0  0x80000000
+#define kBaseAddrUserKSEG1  0xa0000000
+#define kBaseAddrROM        0xbfc00000
+
 #define accessMem(mem, dt)\
     *(dt *)&mem.ptr[addr&(mem.size-1)]
 
