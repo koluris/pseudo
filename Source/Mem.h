@@ -1,6 +1,7 @@
 #define accessMem(mem, dt)\
     *(dt *)&mem.ptr[addr&(mem.size-1)]
 
+
 class CstrMem {
     struct heap {
         ub *ptr; uw size;

@@ -1,10 +1,11 @@
 #import "Global.h"
 
 
-CstrGraphics vs;
-
 #define GPU_COMMAND(x)\
     (x >> 24) & 0xff
+
+
+CstrGraphics vs;
 
 void CstrGraphics::reset() {
     ret.data   = 0x400;

@@ -7,6 +7,7 @@
 #define data16\
     *(uh *)&mem.hwr.ptr[0x1070]
 
+
 class CstrHardware {
 public:
     // Store

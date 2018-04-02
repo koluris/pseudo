@@ -139,12 +139,6 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Audio" identifier="" id="hCI-ov-WoO">
-                                <view key="view" id="JsK-3r-p2I">
-                                    <rect key="frame" x="10" y="33" width="336" height="248"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                </view>
-                            </tabViewItem>
                             <tabViewItem label="Console" identifier="" id="8pK-4f-Ppk">
                                 <view key="view" id="Mlx-g2-35J">
                                     <rect key="frame" x="10" y="33" width="336" height="248"/>

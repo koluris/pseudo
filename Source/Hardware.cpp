@@ -1,11 +1,12 @@
 #import "Global.h"
 
 
-CstrHardware io;
-
 // Low order bits
 #define lob(addr)\
     (addr & 0xffff)
+
+
+CstrHardware io;
 
 void CstrHardware::write32(uw addr, uw data) {
     switch(lob(addr)) {
