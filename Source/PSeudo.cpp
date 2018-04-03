@@ -17,8 +17,9 @@ void CstrPSeudo::reset() {
     [app consolePrint:@"PSeudo startup\n"];
 #endif
     
-    mem.reset();
     cpu.reset();
+    mem.reset();
+    vs .reset();
 }
 
 void CstrPSeudo::console(uw *r, uw addr) {

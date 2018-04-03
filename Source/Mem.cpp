@@ -11,9 +11,9 @@ void CstrMem::reset() {
 
 void CstrMem::write32(uw addr, uw data) {
     switch(addr) {
-        case 0x00000000 ... 0x00200000-1: // RAM
-        case 0x80000000 ... 0x80200000-1:
-        case 0xa0000000 ... 0xa0200000-1:
+        case 0x00000000 ... 0x00800000-1: // RAM
+        case 0x80000000 ... 0x80800000-1:
+        case 0xa0000000 ... 0xa0800000-1:
             // A shorter alternative to allow mem write
             if (!(cpu.copr[12] & 0x10000)) {
                 accessMem(ram, uw) = data;
@@ -33,7 +33,7 @@ void CstrMem::write32(uw addr, uw data) {
 
 void CstrMem::write16(uw addr, uh data) {
     switch(addr) {
-        case 0x80000000 ... 0x80200000-1: // RAM
+        case 0x80000000 ... 0x80800000-1: // RAM
             accessMem(ram, uh) = data;
             return;
             
@@ -46,9 +46,9 @@ void CstrMem::write16(uw addr, uh data) {
 
 void CstrMem::write08(uw addr, ub data) {
     switch(addr) {
-        case 0x00000000 ... 0x00200000-1: // RAM
-        case 0x80000000 ... 0x80200000-1:
-        case 0xa0000000 ... 0xa0200000-1:
+        case 0x00000000 ... 0x00800000-1: // RAM
+        case 0x80000000 ... 0x80800000-1:
+        case 0xa0000000 ... 0xa0800000-1:
             accessMem(ram, ub) = data;
             return;
             
@@ -61,9 +61,9 @@ void CstrMem::write08(uw addr, ub data) {
 
 uw CstrMem::read32(uw addr) {
     switch(addr) {
-        case 0x00000000 ... 0x00200000-1: // RAM
-        case 0x80000000 ... 0x80200000-1:
-        case 0xa0000000 ... 0xa0200000-1:
+        case 0x00000000 ... 0x00800000-1: // RAM
+        case 0x80000000 ... 0x80800000-1:
+        case 0xa0000000 ... 0xa0800000-1:
             return accessMem(ram, uw);
             
         case 0xbfc00000 ... 0xbfc80000-1: // ROM
@@ -79,7 +79,7 @@ uw CstrMem::read32(uw addr) {
 
 uh CstrMem::read16(uw addr) {
     switch(addr) {
-        case 0x80000000 ... 0x80200000-1: // RAM
+        case 0x80000000 ... 0x80800000-1: // RAM
             return accessMem(ram, uh);
             
         case 0x1f801000 ... 0x1f804000-1: // Hardware
@@ -92,8 +92,8 @@ uh CstrMem::read16(uw addr) {
 
 ub CstrMem::read08(uw addr) {
     switch(addr) {
-        case 0x00000000 ... 0x00200000-1: // RAM
-        case 0x80000000 ... 0x80200000-1:
+        case 0x00000000 ... 0x00800000-1: // RAM
+        case 0x80000000 ... 0x80800000-1:
             return accessMem(ram, ub);
             
         case 0xbfc00000 ... 0xbfc80000-1: // ROM

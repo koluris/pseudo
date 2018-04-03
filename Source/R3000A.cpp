@@ -25,24 +25,24 @@ void CstrMips::reset() {
     }
 }
 
-uw vbk = 0;
+//uw vbk = 0;
 
 void CstrMips::branch(uw addr) {
     step(true);
     pc = addr;
     
     if (opcodeCount >= PSX_CYCLE) { // TODO: Rootcounters, interrupts
-        if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
-            data16 |= 1 << 0;
-            vs.redraw();
-        }
+//        if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
+//            data16 |= 1 << 0;
+//            vs.redraw();
+//        }
         
         // Exceptions
-        if (data32 & mask32) {
-            if ((copr[12] & 0x401) == 0x401) {
-                exception(0x400, false);
-            }
-        }
+//        if (data32 & mask32) {
+//            if ((copr[12] & 0x401) == 0x401) {
+//                exception(0x400, false);
+//            }
+//        }
         opcodeCount %= PSX_CYCLE;
     }
 }
@@ -120,6 +120,9 @@ void CstrMips::step(bool branched) {
                         // HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
                         
                         res.u64 = base[rs] * base[rt];
+                        //sd haha = (sd)base[rs] * base[rt];
+                        //res.u32[0] = haha&0xffffffff;
+                        //res.u32[1] = haha>>32;
                     }
                     return;
                     
