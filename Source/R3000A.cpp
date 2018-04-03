@@ -38,11 +38,11 @@ void CstrMips::branch(uw addr) {
 //        }
         
         // Exceptions
-//        if (data32 & mask32) {
-//            if ((copr[12] & 0x401) == 0x401) {
-//                exception(0x400, false);
-//            }
-//        }
+        if (data32 & mask32) {
+            if ((copr[12] & 0x401) == 0x401) {
+                exception(0x400, false);
+            }
+        }
         opcodeCount %= PSX_CYCLE;
     }
 }
