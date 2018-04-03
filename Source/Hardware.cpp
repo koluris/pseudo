@@ -27,11 +27,7 @@ void CstrHardware::write32(uw addr, uw data) {
             return;
             
         /* unused */
-        case 0x1114:
-        case 0x1118: // Rootcounters
-            accessMem(mem.hwr, uw) = data;
-            return;
-            
+        case 0x1114 ... 0x1118: // Rootcounters
         case 0x1000:
         case 0x1004:
         case 0x1008:
@@ -58,13 +54,7 @@ void CstrHardware::write16(uw addr, uh data) {
             
         /* unused */
         case 0x1100 ... 0x1128: // Rootcounters
-            accessMem(mem.hwr, uh) = data;
-            return;
-            
         case 0x1c00 ... 0x1dfe: // Audio
-            accessMem(mem.hwr, uh) = data;
-            return;
-            
         case 0x1074:
             accessMem(mem.hwr, uh) = data;
             return;
@@ -103,8 +93,6 @@ uh CstrHardware::read16(uw addr) {
     switch(lob(addr)) {
         /* unused */
         case 0x1c0c ... 0x1dae: // Audio
-            return accessMem(mem.hwr, uh);
-            
         case 0x1070:
         case 0x1074:
             return accessMem(mem.hwr, uh);
