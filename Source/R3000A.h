@@ -46,7 +46,7 @@ class CstrMips {
     void exception(uw, bool);
     
 public:
-    uw base[32], copr[16], pc;
+    uw base[34], copr[16], pc;
     
     void reset();
     void run();

@@ -20,7 +20,7 @@ void CstrMem::write32(uw addr, uw data) {
             }
             return;
             
-        case 0x1f801000 ... 0x1f803000-1: // Hardware
+        case 0x1f801000 ... 0x1f804000-1: // Hardware
             io.write32(addr, data);
             return;
             
@@ -37,7 +37,7 @@ void CstrMem::write16(uw addr, uh data) {
             accessMem(ram, uh) = data;
             return;
             
-        case 0x1f801000 ... 0x1f803000-1: // Hardware
+        case 0x1f801000 ... 0x1f804000-1: // Hardware
             io.write16(addr, data);
             return;
     }
@@ -52,7 +52,7 @@ void CstrMem::write08(uw addr, ub data) {
             accessMem(ram, ub) = data;
             return;
             
-        case 0x1f801000 ... 0x1f803000-1: // Hardware
+        case 0x1f801000 ... 0x1f804000-1: // Hardware
             io.write08(addr, data);
             return;
     }
@@ -69,7 +69,7 @@ uw CstrMem::read32(uw addr) {
         case 0xbfc00000 ... 0xbfc80000-1: // ROM
             return accessMem(rom, uw);
             
-        case 0x1f801000 ... 0x1f803000-1: // Hardware
+        case 0x1f801000 ... 0x1f804000-1: // Hardware
             return io.read32(addr);
     }
     printx("Unknown Mem Read 32: $%x", addr);
@@ -82,7 +82,7 @@ uh CstrMem::read16(uw addr) {
         case 0x80000000 ... 0x80200000-1: // RAM
             return accessMem(ram, uh);
             
-        case 0x1f801000 ... 0x1f803000-1: // Hardware
+        case 0x1f801000 ... 0x1f804000-1: // Hardware
             return io.read16(addr);
     }
     printx("Unknown Mem Read 16: $%x", addr);

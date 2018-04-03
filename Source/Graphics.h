@@ -30,6 +30,7 @@ class CstrGraphics {
     
 public:
     void reset();
+    void redraw();
     
     // Store
     void dataMemWrite(uw *, sw);

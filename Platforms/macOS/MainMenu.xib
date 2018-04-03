@@ -109,7 +109,7 @@
         <window title="PSeudo™ : Alpha" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="Fcb-bg-8vx">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="131" y="158" width="362" height="298"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="b8H-mq-hnx">
                 <rect key="frame" x="0.0" y="0.0" width="362" height="298"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -161,7 +161,7 @@
                                                             <fragment content="-">
                                                                 <attributes>
                                                                     <color key="NSColor" red="0.78823529411764703" green="0.43172059724606032" blue="0.24659169111640664" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                    <font key="NSFont" metaFont="systemMedium" size="11"/>
+                                                                    <font key="NSFont" metaFont="systemSemibold" size="11"/>
                                                                     <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
                                                                 </attributes>
                                                             </fragment>

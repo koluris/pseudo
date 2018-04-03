@@ -14,6 +14,10 @@ void CstrHardware::write32(uw addr, uw data) {
             data32 &= data & mask32;
             return;
             
+        case 0x10f4: // Thanks Calb, Galtor :)
+            icr = (icr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
+            return;
+            
         case 0x1810:
             vs.dataWrite(data);
             return;
@@ -23,6 +27,11 @@ void CstrHardware::write32(uw addr, uw data) {
             return;
             
         /* unused */
+        case 0x1114:
+        case 0x1118: // Rootcounters
+            accessMem(mem.hwr, uw) = data;
+            return;
+            
         case 0x1000:
         case 0x1004:
         case 0x1008:
@@ -43,12 +52,20 @@ void CstrHardware::write32(uw addr, uw data) {
 
 void CstrHardware::write16(uw addr, uh data) {
     switch(lob(addr)) {
+        case 0x1070:
+            data16 &= data & mask16;
+            return;
+            
         /* unused */
         case 0x1100 ... 0x1128: // Rootcounters
             accessMem(mem.hwr, uh) = data;
             return;
             
         case 0x1c00 ... 0x1dfe: // Audio
+            accessMem(mem.hwr, uh) = data;
+            return;
+            
+        case 0x1074:
             accessMem(mem.hwr, uh) = data;
             return;
     }
@@ -71,8 +88,10 @@ uw CstrHardware::read32(uw addr) {
             return vs.statusRead();
             
         /* unused */
+        case 0x1070:
         case 0x1074:
         case 0x10f0:
+        case 0x10f4:
             return accessMem(mem.hwr, uw);
     }
     printx("Unknown Hardware Read 32: $%x", addr);
@@ -84,6 +103,10 @@ uh CstrHardware::read16(uw addr) {
     switch(lob(addr)) {
         /* unused */
         case 0x1c0c ... 0x1dae: // Audio
+            return accessMem(mem.hwr, uh);
+            
+        case 0x1070:
+        case 0x1074:
             return accessMem(mem.hwr, uh);
     }
     printx("Unknown Hardware Read 16: $%x", addr);

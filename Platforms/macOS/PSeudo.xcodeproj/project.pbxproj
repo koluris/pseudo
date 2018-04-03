@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		42587A882068BEFF0054BEC8 /* Hardware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42587A862068BEFF0054BEC8 /* Hardware.cpp */; };
+		428EAF2F207376EF003BC141 /* Bus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 428EAF2D207376EF003BC141 /* Bus.cpp */; };
 		429C3EBD206500B500915293 /* Mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBB206500B500915293 /* Mem.cpp */; };
 		429C3EC120650CB400915293 /* PSeudo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBF20650CB400915293 /* PSeudo.cpp */; };
 		429C3EC62065189C00915293 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429C3EC52065189C00915293 /* AppKit.framework */; };
@@ -25,6 +26,8 @@
 		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		42587A862068BEFF0054BEC8 /* Hardware.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Hardware.cpp; sourceTree = "<group>"; };
 		42587A872068BEFF0054BEC8 /* Hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Hardware.h; sourceTree = "<group>"; };
+		428EAF2D207376EF003BC141 /* Bus.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Bus.cpp; sourceTree = "<group>"; };
+		428EAF2E207376EF003BC141 /* Bus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bus.h; sourceTree = "<group>"; };
 		429C3EBB206500B500915293 /* Mem.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Mem.cpp; sourceTree = "<group>"; };
 		429C3EBC206500B500915293 /* Mem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mem.h; sourceTree = "<group>"; };
 		429C3EBF20650CB400915293 /* PSeudo.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = PSeudo.cpp; sourceTree = "<group>"; };
@@ -94,6 +97,15 @@
 			name = Hardware;
 			sourceTree = "<group>";
 		};
+		428EAF2C207376DD003BC141 /* Bus */ = {
+			isa = PBXGroup;
+			children = (
+				428EAF2D207376EF003BC141 /* Bus.cpp */,
+				428EAF2E207376EF003BC141 /* Bus.h */,
+			);
+			name = Bus;
+			sourceTree = "<group>";
+		};
 		429C3EBA2064FDC500915293 /* Mem */ = {
 			isa = PBXGroup;
 			children = (
@@ -124,6 +136,7 @@
 		42B9957820626481009B67BE /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				428EAF2C207376DD003BC141 /* Bus */,
 				42DB696D2070DEEC00000D08 /* Graphics */,
 				42587A892068BF040054BEC8 /* Hardware */,
 				429C3EBA2064FDC500915293 /* Mem */,
@@ -255,6 +268,7 @@
 			files = (
 				42587A882068BEFF0054BEC8 /* Hardware.cpp in Sources */,
 				429C3EBD206500B500915293 /* Mem.cpp in Sources */,
+				428EAF2F207376EF003BC141 /* Bus.cpp in Sources */,
 				42EBBCD32062482200824B95 /* Main.mm in Sources */,
 				42B9957B20626481009B67BE /* R3000A.cpp in Sources */,
 				42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */,

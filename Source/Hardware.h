@@ -7,6 +7,9 @@
 #define data16\
     *(uh *)&mem.hwr.ptr[0x1070]
 
+#define mask16\
+    *(uh *)&mem.hwr.ptr[0x1074]
+
 
 class CstrHardware {
 public:

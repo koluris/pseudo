@@ -25,11 +25,18 @@ void CstrMips::reset() {
     }
 }
 
+uw vbk = 0;
+
 void CstrMips::branch(uw addr) {
     step(true);
     pc = addr;
     
     if (opcodeCount >= PSX_CYCLE) { // TODO: Rootcounters, interrupts
+        if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
+            data16 |= 1 << 0;
+            vs.redraw();
+        }
+        
         // Exceptions
         if (data32 & mask32) {
             if ((copr[12] & 0x401) == 0x401) {
