@@ -38,11 +38,11 @@ void CstrMips::branch(uw addr) {
 //        }
         
         // Exceptions
-        if (data32 & mask32) {
-            if ((copr[12] & 0x401) == 0x401) {
-                exception(0x400, false);
-            }
-        }
+//        if (data32 & mask32) {
+//            if ((copr[12] & 0x401) == 0x401) {
+//                exception(0x400, false);
+//            }
+//        }
         opcodeCount %= PSX_CYCLE;
     }
 }
@@ -119,10 +119,12 @@ void CstrMips::step(bool branched) {
                         // LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
                         // HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
                         
-                        res.u64 = base[rs] * base[rt];
-//                        sd haha = (sd)(sw)base[rs] * base[rt];
-//                        res.u32[0] = (sw)(haha&0xffffffff);
-//                        res.u32[1] = (sw)(haha>>32);
+                        //res.u64 = base[rs] * base[rt];
+                        
+                        sd hi = ((sd)(uw)base[rs] * (uw)base[rt]);
+                        
+                        res.u32[0] = (uw)(hi);
+                        res.u32[1] = (uw)(hi>>32);
                     }
                     return;
                     
