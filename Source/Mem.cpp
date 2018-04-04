@@ -33,9 +33,9 @@ void CstrMem::write32(uw addr, uw data) {
 
 void CstrMem::write16(uw addr, uh data) {
     switch(addr) {
-        //case 0x80000000 ... 0x80800000-1: // RAM
-            //accessMem(ram, uh) = data;
-            //return;
+        case 0x80000000 ... 0x80800000-1: // RAM
+            accessMem(ram, uh) = data;
+            return;
             
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             io.write16(addr, data);
@@ -79,11 +79,11 @@ uw CstrMem::read32(uw addr) {
 
 uh CstrMem::read16(uw addr) {
     switch(addr) {
-        //case 0x80000000 ... 0x80800000-1: // RAM
-            //return accessMem(ram, uh);
+        case 0x80000000 ... 0x80800000-1: // RAM
+            return accessMem(ram, uh);
             
-        //case 0x1f801000 ... 0x1f804000-1: // Hardware
-            //return io.read16(addr);
+        case 0x1f801000 ... 0x1f804000-1: // Hardware
+            return io.read16(addr);
     }
     printx("Unknown Mem Read 16: $%x", addr);
     

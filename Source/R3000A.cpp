@@ -32,17 +32,17 @@ void CstrMips::branch(uw addr) {
     pc = addr;
     
     if (opcodeCount >= PSX_CYCLE) { // TODO: Rootcounters, interrupts
-//        if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
-//            data16 |= 1 << 0;
-//            vs.redraw();
-//        }
+        if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
+            data16 |= 1;
+            vs.redraw();
+        }
         
         // Exceptions
-//        if (data32 & mask32) {
-//            if ((copr[12] & 0x401) == 0x401) {
-//                exception(0x400, false);
-//            }
-//        }
+        if (data32 & mask32) {
+            if ((copr[12] & 0x401) == 0x401) {
+                exception(0x400, false);
+            }
+        }
         opcodeCount %= PSX_CYCLE;
     }
 }
@@ -113,19 +113,12 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 25: // MULTU
-                    {
-                        // Example: 0xdeadc0decafebabe
-                        //
-                        // LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
-                        // HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
-                        
-                        //res.u64 = base[rs] * base[rt];
-                        
-                        sd hi = ((sd)(uw)base[rs] * (uw)base[rt]);
-                        
-                        res.u32[0] = (uw)(hi);
-                        res.u32[1] = (uw)(hi>>32);
-                    }
+                    // Example: 0xdeadc0decafebabe
+                    //
+                    // LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
+                    // HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
+                    
+                    res.u64 = base[rs] * base[rt];
                     return;
                     
                 case 26: // DIV
