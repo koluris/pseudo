@@ -106,3 +106,16 @@ ub CstrMem::read08(uw addr) {
     
     return 0;
 }
+
+void CstrMem::executeDMA(uw addr) {
+    if (!bcr || chcr != 0x11000002) {
+        return;
+    }
+    madr &= 0xffffff;
+    
+    while (--bcr) {
+        *(uw *)&ram.ptr[madr & (ram.size - 1)] = (madr - 4) & 0xffffff;
+        madr -= 4;
+    }
+    *(uw *)&ram.ptr[madr & (ram.size - 1)] = 0xffffff;
+}

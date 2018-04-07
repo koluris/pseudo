@@ -35,11 +35,11 @@ void CstrGraphics::redraw() {
     ret.status ^= GPU_ODDLINES;
 }
 
-void resize(uw h, uw v) {
-    if (h && v) {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0.0, h, v, 0.0, 1.0, -1.0);
+void resize(uh resX, uh resY) {
+    if (resX && resY) {
+        GLMatrixMode(GL_PROJECTION);
+        GLID();
+        GLOrtho(0.0, resX, resY, 0.0, 1.0, -1.0);
     }
 }
 

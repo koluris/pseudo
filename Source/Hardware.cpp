@@ -14,6 +14,14 @@ void CstrHardware::write32(uw addr, uw data) {
             data32 &= data & mask32;
             return;
             
+        case 0x10a8 ... 0x10e8: // DMA
+            if (addr & 8) {
+                bus.checkDMA(addr, data);
+                return;
+            }
+            accessMem(mem.hwr, uw) = data;
+            return;
+            
         case 0x10f4: // Thanks Calb, Galtor :)
             icr = (icr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
             return;
@@ -28,6 +36,7 @@ void CstrHardware::write32(uw addr, uw data) {
             
         /* unused */
         case 0x1114 ... 0x1118: // Rootcounters
+            
         case 0x1000:
         case 0x1004:
         case 0x1008:
@@ -39,9 +48,6 @@ void CstrHardware::write32(uw addr, uw data) {
         case 0x1020: // COM
         case 0x1060: // RAM Size
         case 0x1074:
-            
-        case 0x10a8: // DMA
-            
         case 0x10f0:
             accessMem(mem.hwr, uw) = data;
             return;
@@ -86,6 +92,7 @@ uw CstrHardware::read32(uw addr) {
         /* unused */
         case 0x1070:
         case 0x1074:
+        case 0x10e8:
         case 0x10f0:
         case 0x10f4:
             return accessMem(mem.hwr, uw);
