@@ -77,6 +77,9 @@ void CstrHardware::write08(uw addr, ub data) {
 
 uw CstrHardware::read32(uw addr) {
     switch(lob(addr)) {
+        case 0x1810:
+            return vs.dataRead();
+            
         case 0x1814:
             return vs.statusRead();
             

@@ -3,6 +3,10 @@ class CstrGraphics {
         uw data, status;
     } ret;
     
+    uh resMode[8] = {
+        256, 320, 512, 640, 368, 384, 512, 640
+    };
+    
     // Command buffer
     struct {
         uw data[100], prim, size, row;
@@ -38,6 +42,7 @@ public:
     void statusWrite(uw);
     
     // Load
+    uw dataRead();
     uw statusRead();
 };
 

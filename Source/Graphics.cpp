@@ -35,6 +35,14 @@ void CstrGraphics::redraw() {
     ret.status ^= GPU_ODDLINES;
 }
 
+void resize(uw h, uw v) {
+    if (h && v) {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0.0, h, v, 0.0, 1.0, -1.0);
+    }
+}
+
 void draw(uw addr, uw *data) {
     // Operations
     switch(addr) {
@@ -81,8 +89,19 @@ void CstrGraphics::dataWrite(uw data) {
 
 void CstrGraphics::statusWrite(uw data) {
     switch(GPU_COMMAND(data)) {
+        case 0x00:
+            ret.status = 0x14802000;
+            return;
+            
+        case 0x08:
+            resize(resMode[(data & 3) | ((data & 0x40) >> 4)], (data & 4) ? 480 : 240);
+            return;
     }
     printx("GPU Status Write -> 0x%x", (GPU_COMMAND(data)));
+}
+
+uw CstrGraphics::dataRead() {
+    return ret.data;
 }
 
 uw CstrGraphics::statusRead() {
