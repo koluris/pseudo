@@ -29,6 +29,7 @@ void CstrGraphics::reset() {
     
     ret.data   = 0x400;
     ret.status = 0x14802000;
+    dma        = GPU_DMA_NONE;
 }
 
 void CstrGraphics::redraw() {
@@ -49,10 +50,60 @@ void draw(uw addr, uw *data) {
         case 0xe1: // TODO: TEXTURE PAGE
             return;
     }
-    printx("GPU Data Write -> 0x%x", addr);
+    printx("PSeudo /// GPU Draw -> $%x", addr);
 }
 
-void CstrGraphics::dataMemWrite(uw *ptr, sw size) {
+void CstrGraphics::write(uw addr, uw data) {
+    switch(addr & 0xf) {
+        case GPU_REG_DATA:
+            dataWrite(&data, 1); // TODO: Sizes > 1
+            return;
+            
+        case GPU_REG_STATUS:
+            switch(GPU_COMMAND(data)) {
+                case 0x00:
+                    ret.status = 0x14802000;
+                    return;
+                    
+                case 0x04:
+                    dma = data & 3;
+                    
+                    ret.status |= data << 29;
+                    ret.status &= ~GPU_DMABITS;
+                    return;
+                    
+                case 0x08:
+                    resize(resMode[(data & 3) | ((data & 0x40) >> 4)], (data & 4) ? 480 : 240);
+                    return;
+                    
+                case 0x05:
+                case 0x06:
+                case 0x07:
+                    return;
+            }
+            printx("PSeudo /// GPU Write Status: $%x", (GPU_COMMAND(data)));
+            return;
+    }
+    printx("PSeudo /// GPU Write: $%x <- $%x", (addr & 0xf), data);
+}
+
+uw CstrGraphics::read(uw addr) {
+    switch(addr & 0xf) {
+        case GPU_REG_DATA:
+            return ret.data;
+            
+        case GPU_REG_STATUS:
+            ret.status |=  GPU_READYFORVRAM;
+            ret.status &= ~GPU_DOUBLEHEIGHT;
+            
+            return ret.status;
+    }
+    printx("PSeudo /// GPU Read: $%x", (addr & 0xf));
+    
+    return 0;
+}
+
+void CstrGraphics::dataWrite(uw *ptr, sw size) {
     ret.data = *ptr;
     ptr++;
     
@@ -83,30 +134,11 @@ void CstrGraphics::dataMemWrite(uw *ptr, sw size) {
     }
 }
 
-void CstrGraphics::dataWrite(uw data) {
-    dataMemWrite(&data, 1); // TODO: Sizes > 1
-}
-
-void CstrGraphics::statusWrite(uw data) {
-    switch(GPU_COMMAND(data)) {
-        case 0x00:
-            ret.status = 0x14802000;
-            return;
-            
-        case 0x08:
-            resize(resMode[(data & 3) | ((data & 0x40) >> 4)], (data & 4) ? 480 : 240);
+void CstrGraphics::executeDMA(uw addr) {
+    switch(chcr) {
+        case 0x00000401:
+        case 0x01000401:
             return;
     }
-    printx("GPU Status Write -> 0x%x", (GPU_COMMAND(data)));
-}
-
-uw CstrGraphics::dataRead() {
-    return ret.data;
-}
-
-uw CstrGraphics::statusRead() {
-    ret.status |=  GPU_READYFORVRAM;
-    ret.status &= ~GPU_DOUBLEHEIGHT;
-    
-    return ret.status;
+    printx("PSeudo /// GPU DMA: $%x", chcr);
 }

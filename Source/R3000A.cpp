@@ -155,6 +155,10 @@ void CstrMips::step(bool branched) {
                     base[rd] = base[rs] | base[rt];
                     return;
                     
+                case 38: // XOR
+                    base[rd] = base[rs] ^ base[rt];
+                    return;
+                    
                 case 39: // NOR
                     base[rd] = ~(base[rs] | base[rt]);
                     return;
@@ -167,7 +171,7 @@ void CstrMips::step(bool branched) {
                     base[rd] = base[rs] < base[rt];
                     return;
             }
-            printx("$%08x | Unknown special opcode $%08x | %d", pc, code, (code & 63));
+            printx("PSeudo /// $%08x | Unknown special opcode $%08x | %d", pc, code, (code & 63));
             return;
             
         case 1: // REGIMM
@@ -184,7 +188,7 @@ void CstrMips::step(bool branched) {
                     }
                     return;
             }
-            printx("$%08x | Unknown bcond opcode $%08x | %d", pc, code, rt);
+            printx("PSeudo /// $%08x | Unknown bcond opcode $%08x | %d", pc, code, rt);
             return;
             
         case 2: // J
@@ -263,7 +267,7 @@ void CstrMips::step(bool branched) {
                     copr[12] = (copr[12] & 0xfffffff0) | ((copr[12] >> 2) & 0xf);
                     return;
             }
-            printx("$%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
+            printx("PSeudo /// $%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
             return;
             
         case 32: // LB
@@ -298,7 +302,7 @@ void CstrMips::step(bool branched) {
             mem.write32(ob, base[rt]);
             return;
     }
-    printx("$%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
+    printx("PSeudo /// $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
 }
 
 void CstrMips::exception(uw code, bool branched) {

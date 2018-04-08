@@ -28,7 +28,7 @@ void CstrMem::write32(uw addr, uw data) {
             //printf("$fffe0130 <- $%x\n", data);
             return;
     }
-    printx("Unknown Mem Write 32: $%x <- $%x", addr, data);
+    printx("PSeudo /// Mem Write 32: $%x <- $%x", addr, data);
 }
 
 void CstrMem::write16(uw addr, uh data) {
@@ -41,7 +41,7 @@ void CstrMem::write16(uw addr, uh data) {
             io.write16(addr, data);
             return;
     }
-    printx("Unknown Mem Write 16: $%x <- $%x", addr, data);
+    printx("PSeudo /// Mem Write 16: $%x <- $%x", addr, data);
 }
 
 void CstrMem::write08(uw addr, ub data) {
@@ -56,7 +56,7 @@ void CstrMem::write08(uw addr, ub data) {
             io.write08(addr, data);
             return;
     }
-    printx("Unknown Mem Write 08: $%x <- $%x", addr, data);
+    printx("PSeudo /// Mem Write 08: $%x <- $%x", addr, data);
 }
 
 uw CstrMem::read32(uw addr) {
@@ -72,7 +72,7 @@ uw CstrMem::read32(uw addr) {
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             return io.read32(addr);
     }
-    printx("Unknown Mem Read 32: $%x", addr);
+    printx("PSeudo /// Mem Read 32: $%x", addr);
     
     return 0;
 }
@@ -85,7 +85,7 @@ uh CstrMem::read16(uw addr) {
         case 0x1f801000 ... 0x1f804000-1: // Hardware
             return io.read16(addr);
     }
-    printx("Unknown Mem Read 16: $%x", addr);
+    printx("PSeudo /// Mem Read 16: $%x", addr);
     
     return 0;
 }
@@ -102,10 +102,13 @@ ub CstrMem::read08(uw addr) {
         case 0x1f000084: // Serial?
             return 0;
     }
-    printx("Unknown Mem Read 08: $%x", addr);
+    printx("PSeudo /// Mem Read 08: $%x", addr);
     
     return 0;
 }
+
+#define RAM32(addr)\
+    accessMem(ram, uw)
 
 void CstrMem::executeDMA(uw addr) {
     if (!bcr || chcr != 0x11000002) {
@@ -114,8 +117,8 @@ void CstrMem::executeDMA(uw addr) {
     madr &= 0xffffff;
     
     while (--bcr) {
-        *(uw *)&ram.ptr[madr & (ram.size - 1)] = (madr - 4) & 0xffffff;
+        RAM32(madr) = (madr - 4) & 0xffffff;
         madr -= 4;
     }
-    *(uw *)&ram.ptr[madr & (ram.size - 1)] = 0xffffff;
+    RAM32(madr) =  0xffffff;
 }

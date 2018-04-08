@@ -10,18 +10,23 @@ void CstrBus::checkDMA(uw addr, uw data) {
         chcr = data;
         
         switch(chan) {
-            case 6:
+            case DMA_GPU:
+                vs.executeDMA(addr);
+                break;
+                
+            case DMA_CLEAR_OT:
                 mem.executeDMA(addr);
                 break;
                 
             default:
-                printx("Unknown DMA channel: %d", chan);
+                printx("PSeudo /// DMA Channel: %d", chan);
                 break;
         }
         chcr = data & ~0x01000000;
         
         if (icr & (1 << (16 + chan))) {
-            printx("DMA ICR %d", 0);
+            icr |= 1 << (24 + chan);
+            data16 |= 6; // ?
         }
     }
 }

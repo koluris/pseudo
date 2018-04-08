@@ -15,6 +15,16 @@
 
 
 class CstrBus {
+    enum {
+        DMA_MDEC_IN,
+        DMA_MDEC_OUT,
+        DMA_GPU,
+        DMA_CD,
+        DMA_SPU,
+        DMA_PARALLEL,
+        DMA_CLEAR_OT
+    };
+    
 public:
     void checkDMA(uw, uw);
 };

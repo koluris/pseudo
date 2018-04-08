@@ -32,18 +32,32 @@ class CstrGraphics {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xf0
     };
     
+    uw dma;
+    
+    enum {
+        GPU_DMA_NONE,
+        GPU_DMA_MEM2VRAM = 2,
+        GPU_DMA_VRAM2MEM,
+    };
+    
+    enum {
+        GPU_REG_DATA,
+        GPU_REG_STATUS = 4
+    };
+    
 public:
     void reset();
     void redraw();
     
     // Store
-    void dataMemWrite(uw *, sw);
-    void dataWrite(uw);
-    void statusWrite(uw);
+    void dataWrite(uw *, sw);
+    void write(uw, uw);
     
     // Load
-    uw dataRead();
-    uw statusRead();
+    uw read(uw);
+    
+    // DMA
+    void executeDMA(uw);
 };
 
 extern CstrGraphics vs;
