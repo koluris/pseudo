@@ -29,7 +29,7 @@ void CstrGraphics::reset() {
     
     ret.data   = 0x400;
     ret.status = 0x14802000;
-    dma        = GPU_DMA_NONE;
+    modeDMA    = GPU_DMA_NONE;
 }
 
 void CstrGraphics::redraw() {
@@ -47,6 +47,12 @@ void resize(uh resX, uh resY) {
 void draw(uw addr, uw *data) {
     // Operations
     switch(addr) {
+        case 0x01: // TODO: FLUSH
+            return;
+            
+        case 0xa0: // TODO: LOAD IMAGE
+            return;
+            
         case 0xe1: // TODO: TEXTURE PAGE
             return;
     }
@@ -66,7 +72,7 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x04:
-                    dma = data & 3;
+                    modeDMA = data & 3;
                     
                     ret.status |= data << 29;
                     ret.status &= ~GPU_DMABITS;
@@ -76,6 +82,7 @@ void CstrGraphics::write(uw addr, uw data) {
                     resize(resMode[(data & 3) | ((data & 0x40) >> 4)], (data & 4) ? 480 : 240);
                     return;
                     
+                /* unused */
                 case 0x05:
                 case 0x06:
                 case 0x07:
@@ -136,7 +143,8 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
 
 void CstrGraphics::executeDMA(uw addr) {
     switch(chcr) {
-        case 0x00000401:
+        case 0x00000401: // Disable DMA?
+        case 0x01000201:
         case 0x01000401:
             return;
     }

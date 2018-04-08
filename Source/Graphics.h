@@ -32,7 +32,7 @@ class CstrGraphics {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xf0
     };
     
-    uw dma;
+    uw modeDMA;
     
     enum {
         GPU_DMA_NONE,
