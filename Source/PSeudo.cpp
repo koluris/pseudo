@@ -17,9 +17,10 @@ void CstrPSeudo::reset() {
     [app consolePrint:@"PSeudo startup\n"];
 #endif
     
-    vs .reset();
-    mem.reset();
-    cpu.reset(); // Bootstrap is here, execute last!
+       vs.reset();
+    rootc.reset();
+      mem.reset();
+      cpu.reset(); // Bootstrap is here, execute last!
 }
 
 void CstrPSeudo::console(uw *r, uw addr) {

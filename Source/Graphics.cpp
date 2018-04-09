@@ -1,15 +1,15 @@
 #import "Global.h"
 
 
-#define GPU_DITHER           0x00000200
-#define GPU_DRAWINGALLOWED   0x00000400
-#define GPU_MASKDRAWN        0x00000800
-#define GPU_MASKENABLED      0x00001000
-#define GPU_WIDTHBITS        0x00070000
+//#define GPU_DITHER           0x00000200
+//#define GPU_DRAWINGALLOWED   0x00000400
+//#define GPU_MASKDRAWN        0x00000800
+//#define GPU_MASKENABLED      0x00001000
+//#define GPU_WIDTHBITS        0x00070000
 #define GPU_DOUBLEHEIGHT     0x00080000
-#define GPU_PAL              0x00100000
-#define GPU_RGB24            0x00200000
-#define GPU_INTERLACED       0x00400000
+//#define GPU_PAL              0x00100000
+//#define GPU_RGB24            0x00200000
+//#define GPU_INTERLACED       0x00400000
 #define GPU_DISPLAYDISABLED  0x00800000
 #define GPU_IDLE             0x04000000
 #define GPU_READYFORVRAM     0x08000000
@@ -28,7 +28,7 @@ void CstrGraphics::reset() {
     memset(&pipe, 0, sizeof(pipe));
     
     ret.data   = 0x400;
-    ret.status = 0x14802000;
+    ret.status = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA    = GPU_DMA_NONE;
 }
 
@@ -141,12 +141,12 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
     }
 }
 
-void CstrGraphics::executeDMA(uw addr) {
-    switch(chcr) {
+void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
+    switch(dma->chcr) {
         case 0x00000401: // Disable DMA?
         case 0x01000201:
         case 0x01000401:
             return;
     }
-    printx("PSeudo /// GPU DMA: $%x", chcr);
+    printx("PSeudo /// GPU DMA: $%x", dma->chcr);
 }

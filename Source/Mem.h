@@ -6,7 +6,7 @@
 #define kBaseAddrROM        0xbfc00000
 
 #define accessMem(mem, dt)\
-    *(dt *)&mem.ptr[addr&(mem.size-1)]
+    *(dt *)&mem.ptr[addr & (mem.size - 1)]
 
 
 class CstrMem {
@@ -42,7 +42,7 @@ public:
     ub read08(uw);
     
     // DMA
-    void executeDMA(uw);
+    void executeDMA(CstrBus::castDMA *);
 };
 
 extern CstrMem mem;

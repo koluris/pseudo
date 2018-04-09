@@ -9,7 +9,13 @@
 #define PSX_CYCLE\
     64
 
+
 class CstrCounters {
+    uw vbk;
+    
+public:
+    void reset();
+    void update();
 };
 
 extern CstrCounters rootc;

@@ -57,7 +57,7 @@ public:
     uw read(uw);
     
     // DMA
-    void executeDMA(uw);
+    void executeDMA(CstrBus::castDMA *);
 };
 
 extern CstrGraphics vs;
