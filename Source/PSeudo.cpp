@@ -29,13 +29,17 @@ void CstrPSeudo::executable(const char *path) {
     } header;
     
     FILE *fp = fopen(path, "rb");
-    fread(&header, sizeof(header), 1, fp);
-    fread(&mem.ram.ptr[header.v[4] & (mem.ram.size - 1)], header.v[5], 1, fp);
+    fread(&header, 1, sizeof(header), fp);
+    fread(&mem.ram.ptr[header.v[4] & (mem.ram.size - 1)], 1, header.v[5], fp);
     fclose(fp);
+    
+    printf("0x%x\n", (header.v[4] & (mem.ram.size - 1)));
+    printf("Size of exe -> 0x%x\n", header.v[5]);
     
     cpu.base[28] = header.v[ 3];
     cpu.base[29] = header.v[10];
     cpu.pc = header.v[2];
+    printf("0x%x / 0x%x / 0x%x\n", cpu.base[28], cpu.base[29], cpu.pc);
 }
 
 void CstrPSeudo::console(uw *r, uw addr) {

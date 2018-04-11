@@ -14,21 +14,21 @@ void CstrHardware::write32(uw addr, uw data) {
             data32 &= data & mask32;
             return;
             
-        case 0x10a0 ... 0x10e8: // DMA
-            if (addr & 8) {
-                bus.checkDMA(addr, data);
-                return;
-            }
-            accessMem(mem.hwr, uw) = data;
-            return;
+//        case 0x10a0 ... 0x10e8: // DMA
+//            if (addr & 8) {
+//                bus.checkDMA(addr, data);
+//                return;
+//            }
+//            accessMem(mem.hwr, uw) = data;
+//            return;
             
-        case 0x10f4: // Thanks Calb, Galtor :)
-            icr = (icr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
-            return;
+//        case 0x10f4: // Thanks Calb, Galtor :)
+//            icr = (icr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
+//            return;
             
-        case 0x1810 ... 0x1814: // Graphics
-            vs.write(addr, data);
-            return;
+//        case 0x1810 ... 0x1814: // Graphics
+//            vs.write(addr, data);
+//            return;
             
         /* unused */
         case 0x1114 ... 0x1118: // Rootcounters
@@ -79,8 +79,8 @@ void CstrHardware::write08(uw addr, ub data) {
 
 uw CstrHardware::read32(uw addr) {
     switch(lob(addr)) {
-        case 0x1810 ... 0x1814: // Graphics
-            return vs.read(addr);
+//        case 0x1810 ... 0x1814: // Graphics
+//            return vs.read(addr);
             
         /* unused */
         case 0x1110: // Rootcounters
