@@ -2,6 +2,7 @@
 
 @prop (weak) IBOutlet NSOpenGLView *openGLView;
 @prop (unsafe_unretained) IBOutlet NSTextView *consoleView;
+@prop (nonatomic, retain) NSOperationQueue *queue;
 
 // Console
 - (void)consoleClear;

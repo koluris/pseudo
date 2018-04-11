@@ -47,14 +47,41 @@ void resize(uh resX, uh resY) {
 void draw(uw addr, uw *data) {
     // Operations
     switch(addr) {
-        case 0x01: // TODO: FLUSH
-            return;
-            
-        case 0xa0: // TODO: LOAD IMAGE
-            return;
-            
-        case 0xe1: // TODO: TEXTURE PAGE
-            return;
+//        case 0x01: // TODO: FLUSH
+//            return;
+//            
+//        case 0x28: // TODO: VertexF4
+//            return;
+//            
+//        case 0x31: // TODO: VertexG3
+//            return;
+//            
+//        case 0x3d: // VertexGT4
+//            return;
+//            
+//        case 0x42: // LineF2
+//            return;
+//            
+//        case 0x4a: // TODO: LineF3
+//            return;
+//            
+//        case 0x4e: // TODO: LineF4
+//            return;
+//            
+//        case 0x52: // TODO: LineG2
+//            return;
+//            
+//        case 0x7f: // TODO: Sprite16
+//            return;
+//            
+//        case 0xa0: // TODO: LOAD IMAGE
+//            return;
+//            
+//        case 0xc0: // TODO: STORE IMAGE
+//            return;
+//            
+//        case 0xe1: // TODO: TEXTURE PAGE
+//            return;
     }
     printx("PSeudo /// GPU Draw -> $%x", addr);
 }
@@ -83,6 +110,7 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 /* unused */
+                case 0x03:
                 case 0x05:
                 case 0x06:
                 case 0x07:

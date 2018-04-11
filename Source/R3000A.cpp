@@ -1,6 +1,13 @@
 #import "Global.h"
 
 
+#define opcodeLWx(o, d)\
+    base[rt] = (base[rt] & mask[d][ob & 3]) | (mem.read32(ob & ~3) o shift[d][ob & 3])
+
+#define opcodeSWx(o, d)\
+    mem.write32(ob & ~3, (base[rt] o shift[d][ob & 3]) | (mem.read32(ob & ~3) & mask[d][ob & 3]))
+
+
 CstrMips cpu;
 
 // SLLV
@@ -273,6 +280,10 @@ void CstrMips::step(bool branched) {
             base[rt] = (sh)mem.read16(ob);
             return;
             
+        case 34: // LWL
+            opcodeLWx(<<, 0);
+            return;
+            
         case 35: // LW
             base[rt] = mem.read32(ob);
             return;
@@ -285,6 +296,10 @@ void CstrMips::step(bool branched) {
             base[rt] = mem.read16(ob);
             return;
             
+        case 38: // LWR
+            opcodeLWx(>>, 1);
+            return;
+            
         case 40: // SB
             mem.write08(ob, base[rt]);
             return;
@@ -293,8 +308,16 @@ void CstrMips::step(bool branched) {
             mem.write16(ob, base[rt]);
             return;
             
+        case 42: // SWL
+            opcodeSWx(>>, 2);
+            return;
+            
         case 43: // SW
             mem.write32(ob, base[rt]);
+            return;
+            
+        case 46: // SWR
+            opcodeSWx(<<, 3);
             return;
     }
     printx("PSeudo /// $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);

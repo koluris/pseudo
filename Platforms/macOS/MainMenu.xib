@@ -69,7 +69,11 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Action" autoenablesItems="NO" id="bib-Uj-vzu">
                         <items>
-                            <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9"/>
+                            <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
+                                <connections>
+                                    <action selector="menuOpen:" target="xoS-kU-Nao" id="sSM-AV-hHm"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="TNu-9g-461"/>
                             <menuItem title="BIOS Shell" keyEquivalent="b" id="c5s-Xh-2Pr">
                                 <connections>
@@ -109,12 +113,12 @@
         <window title="PSeudo™ : Alpha" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="Fcb-bg-8vx">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="131" y="158" width="362" height="298"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" id="b8H-mq-hnx">
                 <rect key="frame" x="0.0" y="0.0" width="362" height="298"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <tabView translatesAutoresizingMaskIntoConstraints="NO" id="qRh-jH-wcj">
+                    <tabView initialItem="dQW-UG-k5X" translatesAutoresizingMaskIntoConstraints="NO" id="qRh-jH-wcj">
                         <rect key="frame" x="3" y="0.0" width="356" height="294"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
@@ -203,7 +207,7 @@
                     <constraint firstItem="qRh-jH-wcj" firstAttribute="top" secondItem="b8H-mq-hnx" secondAttribute="top" constant="10" id="Yms-p7-gJX"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-523" y="85"/>
+            <point key="canvasLocation" x="-525" y="84"/>
         </window>
     </objects>
 </document>

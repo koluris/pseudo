@@ -8,6 +8,7 @@ class CstrPSeudo {
     
 public:
     void init(const char *);
+    void executable(const char *);
     void console(uw *, uw);
 };
 

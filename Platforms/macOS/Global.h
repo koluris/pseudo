@@ -12,8 +12,9 @@
 #define dispatch_asinc              dispatch_async
 #define dispatch_main_queue         dispatch_get_main_queue
 #define RGBA(r, g, b)               colorWithRed:r/255.f green:g/255.f blue:b/255.f alpha:1.f
-#define GLMatrixMode                glMatrixMode
-#define GLID                        glLoadIdentity
-#define GLOrtho                     glOrtho
+#define setAllowedFileKind          setAllowedFileTypes
+#define startWithCompletionHandler  beginWithCompletionHandler
+#define NSBunch                     NSArray
+#define initWithObs                 initWithObjects
 
 #import "Main.h"

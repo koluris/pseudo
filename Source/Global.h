@@ -21,6 +21,11 @@ typedef int32_t sw; // word
 typedef int16_t sh; // halfword
 typedef int8_t  sb; // bite
 
+// Defines
+#define GLMatrixMode    glMatrixMode
+#define GLID            glLoadIdentity
+#define GLOrtho         glOrtho
+
 // User imports
 #import "Bus.h"
 #import "Graphics.h"

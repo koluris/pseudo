@@ -23,6 +23,21 @@ void CstrPSeudo::reset() {
       cpu.reset(); // Bootstrap is here, execute last!
 }
 
+void CstrPSeudo::executable(const char *path) {
+    struct {
+        ub id[8]; uw v[17];
+    } header;
+    
+    FILE *fp = fopen(path, "rb");
+    fread(&header, sizeof(header), 1, fp);
+    fread(&mem.ram.ptr[header.v[4] & (mem.ram.size - 1)], header.v[5], 1, fp);
+    fclose(fp);
+    
+    cpu.base[28] = header.v[ 3];
+    cpu.base[29] = header.v[10];
+    cpu.pc = header.v[2];
+}
+
 void CstrPSeudo::console(uw *r, uw addr) {
     if (addr == 0xb0) {
         if (r[9] == 59 || r[9] == 61) {

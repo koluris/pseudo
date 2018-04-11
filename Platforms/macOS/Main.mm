@@ -7,11 +7,7 @@
 - (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
     //NSURL *uri = [[NSBundle mainBundle] bundleURL];
     app = (Main *)[[NSApplication sharedApplication] del];
-    
-    // OpenGL
-    //[[self.openGLView openGLContext] makeCurrentContext];
-    //glClearColor(1, 0, 1, 1);
-    //glFlush();
+    self.queue = [[NSOperationQueue alloc] init];
     
     // Console
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
@@ -24,10 +20,40 @@
 }
 
 // Menu
+- (IBAction)menuOpen:(id)sender {
+    NSOpenPanel *op = [NSOpenPanel openPanel];
+    
+    [op setAllowedFileKind:[[NSBunch alloc] initWithObs:@"bin", @"exe", @"psx", nil]];
+    [op startWithCompletionHandler:^(NSInteger res) {
+        if (res == NSModalResponseOK) {
+            NSChars *file = [[op URL] path];
+            psx.executable([file UTF8Chars]);
+            
+            [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
+                [[self.openGLView openGLContext] makeCurrentContext];
+                
+                // OpenGL
+                glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+                glFlush();
+                
+                cpu.run();
+            }]];
+        }
+    }];
+}
+
 - (IBAction)menuShell:(id)sender {
-    dispatch_asinc(dispatch_main_queue(), ^{
+    [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
+        [[self.openGLView openGLContext] makeCurrentContext];
+        
+        // OpenGL
+        glClearColor(1.0f, 0.0f, 1.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glFlush();
+        
         cpu.run();
-    });
+    }]];
 }
 
 // Console
@@ -36,7 +62,9 @@
 }
 
 - (void)consolePrint:(NSChars *)text {
-    self.consoleView.contents = [NSChars charsWithFormat:@"%@%@", self.consoleView.contents, text];
+    dispatch_asinc(dispatch_main_queue(), ^{
+        self.consoleView.contents = [NSChars charsWithFormat:@"%@%@", self.consoleView.contents, text];
+    });
 }
 
 @end
