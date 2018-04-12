@@ -30,18 +30,52 @@ void CstrGraphics::reset() {
     ret.data   = 0x400;
     ret.status = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA    = GPU_DMA_NONE;
+    
+    GLViewport(0, 0, 320, 240);
+    GLMatrixMode(GL_MODELVIEW);
+    GLID();
+    GLClearColor(0, 0, 0, 0);
+    GLClear(GL_COLOR_BUFFER_BIT);
+    resize(320, 240);
+    GLFlush();
 }
 
-void CstrGraphics::redraw() {
-    ret.status ^= GPU_ODDLINES;
-}
-
-void resize(uh resX, uh resY) {
+void CstrGraphics::resize(uh resX, uh resY) {
     if (resX && resY) {
         GLMatrixMode(GL_PROJECTION);
         GLID();
         GLOrtho(0.0, resX, resY, 0.0, 1.0, -1.0);
     }
+}
+
+void CstrGraphics::redraw() {
+    ret.status ^= GPU_ODDLINES;
+    GLFlush();
+}
+
+template <class T>
+void drawF(uw *f, ub size, GLenum mode) {
+    T *k = (T *)f;
+    
+    GLColor4ub(k->co.c, k->co.m, k->co.k, 255);
+    
+    GLStart(mode);
+    for (sw i=0; i<size; i++) {
+        GLVertex2s(k->v[i].w, k->v[i].h);
+    }
+    GLEnd();
+}
+
+template <class T>
+void drawG(uw *f, ub size, GLenum mode) {
+    T *k = (T *)f;
+    
+    GLStart(mode);
+    for (sw i=0; i<size; i++) {
+        GLColor4ub(k->v[i].co.c, k->v[i].co.m, k->v[i].co.k, 255);
+        GLVertex2s(k->v[i].w, k->v[i].h);
+    }
+    GLEnd();
 }
 
 void draw(uw addr, uw *data) {
@@ -57,6 +91,7 @@ void draw(uw addr, uw *data) {
         case 0x21:
         case 0x22:
         case 0x23:
+            drawF<F3>(data, 3, GL_TRIANGLE_STRIP);
             return;
             
         case 0x24: // TODO: Vertex FT3
@@ -66,6 +101,7 @@ void draw(uw addr, uw *data) {
             
         case 0x28: // TODO: Vertex F4
         case 0x29:
+            drawF<F4>(data, 4, GL_TRIANGLE_STRIP);
             return;
             
         case 0x2d: // TODO: Vertex FT4
@@ -75,6 +111,7 @@ void draw(uw addr, uw *data) {
         case 0x31:
         case 0x32:
         case 0x33:
+            drawG<G3>(data, 3, GL_TRIANGLE_STRIP);
             return;
             
         case 0x34: // TODO: Vertex GT3
@@ -84,6 +121,7 @@ void draw(uw addr, uw *data) {
             return;
             
         case 0x39: // TODO: Vertex G4
+            drawG<G4>(data, 4, GL_TRIANGLE_STRIP);
             return;
             
         case 0x3d: // TODO: Vertex GT4
@@ -93,16 +131,20 @@ void draw(uw addr, uw *data) {
         case 0x41:
         case 0x42:
         case 0x43:
+            drawF<F2>(data, 2, GL_LINE_STRIP);
             return;
             
         case 0x4a: // TODO: Line F3
+            drawF<F3>(data, 3, GL_LINE_STRIP);
             return;
             
         case 0x4e: // TODO: Line F4
+            drawF<F4>(data, 4, GL_LINE_STRIP);
             return;
             
         case 0x52: // TODO: Line G2
         case 0x53:
+            drawG<G2>(data, 2, GL_LINE_STRIP);
             return;
             
         case 0x64: // TODO: Sprite

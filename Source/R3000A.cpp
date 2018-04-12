@@ -276,6 +276,9 @@ void CstrMips::step(bool branched) {
             printx("PSeudo /// $%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
             return;
             
+        case 18: // COP2
+            return;
+            
         case 32: // LB
             base[rt] = (sb)mem.read08(ob);
             return;

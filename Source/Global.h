@@ -22,9 +22,19 @@ typedef int16_t sh; // halfword
 typedef int8_t  sb; // bite
 
 // Defines
-#define GLMatrixMode    glMatrixMode
+#define TYPEDEF         typedef
+
+#define GLClear         glClear
+#define GLClearColor    glClearColor
+#define GLColor4ub      glColor4ub
+#define GLEnd           glEnd
+#define GLFlush         glFlush
 #define GLID            glLoadIdentity
+#define GLMatrixMode    glMatrixMode
 #define GLOrtho         glOrtho
+#define GLStart         glBegin
+#define GLVertex2s      glVertex2s
+#define GLViewport      glViewport
 
 // User imports
 #import "Bus.h"
