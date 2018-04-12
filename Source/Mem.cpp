@@ -105,6 +105,9 @@ ub CstrMem::read08(uw addr) {
             
         case 0x1f000084: // Serial?
             return 0;
+            
+        case 0x1f801000 ... (0x1f804000-1): // Hardware
+            return io.read08(addr);
     }
     printx("PSeudo /// Mem Read 08: $%x", addr);
     

@@ -37,7 +37,7 @@ void CstrMips::branch(uw addr) {
     pc = addr;
     
     if (opcodeCount >= PSX_CYCLE) { // TODO: Rootcounters, interrupts
-        //rootc.update();
+        rootc.update();
         
         // Exceptions
         if (data32 & mask32) {
@@ -114,14 +114,18 @@ void CstrMips::step(bool branched) {
                     res.u32[0] = base[rs];
                     return;
                     
-//                case 25: // MULTU
-//                    // Example: 0xdeadc0decafebabe
-//                    //
-//                    // LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
-//                    // HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
-//
-//                    res.u64 = base[rs] * base[rt];
-//                    return;
+                case 24: // MULT
+                    // Example: 0xdeadc0decafebabe
+                    //
+                    // LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
+                    // HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
+                    
+                    res.u64 = (sw)base[rs] * (sw)base[rt];
+                    return;
+                    
+                case 25: // MULTU
+                    res.u64 = base[rs] * base[rt];
+                    return;
                     
                 case 26: // DIV
                     if (base[rt]) {
@@ -280,9 +284,9 @@ void CstrMips::step(bool branched) {
             base[rt] = (sh)mem.read16(ob);
             return;
             
-//        case 34: // LWL
-//            opcodeLWx(<<, 0);
-//            return;
+        case 34: // LWL
+            opcodeLWx(<<, 0);
+            return;
             
         case 35: // LW
             base[rt] = mem.read32(ob);
@@ -296,9 +300,9 @@ void CstrMips::step(bool branched) {
             base[rt] = mem.read16(ob);
             return;
             
-//        case 38: // LWR
-//            opcodeLWx(>>, 1);
-//            return;
+        case 38: // LWR
+            opcodeLWx(>>, 1);
+            return;
             
         case 40: // SB
             mem.write08(ob, base[rt]);
@@ -308,17 +312,17 @@ void CstrMips::step(bool branched) {
             mem.write16(ob, base[rt]);
             return;
             
-//        case 42: // SWL
-//            opcodeSWx(>>, 2);
-//            return;
+        case 42: // SWL
+            opcodeSWx(>>, 2);
+            return;
             
         case 43: // SW
             mem.write32(ob, base[rt]);
             return;
             
-//        case 46: // SWR
-//            opcodeSWx(<<, 3);
-//            return;
+        case 46: // SWR
+            opcodeSWx(<<, 3);
+            return;
     }
     printx("PSeudo /// $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
 }

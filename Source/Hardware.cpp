@@ -65,6 +65,7 @@ void CstrHardware::write16(uw addr, uh data) {
         case 0x104a:
         case 0x104e:
         
+        case 0x1014:
         case 0x1074:
             accessMem(mem.hwr, uh) = data;
             return;
@@ -75,6 +76,10 @@ void CstrHardware::write16(uw addr, uh data) {
 void CstrHardware::write08(uw addr, ub data) {
     switch(lob(addr)) {
         /* unused */
+        case 0x1800: // CD-ROM
+        case 0x1802:
+        case 0x1803:
+            
         case 0x2041:
             accessMem(mem.hwr, ub) = data;
             return;
@@ -90,10 +95,12 @@ uw CstrHardware::read32(uw addr) {
         /* unused */
         case 0x1110: // Rootcounters
             
+        case 0x10a8: // DMA
+        case 0x10c8:
+        case 0x10e8:
+            
         case 0x1070:
         case 0x1074:
-        case 0x10a8:
-        case 0x10e8:
         case 0x10f0:
         case 0x10f4:
             return accessMem(mem.hwr, uw);
@@ -106,13 +113,29 @@ uw CstrHardware::read32(uw addr) {
 uh CstrHardware::read16(uw addr) {
     switch(lob(addr)) {
         /* unused */
+        case 0x1044: // SIO
+            
         case 0x1c0c ... 0x1dae: // Audio
             
+        case 0x1014:
         case 0x1070:
         case 0x1074:
             return accessMem(mem.hwr, uh);
     }
     printx("PSeudo /// Hardware Read 16: $%x", addr);
+    
+    return 0;
+}
+
+ub CstrHardware::read08(uw addr) {
+    switch(lob(addr)) {
+        /* unused */
+        case 0x1040: // SIO
+            
+        case 0x1800: // CD-ROM
+            return accessMem(mem.hwr, ub);
+    }
+    printx("PSeudo /// Hardware Read 08: $%x", addr);
     
     return 0;
 }

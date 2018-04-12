@@ -15,6 +15,9 @@ void CstrBus::checkDMA(uw addr, uw data) {
                 vs.executeDMA(dma);
                 break;
                 
+            case DMA_SPU: // TODO
+                break;
+                
             case DMA_CLEAR_OT:
                 mem.executeDMA(dma);
                 break;
