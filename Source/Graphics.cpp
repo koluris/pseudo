@@ -48,31 +48,34 @@ void resize(uh resX, uh resY) {
 void draw(uw addr, uw *data) {
     // Operations
     switch(addr) {
-//        case 0x01: // TODO: FLUSH
+//        case 0x01: // TODO: Flush
 //            return;
 //            
-//        case 0x28: // TODO: VertexF4
+//        case 0x28: // TODO: Vertex F4
 //            return;
 //            
-//        case 0x31: // TODO: VertexG3
+//        case 0x31: // TODO: Vertex G3
 //            return;
 //            
-//        case 0x3d: // VertexGT4
+//        case 0x3d: // Vertex GT4
 //            return;
 //            
-//        case 0x42: // LineF2
+//        case 0x42: // Line F2
 //            return;
 //            
-//        case 0x4a: // TODO: LineF3
+//        case 0x4a: // TODO: Line F3
 //            return;
 //            
-//        case 0x4e: // TODO: LineF4
+//        case 0x4e: // TODO: Line F4
 //            return;
 //            
-//        case 0x52: // TODO: LineG2
+//        case 0x52: // TODO: Line G2
 //            return;
+            
+        case 0x74: // TODO: Sprite 8
+            return;
 //            
-//        case 0x7f: // TODO: Sprite16
+//        case 0x7f: // TODO: Sprite 16
 //            return;
 //            
 //        case 0xa0: // TODO: LOAD IMAGE
@@ -81,8 +84,17 @@ void draw(uw addr, uw *data) {
 //        case 0xc0: // TODO: STORE IMAGE
 //            return;
 //            
-//        case 0xe1: // TODO: TEXTURE PAGE
-//            return;
+        case 0xe1: // TODO: TEXTURE PAGE
+            return;
+            
+        case 0xe3: // TODO: Draw Area Start
+            return;
+            
+        case 0xe4: // TODO: Draw Area End
+            return;
+            
+        case 0xe5: // TODO: Draw Offset
+            return;
     }
     printx("PSeudo /// GPU Draw -> $%x", addr);
 }
@@ -115,6 +127,7 @@ void CstrGraphics::write(uw addr, uw data) {
                 case 0x05:
                 case 0x06:
                 case 0x07:
+                case 0x10: // TODO: Information
                     return;
             }
             printx("PSeudo /// GPU Write Status: $%x", (GPU_COMMAND(data)));

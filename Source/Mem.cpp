@@ -12,7 +12,7 @@ void CstrMem::reset() {
 void CstrMem::write32(uw addr, uw data) {
     switch(addr) {
         case 0x00000000 ... (0x00200000-1): // RAM
-        case 0x80000000 ... (0x80200000-1):
+        case 0x80000000 ... (0x80800000-1):
         case 0xa0000000 ... (0xa0200000-1):
             // A shorter alternative to allow mem write
             if (!(cpu.copr[12] & 0x10000)) {
@@ -33,7 +33,7 @@ void CstrMem::write32(uw addr, uw data) {
 
 void CstrMem::write16(uw addr, uh data) {
     switch(addr) {
-        case 0x80000000 ... (0x80200000-1): // RAM
+        case 0x80000000 ... (0x80800000-1): // RAM
             accessMem(ram, uh) = data;
             return;
             
@@ -47,7 +47,7 @@ void CstrMem::write16(uw addr, uh data) {
 void CstrMem::write08(uw addr, ub data) {
     switch(addr) {
         case 0x00000000 ... (0x00200000-1): // RAM
-        case 0x80000000 ... (0x80200000-1):
+        case 0x80000000 ... (0x80800000-1):
         case 0xa0000000 ... (0xa0200000-1):
             accessMem(ram, ub) = data;
             return;
@@ -62,7 +62,7 @@ void CstrMem::write08(uw addr, ub data) {
 uw CstrMem::read32(uw addr) {
     switch(addr) {
         case 0x00000000 ... (0x00200000-1): // RAM
-        case 0x80000000 ... (0x80200000-1):
+        case 0x80000000 ... (0x80800000-1):
         case 0xa0000000 ... (0xa0200000-1):
             return accessMem(ram, uw);
             
@@ -80,7 +80,7 @@ uw CstrMem::read32(uw addr) {
 uh CstrMem::read16(uw addr) {
     switch(addr) {
         case 0x00000000 ... (0x00200000-1): // RAM
-        case 0x80000000 ... (0x80200000-1): // RAM
+        case 0x80000000 ... (0x80800000-1): // RAM
             return accessMem(ram, uh);
             
         case 0xbfc00000 ... (0xbfc80000-1): // ROM
@@ -97,7 +97,7 @@ uh CstrMem::read16(uw addr) {
 ub CstrMem::read08(uw addr) {
     switch(addr) {
         case 0x00000000 ... (0x00200000-1): // RAM
-        case 0x80000000 ... (0x80200000-1):
+        case 0x80000000 ... (0x80800000-1):
             return accessMem(ram, ub);
             
         case 0xbfc00000 ... (0xbfc80000-1): // ROM
@@ -112,7 +112,7 @@ ub CstrMem::read08(uw addr) {
 }
 
 #define RAM32(addr)\
-    *(uw *)&mem.ram.ptr[addr & (mem.ram.size-1)]
+    *(uw *)&ram.ptr[addr & (ram.size-1)]
 
 void CstrMem::executeDMA(CstrBus::castDMA *dma) {
     if (!dma->bcr || dma->chcr != 0x11000002) {

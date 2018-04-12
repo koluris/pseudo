@@ -30,6 +30,7 @@ void CstrPSeudo::executable(const char *path) {
     
     FILE *fp = fopen(path, "rb");
     fread(&header, 1, sizeof(header), fp);
+    fseek(fp, 0x800, SEEK_SET);
     fread(&mem.ram.ptr[header.v[4] & (mem.ram.size - 1)], 1, header.v[5], fp);
     fclose(fp);
     

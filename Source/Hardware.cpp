@@ -14,24 +14,24 @@ void CstrHardware::write32(uw addr, uw data) {
             data32 &= data & mask32;
             return;
             
-//        case 0x10a0 ... 0x10e8: // DMA
-//            if (addr & 8) {
-//                bus.checkDMA(addr, data);
-//                return;
-//            }
-//            accessMem(mem.hwr, uw) = data;
-//            return;
+        case 0x10a0 ... 0x10e8: // DMA
+            if (addr & 8) {
+                bus.checkDMA(addr, data);
+                return;
+            }
+            accessMem(mem.hwr, uw) = data;
+            return;
             
-//        case 0x10f4: // Thanks Calb, Galtor :)
-//            icr = (icr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
-//            return;
+        case 0x10f4: // Thanks Calb, Galtor :)
+            icr = (icr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
+            return;
             
-//        case 0x1810 ... 0x1814: // Graphics
-//            vs.write(addr, data);
-//            return;
+        case 0x1810 ... 0x1814: // Graphics
+            vs.write(addr, data);
+            return;
             
         /* unused */
-        //case 0x1114 ... 0x1118: // Rootcounters
+        case 0x1114 ... 0x1118: // Rootcounters
             
         case 0x1000:
         case 0x1004:
@@ -44,7 +44,7 @@ void CstrHardware::write32(uw addr, uw data) {
         case 0x1020: // COM
         case 0x1060: // RAM Size
         case 0x1074:
-        //case 0x10f0:
+        case 0x10f0:
             accessMem(mem.hwr, uw) = data;
             return;
     }
@@ -60,6 +60,11 @@ void CstrHardware::write16(uw addr, uh data) {
         /* unused */
         case 0x1100 ... 0x1128: // Rootcounters
         case 0x1c00 ... 0x1dfe: // Audio
+            
+        case 0x1048: // SIO
+        case 0x104a:
+        case 0x104e:
+        
         case 0x1074:
             accessMem(mem.hwr, uh) = data;
             return;
@@ -79,8 +84,8 @@ void CstrHardware::write08(uw addr, ub data) {
 
 uw CstrHardware::read32(uw addr) {
     switch(lob(addr)) {
-//        case 0x1810 ... 0x1814: // Graphics
-//            return vs.read(addr);
+        case 0x1810 ... 0x1814: // Graphics
+            return vs.read(addr);
             
         /* unused */
         case 0x1110: // Rootcounters
