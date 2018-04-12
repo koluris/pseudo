@@ -31,7 +31,7 @@ void CstrHardware::write32(uw addr, uw data) {
 //            return;
             
         /* unused */
-        case 0x1114 ... 0x1118: // Rootcounters
+        //case 0x1114 ... 0x1118: // Rootcounters
             
         case 0x1000:
         case 0x1004:
@@ -44,7 +44,7 @@ void CstrHardware::write32(uw addr, uw data) {
         case 0x1020: // COM
         case 0x1060: // RAM Size
         case 0x1074:
-        case 0x10f0:
+        //case 0x10f0:
             accessMem(mem.hwr, uw) = data;
             return;
     }
