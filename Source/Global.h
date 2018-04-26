@@ -44,3 +44,10 @@ typedef int8_t  sb; // bite
 #import "PSeudo.h"
 #import "R3000A.h"
 #import "Rootcounters.h"
+
+// SR ← SR[31..4] || SR[5..2] /// 31..4 means 32-4 = 28-bits, also 5..2 means 6-2 = 4-bits, etc
+
+// Example: 0xdeadc0decafebabe
+//
+// LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
+// HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de

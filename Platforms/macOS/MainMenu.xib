@@ -158,7 +158,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="276" height="378"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="backgroundColor" red="0.17232027202072542" green="0.1022964643011218" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <size key="minSize" width="276" height="378"/>
                                     <size key="maxSize" width="463" height="10000000"/>
                                     <attributedString key="textStorage">

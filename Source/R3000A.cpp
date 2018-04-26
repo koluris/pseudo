@@ -115,11 +115,6 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 24: // MULT
-                    // Example: 0xdeadc0decafebabe
-                    //
-                    // LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
-                    // HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
-                    
                     res.u64 = (sw)base[rs] * (sw)base[rt];
                     return;
                     
@@ -269,7 +264,6 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 16: // RFE (Return From Exception)
-                    // SR ← SR[31..4] || SR[5..2] /// 31..4 means 32-4 = 28-bits, also 5..2 means 6-2 = 4-bits, etc
                     copr[12] = (copr[12] & 0xfffffff0) | ((copr[12] >> 2) & 0xf);
                     return;
             }

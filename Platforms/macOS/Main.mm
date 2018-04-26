@@ -29,21 +29,17 @@
             NSChars *file = [[op URL] path];
             psx.executable([file UTF8Chars]);
             
-            [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
-                [[self.openGLView openGLContext] makeCurrentContext];
-                
-                // OpenGL
-                glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-                glClear(GL_COLOR_BUFFER_BIT);
-                glFlush();
-                
-                cpu.run();
-            }]];
+            [self emulationStart];
         }
     }];
 }
 
 - (IBAction)menuShell:(id)sender {
+    [self emulationStart];
+}
+
+// OpenGL
+- (void)emulationStart {
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         [[self.openGLView openGLContext] makeCurrentContext];
         
