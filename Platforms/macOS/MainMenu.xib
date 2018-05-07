@@ -8,7 +8,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
             <connections>
+                <outlet property="console" destination="EYa-DY-fTg" id="6XN-8O-CI3"/>
                 <outlet property="consoleView" destination="jvQ-GN-lzn" id="sx9-73-Of1"/>
+                <outlet property="window" destination="Fcb-bg-8vx" id="b0a-Iq-Dvd"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -19,8 +21,10 @@
         </customObject>
         <customObject id="xoS-kU-Nao" customClass="Main">
             <connections>
+                <outlet property="console" destination="EYa-DY-fTg" id="1DQ-p2-41t"/>
                 <outlet property="consoleView" destination="jvQ-GN-lzn" id="nxE-hh-6y4"/>
                 <outlet property="openGLView" destination="4dB-JW-khN" id="LWw-gk-2Dv"/>
+                <outlet property="window" destination="Fcb-bg-8vx" id="jbx-Ya-D4h"/>
             </connections>
         </customObject>
         <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
@@ -116,8 +120,9 @@
         </menu>
         <window title="PSeudo™ : Alpha" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="Fcb-bg-8vx">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
-            <rect key="contentRect" x="131" y="158" width="320" height="240"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="0.0" y="0.0" width="320" height="240"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
             <view key="contentView" id="b8H-mq-hnx">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -143,7 +148,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="0.0" y="0.0" width="276" height="378"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
             <view key="contentView" id="DNN-Yf-iEu">
                 <rect key="frame" x="0.0" y="0.0" width="276" height="378"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -192,7 +197,7 @@
                     <constraint firstItem="3tq-n3-hIB" firstAttribute="top" secondItem="DNN-Yf-iEu" secondAttribute="top" id="gs3-Mr-5uq"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-317" y="12"/>
+            <point key="canvasLocation" x="-323" y="21"/>
         </window>
     </objects>
 </document>
