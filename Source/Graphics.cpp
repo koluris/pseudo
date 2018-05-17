@@ -78,7 +78,40 @@ void drawG(uw *f, ub size, GLenum mode) {
     GLEnd();
 }
 
-void draw(uw addr, uw *data) {
+#define COLOR_MAX   255
+#define COLOR_HALF  COLOR_MAX>>1
+
+template <class T>
+void drawFT(uw *f, ub size) {
+    T *k = (T *)f;
+    
+    if (k->co.n&1) {
+        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, 255);
+    }
+    else {
+        GLColor4ub(k->co.c, k->co.m, k->co.k, 255);
+    }
+    
+    GLStart(GL_TRIANGLE_STRIP);
+    for (sw i=0; i<size; i++) {
+        GLVertex2s(k->v[i].w, k->v[i].h);
+    }
+    GLEnd();
+}
+
+template <class T>
+void drawGT(uw *f, ub size) {
+    T *k = (T *)f;
+    
+    GLStart(GL_TRIANGLE_STRIP);
+    for (sw i=0; i<size; i++) {
+        GLColor4ub(k->v[i].co.c, k->v[i].co.m, k->v[i].co.k, 255);
+        GLVertex2s(k->v[i].w, k->v[i].h);
+    }
+    GLEnd();
+}
+
+void CstrGraphics::draw(uw addr, uw *data) {
     // Operations
     switch(addr) {
         case 0x01: // TODO: Flush
@@ -98,14 +131,19 @@ void draw(uw addr, uw *data) {
         case 0x25:
         case 0x26:
         case 0x27:
+            drawFT<FT3>(data, 3);
             return;
             
         case 0x28: // TODO: Vertex F4
         case 0x29:
+        case 0x2a:
             drawF<F4>(data, 4, GL_TRIANGLE_STRIP);
             return;
             
-        case 0x2d: // TODO: Vertex FT4
+        case 0x2c: // TODO: Vertex FT4
+        case 0x2d:
+        case 0x2e:
+            drawFT<FT4>(data, 4);
             return;
             
         case 0x30: // TODO: Vertex G3
@@ -119,18 +157,19 @@ void draw(uw addr, uw *data) {
         case 0x35:
         case 0x36:
         case 0x37:
+            drawGT<GT3>(data, 3);
             return;
             
-        case 0x39: // TODO: Vertex G4
+        case 0x38: // TODO: Vertex G4
+        case 0x39:
+        case 0x3a:
             drawG<G4>(data, 4, GL_TRIANGLE_STRIP);
-            return;
-            
-        case 0x3a: // TODO: Vertex G4
             return;
             
         case 0x3c: // TODO: Vertex GT4
         case 0x3d:
         case 0x3e:
+            drawGT<GT4>(data, 4);
             return;
             
         case 0x40: // TODO: Line F2
@@ -141,14 +180,12 @@ void draw(uw addr, uw *data) {
             return;
             
         case 0x49: // TODO: Line F3
+        case 0x4a:
             drawF<F3>(data, 3, GL_LINE_STRIP);
             return;
             
-        case 0x4a: // TODO: Line F3
-            drawF<F3>(data, 3, GL_LINE_STRIP);
-            return;
-            
-        case 0x4e: // TODO: Line F4
+        case 0x4c: // TODO: Line F4
+        case 0x4e:
             drawF<F4>(data, 4, GL_LINE_STRIP);
             return;
             
@@ -166,6 +203,7 @@ void draw(uw addr, uw *data) {
             
         case 0x5c: // TODO: Line G4
         case 0x5e:
+        case 0x5f:
             drawG<G4>(data, 4, GL_LINE_STRIP);
             return;
             
@@ -200,7 +238,8 @@ void draw(uw addr, uw *data) {
         case 0x7b:
             return;
             
-        case 0x7f: // TODO: Sprite 16
+        case 0x7d: // TODO: Sprite 16
+        case 0x7f:
             return;
             
         case 0x80: // TODO: Move photo
@@ -228,6 +267,7 @@ void draw(uw addr, uw *data) {
             return;
             
         case 0xe6: // TODO: STP
+            ret.status = (ret.status & (~(3 << 11))) | ((data[0] & 3) << 11);
             return;
     }
     printx("PSeudo /// GPU Draw -> $%x", addr);
@@ -236,7 +276,7 @@ void draw(uw addr, uw *data) {
 void CstrGraphics::write(uw addr, uw data) {
     switch(addr & 0xf) {
         case GPU_REG_DATA:
-            dataWrite(&data, 1); // TODO: Sizes > 1
+            dataWrite(&data, 1);
             return;
             
         case GPU_REG_STATUS:
@@ -292,41 +332,60 @@ uw CstrGraphics::read(uw addr) {
 }
 
 void CstrGraphics::dataWrite(uw *ptr, sw size) {
-    ret.data = *ptr;
-    ptr++;
+    sw i = 0;
     
-    if (!pipe.size) {
-        ub prim  = GPU_COMMAND(ret.data);
-        ub count = pSize[prim];
+    while (i < size) {
+        ret.data = *ptr;
+        ptr++;
+        i++;
         
-        if (count) {
-            pipe.data[0] = ret.data;
-            pipe.prim = prim;
-            pipe.size = count;
-            pipe.row  = 1;
+        if (!pipe.size) {
+            ub prim  = GPU_COMMAND(ret.data);
+            ub count = pSize[prim];
+            
+            if (count) {
+                pipe.data[0] = ret.data;
+                pipe.prim = prim;
+                pipe.size = count;
+                pipe.row  = 1;
+            }
+            else {
+                return;
+            }
         }
         else {
-            return;
+            pipe.data[pipe.row] = ret.data;
+            pipe.row++;
         }
-    }
-    else {
-        pipe.data[pipe.row] = ret.data;
-        pipe.row++;
-    }
-    
-    if (pipe.size == pipe.row) {
-        pipe.size = 0;
-        pipe.row  = 0;
         
-        draw(pipe.prim, pipe.data);
+        if (pipe.size == pipe.row) {
+            pipe.size = 0;
+            pipe.row  = 0;
+            
+            draw(pipe.prim, pipe.data);
+        }
     }
 }
 
 void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
+    uw *p = (uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)], size = (dma->bcr >> 16) * (dma->bcr & 0xffff);
+    
     switch(dma->chcr) {
         case 0x00000401: // Disable DMA?
+            return;
+            
         case 0x01000201:
+            dataWrite(p, size);
+            return;
+            
         case 0x01000401:
+            do {
+                uw hdr = *(uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
+                p = (uw *)&mem.ram.ptr[(dma->madr + 4) & 0x1ffffc];
+                dataWrite(p, hdr >> 24);
+                dma->madr = hdr & 0xffffff;
+            }
+            while (dma->madr != 0xffffff);
             return;
     }
     printx("PSeudo /// GPU DMA: $%x", dma->chcr);

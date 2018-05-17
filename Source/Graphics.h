@@ -61,6 +61,8 @@ class CstrGraphics {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xf0
     };
     
+    void draw(uw, uw *);
+    
     uw modeDMA;
     
     enum {
