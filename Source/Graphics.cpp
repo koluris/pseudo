@@ -96,6 +96,7 @@ void draw(uw addr, uw *data) {
             
         case 0x24: // TODO: Vertex FT3
         case 0x25:
+        case 0x26:
         case 0x27:
             return;
             
@@ -124,7 +125,12 @@ void draw(uw addr, uw *data) {
             drawG<G4>(data, 4, GL_TRIANGLE_STRIP);
             return;
             
-        case 0x3d: // TODO: Vertex GT4
+        case 0x3a: // TODO: Vertex G4
+            return;
+            
+        case 0x3c: // TODO: Vertex GT4
+        case 0x3d:
+        case 0x3e:
             return;
             
         case 0x40: // TODO: Line F2
@@ -132,6 +138,10 @@ void draw(uw addr, uw *data) {
         case 0x42:
         case 0x43:
             drawF<F2>(data, 2, GL_LINE_STRIP);
+            return;
+            
+        case 0x49: // TODO: Line F3
+            drawF<F3>(data, 3, GL_LINE_STRIP);
             return;
             
         case 0x4a: // TODO: Line F3
@@ -142,9 +152,27 @@ void draw(uw addr, uw *data) {
             drawF<F4>(data, 4, GL_LINE_STRIP);
             return;
             
-        case 0x52: // TODO: Line G2
+        case 0x50: // TODO: Line G2
+        case 0x51:
+        case 0x52:
         case 0x53:
             drawG<G2>(data, 2, GL_LINE_STRIP);
+            return;
+            
+        case 0x59: // TODO: Line G3
+        case 0x5a:
+            drawG<G3>(data, 3, GL_LINE_STRIP);
+            return;
+            
+        case 0x5c: // TODO: Line G4
+        case 0x5e:
+            drawG<G4>(data, 4, GL_LINE_STRIP);
+            return;
+            
+        case 0x60: // TODO: Tile
+        case 0x61:
+        case 0x62:
+        case 0x63:
             return;
             
         case 0x64: // TODO: Sprite
@@ -153,22 +181,41 @@ void draw(uw addr, uw *data) {
         case 0x67:
             return;
             
+        case 0x69: // TODO: Tile 1
+        case 0x6b:
+            return;
+            
+        case 0x71: // TODO: Tile 8
+        case 0x72:
+        case 0x73:
+            return;
+            
         case 0x74: // TODO: Sprite 8
         case 0x75:
         case 0x76:
         case 0x77:
             return;
             
+        case 0x79: // TODO: Tile 16
+        case 0x7b:
+            return;
+            
         case 0x7f: // TODO: Sprite 16
             return;
             
-        case 0xa0: // TODO: LOAD IMAGE
+        case 0x80: // TODO: Move photo
             return;
             
-        case 0xc0: // TODO: STORE IMAGE
+        case 0xa0: // TODO: Load photo
             return;
             
-        case 0xe1: // TODO: TEXTURE PAGE
+        case 0xc0: // TODO: Store photo
+            return;
+            
+        case 0xe1: // TODO: Texture P.
+            return;
+            
+        case 0xe2: // TODO: Texture Window
             return;
             
         case 0xe3: // TODO: Draw Area Start
@@ -178,6 +225,9 @@ void draw(uw addr, uw *data) {
             return;
             
         case 0xe5: // TODO: Draw Offset
+            return;
+            
+        case 0xe6: // TODO: STP
             return;
     }
     printx("PSeudo /// GPU Draw -> $%x", addr);

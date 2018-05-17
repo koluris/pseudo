@@ -32,21 +32,18 @@ void CstrMips::reset() {
     }
 }
 
-void CstrMips::branch(uw addr) {
-    step(true);
-    pc = addr;
+void CstrMips::run() {
+    // Reset state
+    suspended = false;
     
-    if (opcodeCount >= PSX_CYCLE) { // TODO: Rootcounters, interrupts
-        rootc.update();
-        
-        // Exceptions
-        if (data32 & mask32) {
-            if ((copr[12] & 0x401) == 0x401) {
-                exception(0x400, false);
-            }
-        }
-        opcodeCount %= PSX_CYCLE;
+    // Go!
+    while(!suspended) {
+        step(false);
     }
+}
+
+void CstrMips::suspend() {
+    suspended = true;
 }
 
 void CstrMips::step(bool branched) {
@@ -84,7 +81,7 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 8: // JR
-                    branch(base[rs]); // TODO: Print the output
+                    branch(base[rs]);
                     psx.console(base, pc);
                     return;
                     
@@ -96,6 +93,9 @@ void CstrMips::step(bool branched) {
                 case 12: // SYSCALL
                     pc -= 4;
                     exception(0x20, branched);
+                    return;
+                    
+                case 13: // BREAK
                     return;
                     
                 case 16: // MFHI
@@ -144,6 +144,10 @@ void CstrMips::step(bool branched) {
                     base[rd] = base[rs] + base[rt];
                     return;
                     
+                case 34: // SUB
+                    base[rd] = base[rs] - base[rt];
+                    return;
+                    
                 case 35: // SUBU
                     base[rd] = base[rs] - base[rt];
                     return;
@@ -184,6 +188,14 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 1: // BGEZ
+                    if ((sw)base[rs] >= 0) {
+                        branch(baddr);
+                    }
+                    return;
+                    
+                case 17: // BGEZAL
+                    base[31] = pc + 4;
+                    
                     if ((sw)base[rs] >= 0) {
                         branch(baddr);
                     }
@@ -247,6 +259,10 @@ void CstrMips::step(bool branched) {
             
         case 13: // ORI
             base[rt] = base[rs] | immu;
+            return;
+            
+        case 14: // XORI
+            base[rt] = base[rs] ^ immu;
             return;
             
         case 15: // LUI
@@ -324,24 +340,27 @@ void CstrMips::step(bool branched) {
     printx("PSeudo /// $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
 }
 
+void CstrMips::branch(uw addr) {
+    step(true);
+    pc = addr;
+    
+    if (opcodeCount >= PSX_CYCLE) { // TODO: Rootcounters, interrupts
+        rootc.update();
+        
+        // Exceptions
+        if (data32 & mask32) {
+            if ((copr[12] & 0x401) == 0x401) {
+                exception(0x400, false);
+            }
+        }
+        opcodeCount %= PSX_CYCLE;
+    }
+}
+
 void CstrMips::exception(uw code, bool branched) {
     copr[12] = (copr[12] & 0xffffffc0) | ((copr[12] << 2) & 0x3f);
     copr[13] = code;
     copr[14] = pc;
     
     pc = 0x80;
-}
-
-void CstrMips::run() {
-    // Reset state
-    stopped = false;
-    
-    // Go!
-    while(!stopped) {
-        step(false);
-    }
-}
-
-void CstrMips::stop() {
-    stopped = true;
 }

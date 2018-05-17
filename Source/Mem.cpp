@@ -33,7 +33,8 @@ void CstrMem::write32(uw addr, uw data) {
 
 void CstrMem::write16(uw addr, uh data) {
     switch(addr) {
-        case 0x80000000 ... (0x80800000-1): // RAM
+        case 0x00000000 ... (0x00200000-1): // RAM
+        case 0x80000000 ... (0x80800000-1):
             accessMem(ram, uh) = data;
             return;
             
