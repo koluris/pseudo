@@ -29,11 +29,13 @@ void CstrGraphics::reset() {
     
     ret.data   = 0x400;
     ret.status = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
+    blend      = 0;
     modeDMA    = GPU_DMA_NONE;
     
     GLViewport(0, 0, 320*2, 240*2);
     GLMatrixMode(GL_MODELVIEW);
     GLID();
+    GLEnable(GL_BLEND);
     GLClearColor(0, 0, 0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
     resize(320, 240);
@@ -53,11 +55,21 @@ void CstrGraphics::redraw() {
     GLFlush();
 }
 
+#define COLOR_MAX   255
+#define COLOR_HALF  COLOR_MAX>>1
+
 template <class T>
 void drawF(uw *f, ub size, GLenum mode) {
     T *k = (T *)f;
     
-    GLColor4ub(k->co.c, k->co.m, k->co.k, 255);
+    ub b[] = {
+        static_cast<ub>(k->co.n&2 ? vs.blend : 0),
+        static_cast<ub>(k->co.n&2 ? vs.bit[vs.blend].opaque : COLOR_MAX)
+    };
+    
+    GLBlendFunc(vs.bit[b[0]].src, vs.bit[b[0]].dst);
+    
+    GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
     
     GLStart(mode);
     for (sw i=0; i<size; i++) {
@@ -70,26 +82,39 @@ template <class T>
 void drawG(uw *f, ub size, GLenum mode) {
     T *k = (T *)f;
     
+    ub b[] = {
+        static_cast<ub>(k->v[0].co.n&2 ? vs.blend : 0),
+        static_cast<ub>(k->v[0].co.n&2 ? vs.bit[vs.blend].opaque : COLOR_MAX)
+    };
+    
+    GLBlendFunc(vs.bit[b[0]].src, vs.bit[b[0]].dst);
+    
     GLStart(mode);
     for (sw i=0; i<size; i++) {
-        GLColor4ub(k->v[i].co.c, k->v[i].co.m, k->v[i].co.k, 255);
+        GLColor4ub(k->v[i].co.c, k->v[i].co.m, k->v[i].co.k, b[1]);
         GLVertex2s(k->v[i].w, k->v[i].h);
     }
     GLEnd();
 }
 
-#define COLOR_MAX   255
-#define COLOR_HALF  COLOR_MAX>>1
-
 template <class T>
 void drawFT(uw *f, ub size) {
     T *k = (T *)f;
     
+    vs.blend = (k->v[1].clut>>5)&3;
+    
+    ub b[] = {
+        static_cast<ub>(k->co.n&2 ? vs.blend : 0),
+        static_cast<ub>(k->co.n&2 ? vs.bit[vs.blend].opaque : COLOR_MAX)
+    };
+    
+    GLBlendFunc(vs.bit[b[0]].src, vs.bit[b[0]].dst);
+    
     if (k->co.n&1) {
-        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, 255);
+        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
     }
     else {
-        GLColor4ub(k->co.c, k->co.m, k->co.k, 255);
+        GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
     }
     
     GLStart(GL_TRIANGLE_STRIP);
@@ -103,11 +128,90 @@ template <class T>
 void drawGT(uw *f, ub size) {
     T *k = (T *)f;
     
+    vs.blend = (k->v[1].clut>>5)&3;
+    
+    ub b[] = {
+        static_cast<ub>(k->v[0].co.n&2 ? vs.blend : 0),
+        static_cast<ub>(k->v[0].co.n&2 ? vs.bit[vs.blend].opaque : COLOR_MAX)
+    };
+    
+    GLBlendFunc(vs.bit[b[0]].src, vs.bit[b[0]].dst);
+    
     GLStart(GL_TRIANGLE_STRIP);
     for (sw i=0; i<size; i++) {
-        GLColor4ub(k->v[i].co.c, k->v[i].co.m, k->v[i].co.k, 255);
+        GLColor4ub(k->v[i].co.c, k->v[i].co.m, k->v[i].co.k, b[1]);
         GLVertex2s(k->v[i].w, k->v[i].h);
     }
+    GLEnd();
+}
+
+template <class=void>
+void drawTile(uw *f, sh size) {
+    BLK *k = (BLK *)f;
+    
+    if (size) {
+        k->w = size;
+        k->h = size;
+    }
+    
+    ub b[] = {
+        static_cast<ub>(k->co.n&2 ? vs.blend : 0),
+        static_cast<ub>(k->co.n&2 ? vs.bit[vs.blend].opaque : COLOR_MAX)
+    };
+    
+    GLBlendFunc(vs.bit[b[0]].src, vs.bit[b[0]].dst);
+    
+    GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
+    
+    GLStart(GL_TRIANGLE_STRIP);
+    GLVertex2s(k->v[0].w,      k->v[0].h);
+    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
+    GLEnd();
+}
+
+template <class=void>
+void drawSprite(uw *f, sh size) {
+    SPRT *k = (SPRT *)f;
+    
+    if (size) {
+        k->w = size;
+        k->h = size;
+    }
+    
+    ub b[] = {
+        static_cast<ub>(k->co.n&2 ? vs.blend : 0),
+        static_cast<ub>(k->co.n&2 ? vs.bit[vs.blend].opaque : COLOR_MAX)
+    };
+    
+    GLBlendFunc(vs.bit[b[0]].src, vs.bit[b[0]].dst);
+    
+    if (k->co.n&1) {
+        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
+    }
+    else {
+        GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
+    }
+    
+    GLStart(GL_TRIANGLE_STRIP);
+    GLVertex2s(k->v[0].w,      k->v[0].h);
+    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
+    GLEnd();
+}
+
+void BlockFill(uw *hrd) {
+    BLK *k = (BLK *)hrd;
+    
+    GLColor4ub(k->co.c, k->co.m, k->co.k, COLOR_MAX);
+    
+    GLStart(GL_TRIANGLE_STRIP);
+    GLVertex2s(k->v[0].w,      k->v[0].h);
+    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
     GLEnd();
 }
 
@@ -118,6 +222,7 @@ void CstrGraphics::draw(uw addr, uw *data) {
             return;
             
         case 0x02: // Block Fill
+            BlockFill(data);
             return;
             
         case 0x20: // TODO: Vertex F3
@@ -211,35 +316,42 @@ void CstrGraphics::draw(uw addr, uw *data) {
         case 0x61:
         case 0x62:
         case 0x63:
+            drawTile(data, 0);
             return;
             
         case 0x64: // TODO: Sprite
         case 0x65:
         case 0x66:
         case 0x67:
+            drawSprite(data, 0);
             return;
             
         case 0x69: // TODO: Tile 1
         case 0x6b:
+            drawTile(data, 1);
             return;
             
         case 0x71: // TODO: Tile 8
         case 0x72:
         case 0x73:
+            drawTile(data, 8);
             return;
             
         case 0x74: // TODO: Sprite 8
         case 0x75:
         case 0x76:
         case 0x77:
+            drawSprite(data, 8);
             return;
             
         case 0x79: // TODO: Tile 16
         case 0x7b:
+            drawTile(data, 16);
             return;
             
         case 0x7d: // TODO: Sprite 16
         case 0x7f:
+            drawSprite(data, 16);
             return;
             
         case 0x80: // TODO: Move photo
@@ -252,6 +364,9 @@ void CstrGraphics::draw(uw addr, uw *data) {
             return;
             
         case 0xe1: // TODO: Texture P.
+            vs.blend  = (data[0] >> 5) & 0x3;
+            ret.status = ret.status & (~0x7ff);
+            GLBlendFunc(vs.bit[vs.blend].src, vs.bit[vs.blend].dst);
             return;
             
         case 0xe2: // TODO: Texture Window

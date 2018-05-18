@@ -35,6 +35,8 @@ typedef int8_t  sb; // bite
 #define GLStart         glBegin
 #define GLVertex2s      glVertex2s
 #define GLViewport      glViewport
+#define GLBlendFunc     glBlendFunc
+#define GLEnable        glEnable
 
 // User imports
 #import "Bus.h"
