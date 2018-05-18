@@ -248,6 +248,7 @@ void CstrGraphics::draw(uw addr, uw *data) {
         case 0x2c: // TODO: Vertex FT4
         case 0x2d:
         case 0x2e:
+        case 0x2f:
             drawFT<FT4>(data, 4);
             return;
             
@@ -290,7 +291,9 @@ void CstrGraphics::draw(uw addr, uw *data) {
             return;
             
         case 0x4c: // TODO: Line F4
+        case 0x4d:
         case 0x4e:
+        case 0x4f:
             drawF<F4>(data, 4, GL_LINE_STRIP);
             return;
             
@@ -301,8 +304,10 @@ void CstrGraphics::draw(uw addr, uw *data) {
             drawG<G2>(data, 2, GL_LINE_STRIP);
             return;
             
-        case 0x59: // TODO: Line G3
+        case 0x58: // TODO: Line G3
+        case 0x59:
         case 0x5a:
+        case 0x5b:
             drawG<G3>(data, 3, GL_LINE_STRIP);
             return;
             
@@ -326,12 +331,15 @@ void CstrGraphics::draw(uw addr, uw *data) {
             drawSprite(data, 0);
             return;
             
-        case 0x69: // TODO: Tile 1
+        case 0x68: // TODO: Tile 1
+        case 0x69:
+        case 0x6a:
         case 0x6b:
             drawTile(data, 1);
             return;
             
-        case 0x71: // TODO: Tile 8
+        case 0x70: // TODO: Tile 8
+        case 0x71:
         case 0x72:
         case 0x73:
             drawTile(data, 8);
@@ -345,11 +353,13 @@ void CstrGraphics::draw(uw addr, uw *data) {
             return;
             
         case 0x79: // TODO: Tile 16
+        case 0x7a:
         case 0x7b:
             drawTile(data, 16);
             return;
             
-        case 0x7d: // TODO: Sprite 16
+        case 0x7c: // TODO: Sprite 16
+        case 0x7d:
         case 0x7f:
             drawSprite(data, 16);
             return;

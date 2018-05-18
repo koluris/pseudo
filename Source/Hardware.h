@@ -1,3 +1,7 @@
+// Low order bits
+#define lob(addr)\
+    (addr & 0xffff)
+
 #define data32\
     *(uw *)&mem.hwr.ptr[0x1070]
 

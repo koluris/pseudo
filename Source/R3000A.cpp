@@ -286,7 +286,7 @@ void CstrMips::step(bool branched) {
             printx("PSeudo /// $%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
             return;
             
-        case 18: // COP2
+        case 18: // TODO: COP2
             return;
             
         case 32: // LB
@@ -335,6 +335,12 @@ void CstrMips::step(bool branched) {
             
         case 46: // SWR
             opcodeSWx(<<, 3);
+            return;
+            
+        case 50: // TODO: LWC2
+            return;
+            
+        case 58: // TODO: SWC2
             return;
     }
     printx("PSeudo /// $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);

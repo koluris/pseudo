@@ -24,9 +24,11 @@ typedef int8_t  sb; // bite
 // Defines
 #define TYPEDEF         typedef
 
+#define GLBlendFunc     glBlendFunc
 #define GLClear         glClear
 #define GLClearColor    glClearColor
 #define GLColor4ub      glColor4ub
+#define GLEnable        glEnable
 #define GLEnd           glEnd
 #define GLFlush         glFlush
 #define GLID            glLoadIdentity
@@ -35,8 +37,6 @@ typedef int8_t  sb; // bite
 #define GLStart         glBegin
 #define GLVertex2s      glVertex2s
 #define GLViewport      glViewport
-#define GLBlendFunc     glBlendFunc
-#define GLEnable        glEnable
 
 // User imports
 #import "Bus.h"
@@ -46,10 +46,3 @@ typedef int8_t  sb; // bite
 #import "PSeudo.h"
 #import "R3000A.h"
 #import "Rootcounters.h"
-
-// SR ← SR[31..4] || SR[5..2] /// 31..4 means 32-4 = 28-bits, also 5..2 means 6-2 = 4-bits, etc
-
-// Example: 0xdeadc0decafebabe
-//
-// LO <- t[31.. 0] | LO order (LSW) -> 0xcafebabe
-// HI <- t[63..32] | HI order (MSW) -> 0xdeadc0de
