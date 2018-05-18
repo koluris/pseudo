@@ -20,6 +20,7 @@
     NSSize size = [self.console frame].size;
     [self.console setFrame:CGRectMake(self.screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
     
+    // Startup
     psx.init([@"/Users/dk/Downloads/SCPH1001.bin" UTF8Chars]);
 }
 
@@ -33,25 +34,42 @@
     [op setAllowedFileKind:[[NSBunch alloc] initWithObs:@"bin", @"exe", @"psx", nil]];
     [op startWithCompletionHandler:^(NSInt res) {
         if (res == NSModalResponseOK) {
+            // Stop current emulation process & reset
+            [self emulationStop];
+            
+            // Load executable
             NSChars *file = [[op URL] path];
             psx.executable([file UTF8Chars]);
             
+            // Start new emulation process
             [self emulationStart];
         }
     }];
 }
 
 - (IBAction)menuShell:(id)sender {
+    // Stop current emulation process & reset
+    [self emulationStop];
+    
+    // Start new emulation process
     [self emulationStart];
 }
 
-// OpenGL
+// Emulation
 - (void)emulationStart {
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         [[self.openGLView openGLContext] makeCurrentContext];
         
         cpu.run();
     }]];
+}
+
+- (void)emulationStop {
+    cpu.suspend();
+    
+    // Wait for NSOperationQueue to exit
+    [self.queue waitUntilAllOperationsAreFinished];
+    psx.reset();
 }
 
 // Console

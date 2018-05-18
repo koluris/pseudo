@@ -4,10 +4,9 @@
     exit(0)
 
 class CstrPSeudo {
-    void reset();
-    
 public:
     void init(const char *);
+    void reset();
     void executable(const char *);
     void console(uw *, uw);
 };
