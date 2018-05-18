@@ -31,7 +31,7 @@ void CstrGraphics::reset() {
     ret.status = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA    = GPU_DMA_NONE;
     
-    GLViewport(0, 0, 320, 240);
+    GLViewport(0, 0, 320*2, 240*2);
     GLMatrixMode(GL_MODELVIEW);
     GLID();
     GLClearColor(0, 0, 0, 0);

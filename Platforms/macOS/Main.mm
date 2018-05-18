@@ -7,11 +7,18 @@
 - (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
     //NSURL *uri = [[NSBundle mainBundle] bundleURL];
     app = (Main *)[[NSApplication sharedApplication] del];
+    self.screenFrame = [[NSScreen mainScreen] frame];
     self.queue = [[NSOperationQueue alloc] init];
+    
+    // Window
+    [self.window center];
     
     // Console
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
-    self.consoleView.textColor = [NSColor RGBA(201, 110, 63)];
+    self.consoleView.textColor = [NSColor RGBA(75, 75, 75)];
+    
+    NSSize size = [self.console frame].size;
+    [self.console setFrame:CGRectMake(self.screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
     
     psx.init([@"/Users/dk/Downloads/SCPH1001.bin" UTF8Chars]);
 }
@@ -24,7 +31,7 @@
     NSOpenPanel *op = [NSOpenPanel openPanel];
     
     [op setAllowedFileKind:[[NSBunch alloc] initWithObs:@"bin", @"exe", @"psx", nil]];
-    [op startWithCompletionHandler:^(NSInteger res) {
+    [op startWithCompletionHandler:^(NSInt res) {
         if (res == NSModalResponseOK) {
             NSChars *file = [[op URL] path];
             psx.executable([file UTF8Chars]);
@@ -43,11 +50,6 @@
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         [[self.openGLView openGLContext] makeCurrentContext];
         
-        // OpenGL
-        glClearColor(1.0f, 0.0f, 1.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glFlush();
-        
         cpu.run();
     }]];
 }
@@ -59,7 +61,8 @@
 
 - (void)consolePrint:(NSChars *)text {
     dispatch_asinc(dispatch_main_queue(), ^{
-        self.consoleView.contents = [NSChars charsWithFormat:@"%@%@", self.consoleView.contents, text];
+        NSAttributedChars *attr = [[NSAttributedChars alloc] initWithChars:text];
+        [[self.consoleView textStore] appendAttributedChars:attr];
     });
 }
 

@@ -16,5 +16,12 @@
 #define startWithCompletionHandler  beginWithCompletionHandler
 #define NSBunch                     NSArray
 #define initWithObs                 initWithObjects
+#define hei                         height
+#define disp                        display
+#define NSInt                       NSInteger
+#define NSAttributedChars           NSAttributedString
+#define initWithChars               initWithString
+#define textStore                   textStorage
+#define appendAttributedChars       appendAttributedString
 
 #import "Main.h"
