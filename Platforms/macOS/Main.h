@@ -3,6 +3,7 @@
 // Interface Builder
 @prop (weak) IBOutlet NSWindow *window;
 @prop (weak) IBOutlet NSOpenGLView *openGLView;
+@property (weak) IBOutlet Options *options;
 @prop (weak) IBOutlet NSPanel *console;
 @prop (unsafe_unretained) IBOutlet NSTextView *consoleView;
 

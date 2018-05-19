@@ -11,11 +11,8 @@
 #define del                         delegate
 #define dispatch_asinc              dispatch_async
 #define dispatch_main_queue         dispatch_get_main_queue
-#define RGBA(r, g, b)               colorWithRed:r/255.f green:g/255.f blue:b/255.f alpha:1.f
+#define RGBA(r, c, b)               colorWithRed:r/255.f green:c/255.f blue:b/255.f alpha:1.f
 #define setAllowedFileKind          setAllowedFileTypes
-#define startWithCompletionHandler  beginWithCompletionHandler
-#define NSBunch                     NSArray
-#define initWithObs                 initWithObjects
 #define hei                         height
 #define disp                        display
 #define NSInt                       NSInteger
@@ -23,5 +20,7 @@
 #define initWithChars               initWithString
 #define textStore                   textStorage
 #define appendAttributedChars       appendAttributedString
+#define startSheetModalForWindow    beginSheetModalForWindow
 
+#import "Options.h"
 #import "Main.h"

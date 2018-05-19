@@ -13,6 +13,7 @@
 		429C3EC120650CB400915293 /* PSeudo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBF20650CB400915293 /* PSeudo.cpp */; };
 		429C3EC62065189C00915293 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429C3EC52065189C00915293 /* AppKit.framework */; };
 		42B9957B20626481009B67BE /* R3000A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B9957920626481009B67BE /* R3000A.cpp */; };
+		42CA2D3620AF4776003F72D0 /* Options.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42CA2D3520AF4776003F72D0 /* Options.mm */; };
 		42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CB1D6C206E34680023337A /* Rootcounters.cpp */; };
 		42DB69702070DF0800000D08 /* Graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42DB696E2070DF0800000D08 /* Graphics.cpp */; };
 		42DE0D5920711EA200EEB549 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42DE0D5820711EA200EEB549 /* OpenGL.framework */; };
@@ -35,6 +36,8 @@
 		429C3EC52065189C00915293 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		42B9957920626481009B67BE /* R3000A.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = R3000A.cpp; sourceTree = "<group>"; };
 		42B9957A20626481009B67BE /* R3000A.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = R3000A.h; sourceTree = "<group>"; };
+		42CA2D3520AF4776003F72D0 /* Options.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Options.mm; sourceTree = "<group>"; };
+		42CA2D3720AF479A003F72D0 /* Options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
 		42CB1D6C206E34680023337A /* Rootcounters.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Rootcounters.cpp; sourceTree = "<group>"; };
 		42CB1D6D206E34680023337A /* Rootcounters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rootcounters.h; sourceTree = "<group>"; };
 		42DB696E2070DF0800000D08 /* Graphics.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Graphics.cpp; sourceTree = "<group>"; };
@@ -65,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				420AD1BF2063BA43006C22D9 /* Main */,
+				42CA2D3420AF4753003F72D0 /* Options */,
 				420AD1BC2063B8B7006C22D9 /* Global.h */,
 			);
 			name = GUI;
@@ -147,6 +151,15 @@
 			);
 			name = Source;
 			path = ../../Source;
+			sourceTree = "<group>";
+		};
+		42CA2D3420AF4753003F72D0 /* Options */ = {
+			isa = PBXGroup;
+			children = (
+				42CA2D3520AF4776003F72D0 /* Options.mm */,
+				42CA2D3720AF479A003F72D0 /* Options.h */,
+			);
+			name = Options;
 			sourceTree = "<group>";
 		};
 		42CB1D6B206E344A0023337A /* Rootcounters */ = {
@@ -271,6 +284,7 @@
 				428EAF2F207376EF003BC141 /* Bus.cpp in Sources */,
 				42EBBCD32062482200824B95 /* Main.mm in Sources */,
 				42B9957B20626481009B67BE /* R3000A.cpp in Sources */,
+				42CA2D3620AF4776003F72D0 /* Options.mm in Sources */,
 				42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */,
 				42DB69702070DF0800000D08 /* Graphics.cpp in Sources */,
 				429C3EC120650CB400915293 /* PSeudo.cpp in Sources */,

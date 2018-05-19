@@ -28,19 +28,25 @@
 }
 
 // Menu
+- (IBAction)menuPreferences:(id)sender {
+    [self.window beginSheet:self.options completionHandler:^(NSModalResponse returnCode) {
+        printf("Completion handler\n");
+    }];
+}
+
 - (IBAction)menuOpen:(id)sender {
     NSOpenPanel *op = [NSOpenPanel openPanel];
+    [op setAllowedFileKind:@[@"bin", @"exe", @"psx"]];
     
-    [op setAllowedFileKind:[[NSBunch alloc] initWithObs:@"bin", @"exe", @"psx", nil]];
-    [op startWithCompletionHandler:^(NSInt res) {
+    [op startSheetModalForWindow:self.window completionHandler:^(NSInt res) {
         if (res == NSModalResponseOK) {
             // Stop current emulation process & reset
             [self emulationStop];
-            
+
             // Load executable
             NSChars *file = [[op URL] path];
             psx.executable([file UTF8Chars]);
-            
+
             // Start new emulation process
             [self emulationStart];
         }
@@ -82,6 +88,10 @@
         NSAttributedChars *attr = [[NSAttributedChars alloc] initWithChars:text];
         [[self.consoleView textStore] appendAttributedChars:attr];
     });
+}
+
+- (IBAction)closeBtn:(id)sender {
+    [self.window endSheet:self.options];
 }
 
 @end
