@@ -4,43 +4,95 @@
 @implementation Options
 
 - (void)awakeFromNib {
-    printf("awakeFromNib\n");
-    
     self.defaults = [NSUserDefaults standardUserDefaults];
     
+    //NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+    //[[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+    
     if (![self readNumberFrom:@"firstRun"]) {
-        [self writeNumber:1 to:@"firstRun"];
-        [self writeNumber:0 to:@"cpuMode"];
-        [self writeNumber:0 to:@"skipBootScreen"];
-        [self writeNumber:0 to:@"windowResolution"];
-        [self writeNumber:1 to:@"smoothTextures"];
-        [self writeNumber:2 to:@"fpsLimit"];
-        [self writeNumber:1 to:@"audioStereo"];
-        [self writeNumber:0 to:@"audioMono"];
-        [self writeNumber:0 to:@"audioOff"];
+        // Mark defaults as set
+        [self writeText:@""
+                     to:@"biosFile"];
+        
+        [self writeNumber:1
+                       to:@"firstRun"];
+        
+        [self writeNumber:0
+                       to:@"cpuMode"];
+        
+        [self writeNumber:0
+                       to:@"skipBootScreen"];
+        
+        [self writeNumber:0
+                       to:@"windowResolution"];
+        
+        [self writeNumber:1
+                       to:@"smoothTextures"];
+        
+        [self writeNumber:2
+                       to:@"fpsLimit"];
+        
+        [self writeNumber:1
+                       to:@"audioStereo"];
+        
+        [self writeNumber:0
+                       to:@"audioMono"];
+        
+        [self writeNumber:0
+                       to:@"audioOff"];
     }
     
     [self optionsFill];
 }
 
 - (void)optionsFill {
-    [self.cpuMode selectItemAtIndex:[self readNumberFrom:@"cpuMode"]];
-    [self.skipBootScreen setState:[self readNumberFrom:@"skipBootScreen"]];
+    // Textfield
+    [self.biosFile setStringValue:[self readTextFrom:@"biosFile"]];
+    
+    // Combobox
+    [self.cpuMode          selectItemAtIndex:[self readNumberFrom:@"cpuMode"]];
     [self.windowResolution selectItemAtIndex:[self readNumberFrom:@"windowResolution"]];
+    [self.fpsLimit         selectItemAtIndex:[self readNumberFrom:@"fpsLimit"]];
+    
+    // Checkbox
+    [self.skipBootScreen setState:[self readNumberFrom:@"skipBootScreen"]];
     [self.smoothTextures setState:[self readNumberFrom:@"smoothTextures"]];
-    [self.fpsLimit selectItemAtIndex:[self readNumberFrom:@"fpsLimit"]];
-    [self.audioStereo setState:[self readNumberFrom:@"audioStereo"]];
-    [self.audioMono setState:[self readNumberFrom:@"audioMono"]];
-    [self.audioOff setState:[self readNumberFrom:@"audioOff"]];
+    [self.audioStereo    setState:[self readNumberFrom:@"audioStereo"]];
+    [self.audioMono      setState:[self readNumberFrom:@"audioMono"]];
+    [self.audioOff       setState:[self readNumberFrom:@"audioOff"]];
 }
 
-- (void)writeNumber:(NSInt)number to:(NSChars *)text {
-    [self.defaults setInteger:number forKey:text];
+- (void)writeText:(NSChars *)text to:(NSChars *)k {
+    [self.defaults setObject:text forKey:k];
     [self.defaults synchronize];
 }
 
-- (NSInt)readNumberFrom:(NSChars *)text {
-    return [self.defaults integerForKey:text];
+- (void)writeNumber:(NSInt)number to:(NSChars *)k {
+    [self.defaults setInteger:number forKey:k];
+    [self.defaults synchronize];
+}
+
+- (NSChars *)readTextFrom:(NSChars *)k {
+    return [self.defaults stringForKey:k];
+}
+
+- (NSInt)readNumberFrom:(NSChars *)k {
+    return [self.defaults integerForKey:k];
+}
+
+- (IBAction)pushBrowse:(NSButton *)sender {
+    NSOpenPanel *op = [NSOpenPanel openPanel];
+    [op setAllowedFileKind:@[@"bin"]];
+    
+    [op startSheetModalForWindow:self completionHandler:^(NSInt res) {
+        if (res == NSModalResponseOK) {
+            // Load bios
+            NSChars *file = [[op URL] path];
+            //psx.executable([file UTF8Chars]);
+            [self.biosFile setStringValue:file];
+            [self writeText:file to:@"biosFile"];
+        }
+    }];
 }
 
 - (IBAction)pushCpuMode:(NSPopUpButton *)sender {
@@ -64,6 +116,23 @@
 }
 
 - (IBAction)pushAudioChannel:(NSButton *)sender {
+    NSChars *title = [sender title];
+    
+    // Reset all
+    [self writeNumber:0 to:@"audioStereo"];
+    [self writeNumber:0 to:@"audioMono"];
+    [self writeNumber:0 to:@"audioOff"];
+    
+    // Mark selected
+    if ([title isEqualToString:@"Stereo"]) {
+        [self writeNumber:1 to:@"audioStereo"];
+    }
+    else if ([title isEqualToString:@"Mono"]) {
+        [self writeNumber:1 to:@"audioMono"];
+    }
+    else {
+        [self writeNumber:1 to:@"audioOff"];
+    }
 }
 
 @end
