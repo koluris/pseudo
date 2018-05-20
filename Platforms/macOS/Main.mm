@@ -20,8 +20,19 @@
     NSSize size = [self.console frame].size;
     [self.console setFrame:CGRectMake(self.screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
     
+    // OpenGL init
+    vs.reset();
+    
+    // Check for valid BIOS file
+    NSChars *path = [self.options readTextFrom:@"biosFile"];
+    
+    if ([path isEqualToChars:@""]) {
+        [self menuPreferences:nil];
+        return;
+    }
+    
     // Startup
-    psx.init([@"/Users/dk/Downloads/SCPH1001.bin" UTF8Chars]);
+    psx.init([path UTF8Chars]);
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -29,8 +40,8 @@
 
 // Menu
 - (IBAction)menuPreferences:(id)sender {
-    [self.window beginSheet:self.options completionHandler:^(NSModalResponse returnCode) {
-        printf("Completion handler\n");
+    [self.window startSheet:self.options completionHandler:^(NSModalResponse returnCode) {
+        //printf("Completion handler\n");
     }];
 }
 
@@ -78,6 +89,27 @@
     psx.reset();
 }
 
+// Options
+- (IBAction)closeBtn:(id)sender {
+    // Check for valid BIOS file
+    NSChars *path = [self.options readTextFrom:@"biosFile"];
+    
+    if ([path isEqualToChars:@""]) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        NSRect frame = alert.window.frame;
+        frame.size.width = 300;
+        [alert.window setFrame:frame disp:YES];
+        [alert setInformativeText:@"Please, browse for a valid BIOS file in order to operate the emulator."];
+        [alert runModal];
+        return;
+    }
+    
+    // Startup
+    path = [self.options readTextFrom:@"biosFile"];
+    psx.init([path UTF8Chars]);
+    [self.window endSheet:self.options];
+}
+
 // Console
 - (void)consoleClear {
     self.consoleView.contents = @"";
@@ -90,9 +122,6 @@
     });
 }
 
-- (IBAction)closeBtn:(id)sender {
-    [self.window endSheet:self.options];
-}
 
 @end
 

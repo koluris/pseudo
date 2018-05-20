@@ -6,8 +6,9 @@
 - (void)awakeFromNib {
     self.defaults = [NSUserDefaults standardUserDefaults];
     
-    //NSString *appDomain = [[NSBundle mainBundle] bundleIdentifier];
+    //NSChars *appDomain = [[NSBundle mainBundle] bundleIdentifier];
     //[[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+    //exit(0);
     
     if (![self readNumberFrom:@"firstRun"]) {
         // Mark defaults as set
@@ -47,7 +48,7 @@
 
 - (void)optionsFill {
     // Textfield
-    [self.biosFile setStringValue:[self readTextFrom:@"biosFile"]];
+    [self.biosFile setCharsValue:[self readTextFrom:@"biosFile"]];
     
     // Combobox
     [self.cpuMode          selectItemAtIndex:[self readNumberFrom:@"cpuMode"]];
@@ -62,22 +63,22 @@
     [self.audioOff       setState:[self readNumberFrom:@"audioOff"]];
 }
 
-- (void)writeText:(NSChars *)text to:(NSChars *)k {
-    [self.defaults setObject:text forKey:k];
-    [self.defaults synchronize];
+- (void)writeText:(NSChars *)text to:(NSChars *)value {
+    [self.defaults setOb:text forValue:value];
+    [self.defaults save];
 }
 
-- (void)writeNumber:(NSInt)number to:(NSChars *)k {
-    [self.defaults setInteger:number forKey:k];
-    [self.defaults synchronize];
+- (void)writeNumber:(NSInt)number to:(NSChars *)value {
+    [self.defaults setInt:number forValue:value];
+    [self.defaults save];
 }
 
-- (NSChars *)readTextFrom:(NSChars *)k {
-    return [self.defaults stringForKey:k];
+- (NSChars *)readTextFrom:(NSChars *)value {
+    return [self.defaults charsForValue:value];
 }
 
-- (NSInt)readNumberFrom:(NSChars *)k {
-    return [self.defaults integerForKey:k];
+- (NSInt)readNumberFrom:(NSChars *)value {
+    return [self.defaults intForValue:value];
 }
 
 - (IBAction)pushBrowse:(NSButton *)sender {
@@ -89,7 +90,7 @@
             // Load bios
             NSChars *file = [[op URL] path];
             //psx.executable([file UTF8Chars]);
-            [self.biosFile setStringValue:file];
+            [self.biosFile setCharsValue:file];
             [self writeText:file to:@"biosFile"];
         }
     }];
@@ -124,10 +125,10 @@
     [self writeNumber:0 to:@"audioOff"];
     
     // Mark selected
-    if ([title isEqualToString:@"Stereo"]) {
+    if ([title isEqualToChars:@"Stereo"]) {
         [self writeNumber:1 to:@"audioStereo"];
     }
-    else if ([title isEqualToString:@"Mono"]) {
+    else if ([title isEqualToChars:@"Mono"]) {
         [self writeNumber:1 to:@"audioMono"];
     }
     else {

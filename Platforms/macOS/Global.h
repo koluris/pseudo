@@ -21,6 +21,15 @@
 #define textStore                   textStorage
 #define appendAttributedChars       appendAttributedString
 #define startSheetModalForWindow    beginSheetModalForWindow
+#define isEqualToChars              isEqualToString
+#define setCharsValue               setStringValue
+#define setOb                       setObject
+#define setInt                      setInteger
+#define charsForValue               stringForKey
+#define intForValue                 integerForKey
+#define forValue                    forKey
+#define save                        synchronize
+#define startSheet                  beginSheet
 
 #import "Options.h"
 #import "Main.h"

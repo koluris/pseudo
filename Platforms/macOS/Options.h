@@ -18,4 +18,7 @@
 // Members
 @prop NSUserDefaults *defaults;
 
+// Functions
+- (NSChars *)readTextFrom:(NSChars *)value;
+
 @end
