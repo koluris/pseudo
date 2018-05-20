@@ -25,8 +25,9 @@ void CstrMips::reset() {
     
     pc = 0xbfc00000;
     res.u64 = opcodeCount = 0;
-    
-    // Bootstrap
+}
+
+void CstrMips::bootstrap() {
     while(pc != 0x80030000) {
         step(false);
     }

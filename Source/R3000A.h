@@ -63,6 +63,7 @@ public:
     uw base[32], copr[16], pc;
     
     void reset();
+    void bootstrap();
     void run();
     void suspend();
 };

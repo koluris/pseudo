@@ -14,16 +14,18 @@ void CstrPSeudo::init(const char *path) {
 void CstrPSeudo::reset() {
 #ifdef MAC_OS_X
     [app consoleClear];
-    [app consolePrint:@"PSeudo startup\n"];
+    [app consolePrint:@"PSeudo reset\n"];
 #endif
     
-       vs.reset();
-    rootc.reset();
+      cpu.reset();
       mem.reset();
-      cpu.reset(); // Bootstrap is here, execute last!
+    rootc.reset();
+       vs.reset();
 }
 
 void CstrPSeudo::executable(const char *path) {
+    cpu.bootstrap();
+    
     struct {
         ub id[8]; uw v[17];
     } header;

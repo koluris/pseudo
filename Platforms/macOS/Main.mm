@@ -104,7 +104,7 @@
         
         // Information
         [alert setMesText:@"BIOS dump"];
-        [alert setInformativeText:@"Please, browse for a valid BIOS file in order to operate the emulator."];
+        [alert setInformativeText:@"Please browse for a valid BIOS file in order to operate the emulator."];
         [alert addButtonWithTitle:@"OK"];
         [alert addButtonWithTitle:@"Exit"];
         
