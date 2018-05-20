@@ -89,7 +89,6 @@
         if (res == NSModalResponseOK) {
             // Load bios
             NSChars *file = [[op URL] path];
-            //psx.executable([file UTF8Chars]);
             [self.biosFile setCharsValue:file];
             [self writeText:file to:@"biosFile"];
         }

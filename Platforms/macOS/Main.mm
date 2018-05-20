@@ -31,8 +31,7 @@
         return;
     }
     
-    // Startup
-    psx.init([path UTF8Chars]);
+    [self enableEmulator:path];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -40,17 +39,15 @@
 
 // Menu
 - (IBAction)menuPreferences:(id)sender {
-    [self.window startSheet:self.options completionHandler:^(NSModalResponse returnCode) {
-        //printf("Completion handler\n");
-    }];
+    [self.window startSheet:self.options completionHandler:nil];
 }
 
 - (IBAction)menuOpen:(id)sender {
     NSOpenPanel *op = [NSOpenPanel openPanel];
     [op setAllowedFileKind:@[@"bin", @"exe", @"psx"]];
     
-    [op startSheetModalForWindow:self.window completionHandler:^(NSInt res) {
-        if (res == NSModalResponseOK) {
+    [op startSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+        if (returnCode == NSModalResponseOK) {
             // Stop current emulation process & reset
             [self emulationStop];
 
@@ -73,6 +70,14 @@
 }
 
 // Emulation
+- (void)enableEmulator:(NSChars *)path {
+    self.menuOpen .enabled = YES;
+    self.menuShell.enabled = YES;
+    
+    // Startup
+    psx.init([path UTF8Chars]);
+}
+
 - (void)emulationStart {
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         [[self.openGLView openGLContext] makeCurrentContext];
@@ -96,18 +101,30 @@
     
     if ([path isEqualToChars:@""]) {
         NSAlert *alert = [[NSAlert alloc] init];
-        NSRect frame = alert.window.frame;
-        frame.size.width = 300;
-        [alert.window setFrame:frame disp:YES];
+        
+        // Information
+        [alert setMesText:@"BIOS dump"];
         [alert setInformativeText:@"Please, browse for a valid BIOS file in order to operate the emulator."];
-        [alert runModal];
+        [alert addButtonWithTitle:@"OK"];
+        [alert addButtonWithTitle:@"Exit"];
+        
+        // Size
+        NSRect frame = alert.window.frame;
+        frame.size.width = self.options.frame.size.width - 26.0f;
+        [alert.window setFrame:frame disp:YES];
+        
+        [alert startSheetModalForWindow:self.options completionHandler:^(NSModalResponse returnCode) {
+            if (returnCode == NSAlertSecondButtonReturn) {
+                [self.window endSheet:self.options];
+            }
+        }];
         return;
     }
     
     // Startup
-    path = [self.options readTextFrom:@"biosFile"];
-    psx.init([path UTF8Chars]);
     [self.window endSheet:self.options];
+    path = [self.options readTextFrom:@"biosFile"];
+    [self enableEmulator:path];
 }
 
 // Console

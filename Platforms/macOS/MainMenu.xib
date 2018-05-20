@@ -267,6 +267,8 @@
             <connections>
                 <outlet property="console" destination="EYa-DY-fTg" id="8jX-uB-iyt"/>
                 <outlet property="consoleView" destination="jvQ-GN-lzn" id="Ips-GQ-ekd"/>
+                <outlet property="menuOpen" destination="IAo-SY-fd9" id="5Uo-YX-c6X"/>
+                <outlet property="menuShell" destination="c5s-Xh-2Pr" id="KP0-zG-ZD9"/>
                 <outlet property="openGLView" destination="gyI-cr-EPE" id="6OB-hR-rkh"/>
                 <outlet property="options" destination="gn3-gZ-vsZ" id="WDE-5b-AwL"/>
                 <outlet property="window" destination="gP8-RP-mk9" id="Eg8-im-bE7"/>
@@ -326,13 +328,13 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Action" autoenablesItems="NO" id="bib-Uj-vzu">
                         <items>
-                            <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
+                            <menuItem title="Open…" enabled="NO" keyEquivalent="o" id="IAo-SY-fd9">
                                 <connections>
                                     <action selector="menuOpen:" target="mgR-F7-Tr3" id="S8o-Ct-8aF"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="TNu-9g-461"/>
-                            <menuItem title="BIOS Shell" keyEquivalent="b" id="c5s-Xh-2Pr">
+                            <menuItem title="BIOS Shell" enabled="NO" keyEquivalent="b" id="c5s-Xh-2Pr">
                                 <connections>
                                     <action selector="menuShell:" target="mgR-F7-Tr3" id="8Dx-od-QR9"/>
                                 </connections>

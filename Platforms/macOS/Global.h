@@ -30,6 +30,7 @@
 #define forValue                    forKey
 #define save                        synchronize
 #define startSheet                  beginSheet
+#define setMesText                  setMessageText
 
 #import "Options.h"
 #import "Main.h"
