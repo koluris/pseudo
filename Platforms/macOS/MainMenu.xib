@@ -9,7 +9,6 @@
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
             <connections>
                 <outlet property="delegate" destination="mgR-F7-Tr3" id="UaQ-6I-dHd"/>
-                <outlet property="options" destination="gn3-gZ-vsZ" id="S6X-Bp-n1N"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
@@ -57,16 +56,19 @@
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cWs-EW-cq1">
                         <rect key="frame" x="146" y="283" width="143" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="Compiler (Faster)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="bN4-h8-S80" id="zFG-k3-b4e">
+                        <popUpButtonCell key="cell" type="push" title="Compiler (Faster)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="bN4-h8-S80" id="zFG-k3-b4e">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" id="0Tv-e7-76C">
                                 <items>
-                                    <menuItem title="Compiler (Faster)" id="bN4-h8-S80"/>
+                                    <menuItem title="Compiler (Faster)" state="on" id="bN4-h8-S80"/>
                                     <menuItem title="Interpreter" id="qzV-hB-AdX"/>
                                 </items>
                             </menu>
                         </popUpButtonCell>
+                        <connections>
+                            <action selector="pushCpuMode:" target="gn3-gZ-vsZ" id="9pn-iN-CPe"/>
+                        </connections>
                     </popUpButton>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bHL-LS-Dzz">
                         <rect key="frame" x="146" y="262" width="204" height="18"/>
@@ -75,6 +77,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="pushSkipBootScreen:" target="gn3-gZ-vsZ" id="sTW-pq-KZm"/>
+                        </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="T6N-TG-cUN">
                         <rect key="frame" x="20" y="240" width="345" height="5"/>
@@ -103,6 +108,9 @@
                                 </items>
                             </menu>
                         </popUpButtonCell>
+                        <connections>
+                            <action selector="pushWindowResolution:" target="gn3-gZ-vsZ" id="Orw-Wb-xnT"/>
+                        </connections>
                     </popUpButton>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6b7-QL-fYG">
                         <rect key="frame" x="146" y="178" width="122" height="18"/>
@@ -111,6 +119,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="pushSmoothTextures:" target="gn3-gZ-vsZ" id="wli-ty-lmi"/>
+                        </connections>
                     </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QFD-vj-8l0">
                         <rect key="frame" x="77" y="143" width="65" height="17"/>
@@ -135,6 +146,9 @@
                                 </items>
                             </menu>
                         </popUpButtonCell>
+                        <connections>
+                            <action selector="pushFpsLimit:" target="gn3-gZ-vsZ" id="OWY-x5-Pr0"/>
+                        </connections>
                     </popUpButton>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="YVu-8b-lUy">
                         <rect key="frame" x="20" y="117" width="345" height="5"/>
@@ -156,6 +170,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="pushAudioChannel:" target="gn3-gZ-vsZ" id="kSe-kQ-H1I"/>
+                        </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T0N-s6-zwn">
                         <rect key="frame" x="213" y="81" width="57" height="18"/>
@@ -164,6 +181,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="pushAudioChannel:" target="gn3-gZ-vsZ" id="UgR-qE-6Tb"/>
+                        </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lE4-eg-UiB">
                         <rect key="frame" x="275" y="81" width="42" height="18"/>
@@ -172,6 +192,9 @@
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="pushAudioChannel:" target="gn3-gZ-vsZ" id="XGb-Tl-Ugx"/>
+                        </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="jqK-ou-Q3F">
                         <rect key="frame" x="20" y="59" width="345" height="5"/>

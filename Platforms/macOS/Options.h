@@ -9,4 +9,6 @@
 @prop (weak) IBOutlet NSButton *audioMono;
 @prop (weak) IBOutlet NSButton *audioOff;
 
+@prop NSUserDefaults *defaults;
+
 @end
