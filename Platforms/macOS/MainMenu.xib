@@ -44,6 +44,20 @@
                 <rect key="frame" x="0.0" y="0.0" width="410" height="433"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h7N-QO-pyX">
+                        <rect key="frame" x="18" y="371" width="374" height="42"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="bOx-6G-etg">
+                            <font key="font" metaFont="smallSystem"/>
+                            <string key="title">Caution! In order to operate the emulator, a valid BIOS dump must be provided. Please press the "Browse" button and select a BIOS file such as "SCPH1001.bin".</string>
+                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="yNg-Rk-mKQ">
+                        <rect key="frame" x="20" y="350" width="370" height="5"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    </box>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WXS-ov-dBe">
                         <rect key="frame" x="82" y="315" width="60" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -73,6 +87,17 @@
                             <action selector="pushBrowse:" target="gn3-gZ-vsZ" id="Bke-yH-Pbi"/>
                         </connections>
                     </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bHL-LS-Dzz">
+                        <rect key="frame" x="146" y="288" width="204" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Skip intermediate boot screen" bezelStyle="regularSquare" imagePosition="left" inset="2" id="7kV-wE-CUB">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="pushSkipBootScreen:" target="gn3-gZ-vsZ" id="sTW-pq-KZm"/>
+                        </connections>
+                    </button>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CWr-QZ-UqW">
                         <rect key="frame" x="69" y="254" width="73" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -99,23 +124,8 @@
                             <action selector="pushCpuMode:" target="gn3-gZ-vsZ" id="9pn-iN-CPe"/>
                         </connections>
                     </popUpButton>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bHL-LS-Dzz">
-                        <rect key="frame" x="146" y="288" width="204" height="18"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="Skip intermediate boot screen" bezelStyle="regularSquare" imagePosition="left" inset="2" id="7kV-wE-CUB">
-                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="pushSkipBootScreen:" target="gn3-gZ-vsZ" id="sTW-pq-KZm"/>
-                        </connections>
-                    </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="T6N-TG-cUN">
-                        <rect key="frame" x="20" y="230" width="370" height="5"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    </box>
-                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="yNg-Rk-mKQ">
-                        <rect key="frame" x="20" y="350" width="370" height="5"/>
+                        <rect key="frame" x="20" y="230" width="370" height="169"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ycs-bY-dps">
@@ -241,16 +251,6 @@
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                     </button>
-                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h7N-QO-pyX">
-                        <rect key="frame" x="18" y="371" width="374" height="42"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="bOx-6G-etg">
-                            <font key="font" metaFont="system" size="11"/>
-                            <string key="title">Caution! In order to operate the emulator, a valid BIOS dump must be provided. Please press the "Browse" button and select a BIOS file such as "SCPH1001.bin".</string>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jle-xm-zsR">
                         <rect key="frame" x="14" y="13" width="75" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -275,7 +275,7 @@
                 <outlet property="smoothTextures" destination="6b7-QL-fYG" id="Xhq-3s-v8e"/>
                 <outlet property="windowResolution" destination="Z1q-2r-EsE" id="65s-cX-GWU"/>
             </connections>
-            <point key="canvasLocation" x="-818" y="-540.5"/>
+            <point key="canvasLocation" x="-589" y="-577.5"/>
         </window>
         <customObject id="mgR-F7-Tr3" customClass="Main">
             <connections>

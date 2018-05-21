@@ -164,10 +164,10 @@ void drawTile(uw *f, sh size) {
     GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
     
     GLStart(GL_TRIANGLE_STRIP);
-    GLVertex2s(k->v[0].w,      k->v[0].h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
-    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w,      k->v[0].h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+        GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
     GLEnd();
 }
 
@@ -195,10 +195,10 @@ void drawSprite(uw *f, sh size) {
     }
     
     GLStart(GL_TRIANGLE_STRIP);
-    GLVertex2s(k->v[0].w,      k->v[0].h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
-    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w,      k->v[0].h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+        GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
     GLEnd();
 }
 
@@ -208,10 +208,10 @@ void BlockFill(uw *hrd) {
     GLColor4ub(k->co.c, k->co.m, k->co.k, COLOR_MAX);
     
     GLStart(GL_TRIANGLE_STRIP);
-    GLVertex2s(k->v[0].w,      k->v[0].h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
-    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w,      k->v[0].h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+        GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
     GLEnd();
 }
 
