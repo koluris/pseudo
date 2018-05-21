@@ -35,7 +35,7 @@
 
 class CstrMips {
     union { // Product & quotient (lo, hi)
-        ud u64; uw u32[2];
+        sd u64; uw u32[2];
     } res;
     
     const uw mask[4][4] = {

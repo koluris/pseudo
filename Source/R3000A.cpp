@@ -116,11 +116,11 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 24: // MULT
-                    res.u64 = (sw)base[rs] * (sw)base[rt];
+                    res.u64 = (sd)(sw)base[rs] * (sw)base[rt];
                     return;
                     
                 case 25: // MULTU
-                    res.u64 = base[rs] * base[rt];
+                    res.u64 = (sd)base[rs] * base[rt];
                     return;
                     
                 case 26: // DIV

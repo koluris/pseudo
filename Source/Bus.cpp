@@ -30,7 +30,7 @@ void CstrBus::checkDMA(uw addr, uw data) {
         
         if (icr & (1 << (16 + chan))) {
             icr |= 1 << (24 + chan);
-            data16 |= 6; // ?
+            data16 |= 8;
         }
     }
 }
