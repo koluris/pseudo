@@ -34,10 +34,6 @@
 
 
 class CstrMips {
-    union { // Product & quotient (lo, hi)
-        sd u64; uw u32[2];
-    } res;
-    
     const uw mask[4][4] = {
         { 0x00ffffff, 0x0000ffff, 0x000000ff, 0x00000000 },
         { 0x00000000, 0xff000000, 0xffff0000, 0xffffff00 },
@@ -51,6 +47,10 @@ class CstrMips {
         { 0x18, 0x10, 0x08, 0x00 },
         { 0x00, 0x08, 0x10, 0x18 },
     };
+    
+    union { // Product & quotient (lo, hi)
+        sd u64; uw u32[2];
+    } res;
     
     uw opcodeCount;
     bool suspended;

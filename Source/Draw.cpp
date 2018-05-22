@@ -346,7 +346,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
         case 0xc0: // TODO: Store photo
             return;
             
-        case 0xe1: // TODO: Texture P.
+        case 0xe1: // Texture P.
             blend  = (data[0] >> 5) & 0x3;
             vs.ret.status = vs.ret.status & (~0x7ff);
             GLBlendFunc(bit[blend].src, bit[blend].dst);
@@ -364,7 +364,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
         case 0xe5: // TODO: Draw Offset
             return;
             
-        case 0xe6: // TODO: STP
+        case 0xe6: // STP
             vs.ret.status = (vs.ret.status & (~(3 << 11))) | ((data[0] & 3) << 11);
             return;
     }

@@ -4,6 +4,27 @@
     exit(0)
 
 class CstrPSeudo {
+    struct {
+        ub id[8];  /* SCE EXE || PS-X EXE */
+        uw text;   /* SCE */
+        uw data;   /* SCE */
+        uw pc0;
+        uw cp0;    /* SCE */
+        uw t_addr;
+        uw t_size;
+        uw d_addr; /* SCE */
+        uw d_size; /* SCE */
+        uw b_addr; /* SCE */
+        uw b_size; /* SCE */
+        uw s_addr;
+        uw s_size;
+        uw SavedSP;
+        uw SavedFP;
+        uw SavedGP;
+        uw SavedRA;
+        uw SavedS0;
+    } header;
+    
     uw fileSize(FILE *);
     
 public:
