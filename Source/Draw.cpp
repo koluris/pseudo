@@ -36,13 +36,13 @@ void CstrDraw::refresh() {
 void CstrDraw::blockFill(uw *data) {
     BLK *k = (BLK *)data;
     
-    GLColor4ub(k->co.c, k->co.m, k->co.k, COLOR_MAX);
+    GLColor4ub(k->co.r, k->co.c, k->co.b, COLOR_MAX);
     
     GLStart(GL_TRIANGLE_STRIP);
-    GLVertex2s(k->v[0].w,      k->v[0].h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
-    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w,      k->v[0].h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+        GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
     GLEnd();
 }
 
@@ -51,16 +51,16 @@ void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
     T *k = (T *)data;
     
     ub b[] = {
-        static_cast<ub>(k->co.n&2 ? blend : 0),
-        static_cast<ub>(k->co.n&2 ? bit[blend].opaque : COLOR_MAX)
+        k->co.a & 2 ? blend : (ub)0,
+        k->co.a & 2 ? bit[blend].opaque : (ub)COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
-    GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
+    GLColor4ub(k->co.r, k->co.c, k->co.b, b[1]);
     
     GLStart(mode);
-    for (sw i=0; i<size; i++) {
+    for (sw i = 0; i < size; i++) {
         GLVertex2s(k->v[i].w, k->v[i].h);
     }
     GLEnd();
@@ -71,15 +71,15 @@ void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
     T *k = (T *)data;
     
     ub b[] = {
-        static_cast<ub>(k->v[0].co.n&2 ? blend : 0),
-        static_cast<ub>(k->v[0].co.n&2 ? bit[blend].opaque : COLOR_MAX)
+        k->v[0].co.a & 2 ? blend : (ub)0,
+        k->v[0].co.a & 2 ? bit[blend].opaque : (ub)COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
     GLStart(mode);
-    for (sw i=0; i<size; i++) {
-        GLColor4ub(k->v[i].co.c, k->v[i].co.m, k->v[i].co.k, b[1]);
+    for (sw i = 0; i < size; i++) {
+        GLColor4ub(k->v[i].co.r, k->v[i].co.c, k->v[i].co.b, b[1]);
         GLVertex2s(k->v[i].w, k->v[i].h);
     }
     GLEnd();
@@ -89,24 +89,24 @@ template <class T>
 void CstrDraw::drawFT(uw *data, ub size) {
     T *k = (T *)data;
     
-    blend = (k->v[1].clut>>5)&3;
+    blend = (k->v[1].clut >> 5) & 3;
     
     ub b[] = {
-        static_cast<ub>(k->co.n&2 ? blend : 0),
-        static_cast<ub>(k->co.n&2 ? bit[blend].opaque : COLOR_MAX)
+        k->co.a & 2 ? blend : (ub)0,
+        k->co.a & 2 ? bit[blend].opaque : (ub)COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
-    if (k->co.n&1) {
+    if (k->co.a & 1) {
         GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
     }
     else {
-        GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
+        GLColor4ub(k->co.r, k->co.c, k->co.b, b[1]);
     }
     
     GLStart(GL_TRIANGLE_STRIP);
-    for (sw i=0; i<size; i++) {
+    for (sw i = 0; i < size; i++) {
         GLVertex2s(k->v[i].w, k->v[i].h);
     }
     GLEnd();
@@ -116,18 +116,18 @@ template <class T>
 void CstrDraw::drawGT(uw *data, ub size) {
     T *k = (T *)data;
     
-    blend = (k->v[1].clut>>5)&3;
+    blend = (k->v[1].clut >> 5) & 3;
     
     ub b[] = {
-        static_cast<ub>(k->v[0].co.n&2 ? blend : 0),
-        static_cast<ub>(k->v[0].co.n&2 ? bit[blend].opaque : COLOR_MAX)
+        k->v[0].co.a & 2 ? blend : (ub)0,
+        k->v[0].co.a & 2 ? bit[blend].opaque : (ub)COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
     GLStart(GL_TRIANGLE_STRIP);
-    for (sw i=0; i<size; i++) {
-        GLColor4ub(k->v[i].co.c, k->v[i].co.m, k->v[i].co.k, b[1]);
+    for (sw i = 0; i < size; i++) {
+        GLColor4ub(k->v[i].co.r, k->v[i].co.c, k->v[i].co.b, b[1]);
         GLVertex2s(k->v[i].w, k->v[i].h);
     }
     GLEnd();
@@ -142,19 +142,19 @@ void CstrDraw::drawTile(uw *data, sh size) {
     }
     
     ub b[] = {
-        static_cast<ub>(k->co.n&2 ? blend : 0),
-        static_cast<ub>(k->co.n&2 ? bit[blend].opaque : COLOR_MAX)
+        k->co.a & 2 ? blend : (ub)0,
+        k->co.a & 2 ? bit[blend].opaque : (ub)COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
-    GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
+    GLColor4ub(k->co.r, k->co.c, k->co.b, b[1]);
     
     GLStart(GL_TRIANGLE_STRIP);
-    GLVertex2s(k->v[0].w,      k->v[0].h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
-    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w,      k->v[0].h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+        GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
     GLEnd();
 }
 
@@ -167,24 +167,24 @@ void CstrDraw::drawSprite(uw *data, sh size) {
     }
     
     ub b[] = {
-        static_cast<ub>(k->co.n&2 ? blend : 0),
-        static_cast<ub>(k->co.n&2 ? bit[blend].opaque : COLOR_MAX)
+        k->co.a & 2 ? blend : (ub)0,
+        k->co.a & 2 ? bit[blend].opaque : (ub)COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
-    if (k->co.n&1) {
+    if (k->co.a & 1) {
         GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
     }
     else {
-        GLColor4ub(k->co.c, k->co.m, k->co.k, b[1]);
+        GLColor4ub(k->co.r, k->co.c, k->co.b, b[1]);
     }
     
     GLStart(GL_TRIANGLE_STRIP);
-    GLVertex2s(k->v[0].w,      k->v[0].h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h);
-    GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
-    GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w,      k->v[0].h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h);
+        GLVertex2s(k->v[0].w,      k->v[0].h+k->h);
+        GLVertex2s(k->v[0].w+k->w, k->v[0].h+k->h);
     GLEnd();
 }
 

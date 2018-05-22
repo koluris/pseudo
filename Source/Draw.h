@@ -1,6 +1,6 @@
 class CstrDraw {
     // Basic
-    TYPEDEF struct { ub c, m, k, n; } COLOR;
+    TYPEDEF struct { ub r, c, b, a; } COLOR;
     TYPEDEF struct { sh w, h; } POINTF;
     TYPEDEF struct { sh w, h; ub u, v; uh clut; } POINTFT;
     TYPEDEF struct { COLOR co; sh w, h; } POINTG;
@@ -28,7 +28,7 @@ class CstrDraw {
     TYPEDEF struct { COLOR co; POINTF  v[1]; sh w, h; } BLK;
     TYPEDEF struct { COLOR co; POINTFT v[1]; sh w, h; } SPRT;
     
-    uw blend;
+    ub blend;
     
     // Setup blend values
     const struct {
