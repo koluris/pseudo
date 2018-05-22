@@ -280,7 +280,7 @@
         <customObject id="mgR-F7-Tr3" customClass="Main">
             <connections>
                 <outlet property="console" destination="EYa-DY-fTg" id="8jX-uB-iyt"/>
-                <outlet property="consoleView" destination="jvQ-GN-lzn" id="Ips-GQ-ekd"/>
+                <outlet property="consoleView" destination="jvQ-GN-lzn" id="a0a-Ug-Njm"/>
                 <outlet property="menuOpen" destination="IAo-SY-fd9" id="5Uo-YX-c6X"/>
                 <outlet property="menuShell" destination="c5s-Xh-2Pr" id="KP0-zG-ZD9"/>
                 <outlet property="openGLView" destination="gyI-cr-EPE" id="6OB-hR-rkh"/>
@@ -356,13 +356,26 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="View" id="9W8-QU-9kg">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="View" id="9uh-45-POh">
+                        <items>
+                            <menuItem title="Console" state="on" id="Mvt-FM-cjO">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="menuConsole:" target="mgR-F7-Tr3" id="oN9-p0-Oab"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Window" id="aUF-d1-5bR">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
+                    <menu key="submenu" title="Window" systemMenu="window" id="05a-Kb-OVL">
                         <items>
-                            <menuItem title="Minimize" keyEquivalent="m" id="OY7-WF-poV">
+                            <menuItem title="Minimize" keyEquivalent="m" id="33c-Af-f6m">
                                 <connections>
-                                    <action selector="performMiniaturize:" target="-1" id="VwT-WD-YPe"/>
+                                    <action selector="performMiniaturize:" target="-1" id="JK9-GI-pWp"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -386,33 +399,25 @@
         <window title="Console" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="EYa-DY-fTg" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="0.0" y="0.0" width="320" height="240"/>
+            <rect key="contentRect" x="0.0" y="0.0" width="400" height="240"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
             <view key="contentView" id="DNN-Yf-iEu">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
+                <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3tq-n3-hIB">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
+                        <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
                         <clipView key="contentView" id="WQF-ES-h1U">
-                            <rect key="frame" x="0.0" y="0.0" width="305" height="240"/>
+                            <rect key="frame" x="0.0" y="0.0" width="385" height="240"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="jvQ-GN-lzn">
-                                    <rect key="frame" x="0.0" y="0.0" width="305" height="240"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="385" height="240"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <size key="minSize" width="305" height="240"/>
+                                    <color key="backgroundColor" red="0.2195393458549223" green="0.2195393458549223" blue="0.2195393458549223" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <size key="minSize" width="385" height="240"/>
                                     <size key="maxSize" width="463" height="10000000"/>
-                                    <attributedString key="textStorage">
-                                        <fragment content="Sample">
-                                            <attributes>
-                                                <font key="NSFont" metaFont="systemSemibold" size="10"/>
-                                                <paragraphStyle key="NSParagraphStyle" alignment="natural" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
-                                            </attributes>
-                                        </fragment>
-                                    </attributedString>
-                                    <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="insertionPointColor" red="0.8784313725490196" green="0.68033387008206803" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </textView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -422,7 +427,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="lxk-Xk-kMq">
-                            <rect key="frame" x="305" y="0.0" width="15" height="240"/>
+                            <rect key="frame" x="385" y="0.0" width="15" height="240"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
@@ -434,7 +439,7 @@
                     <constraint firstItem="3tq-n3-hIB" firstAttribute="top" secondItem="DNN-Yf-iEu" secondAttribute="top" id="gs3-Mr-5uq"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-288" y="64"/>
+            <point key="canvasLocation" x="-180" y="44"/>
         </window>
     </objects>
 </document>

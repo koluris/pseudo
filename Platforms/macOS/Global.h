@@ -31,6 +31,9 @@
 #define save                        synchronize
 #define startSheet                  beginSheet
 #define setMesText                  setMessageText
+#define fontOfSize                  systemFontOfSize
+#define NSForeColorAttributeName    NSForegroundColorAttributeName
+
 
 #import "Options.h"
 #import "Main.h"

@@ -14,11 +14,9 @@
     [self.window center];
     
     // Console
-    self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
-    self.consoleView.textColor = [NSColor RGBA(75, 75, 75)];
-    
     NSSize size = [self.console frame].size;
     [self.console setFrame:CGRectMake(self.screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
+    self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
     
     // OpenGL init
     draw.reset();
@@ -67,6 +65,9 @@
     
     // Start new emulation process
     [self emulationStart];
+}
+
+- (IBAction)menuConsole:(id)sender {
 }
 
 // Emulation
@@ -134,8 +135,9 @@
 
 - (void)consolePrint:(NSChars *)text {
     dispatch_asinc(dispatch_main_queue(), ^{
-        NSAttributedChars *attr = [[NSAttributedChars alloc] initWithChars:text];
+        NSAttributedChars *attr = [[NSAttributedChars alloc] initWithChars:text attributes:@{ NSFontAttributeName: [NSFont fontWithName:@"Menlo" size:10], NSForeColorAttributeName: [NSColor RGBA(225, 170, 0)] }];
         [[self.consoleView textStore] appendAttributedChars:attr];
+
     });
 }
 
