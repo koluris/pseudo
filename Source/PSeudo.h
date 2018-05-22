@@ -4,6 +4,8 @@
     exit(0)
 
 class CstrPSeudo {
+    uw fileSize(FILE *);
+    
 public:
     void init(const char *);
     void reset();

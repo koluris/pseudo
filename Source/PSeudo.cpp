@@ -5,10 +5,24 @@ CstrPSeudo psx;
 
 void CstrPSeudo::init(const char *path) {
     FILE *fp = fopen(path, "rb");
-    fread(mem.rom.ptr, 1, mem.rom.size, fp);
-    fclose(fp);
     
-    reset();
+    // Available
+    if (fp) {
+        if (fileSize(fp) == mem.rom.size) {
+            fread(mem.rom.ptr, 1, mem.rom.size, fp);
+            reset();
+        }
+        else { // Incorrect file size
+#ifdef MAC_OS_X
+#endif
+        }
+        
+        fclose(fp);
+    }
+    else { // File not found
+#ifdef MAC_OS_X
+#endif
+    }
 }
 
 void CstrPSeudo::reset() {
@@ -24,21 +38,57 @@ void CstrPSeudo::reset() {
 }
 
 void CstrPSeudo::executable(const char *path) {
-    cpu.bootstrap();
-    
     struct {
-        ub id[8]; uw v[17];
+        ub id[8];  /* SCE EXE || PS-X EXE */
+        uw text;   /* SCE */
+        uw data;   /* SCE */
+        uw pc0;
+        uw cp0;    /* SCE */
+        uw t_addr;
+        uw t_size;
+        uw d_addr; /* SCE */
+        uw d_size; /* SCE */
+        uw b_addr; /* SCE */
+        uw b_size; /* SCE */
+        uw s_addr;
+        uw s_size;
+        uw SavedSP;
+        uw SavedFP;
+        uw SavedGP;
+        uw SavedRA;
+        uw SavedS0;
     } header;
     
     FILE *fp = fopen(path, "rb");
-    fread(&header, 1, sizeof(header), fp);
-    fseek(fp, 0x800, SEEK_SET);
-    fread(&mem.ram.ptr[header.v[4] & (mem.ram.size - 1)], 1, header.v[5], fp);
-    fclose(fp);
     
-    cpu.pc = header.v[2];
-    cpu.base[28] = header.v[3];
-    cpu.base[29] = header.v[10];
+    // Available
+    if (fp) {
+        if (fileSize(fp)) {
+            // Prerequisite boot
+            cpu.bootstrap();
+            
+            // EXE file
+            fread(&header, 1, sizeof(header), fp);
+            fseek(fp, 0x800, SEEK_SET);
+            fread(&mem.ram.ptr[header.t_addr & (mem.ram.size - 1)], 1, header.t_size, fp);
+            
+            cpu.pc = header.pc0;
+            
+            // GP0 and SAddr
+            cpu.base[28] = header.cp0;
+            cpu.base[29] = header.s_addr;
+        }
+        else { // Incorrect file size
+#ifdef MAC_OS_X
+#endif
+        }
+        
+        fclose(fp);
+    }
+    else { // File not found
+#ifdef MAC_OS_X
+#endif
+    }
 }
 
 void CstrPSeudo::console(uw *r, uw addr) {
@@ -50,4 +100,14 @@ void CstrPSeudo::console(uw *r, uw addr) {
 #endif
         }
     }
+}
+
+uw CstrPSeudo::fileSize(FILE *fp) {
+    uw size;
+    
+    fseek(fp, 0, SEEK_END);
+    size = (uw)ftell(fp);
+    rewind(fp);
+    
+    return size;
 }
