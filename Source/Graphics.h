@@ -16,14 +16,20 @@
 
 
 class CstrGraphics {
+    enum {
+        GPU_DMA_NONE,
+        GPU_DMA_MEM2VRAM = 2,
+        GPU_DMA_VRAM2MEM,
+    };
+    
+    enum {
+        GPU_REG_DATA,
+        GPU_REG_STATUS = 4
+    };
+    
     const uh resMode[8] = {
         256, 320, 512, 640, 368, 384, 512, 640
     };
-    
-    // Command buffer
-    struct {
-        uw data[100], prim, size, row;
-    } pipe;
     
     // Primitive size
     const ub pSize[256] = {
@@ -45,20 +51,14 @@ class CstrGraphics {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xf0
     };
     
-    void dataWrite(uw *, sw);
+    // Command buffer
+    struct {
+        uw data[100], prim, size, row;
+    } pipe;
     
     uw modeDMA;
     
-    enum {
-        GPU_DMA_NONE,
-        GPU_DMA_MEM2VRAM = 2,
-        GPU_DMA_VRAM2MEM,
-    };
-    
-    enum {
-        GPU_REG_DATA,
-        GPU_REG_STATUS = 4
-    };
+    void dataWrite(uw *, sw);
     
 public:
     struct {

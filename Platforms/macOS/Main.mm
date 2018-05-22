@@ -21,7 +21,7 @@
     [self.console setFrame:CGRectMake(self.screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
     
     // OpenGL init
-    vs.reset();
+    draw.reset();
     
     // Check for valid BIOS file
     NSChars *path = [self.options readTextFrom:@"biosFile"];
