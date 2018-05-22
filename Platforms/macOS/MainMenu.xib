@@ -125,7 +125,7 @@
                         </connections>
                     </popUpButton>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="T6N-TG-cUN">
-                        <rect key="frame" x="20" y="230" width="370" height="169"/>
+                        <rect key="frame" x="20" y="230" width="370" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ycs-bY-dps">

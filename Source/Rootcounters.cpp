@@ -11,6 +11,6 @@ void CstrCounters::update() {
     // VBlank
     if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
         data16 |= 1;
-        vs.redraw();
+        draw.refresh();
     }
 }

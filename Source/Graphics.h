@@ -1,38 +1,22 @@
-// Basic
-TYPEDEF struct { ub c, m, k, n; } COLOR;
-TYPEDEF struct { sh w, h; } POINTF;
-TYPEDEF struct { sh w, h; ub u, v; uh clut; } POINTFT;
-TYPEDEF struct { COLOR co; sh w, h; } POINTG;
-TYPEDEF struct { COLOR co; sh w, h; ub u, v; uh clut; } POINTGT;
+//#define GPU_DITHER           0x00000200
+//#define GPU_DRAWINGALLOWED   0x00000400
+//#define GPU_MASKDRAWN        0x00000800
+//#define GPU_MASKENABLED      0x00001000
+//#define GPU_WIDTHBITS        0x00070000
+#define GPU_DOUBLEHEIGHT     0x00080000
+//#define GPU_PAL              0x00100000
+//#define GPU_RGB24            0x00200000
+//#define GPU_INTERLACED       0x00400000
+#define GPU_DISPLAYDISABLED  0x00800000
+#define GPU_IDLE             0x04000000
+#define GPU_READYFORVRAM     0x08000000
+#define GPU_READYFORCOMMANDS 0x10000000
+#define GPU_DMABITS          0x60000000
+#define GPU_ODDLINES         0x80000000
 
-// VertexF & LineF
-TYPEDEF struct { COLOR co; POINTF v[2]; } F2;
-TYPEDEF struct { COLOR co; POINTF v[3]; } F3;
-TYPEDEF struct { COLOR co; POINTF v[4]; } F4;
-
-// VertexFT
-TYPEDEF struct { COLOR co; POINTFT v[3]; } FT3;
-TYPEDEF struct { COLOR co; POINTFT v[4]; } FT4;
-
-// VertexG & LineG
-TYPEDEF struct { POINTG v[2]; } G2;
-TYPEDEF struct { POINTG v[3]; } G3;
-TYPEDEF struct { POINTG v[4]; } G4;
-
-// VertexGT
-TYPEDEF struct { POINTGT v[3]; } GT3;
-TYPEDEF struct { POINTGT v[4]; } GT4;
-
-// BlockFill & Sprites
-TYPEDEF struct { COLOR co; POINTF  v[1]; sh w, h; } BLK;
-TYPEDEF struct { COLOR co; POINTFT v[1]; sh w, h; } SPRT;
 
 class CstrGraphics {
-    struct {
-        uw data, status;
-    } ret;
-    
-    uh resMode[8] = {
+    const uh resMode[8] = {
         256, 320, 512, 640, 368, 384, 512, 640
     };
     
@@ -42,7 +26,7 @@ class CstrGraphics {
     } pipe;
     
     // Primitive size
-    ub pSize[256] = {
+    const ub pSize[256] = {
         0, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x00
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x10
         4, 4, 4, 4, 7, 7, 7, 7, 5, 5, 5, 5, 9, 9, 9, 9, // 0x20
@@ -61,7 +45,7 @@ class CstrGraphics {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xf0
     };
     
-    void draw(uw, uw *);
+    void dataWrite(uw *, sw);
     
     uw modeDMA;
     
@@ -77,24 +61,13 @@ class CstrGraphics {
     };
     
 public:
-    uw blend;
-    
-    // Setup blend values
-    const struct {
-        sw src, dst; ub opaque;
-    } bit[4] = {
-        { GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 128 },
-        { GL_ONE,       GL_ONE_MINUS_SRC_ALPHA,   0 },
-        { GL_ZERO,      GL_ONE_MINUS_SRC_COLOR,   0 },
-        { GL_SRC_ALPHA, GL_ONE,                  64 },
-    };
+    struct {
+        uw data, status;
+    } ret;
     
     void reset();
-    void resize(uh, uh);
-    void redraw();
     
     // Store
-    void dataWrite(uw *, sw);
     void write(uw, uw);
     
     // Load

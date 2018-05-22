@@ -26,15 +26,15 @@ void CstrPSeudo::init(const char *path) {
 }
 
 void CstrPSeudo::reset() {
-#ifdef MAC_OS_X
-    [app consoleClear];
-    [app consolePrint:@"PSeudo reset\n"];
-#endif
-    
       cpu.reset();
       mem.reset();
     rootc.reset();
        vs.reset();
+    
+#ifdef MAC_OS_X
+    [app consoleClear];
+    [app consolePrint:@"PSeudo reset\n"];
+#endif
 }
 
 void CstrPSeudo::executable(const char *path) {

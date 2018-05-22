@@ -40,6 +40,7 @@ typedef int8_t  sb; // bite
 
 // User imports
 #import "Bus.h"
+#import "Draw.h"
 #import "Graphics.h"
 #import "Hardware.h"
 #import "Mem.h"

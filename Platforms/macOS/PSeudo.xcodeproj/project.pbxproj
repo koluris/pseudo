@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		42032C1820B483DD00B032A8 /* Draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42032C1620B483DD00B032A8 /* Draw.cpp */; };
 		42587A882068BEFF0054BEC8 /* Hardware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42587A862068BEFF0054BEC8 /* Hardware.cpp */; };
 		428EAF2F207376EF003BC141 /* Bus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 428EAF2D207376EF003BC141 /* Bus.cpp */; };
 		429C3EBD206500B500915293 /* Mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBB206500B500915293 /* Mem.cpp */; };
@@ -23,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		42032C1620B483DD00B032A8 /* Draw.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Draw.cpp; sourceTree = "<group>"; };
+		42032C1720B483DD00B032A8 /* Draw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Draw.h; sourceTree = "<group>"; };
 		420AD1BC2063B8B7006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		42587A862068BEFF0054BEC8 /* Hardware.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Hardware.cpp; sourceTree = "<group>"; };
@@ -64,6 +67,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		42032C1920B483E300B032A8 /* Draw */ = {
+			isa = PBXGroup;
+			children = (
+				42032C1620B483DD00B032A8 /* Draw.cpp */,
+				42032C1720B483DD00B032A8 /* Draw.h */,
+			);
+			name = Draw;
+			sourceTree = "<group>";
+		};
 		420AD1BE2063BA32006C22D9 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
@@ -174,6 +186,7 @@
 		42DB696D2070DEEC00000D08 /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
+				42032C1920B483E300B032A8 /* Draw */,
 				42DB696E2070DF0800000D08 /* Graphics.cpp */,
 				42DB696F2070DF0800000D08 /* Graphics.h */,
 			);
@@ -288,6 +301,7 @@
 				42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */,
 				42DB69702070DF0800000D08 /* Graphics.cpp in Sources */,
 				429C3EC120650CB400915293 /* PSeudo.cpp in Sources */,
+				42032C1820B483DD00B032A8 /* Draw.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
