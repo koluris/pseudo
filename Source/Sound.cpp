@@ -1,6 +1,9 @@
 #import "Global.h"
 
 
+#define SAMPLE_RATE\
+    44100
+
 #define MAX_CHANNELS\
     24
 
@@ -10,6 +13,12 @@
 #define spuAcc(addr)\
     *(uh *)&mem.hwr.ptr[addr]
 
+#define spuChannel(addr)\
+    (addr >> 4) & 0x1f
+
+#define MAX(a, b) ((a) > (b) ? a : b)
+#define MIN(a, b) ((a) < (b) ? a : b)
+
 
 CstrAudio audio;
 
@@ -18,6 +27,8 @@ void CstrAudio::reset() {
     spuAddr = ~0;
     spuVolumeL = MAX_VOLUME;
     spuVolumeR = MAX_VOLUME;
+    
+    memset(&spuMem, 0, sizeof(hi));
     
     // Channels
     for (int n = 0; n < MAX_CHANNELS; n++) {
@@ -61,6 +72,40 @@ void CstrAudio::write(uw addr, uh data) {
     addr = lob(addr);
     
     spuAcc(addr) = data;
+    
+    // Channels
+    if (addr >= 0x1c00 && addr <= 0x1d7e) {
+        int n = spuChannel(addr);
+        
+        switch(addr & 0xf) {
+            case 0x0: // Volume L
+                spuVoices[n].volume.l = data & MAX_VOLUME;
+                return;
+                
+            case 0x2: // Volume R
+                spuVoices[n].volume.r = data & MAX_VOLUME;
+                return;
+                
+            case 0x4: // Pitch
+                spuVoices[n].freq = MAX((data * SAMPLE_RATE) / 4096, 1);
+                return;
+                
+            case 0x6: // Sound Address
+                spuVoices[n].saddr = data << 3;
+                return;
+                
+            case 0xe: // Return Address
+                spuVoices[n].raddr = data << 3;
+                return;
+                
+            /* unused */
+            case 0x8:
+            case 0xa:
+            case 0xc:
+                return;
+        }
+        printx("PSeudo /// SPU write < 0x1d80 $%x <- $%x", addr, data);
+    }
     
     // HW
     switch(addr) {
@@ -115,10 +160,39 @@ void CstrAudio::write(uw addr, uh data) {
 }
 
 uh CstrAudio::read(uw addr) {
+    // Switch to low order bits
+    addr = lob(addr);
+    
+    // HW
+    switch(addr) {
+        case 0x1daa: // Control
+        case 0x1dae: // Status
+            return spuAcc(addr);
+    }
+    
     printx("PSeudo /// SPU read: $%x", addr);
     return 0;
 }
 
+void CstrAudio::dataWrite(uw addr, uw size) {
+    while(size-- > 0) {
+        spuMem.u16[spuAddr >> 1] = accessMem(mem.ram, uh); addr += 2;
+        spuAddr += 2;
+        spuAddr &= 0x3ffff;
+    }
+}
+
 void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
+    sw size = (dma->bcr >> 16) * (dma->bcr & 0xffff) * 2;
+    
+    switch(dma->chcr) {
+        case 0x01000201: // Write DMA Mem
+            dataWrite(dma->madr, size);
+            return;
+            
+//        case 0x01000200:
+//            dataMem.read(madr, size);
+//            return;
+    }
     printx("PSeudo /// SPU DMA: $%x", dma->chcr);
 }

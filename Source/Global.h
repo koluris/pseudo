@@ -4,6 +4,7 @@
 #import <stdlib.h>
 #import <string.h>
 #import <OpenGL/gl.h>
+#import <OpenAL/OpenAL.h>
 
 // Apple macOS
 #ifdef MAC_OS_X

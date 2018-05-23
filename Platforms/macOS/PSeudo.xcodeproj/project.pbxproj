@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		42032C1820B483DD00B032A8 /* Draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42032C1620B483DD00B032A8 /* Draw.cpp */; };
 		42587A882068BEFF0054BEC8 /* Hardware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42587A862068BEFF0054BEC8 /* Hardware.cpp */; };
+		428D389620B5B549002856FC /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D389520B5B549002856FC /* OpenAL.framework */; };
 		428EAF2F207376EF003BC141 /* Bus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 428EAF2D207376EF003BC141 /* Bus.cpp */; };
 		429C3EBD206500B500915293 /* Mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBB206500B500915293 /* Mem.cpp */; };
 		429C3EC120650CB400915293 /* PSeudo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBF20650CB400915293 /* PSeudo.cpp */; };
@@ -31,6 +32,7 @@
 		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		42587A862068BEFF0054BEC8 /* Hardware.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Hardware.cpp; sourceTree = "<group>"; };
 		42587A872068BEFF0054BEC8 /* Hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Hardware.h; sourceTree = "<group>"; };
+		428D389520B5B549002856FC /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		428EAF2D207376EF003BC141 /* Bus.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Bus.cpp; sourceTree = "<group>"; };
 		428EAF2E207376EF003BC141 /* Bus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bus.h; sourceTree = "<group>"; };
 		429C3EBB206500B500915293 /* Mem.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Mem.cpp; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				429C3EC62065189C00915293 /* AppKit.framework in Frameworks */,
+				428D389620B5B549002856FC /* OpenAL.framework in Frameworks */,
 				42DE0D5920711EA200EEB549 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -147,6 +150,7 @@
 			isa = PBXGroup;
 			children = (
 				429C3EC52065189C00915293 /* AppKit.framework */,
+				428D389520B5B549002856FC /* OpenAL.framework */,
 				42DE0D5820711EA200EEB549 /* OpenGL.framework */,
 			);
 			name = Frameworks;
