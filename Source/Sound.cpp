@@ -16,9 +16,6 @@
 #define spuChannel(addr)\
     (addr >> 4) & 0x1f
 
-#define MAX(a, b) ((a) > (b) ? a : b)
-#define MIN(a, b) ((a) < (b) ? a : b)
-
 
 CstrAudio audio;
 
@@ -32,7 +29,7 @@ void CstrAudio::reset() {
     
     // Channels
     for (int n = 0; n < MAX_CHANNELS; n++) {
-        memset(&spuVoices[n].buffer, 0, USHRT_MAX * 2);
+        memset(&spuVoices[n].buffer, 0, sizeof(hi2));
         spuVoices[n].count    = 0;
         spuVoices[n].freq     = 0;
         spuVoices[n].on       = false;
@@ -45,6 +42,58 @@ void CstrAudio::reset() {
     }
 }
 
+void CstrAudio::depackVAG(voice chn) {
+    sh f[5][2] = {
+        {0, 0}, {60, 0}, {115, -52}, {98, -55}, {122, -60}
+    };
+    
+    uw p = chn.saddr;
+    uw s_1  = 0;
+    uw s_2  = 0;
+    uw temp[32];
+    
+    while (1) {
+        uw shift  = spuMem.u08[p] & 15;
+        uw filter = spuMem.u08[p] >> 4;
+        
+        for (int i = 2; i < 16; i++) {
+            uw a = ((spuMem.u08[p + i] & 0x0f) << 12);
+            uw b = ((spuMem.u08[p + i] & 0xf0) <<  8);
+            if (a & 0x8000) a |= 0xffff0000;
+            if (b & 0x8000) b |= 0xffff0000;
+            temp[i * 2 - 4] = a >> shift;
+            temp[i * 2 - 3] = b >> shift;
+        }
+        
+        for (int i = 0; i < 28; i++) {
+            uw res = temp[i] + ((s_1 * f[filter][0] + s_2 * f[filter][1] + 32) >> 6);
+            s_2 = s_1;
+            s_1 = res;
+            res = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
+            chn.buffer.s16[chn.size++] = res;
+            
+            // Overflow
+            if (chn.size == USHRT_MAX) {
+                printf("SPU Channel size overflow\n");
+                return;
+            }
+        }
+        
+        // Fin
+        uw op = spuMem.u08[p + 1];
+        
+        if (op == 3 || op == 7) { // Termination
+            return;
+        }
+        if (op == 6) { // Repeat
+            chn.raddr = chn.size;
+        }
+        
+        // Advance Buffer
+        p += 16;
+    }
+}
+
 void CstrAudio::voiceOn(uh data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
@@ -54,7 +103,7 @@ void CstrAudio::voiceOn(uh data) {
             spuVoices[n].raddr = 0;
             spuVoices[n].size  = 0;
             
-            //depackVAG(spuVoices[n]);
+            depackVAG(spuVoices[n]);
         }
     }
 }
@@ -105,7 +154,7 @@ void CstrAudio::write(uw addr, uh data) {
                 return;
         }
         
-        printx("PSeudo /// SPU write < 0x1d80 $%x <- $%x", addr, data);
+        printx("PSeudo /// SPU write phase $%x <- $%x", addr, data);
     }
     
     // Reverb
@@ -178,7 +227,7 @@ uh CstrAudio::read(uw addr) {
     
     // Channels
     if (addr >= 0x1c00 && addr <= 0x1d7e) {
-        switch(addr&0xf) {
+        switch(addr & 0xf) {
             case 0x8:
             case 0xa:
             case 0xc:
