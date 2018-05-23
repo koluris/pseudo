@@ -4,11 +4,16 @@
 #import <stdlib.h>
 #import <string.h>
 #import <OpenGL/gl.h>
-#import <OpenAL/OpenAL.h>
 
 // Apple macOS
 #ifdef MAC_OS_X
+    #import <OpenAL/al.h>
+    #import <OpenAL/alc.h>
+
     #import "../Platforms/macOS/Global.h"
+#else
+    #import <AL/al.h>
+    #import <AL/alc.h>
 #endif
 
 // Data
