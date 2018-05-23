@@ -104,7 +104,13 @@ void CstrAudio::write(uw addr, uh data) {
             case 0xc:
                 return;
         }
+        
         printx("PSeudo /// SPU write < 0x1d80 $%x <- $%x", addr, data);
+    }
+    
+    // Reverb
+    if (addr >= 0x1dc0 && addr <= 0x1dfe) {
+        return;
     }
     
     // HW
@@ -136,6 +142,12 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1da6: // Transfer Address
             spuAddr = data << 3;
             return;
+            
+        case 0x1da8: // Data
+            spuMem.u16[spuAddr >> 1] = data;
+            spuAddr += 2;
+            spuAddr &= 0x3ffff;
+            return;
         
         case 0x1daa: // Control
             return;
@@ -148,6 +160,7 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1d96: // Noise Mode On 2
         case 0x1d98: // Reverb Mode On 1
         case 0x1d9a: // Reverb Mode On 2
+        case 0x1da2: // Reverb Address
         case 0x1dac:
         case 0x1db0: // CD Volume L
         case 0x1db2: // CD Volume R
@@ -163,9 +176,29 @@ uh CstrAudio::read(uw addr) {
     // Switch to low order bits
     addr = lob(addr);
     
+    // Channels
+    if (addr >= 0x1c00 && addr <= 0x1d7e) {
+        switch(addr&0xf) {
+            case 0x8:
+            case 0xa:
+            case 0xc:
+                return spuAcc(addr);
+        }
+        
+        printx("PSeudo /// SPU read phase: $%x", (addr & 0xf));
+    }
+    
     // HW
     switch(addr) {
+        case 0x1da6: // Transfer Address
+            return spuAddr >> 3;
+            
+        case 0x1d88: // Sound On 1
+        case 0x1d8a: // Sound On 2
+        case 0x1d8c: // Sound Off 1
+        case 0x1d8e: // Sound Off 2
         case 0x1daa: // Control
+        case 0x1dac: // ?
         case 0x1dae: // Status
             return spuAcc(addr);
     }
@@ -194,5 +227,6 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
 //            dataMem.read(madr, size);
 //            return;
     }
+    
     printx("PSeudo /// SPU DMA: $%x", dma->chcr);
 }
