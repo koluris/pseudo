@@ -26,6 +26,7 @@ void CstrAudio::reset() {
     spuVolumeR = MAX_VOLUME;
     
     memset(&spuMem, 0, sizeof(hi));
+    memset(&sbuf, 0, sizeof(strSbuf));
     
     // Channels
     for (int n = 0; n < MAX_CHANNELS; n++) {
@@ -42,15 +43,16 @@ void CstrAudio::reset() {
     }
 }
 
-void CstrAudio::depackVAG(voice chn) {
+void CstrAudio::depackVAG(voice *chn) {
     sh f[5][2] = {
         {0, 0}, {60, 0}, {115, -52}, {98, -55}, {122, -60}
     };
     
-    uw p = chn.saddr;
-    uw s_1  = 0;
-    uw s_2  = 0;
+    uh p = chn->saddr;
+    uw s_1 = 0;
+    uw s_2 = 0;
     uw temp[32];
+    memset(&temp, 0, 32);
     
     while (1) {
         uw shift  = spuMem.u08[p] & 15;
@@ -66,32 +68,93 @@ void CstrAudio::depackVAG(voice chn) {
         }
         
         for (int i = 0; i < 28; i++) {
-            uw res = temp[i] + ((s_1 * f[filter][0] + s_2 * f[filter][1] + 32) >> 6);
+            uh res = temp[i] + ((s_1 * f[filter][0] + s_2 * f[filter][1] + 32) >> 6);
             s_2 = s_1;
             s_1 = res;
             res = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
-            chn.buffer.s16[chn.size++] = res;
+            chn->buffer.s16[chn->size++] = res;
             
             // Overflow
-            if (chn.size == USHRT_MAX) {
+            if (chn->size == USHRT_MAX) {
                 printf("SPU Channel size overflow\n");
                 return;
             }
         }
         
         // Fin
-        uw op = spuMem.u08[p + 1];
+        ub op = spuMem.u08[p + 1];
         
         if (op == 3 || op == 7) { // Termination
             return;
         }
         if (op == 6) { // Repeat
-            chn.raddr = chn.size;
+            chn->raddr = chn->size;
         }
         
         // Advance Buffer
         p += 16;
     }
+}
+
+void CstrAudio::decodeStream() {
+    for (int n = 0; n < MAX_CHANNELS; n++) {
+        voice *chn = &spuVoices[n];
+        
+        // Channel on?
+        if (chn->on == false) {
+            continue;
+        }
+        
+        for (int i = 0; i < SBUF_SIZE; i++) {
+            chn->count += chn->freq;
+            if (chn->count >= SAMPLE_RATE) {
+                chn->pos += (chn->count/SAMPLE_RATE) | 0;
+                chn->count %= SAMPLE_RATE;
+            }
+            
+            // Mix Channel Samples
+//            if (stereo) {
+//                sbuf.temp[i] += chn.buffer.sh[chn.pos] * (chn.volume.l/MAX_VOLUME);
+//                sbuf.temp[i+SBUF_SIZE] += -chn.buffer.sh[chn.pos] * (chn.volume.r/MAX_VOLUME);
+//            }
+//            else {
+            sbuf.temp[i] += chn->buffer.s16[chn->pos] * ((chn->volume.l+chn->volume.r)/2)/MAX_VOLUME;
+//            }
+            
+            // End of Sample
+            if (chn->pos >= chn->size) {
+                if (chn->raddr > 0) { // Repeat?
+                    chn->pos = chn->raddr;
+                    chn->count = 0;
+                    continue;
+                }
+                chn->on = false;
+                break;
+            }
+        }
+    }
+    // Volume Mix
+    for (int i = 0; i < SBUF_SIZE; i++) {
+//        if (stereo) {
+//            sbuf.final[i] = (sbuf.temp[i]/4) * (spuVolumeL/MAX_VOLUME);
+//            sbuf.final[i+SBUF_SIZE] = -(sbuf.temp[i+SBUF_SIZE]/4) * (spuVolumeR/MAX_VOLUME);
+//        }
+//        else {
+            sbuf.fin[i] = (sbuf.temp[i]/4) * ((spuVolumeL+spuVolumeR)/2)/MAX_VOLUME;
+//        }
+    }
+    
+    // Clear
+    //ioZero(sbuf.temp);
+    
+    //return sbuf.fin;
+    
+    // OpenAL
+    alBufferData(bfr, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE, 44100);
+    alSourcei(source, AL_BUFFER, bfr);
+    alSourcePlay(source);
+    
+    memset(&sbuf.temp, 0, sizeof(sbuf.temp));
 }
 
 void CstrAudio::voiceOn(uh data) {
@@ -103,9 +166,10 @@ void CstrAudio::voiceOn(uh data) {
             spuVoices[n].raddr = 0;
             spuVoices[n].size  = 0;
             
-            depackVAG(spuVoices[n]);
+            depackVAG(&spuVoices[n]);
         }
     }
+    decodeStream();
 }
 
 void CstrAudio::voiceOff(uh data) {
