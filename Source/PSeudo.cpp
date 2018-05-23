@@ -26,6 +26,7 @@ void CstrPSeudo::init(const char *path) {
 }
 
 void CstrPSeudo::reset() {
+    audio.reset();
       cpu.reset();
       mem.reset();
     rootc.reset();

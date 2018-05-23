@@ -47,3 +47,4 @@ typedef int8_t  sb; // bite
 #import "PSeudo.h"
 #import "R3000A.h"
 #import "Rootcounters.h"
+#import "Sound.h"

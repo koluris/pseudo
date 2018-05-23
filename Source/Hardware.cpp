@@ -51,6 +51,10 @@ void CstrHardware::write16(uw addr, uh data) {
             data16 &= data & mask16;
             return;
             
+        case 0x1c00 ... 0x1dfe: // Audio
+            audio.write(addr, data);
+            return;
+            
         /* unused */
         case 0x1014: // ?
         case 0x1048: // SIO
@@ -58,7 +62,6 @@ void CstrHardware::write16(uw addr, uh data) {
         case 0x104e:
         case 0x1074: // iMask
         case 0x1100 ... 0x1128: // Rootcounters
-        case 0x1c00 ... 0x1dfe: // Audio
             accessMem(mem.hwr, uh) = data;
             return;
     }
@@ -104,13 +107,15 @@ uh CstrHardware::read16(uw addr) {
         case 0x1044: // SIO
             return 0xffff; // Nice :)
             
+        case 0x1c08 ... 0x1dae: // Audio
+            return audio.read(addr);
+            
         /* unused */
         case 0x104a: // SIO
         case 0x1014: // ?
         case 0x1070: // iStatus
         case 0x1074: // iMask
         case 0x1110: // Rootcounters
-        case 0x1c08 ... 0x1dae: // Audio
             return accessMem(mem.hwr, uh);
     }
     printx("PSeudo /// Hardware Read 16: $%x", addr);
