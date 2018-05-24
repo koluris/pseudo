@@ -11,6 +11,7 @@
 #define del                         delegate
 #define dispatch_asinc              dispatch_async
 #define dispatch_main_queue         dispatch_get_main_queue
+#define dispatch_outter_queue       dispatch_get_global_queue
 #define RGBA(r, c, b)               colorWithRed:r/255.f green:c/255.f blue:b/255.f alpha:1.f
 #define setAllowedFileKind          setAllowedFileTypes
 #define hei                         height

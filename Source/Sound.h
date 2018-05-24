@@ -1,5 +1,5 @@
 #define SBUF_SIZE\
-    1024*4
+    (1024*64)
 
 
 class CstrAudio {
@@ -62,8 +62,6 @@ public:
         if (!ctx) {
             printf("hi\n");
         }
-        
-        
         
 //        alDeleteSources(1, &source);
 //        alDeleteBuffers(1, &buffer);

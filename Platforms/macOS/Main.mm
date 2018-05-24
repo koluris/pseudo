@@ -86,12 +86,12 @@
         cpu.run();
     }]];
     
-//    dispatch_asinc(dispatch_main_queue(), ^{
-//        while(1) {
-//            audio.decodeStream();
-//            //sleep(1);
-//        }
-//    });
+    dispatch_asinc(dispatch_outter_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        while(1) {
+            audio.decodeStream();
+            usleep(30000);
+        }
+    });
 }
 
 - (void)emulationStop {

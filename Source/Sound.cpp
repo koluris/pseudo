@@ -152,15 +152,18 @@ void CstrAudio::decodeStream() {
     
     // OpenAL
     
-    //ALint state;
-    //alGetSourcei(source, AL_SOURCE_STATE, &state);
-    //if (state != AL_PLAYING) {
-        alGenSources(1, &source);
-        alGenBuffers(1, &bfr);
-        alBufferData(bfr, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE, 44100);
-        alSourcei(source, AL_BUFFER, bfr);
-        alSourcePlay(source);
-    //}
+    ALint state;
+    alGetSourcei(source, AL_SOURCE_STATE, &state);
+    
+    if (state == AL_PLAYING) {
+        alSourceStop(source);
+    }
+    
+    alGenSources(1, &source);
+    alGenBuffers(1, &bfr);
+    alBufferData(bfr, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE/2, 44100);
+    alSourcei(source, AL_BUFFER, bfr);
+    alSourcePlay(source);
     
     memset(&sbuf.temp, 0, sizeof(sbuf.temp));
 }
@@ -175,9 +178,9 @@ void CstrAudio::voiceOn(uh data) {
             spuVoices[n].size  = 0;
             
             depackVAG(&spuVoices[n]);
+            //decodeStream();
         }
     }
-    decodeStream();
 }
 
 void CstrAudio::voiceOff(uh data) {
