@@ -85,6 +85,13 @@
         
         cpu.run();
     }]];
+    
+//    dispatch_asinc(dispatch_main_queue(), ^{
+//        while(1) {
+//            audio.decodeStream();
+//            //sleep(1);
+//        }
+//    });
 }
 
 - (void)emulationStop {

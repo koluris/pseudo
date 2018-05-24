@@ -49,7 +49,6 @@ void CstrAudio::depackVAG(voice *chn) {
     };
     
     uh p = chn->saddr;
-    printf("%d\n", chn->saddr);
     sh s_1 = 0;
     sh s_2 = 0;
     sh temp[28];
@@ -109,7 +108,7 @@ void CstrAudio::decodeStream() {
         for (int i = 0; i < SBUF_SIZE; i++) {
             chn->count += chn->freq;
             if (chn->count >= SAMPLE_RATE) {
-                chn->pos += (chn->count/SAMPLE_RATE) | 0;
+                chn->pos += chn->count/SAMPLE_RATE;
                 chn->count %= SAMPLE_RATE;
             }
             
@@ -142,6 +141,7 @@ void CstrAudio::decodeStream() {
 //        }
 //        else {
             sbuf.fin[i] = (sbuf.temp[i]/4) * ((spuVolumeL+spuVolumeR)/2)/MAX_VOLUME;
+        //printf("%d\n", sbuf.fin[i]);
 //        }
     }
     
@@ -151,9 +151,16 @@ void CstrAudio::decodeStream() {
     //return sbuf.fin;
     
     // OpenAL
-    alBufferData(bfr, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE, 44100);
-    alSourcei(source, AL_BUFFER, bfr);
-    alSourcePlay(source);
+    
+    //ALint state;
+    //alGetSourcei(source, AL_SOURCE_STATE, &state);
+    //if (state != AL_PLAYING) {
+        alGenSources(1, &source);
+        alGenBuffers(1, &bfr);
+        alBufferData(bfr, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE, 44100);
+        alSourcei(source, AL_BUFFER, bfr);
+        alSourcePlay(source);
+    //}
     
     memset(&sbuf.temp, 0, sizeof(sbuf.temp));
 }
@@ -168,9 +175,9 @@ void CstrAudio::voiceOn(uh data) {
             spuVoices[n].size  = 0;
             
             depackVAG(&spuVoices[n]);
-            //decodeStream();
         }
     }
+    decodeStream();
 }
 
 void CstrAudio::voiceOff(uh data) {
