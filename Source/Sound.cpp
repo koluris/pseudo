@@ -49,18 +49,19 @@ void CstrAudio::depackVAG(voice *chn) {
     };
     
     uh p = chn->saddr;
-    uw s_1 = 0;
-    uw s_2 = 0;
-    uw temp[32];
-    memset(&temp, 0, 32);
+    printf("%d\n", chn->saddr);
+    sh s_1 = 0;
+    sh s_2 = 0;
+    sh temp[28];
+    memset(&temp, 0, 28);
     
     while (1) {
-        uw shift  = spuMem.u08[p] & 15;
-        uw filter = spuMem.u08[p] >> 4;
+        ub shift  = spuMem.u08[p] & 15;
+        ub filter = spuMem.u08[p] >> 4;
         
         for (int i = 2; i < 16; i++) {
-            uw a = ((spuMem.u08[p + i] & 0x0f) << 12);
-            uw b = ((spuMem.u08[p + i] & 0xf0) <<  8);
+            sh a = ((spuMem.u08[p + i] & 0x0f) << 12);
+            sh b = ((spuMem.u08[p + i] & 0xf0) <<  8);
             if (a & 0x8000) a |= 0xffff0000;
             if (b & 0x8000) b |= 0xffff0000;
             temp[i * 2 - 4] = a >> shift;
@@ -68,7 +69,7 @@ void CstrAudio::depackVAG(voice *chn) {
         }
         
         for (int i = 0; i < 28; i++) {
-            uh res = temp[i] + ((s_1 * f[filter][0] + s_2 * f[filter][1] + 32) >> 6);
+            sh res = temp[i] + ((s_1 * f[filter][0] + s_2 * f[filter][1] + 32) >> 6);
             s_2 = s_1;
             s_1 = res;
             res = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
@@ -167,9 +168,9 @@ void CstrAudio::voiceOn(uh data) {
             spuVoices[n].size  = 0;
             
             depackVAG(&spuVoices[n]);
+            //decodeStream();
         }
     }
-    decodeStream();
 }
 
 void CstrAudio::voiceOff(uh data) {
