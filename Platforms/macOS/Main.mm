@@ -86,12 +86,12 @@
         cpu.run();
     }]];
     
-    dispatch_asinc(dispatch_outter_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         while(1) {
             audio.decodeStream();
-            usleep(30000);
+            //usleep(10);
         }
-    });
+    }]];
 }
 
 - (void)emulationStop {

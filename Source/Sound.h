@@ -40,7 +40,7 @@ class CstrAudio {
     ALCdevice *device;
     ALCcontext *ctx;
     ALuint source;
-    ALuint bfr;
+    ALuint bfr[4];
     
     void depackVAG(voice *);
     void voiceOn(uh);
@@ -62,6 +62,15 @@ public:
         if (!ctx) {
             printf("hi\n");
         }
+        
+        alGenSources(1, &source);
+        alGenBuffers(4, bfr);
+        
+        for (int i=0; i<4; i++) {
+            alBufferData(bfr[0], AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE/2, 44100);
+        }
+        
+        alSourceQueueBuffers(source, 1, bfr);
         
 //        alDeleteSources(1, &source);
 //        alDeleteBuffers(1, &buffer);

@@ -151,19 +151,23 @@ void CstrAudio::decodeStream() {
     //return sbuf.fin;
     
     // OpenAL
+    ALint processed;
+    alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+    
+    printf("%d\n", processed);
+    
+    while(processed--) {
+        ALuint newb;
+        alSourceUnqueueBuffers(source, 1, &newb);
+        alBufferData(newb, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE/2, 44100);
+        alSourceQueueBuffers(source, 1, &newb);
+    }
     
     ALint state;
     alGetSourcei(source, AL_SOURCE_STATE, &state);
-    
-    if (state == AL_PLAYING) {
-        alSourceStop(source);
+    if (state != AL_PLAYING) {
+        alSourcePlay(source);
     }
-    
-    alGenSources(1, &source);
-    alGenBuffers(1, &bfr);
-    alBufferData(bfr, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE/2, 44100);
-    alSourcei(source, AL_BUFFER, bfr);
-    alSourcePlay(source);
     
     memset(&sbuf.temp, 0, sizeof(sbuf.temp));
 }
