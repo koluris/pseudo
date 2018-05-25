@@ -89,7 +89,7 @@
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         while(1) {
             audio.decodeStream();
-            //usleep(10);
+            //usleep(20000);
         }
     }]];
 }

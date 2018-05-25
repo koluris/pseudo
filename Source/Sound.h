@@ -1,5 +1,5 @@
 #define SBUF_SIZE\
-    (1024*64)
+    1024
 
 
 class CstrAudio {
@@ -40,8 +40,11 @@ class CstrAudio {
     ALCdevice *device;
     ALCcontext *ctx;
     ALuint source;
-    ALuint bfr[4];
     
+#define bufnum 24
+    ALuint bfr[bufnum];
+    
+    void stream();
     void depackVAG(voice *);
     void voiceOn(uh);
     void voiceOff(uh);
@@ -52,25 +55,27 @@ public:
         // OpenAL
         device = alcOpenDevice(NULL);
 
-        if (device == NULL) {
-            // Handle Exception
+        if (!device) {
+            printf("ALC Device error\n");
         }
 
         ctx = alcCreateContext(device, NULL);
         alcMakeContextCurrent(ctx);
         
         if (!ctx) {
-            printf("hi\n");
+            printf("ALC Context error\n");
         }
         
         alGenSources(1, &source);
-        alGenBuffers(4, bfr);
+        alGenBuffers(bufnum, bfr);
+        alSourcei(source, AL_LOOPING, AL_FALSE);
         
-        for (int i=0; i<4; i++) {
-            alBufferData(bfr[0], AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE/2, 44100);
+        for (int i=0; i<bufnum; i++) {
+            alBufferData(bfr[i], AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE, 44100);
         }
         
-        alSourceQueueBuffers(source, 1, bfr);
+        alSourceQueueBuffers(source, bufnum, bfr);
+        stream();
         
 //        alDeleteSources(1, &source);
 //        alDeleteBuffers(1, &buffer);

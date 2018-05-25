@@ -96,6 +96,15 @@ void CstrAudio::depackVAG(voice *chn) {
     }
 }
 
+void CstrAudio::stream() {
+    ALint state;
+    alGetSourcei(source, AL_SOURCE_STATE, &state);
+    
+    if (state != AL_PLAYING) {
+        alSourcePlay(source);
+    }
+}
+
 void CstrAudio::decodeStream() {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         voice *chn = &spuVoices[n];
@@ -114,8 +123,8 @@ void CstrAudio::decodeStream() {
             
             // Mix Channel Samples
 //            if (stereo) {
-//                sbuf.temp[i] += chn.buffer.sh[chn.pos] * (chn.volume.l/MAX_VOLUME);
-//                sbuf.temp[i+SBUF_SIZE] += -chn.buffer.sh[chn.pos] * (chn.volume.r/MAX_VOLUME);
+//            sbuf.temp[i] += chn->buffer.s16[chn->pos] * (chn->volume.l/MAX_VOLUME);
+//            sbuf.temp[i+SBUF_SIZE] += -chn->buffer.s16[chn->pos] * (chn->volume.r/MAX_VOLUME);
 //            }
 //            else {
             sbuf.temp[i] += chn->buffer.s16[chn->pos] * ((chn->volume.l+chn->volume.r)/2)/MAX_VOLUME;
@@ -136,8 +145,8 @@ void CstrAudio::decodeStream() {
     // Volume Mix
     for (int i = 0; i < SBUF_SIZE; i++) {
 //        if (stereo) {
-//            sbuf.final[i] = (sbuf.temp[i]/4) * (spuVolumeL/MAX_VOLUME);
-//            sbuf.final[i+SBUF_SIZE] = -(sbuf.temp[i+SBUF_SIZE]/4) * (spuVolumeR/MAX_VOLUME);
+//            sbuf.fin[i] = (sbuf.temp[i]/4) * (spuVolumeL/MAX_VOLUME);
+//            sbuf.fin[i+SBUF_SIZE] = -(sbuf.temp[i+SBUF_SIZE]/4) * (spuVolumeR/MAX_VOLUME);
 //        }
 //        else {
             sbuf.fin[i] = (sbuf.temp[i]/4) * ((spuVolumeL+spuVolumeR)/2)/MAX_VOLUME;
@@ -151,23 +160,31 @@ void CstrAudio::decodeStream() {
     //return sbuf.fin;
     
     // OpenAL
-    ALint processed;
-    alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+    const char *bsrc = (const char *)sbuf.fin;
+    int size = SBUF_SIZE*2;
+    ALuint buffer;
+    ALint buffers_count;
+    alGetSourcei(source, AL_BUFFERS_PROCESSED, &buffers_count);
     
-    printf("%d\n", processed);
-    
-    while(processed--) {
-        ALuint newb;
-        alSourceUnqueueBuffers(source, 1, &newb);
-        alBufferData(newb, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE/2, 44100);
-        alSourceQueueBuffers(source, 1, &newb);
+    while(size) {
+        if (buffers_count-- <= 0) {
+            stream();
+            alGetSourcei(source, AL_BUFFERS_PROCESSED, &buffers_count);
+            continue;
+        }
+        
+        int bsize = size < SBUF_SIZE*2 ? size : SBUF_SIZE*2;
+        printf("%d\n", bsize);
+        
+        alSourceUnqueueBuffers(source, 1, &buffer);
+        alBufferData(buffer, AL_FORMAT_MONO16, bsrc, bsize, 44100);
+        alSourceQueueBuffers(source, 1, &buffer);
+        
+        size -= bsize;
+        bsrc += bsize;
     }
     
-    ALint state;
-    alGetSourcei(source, AL_SOURCE_STATE, &state);
-    if (state != AL_PLAYING) {
-        alSourcePlay(source);
-    }
+    stream();
     
     memset(&sbuf.temp, 0, sizeof(sbuf.temp));
 }
