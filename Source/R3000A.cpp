@@ -68,17 +68,10 @@ void CstrMips::bootstrap() {
 }
 
 void CstrMips::run() {
-    // Reset state
-    suspended = false;
-    
     // Go!
-    while(!suspended) {
+    while(!psx.suspended) {
         step(false);
     }
-}
-
-void CstrMips::suspend() {
-    suspended = true;
 }
 
 void CstrMips::step(bool branched) {

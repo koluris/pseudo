@@ -215,6 +215,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
         case 0x28: // TODO: Vertex F4
         case 0x29:
         case 0x2a:
+        case 0x2b:
             drawF<F4>(data, 4, GL_TRIANGLE_STRIP);
             return;
             
@@ -242,12 +243,14 @@ void CstrDraw::primitive(uw addr, uw *data) {
         case 0x38: // TODO: Vertex G4
         case 0x39:
         case 0x3a:
+        case 0x3b:
             drawG<G4>(data, 4, GL_TRIANGLE_STRIP);
             return;
             
         case 0x3c: // TODO: Vertex GT4
         case 0x3d:
         case 0x3e:
+        case 0x3f:
             drawGT<GT4>(data, 4);
             return;
             
@@ -258,8 +261,10 @@ void CstrDraw::primitive(uw addr, uw *data) {
             drawF<F2>(data, 2, GL_LINE_STRIP);
             return;
             
-        case 0x49: // TODO: Line F3
+        case 0x48: // TODO: Line F3
+        case 0x49:
         case 0x4a:
+        case 0x4b:
             drawF<F3>(data, 3, GL_LINE_STRIP);
             return;
             
@@ -285,6 +290,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0x5c: // TODO: Line G4
+        case 0x5d:
         case 0x5e:
         case 0x5f:
             drawG<G4>(data, 4, GL_LINE_STRIP);
@@ -325,7 +331,8 @@ void CstrDraw::primitive(uw addr, uw *data) {
             drawSprite(data, 8);
             return;
             
-        case 0x79: // TODO: Tile 16
+        case 0x78: // TODO: Tile 16
+        case 0x79:
         case 0x7a:
         case 0x7b:
             drawTile(data, 16);
@@ -333,6 +340,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             
         case 0x7c: // TODO: Sprite 16
         case 0x7d:
+        case 0x7e:
         case 0x7f:
             drawSprite(data, 16);
             return;

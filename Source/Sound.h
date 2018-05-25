@@ -1,49 +1,53 @@
-#define SBUF_SIZE\
-    512
-
-
 class CstrAudio {
-    typedef struct {
-        sh l, r;
-    } vol;
+    enum {
+        SAMPLE_RATE    =  44100,
+        MAX_CHANNELS   =     24,
+        SBUF_SIZE      =    512,
+        MAX_VOLUME     = 0x3fff,
+        ALC_BUF_AMOUNT =      8,
+    };
     
-    typedef union {
-        sh u16[1024 * 256];
-        ub u08[1024 * 256 * 2];
-    } hi;
+    const sh f[5][2] = {
+        {   0,   0 },
+        {  60,   0 },
+        { 115, -52 },
+        {  98, -55 },
+        { 122, -60 },
+    };
     
-    typedef union {
-        sh s16[USHRT_MAX];
-        ub u08[USHRT_MAX * 2];
-    } hi2;
+    union {
+        sh ish[1024 * 256];
+        ub iub[1024 * 256 * 2];
+    } spuMem;
     
-    typedef struct {
-        hi2 buffer;
-        uh freq, raddr, saddr;
-        uw count;
-        int pos, size;
+    struct voice {
         bool on;
-        vol volume;
-    } voice;
+        
+        union {
+            sh ish[USHRT_MAX];
+            ub iub[USHRT_MAX * 2];
+        } buffer;
+        
+        uw count;
+        sw pos, size;
+        uh freq, raddr, saddr;
+        sh volumeL, volumeR;
+    } spuVoices[MAX_CHANNELS];
     
-    typedef struct {
+    struct {
         sw temp[SBUF_SIZE * 2];
-        sh fin[SBUF_SIZE * 2];
-    } strSbuf;
+        sh  fin[SBUF_SIZE * 2];
+    } sbuf;
     
-    strSbuf sbuf;
-    hi spuMem;
-    voice spuVoices[24];
-    sh spuVolumeL, spuVolumeR;
     sw spuAddr;
+    sh spuVolumeL, spuVolumeR;
     bool stereo;
     
+    // OpenAL
     ALCdevice *device;
     ALCcontext *ctx;
     ALuint source;
-    
-#define bufnum 4
-    ALuint bfr[bufnum];
+    ALuint bfr[ALC_BUF_AMOUNT];
     
     void stream();
     void depackVAG(voice *);
@@ -68,20 +72,21 @@ public:
         }
         
         alGenSources(1, &source);
-        alGenBuffers(bufnum, bfr);
+        alGenBuffers(ALC_BUF_AMOUNT, bfr);
         
-        for (int i=0; i<bufnum; i++) {
-            alBufferData(bfr[i], AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE*2, 44100);
+        for (ub i = 0; i < ALC_BUF_AMOUNT; i++) {
+            alBufferData(bfr[i], AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
         }
         
-        alSourceQueueBuffers(source, bufnum, bfr);
-        
-//        alDeleteSources(1, &source);
-//        alDeleteBuffers(1, &buffer);
-//        device = alcGetContextsDevice(context);
-//        alcMakeContextCurrent(NULL);
-//        alcDestroyContext(context);
-//        alcCloseDevice(device);
+        alSourceQueueBuffers(source, ALC_BUF_AMOUNT, bfr);
+    }
+    
+    ~CstrAudio() {
+        alDeleteSources(1, &source);
+        alDeleteBuffers(ALC_BUF_AMOUNT, bfr);
+        ALCdevice *device = alcGetContextsDevice(ctx);
+        alcMakeContextCurrent(NULL);
+        alcCloseDevice(device);
     }
     
     void reset();

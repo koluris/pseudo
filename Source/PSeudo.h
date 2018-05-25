@@ -3,6 +3,7 @@
     putchar('\n');\
     exit(0)
 
+
 class CstrPSeudo {
     struct {
         ub id[8];  /* SCE EXE || PS-X EXE */
@@ -28,6 +29,10 @@ class CstrPSeudo {
     uw fileSize(FILE *);
     
 public:
+    // Variables
+    bool suspended;
+    
+    // Functions
     void init(const char *);
     void reset();
     void executable(const char *);

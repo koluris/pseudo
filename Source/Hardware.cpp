@@ -107,7 +107,7 @@ uh CstrHardware::read16(uw addr) {
         case 0x1044: // SIO
             return 0xffff; // Nice :)
             
-        case 0x1c08 ... 0x1dae: // Audio
+        case 0x1c00 ... 0x1e0e: // Audio
             return audio.read(addr);
             
         /* unused */

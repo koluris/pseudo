@@ -30,6 +30,7 @@ typedef int8_t  sb; // bite
 // Defines
 #define TYPEDEF         typedef
 
+// OpenGL
 #define GLBlendFunc     glBlendFunc
 #define GLClear         glClear
 #define GLClearColor    glClearColor
@@ -43,6 +44,9 @@ typedef int8_t  sb; // bite
 #define GLStart         glBegin
 #define GLVertex2s      glVertex2s
 #define GLViewport      glViewport
+
+// OpenAL
+#define alSourceStream  alSourcePlay
 
 // User imports
 #import "Bus.h"

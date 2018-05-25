@@ -18,7 +18,6 @@ class CstrMips {
     } res;
     
     uw opcodeCount;
-    bool suspended;
     
     void step(bool);
     void branch(uw);
@@ -30,7 +29,6 @@ public:
     void reset();
     void bootstrap();
     void run();
-    void suspend();
 };
 
 extern CstrMips cpu;

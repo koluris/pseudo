@@ -80,22 +80,24 @@
 }
 
 - (void)emulationStart {
+    // Reset state
+    psx.suspended = false;
+    
+    // CPU & Graphics
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         [[self.openGLView openGLContext] makeCurrentContext];
         
         cpu.run();
     }]];
     
+    // Audio
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
-        while(1) {
-            audio.decodeStream();
-            //usleep(20000);
-        }
+        audio.decodeStream();
     }]];
 }
 
 - (void)emulationStop {
-    cpu.suspend();
+    psx.suspended = true;
     
     // Wait for NSOperationQueue to exit
     [self.queue waitUntilAllOperationsAreFinished];
