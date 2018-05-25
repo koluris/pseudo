@@ -34,7 +34,7 @@ void CstrPSeudo::reset() {
     
 #ifdef MAC_OS_X
     [app consoleClear];
-    [app consolePrint:@"PSeudo™ : Alpha 0.2\n-> reset complete\n"];
+    [app consolePrint:@"PSeudo™ : Alpha 0.6\n-> reset complete\n"];
 #endif
 }
 
