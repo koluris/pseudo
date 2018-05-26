@@ -376,5 +376,5 @@ void CstrDraw::primitive(uw addr, uw *data) {
             vs.ret.status = (vs.ret.status & (~(3 << 11))) | ((data[0] & 3) << 11);
             return;
     }
-    printx("PSeudo /// GPU Draw -> $%x", addr);
+    printx("/// PSeudo GPU Draw: $%x", addr);
 }

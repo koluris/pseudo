@@ -48,7 +48,7 @@ void CstrCounters::write(uw addr, T data) {
             return;
     }
     
-    printx("/// PSeudo RTC write(%lu) 0x%x\n", sizeof(T), (addr & 0xf));
+    printx("/// PSeudo RTC Write(%lu): $%x", sizeof(T), (addr & 0xf));
 }
 
 template void CstrCounters::write<uw>(uw, uw);
@@ -69,7 +69,7 @@ T CstrCounters::read(uw addr) {
             return   dst(p);
     }
     
-    printx("/// PSeudo RTC read(%lu) 0x%x\n", sizeof(T), (addr & 0xf));
+    printx("/// PSeudo RTC Read(%lu): $%x", sizeof(T), (addr & 0xf));
     return 0;
 }
 
@@ -80,14 +80,14 @@ void CstrCounters::update() {
     count(0) += mode(0) & 0x100 ? PSX_CYCLE : PSX_CYCLE / 8;
     
     if (count(0) >= bound(0)) {
-        printx("/// PSeudo RTC timer[0].count >= timer[0].bound\n", 0);
+        printx("/// PSeudo RTC timer[0].count >= timer[0].bound", 0);
     }
     
     if (!(mode(1) & 0x100)) {
         count(1) += PSX_CYCLE;
         
         if (count(1) >= bound(1)) {
-            printx("/// PSeudo RTC timer[1].count >= timer[1].bound\n", 0);
+            printx("/// PSeudo RTC timer[1].count >= timer[1].bound", 0);
         }
     }
     else if ((hbk += PSX_CYCLE) >= PSX_HSYNC) { hbk = 0;

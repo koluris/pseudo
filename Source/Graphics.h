@@ -19,7 +19,7 @@ class CstrGraphics {
     enum {
         GPU_DMA_NONE,
         GPU_DMA_MEM2VRAM = 2,
-        GPU_DMA_VRAM2MEM,
+        GPU_DMA_VRAM2MEM
     };
     
     enum {

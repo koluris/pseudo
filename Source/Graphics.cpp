@@ -55,10 +55,10 @@ void CstrGraphics::write(uw addr, uw data) {
                 case 0x10: // TODO: Information
                     return;
             }
-            printx("PSeudo /// GPU Write Status: $%x", (GPU_COMMAND(data)));
+            printx("/// PSeudo GPU Write Status: $%x", (GPU_COMMAND(data)));
             return;
     }
-    printx("PSeudo /// GPU Write: $%x <- $%x", (addr & 0xf), data);
+    printx("/// PSeudo GPU Write: $%x <- $%x", (addr & 0xf), data);
 }
 
 uw CstrGraphics::read(uw addr) {
@@ -72,7 +72,7 @@ uw CstrGraphics::read(uw addr) {
             
             return ret.status;
     }
-    printx("PSeudo /// GPU Read: $%x", (addr & 0xf));
+    printx("/// PSeudo GPU Read: $%x", (addr & 0xf));
     
     return 0;
 }
@@ -134,5 +134,5 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
             while (dma->madr != 0xffffff);
             return;
     }
-    printx("PSeudo /// GPU DMA: $%x", dma->chcr);
+    printx("/// PSeudo GPU DMA: $%x", dma->chcr);
 }

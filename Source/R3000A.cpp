@@ -204,7 +204,7 @@ void CstrMips::step(bool branched) {
                     base[rd] = base[rs] < base[rt];
                     return;
             }
-            printx("PSeudo /// $%08x | Unknown special opcode $%08x | %d", pc, code, (code & 63));
+            printx("/// PSeudo $%08x | Unknown special opcode $%08x | %d", pc, code, (code & 63));
             return;
             
         case 1: // REGIMM
@@ -229,7 +229,7 @@ void CstrMips::step(bool branched) {
                     }
                     return;
             }
-            printx("PSeudo /// $%08x | Unknown bcond opcode $%08x | %d", pc, code, rt);
+            printx("/// PSeudo $%08x | Unknown bcond opcode $%08x | %d", pc, code, rt);
             return;
             
         case 2: // J
@@ -311,7 +311,7 @@ void CstrMips::step(bool branched) {
                     copr[12] = (copr[12] & 0xfffffff0) | ((copr[12] >> 2) & 0xf);
                     return;
             }
-            printx("PSeudo /// $%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
+            printx("/// PSeudo $%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
             return;
             
         case 18: // TODO: COP2
@@ -371,7 +371,7 @@ void CstrMips::step(bool branched) {
         case 58: // TODO: SWC2
             return;
     }
-    printx("PSeudo /// $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
+    printx("/// PSeudo $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
 }
 
 void CstrMips::branch(uw addr) {
@@ -395,6 +395,10 @@ void CstrMips::branch(uw addr) {
 }
 
 void CstrMips::exception(uw code, bool branched) {
+    if (branched) {
+        printx("/// PSeudo Exception branched", 0);
+    }
+    
     copr[12] = (copr[12] & 0xffffffc0) | ((copr[12] << 2) & 0x3f);
     copr[13] = code;
     copr[14] = pc;

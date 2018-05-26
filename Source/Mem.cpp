@@ -28,7 +28,7 @@ void CstrMem::write32(uw addr, uw data) {
             //printf("$fffe0130 <- $%x\n", data);
             return;
     }
-    printx("PSeudo /// Mem Write 32: $%x <- $%x", addr, data);
+    printx("/// PSeudo Mem Write 32: $%x <- $%x", addr, data);
 }
 
 void CstrMem::write16(uw addr, uh data) {
@@ -42,7 +42,7 @@ void CstrMem::write16(uw addr, uh data) {
             io.write16(addr, data);
             return;
     }
-    printx("PSeudo /// Mem Write 16: $%x <- $%x", addr, data);
+    printx("/// PSeudo Mem Write 16: $%x <- $%x", addr, data);
 }
 
 void CstrMem::write08(uw addr, ub data) {
@@ -57,7 +57,7 @@ void CstrMem::write08(uw addr, ub data) {
             io.write08(addr, data);
             return;
     }
-    printx("PSeudo /// Mem Write 08: $%x <- $%x", addr, data);
+    printx("/// PSeudo Mem Write 08: $%x <- $%x", addr, data);
 }
 
 uw CstrMem::read32(uw addr) {
@@ -73,7 +73,7 @@ uw CstrMem::read32(uw addr) {
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             return io.read32(addr);
     }
-    printx("PSeudo /// Mem Read 32: $%x", addr);
+    printx("/// PSeudo Mem Read 32: $%x", addr);
     
     return 0;
 }
@@ -90,7 +90,7 @@ uh CstrMem::read16(uw addr) {
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             return io.read16(addr);
     }
-    printx("PSeudo /// Mem Read 16: $%x", addr);
+    printx("/// PSeudo Mem Read 16: $%x", addr);
     
     return 0;
 }
@@ -110,19 +110,20 @@ ub CstrMem::read08(uw addr) {
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             return io.read08(addr);
     }
-    printx("PSeudo /// Mem Read 08: $%x", addr);
+    printx("/// PSeudo Mem Read 08: $%x", addr);
     
     return 0;
 }
 
+// OTC
 void CstrMem::executeDMA(CstrBus::castDMA *dma) {
-    uw *ptr = (uw *)&ram.ptr[dma->madr & (ram.size - 1)];
+    uw *p = (uw *)&ram.ptr[dma->madr & (ram.size - 1)];
 
     if (dma->chcr == 0x11000002) {
         while(dma->bcr--) {
-            *ptr-- = (dma->madr - 4) & 0xffffff;
+            *p-- = (dma->madr - 4) & 0xffffff;
             dma->madr -= 4;
         }
-        ptr++; *ptr = 0xffffff;
+        p++; *p = 0xffffff;
     }
 }

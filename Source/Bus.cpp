@@ -43,7 +43,7 @@ void CstrBus::checkDMA(uw addr, uw data) {
                 vs.executeDMA(dma);
                 break;
                 
-            case DMA_SPU: // TODO
+            case DMA_SPU:
                 audio.executeDMA(dma);
                 break;
                 
@@ -52,7 +52,7 @@ void CstrBus::checkDMA(uw addr, uw data) {
                 break;
                 
             default:
-                printx("PSeudo /// DMA Channel: %d", chan);
+                printx("/// PSeudo DMA Channel: %d", chan);
                 break;
         }
         dma->chcr = data & ~(0x01000000);

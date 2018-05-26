@@ -56,7 +56,7 @@ void CstrAudio::depackVAG(voice *chn) {
             
             // Overflow
             if (chn->size == USHRT_MAX) {
-                printf("PSeudo /// SPU Channel size overflow\n");
+                printf("/// PSeudo SPU Channel size overflow\n");
                 return;
             }
         }
@@ -140,7 +140,7 @@ void CstrAudio::decodeStream() {
         
         if (processed >= ALC_BUF_AMOUNT) {
             // We have to free buffers
-            printf("PSeudo /// Inadequent ALC buffer size -> %d\n", processed);
+            printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
         }
         
         int size = SBUF_SIZE;
@@ -226,7 +226,7 @@ void CstrAudio::write(uw addr, uh data) {
                 return;
         }
         
-        printx("PSeudo /// SPU write phase $%x <- $%x", addr, data);
+        printx("/// PSeudo SPU write phase: $%x <- $%x", addr, data);
     }
     
     // Reverb
@@ -292,7 +292,7 @@ void CstrAudio::write(uw addr, uh data) {
             return;
     }
     
-    printx("PSeudo /// SPU write: $%x <- $%x", addr, data);
+    printx("/// PSeudo SPU write: $%x <- $%x", addr, data);
 }
 
 uh CstrAudio::read(uw addr) {
@@ -313,7 +313,7 @@ uh CstrAudio::read(uw addr) {
                 return spuAcc(addr);
         }
         
-        printx("PSeudo /// SPU read phase: $%x", (addr & 0xf));
+        printx("/// PSeudo SPU read phase: $%x", (addr & 0xf));
     }
     
     // HW
@@ -339,7 +339,7 @@ uh CstrAudio::read(uw addr) {
             return spuAcc(addr);
     }
     
-    printx("PSeudo /// SPU read: $%x", addr);
+    printx("/// PSeudo SPU read: $%x", addr);
     return 0;
 }
 
@@ -364,5 +364,5 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
 //            return;
     }
     
-    printx("PSeudo /// SPU DMA: $%x", dma->chcr);
+    printx("/// PSeudo SPU DMA: $%x", dma->chcr);
 }

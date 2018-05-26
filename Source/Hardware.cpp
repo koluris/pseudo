@@ -45,7 +45,7 @@ void CstrHardware::write32(uw addr, uw data) {
             accessMem(mem.hwr, uw) = data;
             return;
     }
-    printx("PSeudo /// Hardware Write 32: $%x <- $%x", addr, data);
+    printx("/// PSeudo Hardware Write 32: $%x <- $%x", addr, data);
 }
 
 void CstrHardware::write16(uw addr, uh data) {
@@ -71,7 +71,7 @@ void CstrHardware::write16(uw addr, uh data) {
             accessMem(mem.hwr, uh) = data;
             return;
     }
-    printx("PSeudo /// Hardware Write 16: $%x <- $%x", addr, data);
+    printx("/// PSeudo Hardware Write 16: $%x <- $%x", addr, data);
 }
 
 void CstrHardware::write08(uw addr, ub data) {
@@ -83,7 +83,7 @@ void CstrHardware::write08(uw addr, ub data) {
             accessMem(mem.hwr, ub) = data;
             return;
     }
-    printx("PSeudo /// Hardware Write 08: $%x <- $%x", addr, data);
+    printx("/// PSeudo Hardware Write 08: $%x <- $%x", addr, data);
 }
 
 uw CstrHardware::read32(uw addr) {
@@ -105,7 +105,7 @@ uw CstrHardware::read32(uw addr) {
         case 0x10f4: // DICR
             return accessMem(mem.hwr, uw);
     }
-    printx("PSeudo /// Hardware Read 32: $%x", addr);
+    printx("/// PSeudo Hardware Read 32: $%x", addr);
     
     return 0;
 }
@@ -128,7 +128,7 @@ uh CstrHardware::read16(uw addr) {
         case 0x1074: // iMask
             return accessMem(mem.hwr, uh);
     }
-    printx("PSeudo /// Hardware Read 16: $%x", addr);
+    printx("/// PSeudo Hardware Read 16: $%x", addr);
     
     return 0;
 }
@@ -140,7 +140,7 @@ ub CstrHardware::read08(uw addr) {
         case 0x1800 ... 0x1803: // CD-ROM
             return accessMem(mem.hwr, ub);
     }
-    printx("PSeudo /// Hardware Read 08: $%x", addr);
+    printx("/// PSeudo Hardware Read 08: $%x", addr);
     
     return 0;
 }
