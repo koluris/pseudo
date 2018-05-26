@@ -1,13 +1,27 @@
 #import "Global.h"
 
 
+#define count(n)\
+    *(uh *)&mem.hwr.ptr[0x1100 + (n << 4)]
+
+#define  mode(n)\
+    *(uw *)&mem.hwr.ptr[0x1104 + (n << 4)]
+
+#define   dst(n)\
+    *(uh *)&mem.hwr.ptr[0x1108 + (n << 4)]
+
+#define bound(n)\
+    bounds[n]
+
+#define RTC_PORT(addr)\
+    (addr >> 4) & 3
+
+
 CstrCounters rootc;
 
 void CstrCounters::reset() {
-    memset(&timer, 0, sizeof(timer));
-    
     for (ub i = 0; i < 3; i++) {
-        timer[i].bound = RTC_LIMIT;
+        bounds[i] = RTC_BOUND;
     }
     
     vbk = 0;
@@ -16,21 +30,21 @@ void CstrCounters::reset() {
 
 template <class T>
 void CstrCounters::write(uw addr, T data) {
-    ub chn = (addr & 0x30) >> 4;
+    ub p = RTC_PORT(addr);
     
     switch(addr & 0xf) {
         case RTC_COUNT:
-            timer[chn].count = data & 0xffff;
+            count(p) = data & 0xffff;
             return;
             
         case RTC_MODE:
-            timer[chn].mode  = data;
-            timer[chn].bound = (timer[chn].mode & 8) ? timer[chn].des : RTC_LIMIT;
+             mode(p) = data;
+            bound(p) = mode(p) & 8 ? dst(p) : RTC_BOUND;
             return;
             
         case RTC_TARGET:
-            timer[chn].des   = data & 0xffff;
-            timer[chn].bound = (timer[chn].mode & 8) ? timer[chn].des : RTC_LIMIT;
+              dst(p) = data & 0xffff;
+            bound(p) = mode(p) & 8 ? dst(p) : RTC_BOUND;
             return;
     }
     
@@ -42,17 +56,17 @@ template void CstrCounters::write<uh>(uw, uh);
 
 template <class T>
 T CstrCounters::read(uw addr) {
-    ub chn = (addr & 0x30) >> 4;
+    ub p = RTC_PORT(addr);
     
     switch(addr & 0xf) {
         case RTC_COUNT:
-            return timer[chn].count;
+            return count(p);
             
         case RTC_MODE:
-            return timer[chn].mode;
+            return  mode(p);
             
         case RTC_TARGET:
-            return timer[chn].des;
+            return   dst(p);
     }
     
     printx("/// PSeudo RTC read(%lu) 0x%x\n", sizeof(T), (addr & 0xf));
@@ -63,32 +77,34 @@ template uw CstrCounters::read<uw>(uw);
 template uh CstrCounters::read<uh>(uw);
 
 void CstrCounters::update() {
-    timer[0].count = timer[0].count + (timer[0].mode & 0x100 ? PSX_CYCLE : PSX_CYCLE / 8);
+    count(0) += mode(0) & 0x100 ? PSX_CYCLE : PSX_CYCLE / 8;
     
-    if (timer[0].count >= timer[0].bound) {
+    if (count(0) >= bound(0)) {
         printx("/// PSeudo RTC timer[0].count >= timer[0].bound\n", 0);
     }
     
-    if (!(timer[1].mode & 0x100)) {
-        timer[1].count = timer[1].count + PSX_CYCLE;
+    if (!(mode(1) & 0x100)) {
+        count(1) += PSX_CYCLE;
         
-        if (timer[1].count >= timer[1].bound) {
+        if (count(1) >= bound(1)) {
             printx("/// PSeudo RTC timer[1].count >= timer[1].bound\n", 0);
         }
     }
     else if ((hbk += PSX_CYCLE) >= PSX_HSYNC) { hbk = 0;
-        if (++timer[1].count >= timer[1].bound) { timer[1].count = 0;
-            if (timer[1].mode & 0x50) {
+        if (++count(1) >= bound(1)) {
+            count(1) = 0;
+            if (mode(1) & 0x50) {
                 data16 |= 0x20;
             }
         }
     }
     
-    if (!(timer[2].mode & 1)) {
-        timer[2].count = timer[2].count + (timer[2].mode & 0x200 ? PSX_CYCLE / 8 : PSX_CYCLE);
+    if (!(mode(2) & 1)) {
+        count(2) += mode(2) & 0x200 ? PSX_CYCLE / 8 : PSX_CYCLE;
         
-        if (timer[2].count >= timer[2].bound) { timer[2].count = 0;
-            if (timer[2].mode & 0x50) {
+        if (count(2) >= bound(2)) {
+            count(2) = 0;
+            if (mode(2) & 0x50) {
                 data16 |= 0x40;
             }
         }

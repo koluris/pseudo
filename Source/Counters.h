@@ -18,22 +18,21 @@ class CstrCounters {
         RTC_COUNT  = 0x0,
         RTC_MODE   = 0x4,
         RTC_TARGET = 0x8,
-        RTC_LIMIT  = 0xffff
+        RTC_BOUND  = 0xffff
     };
     
-    struct {
-        uw mode; uh count, des, bound;
-    } timer[3];
-    
+    uh bounds[3];
     uw vbk, hbk;
     
 public:
     void reset();
     void update();
     
+    // Store
     template <class T>
     void write(uw, T);
     
+    // Load
     template <class T>
     T read(uw);
 };
