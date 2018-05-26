@@ -12,13 +12,13 @@ class CstrBus {
     };
     
     enum {
-        DMA_MDEC_IN,
-        DMA_MDEC_OUT,
-        DMA_GPU,
-        DMA_CD,
-        DMA_SPU,
-        DMA_PARALLEL,
-        DMA_CLEAR_OT
+        /* 0 */ DMA_MDEC_IN,
+        /* 1 */ DMA_MDEC_OUT,
+        /* 2 */ DMA_GPU,
+        /* 3 */ DMA_CD,
+        /* 4 */ DMA_SPU,
+        /* 5 */ DMA_PARALLEL,
+        /* 6 */ DMA_CLEAR_OT
     };
     
     struct interrupt {

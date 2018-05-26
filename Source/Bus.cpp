@@ -19,8 +19,8 @@ void CstrBus::interruptsUpdate() { // A method to schedule when IRQs should fire
         
         if (item->queued) {
             if (item->queued++ == item->dest) {
-                data16 |= (1 << item->code);
                 item->queued = IRQ_QUEUED_NO;
+                data16 |= (1 << item->code);
                 break;
             }
         }
