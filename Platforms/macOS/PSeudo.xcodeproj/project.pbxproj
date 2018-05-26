@@ -17,7 +17,7 @@
 		42B6B61A20B57D5700D70027 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B6B61820B57D5700D70027 /* Sound.cpp */; };
 		42B9957B20626481009B67BE /* R3000A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B9957920626481009B67BE /* R3000A.cpp */; };
 		42CA2D3620AF4776003F72D0 /* Options.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42CA2D3520AF4776003F72D0 /* Options.mm */; };
-		42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CB1D6C206E34680023337A /* Rootcounters.cpp */; };
+		42CB1D6E206E34680023337A /* Counters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CB1D6C206E34680023337A /* Counters.cpp */; };
 		42DB69702070DF0800000D08 /* Graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42DB696E2070DF0800000D08 /* Graphics.cpp */; };
 		42DE0D5920711EA200EEB549 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42DE0D5820711EA200EEB549 /* OpenGL.framework */; };
 		42EBBCD32062482200824B95 /* Main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42EBBCD22062482200824B95 /* Main.mm */; };
@@ -46,8 +46,8 @@
 		42B9957A20626481009B67BE /* R3000A.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = R3000A.h; sourceTree = "<group>"; };
 		42CA2D3520AF4776003F72D0 /* Options.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Options.mm; sourceTree = "<group>"; };
 		42CA2D3720AF479A003F72D0 /* Options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
-		42CB1D6C206E34680023337A /* Rootcounters.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Rootcounters.cpp; sourceTree = "<group>"; };
-		42CB1D6D206E34680023337A /* Rootcounters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rootcounters.h; sourceTree = "<group>"; };
+		42CB1D6C206E34680023337A /* Counters.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Counters.cpp; sourceTree = "<group>"; };
+		42CB1D6D206E34680023337A /* Counters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Counters.h; sourceTree = "<group>"; };
 		42DB696E2070DF0800000D08 /* Graphics.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Graphics.cpp; sourceTree = "<group>"; };
 		42DB696F2070DF0800000D08 /* Graphics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Graphics.h; sourceTree = "<group>"; };
 		42DE0D5820711EA200EEB549 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -169,12 +169,12 @@
 			isa = PBXGroup;
 			children = (
 				428EAF2C207376DD003BC141 /* Bus */,
+				42CB1D6B206E344A0023337A /* Counters */,
 				42DB696D2070DEEC00000D08 /* Graphics */,
 				42587A892068BF040054BEC8 /* Hardware */,
 				429C3EBA2064FDC500915293 /* Mem */,
 				429C3EBE20650C9B00915293 /* PSeudo */,
 				420AD1C12063BB0F006C22D9 /* R3000A */,
-				42CB1D6B206E344A0023337A /* Rootcounters */,
 				42B6B61720B57D4500D70027 /* Sound */,
 				420AD1C22063BB24006C22D9 /* Global.h */,
 			);
@@ -191,13 +191,13 @@
 			name = Options;
 			sourceTree = "<group>";
 		};
-		42CB1D6B206E344A0023337A /* Rootcounters */ = {
+		42CB1D6B206E344A0023337A /* Counters */ = {
 			isa = PBXGroup;
 			children = (
-				42CB1D6C206E34680023337A /* Rootcounters.cpp */,
-				42CB1D6D206E34680023337A /* Rootcounters.h */,
+				42CB1D6C206E34680023337A /* Counters.cpp */,
+				42CB1D6D206E34680023337A /* Counters.h */,
 			);
-			name = Rootcounters;
+			name = Counters;
 			sourceTree = "<group>";
 		};
 		42DB696D2070DEEC00000D08 /* Graphics */ = {
@@ -316,7 +316,7 @@
 				42EBBCD32062482200824B95 /* Main.mm in Sources */,
 				42B9957B20626481009B67BE /* R3000A.cpp in Sources */,
 				42CA2D3620AF4776003F72D0 /* Options.mm in Sources */,
-				42CB1D6E206E34680023337A /* Rootcounters.cpp in Sources */,
+				42CB1D6E206E34680023337A /* Counters.cpp in Sources */,
 				42DB69702070DF0800000D08 /* Graphics.cpp in Sources */,
 				429C3EC120650CB400915293 /* PSeudo.cpp in Sources */,
 				42032C1820B483DD00B032A8 /* Draw.cpp in Sources */,

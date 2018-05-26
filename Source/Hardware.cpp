@@ -21,6 +21,10 @@ void CstrHardware::write32(uw addr, uw data) {
             icr = (icr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
             return;
             
+        case 0x1114 ... 0x1118: // Rootcounters
+            rootc.write<uw>(addr, data);
+            return;
+            
         case 0x1810 ... 0x1814: // Graphics
             vs.write(addr, data);
             return;
@@ -38,7 +42,6 @@ void CstrHardware::write32(uw addr, uw data) {
         case 0x1060: // RAM Size
         case 0x1074: // iMask
         case 0x10f0: // DPCR
-        case 0x1114 ... 0x1118: // Rootcounters
             accessMem(mem.hwr, uw) = data;
             return;
     }
@@ -51,6 +54,10 @@ void CstrHardware::write16(uw addr, uh data) {
             data16 &= data & mask16;
             return;
             
+        case 0x1100 ... 0x1128: // Rootcounters
+            rootc.write<uh>(addr, data);
+            return;
+            
         case 0x1c00 ... 0x1dfe: // Audio
             audio.write(addr, data);
             return;
@@ -61,7 +68,6 @@ void CstrHardware::write16(uw addr, uh data) {
         case 0x104a:
         case 0x104e:
         case 0x1074: // iMask
-        case 0x1100 ... 0x1128: // Rootcounters
             accessMem(mem.hwr, uh) = data;
             return;
     }
@@ -82,6 +88,9 @@ void CstrHardware::write08(uw addr, ub data) {
 
 uw CstrHardware::read32(uw addr) {
     switch(lob(addr)) {
+        case 0x1100 ... 0x1110: // Rootcounters
+            return rootc.read<uw>(addr);
+            
         case 0x1810 ... 0x1814: // Graphics
             return vs.read(addr);
             
@@ -94,7 +103,6 @@ uw CstrHardware::read32(uw addr) {
         case 0x10e8:
         case 0x10f0: // DPCR
         case 0x10f4: // DICR
-        case 0x1110: // Rootcounters
             return accessMem(mem.hwr, uw);
     }
     printx("PSeudo /// Hardware Read 32: $%x", addr);
@@ -107,6 +115,9 @@ uh CstrHardware::read16(uw addr) {
         case 0x1044: // SIO
             return 0xffff; // Nice :)
             
+        case 0x1110 ... 0x1128: // Rootcounters
+            return rootc.read<uh>(addr);
+            
         case 0x1c00 ... 0x1e0e: // Audio
             return audio.read(addr);
             
@@ -115,7 +126,6 @@ uh CstrHardware::read16(uw addr) {
         case 0x1014: // ?
         case 0x1070: // iStatus
         case 0x1074: // iMask
-        case 0x1110: // Rootcounters
             return accessMem(mem.hwr, uh);
     }
     printx("PSeudo /// Hardware Read 16: $%x", addr);
