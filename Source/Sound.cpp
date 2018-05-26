@@ -138,6 +138,11 @@ void CstrAudio::decodeStream() {
         ALint processed;
         alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
         
+        if (processed >= ALC_BUF_AMOUNT) {
+            // We have to free buffers
+            printf("PSeudo /// Inadequent ALC buffer size -> %d\n", processed);
+        }
+        
         int size = SBUF_SIZE;
         ALuint buffer;
         
@@ -185,7 +190,7 @@ void CstrAudio::voiceOff(uh data) {
 
 void CstrAudio::write(uw addr, uh data) {
     // Switch to low order bits
-    addr = lob(addr);
+    addr = LO_BITS(addr);
     
     spuAcc(addr) = data;
     
@@ -292,7 +297,7 @@ void CstrAudio::write(uw addr, uh data) {
 
 uh CstrAudio::read(uw addr) {
     // Switch to low order bits
-    addr = lob(addr);
+    addr = LO_BITS(addr);
     
     // Channels
     if (addr >= 0x1c00 && addr <= 0x1d7e) {

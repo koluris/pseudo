@@ -4,7 +4,7 @@
 CstrHardware io;
 
 void CstrHardware::write32(uw addr, uw data) {
-    switch(lob(addr)) {
+    switch(LO_BITS(addr)) {
         case 0x1070: // iStatus
             data32 &= data & mask32;
             return;
@@ -18,7 +18,7 @@ void CstrHardware::write32(uw addr, uw data) {
             return;
             
         case 0x10f4: // DICR, thanks Calb, Galtor :)
-            icr = (icr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
+            dicr = (dicr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
             return;
             
         case 0x1114 ... 0x1118: // Rootcounters
@@ -49,7 +49,7 @@ void CstrHardware::write32(uw addr, uw data) {
 }
 
 void CstrHardware::write16(uw addr, uh data) {
-    switch(lob(addr)) {
+    switch(LO_BITS(addr)) {
         case 0x1070: // iStatus
             data16 &= data & mask16;
             return;
@@ -75,7 +75,7 @@ void CstrHardware::write16(uw addr, uh data) {
 }
 
 void CstrHardware::write08(uw addr, ub data) {
-    switch(lob(addr)) {
+    switch(LO_BITS(addr)) {
         /* unused */
         case 0x1040: // SIO
         case 0x1800 ... 0x1803: // CD-ROM
@@ -87,7 +87,7 @@ void CstrHardware::write08(uw addr, ub data) {
 }
 
 uw CstrHardware::read32(uw addr) {
-    switch(lob(addr)) {
+    switch(LO_BITS(addr)) {
         case 0x1100 ... 0x1110: // Rootcounters
             return rootc.read<uw>(addr);
             
@@ -111,7 +111,7 @@ uw CstrHardware::read32(uw addr) {
 }
 
 uh CstrHardware::read16(uw addr) {
-    switch(lob(addr)) {
+    switch(LO_BITS(addr)) {
         case 0x1044: // SIO
             return 0xffff; // Nice :)
             
@@ -134,7 +134,7 @@ uh CstrHardware::read16(uw addr) {
 }
 
 ub CstrHardware::read08(uw addr) {
-    switch(lob(addr)) {
+    switch(LO_BITS(addr)) {
         /* unused */
         case 0x1040: // SIO
         case 0x1800 ... 0x1803: // CD-ROM

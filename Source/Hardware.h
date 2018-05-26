@@ -1,5 +1,5 @@
 // Low order bits
-#define lob(addr)\
+#define LO_BITS(addr)\
     (addr & 0xffff)
 
 #define data32\

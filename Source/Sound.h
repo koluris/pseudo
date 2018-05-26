@@ -2,9 +2,9 @@ class CstrAudio {
     enum {
         SAMPLE_RATE    =  44100,
         MAX_CHANNELS   =     24,
-        SBUF_SIZE      =    512,
+        SBUF_SIZE      =    256,
         MAX_VOLUME     = 0x3fff,
-        ALC_BUF_AMOUNT =      8,
+        ALC_BUF_AMOUNT =     16,
     };
     
     const sh f[5][2] = {
