@@ -115,18 +115,14 @@ ub CstrMem::read08(uw addr) {
     return 0;
 }
 
-#define RAM32(addr)\
-    *(uw *)&ram.ptr[addr & (ram.size-1)]
-
 void CstrMem::executeDMA(CstrBus::castDMA *dma) {
-    if (!dma->bcr || dma->chcr != 0x11000002) {
-        return;
+    uw *ptr = (uw *)&ram.ptr[dma->madr & (ram.size - 1)];
+
+    if (dma->chcr == 0x11000002) {
+        while(dma->bcr--) {
+            *ptr-- = (dma->madr - 4) & 0xffffff;
+            dma->madr -= 4;
+        }
+        ptr++; *ptr = 0xffffff;
     }
-    dma->madr &= 0xffffff;
-    
-    while (--dma->bcr) {
-        RAM32(dma->madr) = (dma->madr - 4) & 0xffffff;
-        dma->madr -= 4;
-    }
-    RAM32(dma->madr) =  0xffffff;
 }
