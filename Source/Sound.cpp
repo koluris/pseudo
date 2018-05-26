@@ -169,8 +169,8 @@ void CstrAudio::decodeStream() {
 void CstrAudio::voiceOn(uh data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
-            spuVoices[n].on    = true;
             spuVoices[n].count = 0;
+            spuVoices[n].on    = true;
             spuVoices[n].pos   = 0;
             spuVoices[n].raddr = 0;
             spuVoices[n].size  = 0;

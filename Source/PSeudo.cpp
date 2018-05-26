@@ -29,6 +29,7 @@ void CstrPSeudo::reset() {
     suspended = false;
     
     audio.reset();
+      bus.reset();
       cpu.reset();
       mem.reset();
     rootc.reset();

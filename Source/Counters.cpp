@@ -94,7 +94,7 @@ void CstrCounters::update() {
         if (++count(1) >= bound(1)) {
             count(1) = 0;
             if (mode(1) & 0x50) {
-                data16 |= 0x20;
+                bus.interruptSet(CstrBus::IRQ_RTC1);
             }
         }
     }
@@ -105,14 +105,14 @@ void CstrCounters::update() {
         if (count(2) >= bound(2)) {
             count(2) = 0;
             if (mode(2) & 0x50) {
-                data16 |= 0x40;
+                bus.interruptSet(CstrBus::IRQ_RTC2);
             }
         }
     }
     
     // VBlank
     if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
-        data16 |= 1;
         draw.refresh();
+        bus.interruptSet(CstrBus::IRQ_VSYNC);
     }
 }

@@ -375,11 +375,14 @@ void CstrMips::step(bool branched) {
 }
 
 void CstrMips::branch(uw addr) {
+    // Execute instruction in slot
     step(true);
     pc = addr;
     
-    if (opcodeCount >= PSX_CYCLE) { // TODO: Rootcounters, interrupts
+    if (opcodeCount >= PSX_CYCLE) {
+        // Rootcounters, interrupts
         rootc.update();
+        bus.interruptsUpdate();
         
         // Exceptions
         if (data32 & mask32) {

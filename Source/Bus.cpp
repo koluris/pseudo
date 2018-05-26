@@ -3,6 +3,34 @@
 
 CstrBus bus;
 
+void CstrBus::reset() {
+    ub size = sizeof(interrupts) / sizeof(interrupts[0]);
+    
+    for (ub i = 0; i < size; i++) {
+        interrupts[i].queued = IRQ_QUEUED_NO;
+    }
+}
+
+void CstrBus::interruptsUpdate() { // A method to schedule when IRQs should fire
+    ub size = sizeof(interrupts) / sizeof(interrupts[0]);
+    
+    for (ub i = 0; i < size; i++) {
+        interrupt *item = &interrupts[i];
+        
+        if (item->queued) {
+            if (item->queued++ == item->dest) {
+                data16 |= (1 << item->code);
+                item->queued = IRQ_QUEUED_NO;
+                break;
+            }
+        }
+    }
+}
+
+void CstrBus::interruptSet(ub code) {
+    interrupts[code].queued = IRQ_QUEUED_YES;
+}
+
 void CstrBus::checkDMA(uw addr, uw data) {
     ub chan = ((addr >> 4) & 0xf) - 8;
     
@@ -27,11 +55,11 @@ void CstrBus::checkDMA(uw addr, uw data) {
                 printx("PSeudo /// DMA Channel: %d", chan);
                 break;
         }
-        dma->chcr = data & ~0x01000000;
+        dma->chcr = data & ~(0x01000000);
         
         if (dicr & (1 << (16 + chan))) {
             dicr |= 1 << (24 + chan);
-            data16 |= 8;
+            bus.interruptSet(CstrBus::IRQ_DMA);
         }
     }
 }
