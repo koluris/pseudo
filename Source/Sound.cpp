@@ -15,16 +15,16 @@ void CstrAudio::reset() {
     memset(&spuMem, 0, sizeof(spuMem));
     memset(&  sbuf, 0, sizeof(sbuf));
     
+    // Channels reset
+    for (int n = 0; n < MAX_CHANNELS; n++) {
+        memset(&spuVoices[n], 0, sizeof(spuVoices[n]));
+    }
+    
     // Variables
     spuAddr    = ~(0);
     spuVolumeL = MAX_VOLUME;
     spuVolumeR = MAX_VOLUME;
     stereo     = true;
-    
-    // Channels reset
-    for (int n = 0; n < MAX_CHANNELS; n++) {
-        memset(&spuVoices[n], 0, sizeof(spuVoices[n]));
-    }
 }
 
 void CstrAudio::depackVAG(voice *chn) {
@@ -56,7 +56,7 @@ void CstrAudio::depackVAG(voice *chn) {
             
             // Overflow
             if (chn->size == USHRT_MAX) {
-                printf("SPU Channel size overflow\n");
+                printf("PSeudo /// SPU Channel size overflow\n");
                 return;
             }
         }
