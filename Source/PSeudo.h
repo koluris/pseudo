@@ -3,6 +3,10 @@
     putchar('\n');\
     exit(0)
 
+// Low order bits
+#define LO_BITS(addr)\
+    (addr & 0xffff)
+
 
 class CstrPSeudo {
     struct {

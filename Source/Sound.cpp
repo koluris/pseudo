@@ -163,6 +163,8 @@ void CstrAudio::decodeStream() {
         
         // Clear
         memset(&sbuf.temp, 0, sizeof(sbuf.temp));
+        
+        //usleep(1000);
     }
 }
 

@@ -25,16 +25,16 @@ class CstrBus {
         const uw code, dest; ub queued;
     } interrupts[11] = {
         { IRQ_VSYNC, 1 },
-        { IRQ_GPU  , 1 },
-        { IRQ_CD   , 4 },
-        { IRQ_DMA  , 1 },
-        { IRQ_RTC0 , 1 },
-        { IRQ_RTC1 , 1 },
-        { IRQ_RTC2 , 1 },
-        { IRQ_SIO0 , 8 },
-        { IRQ_SIO1 , 8 },
-        { IRQ_SPU  , 1 },
-        { IRQ_PIO  , 1 },
+        { IRQ_GPU,   1 },
+        { IRQ_CD,    4 },
+        { IRQ_DMA,   1 },
+        { IRQ_RTC0,  1 },
+        { IRQ_RTC1,  1 },
+        { IRQ_RTC2,  1 },
+        { IRQ_SIO0,  8 },
+        { IRQ_SIO1,  8 },
+        { IRQ_SPU,   1 },
+        { IRQ_PIO,   1 },
     };
     
 public:
