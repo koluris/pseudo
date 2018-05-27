@@ -11,11 +11,18 @@
 CstrDraw draw;
 
 void CstrDraw::reset() {
-    blend = 0;
+    blend    = 0;
+    spriteTP = 0;
     
+    // OpenGL
     GLViewport(0, 0, 320*2, 240*2);
     GLMatrixMode(GL_MODELVIEW);
     GLID();
+    
+    GLMatrixMode(GL_TEXTURE);
+    GLID();
+    GLScalef(1.0f / 256.0f, 1.0f / 256.0f, 1.0f);
+    
     GLEnable(GL_BLEND);
     GLClearColor(0, 0, 0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
@@ -36,7 +43,7 @@ void CstrDraw::refresh() {
     GLFlush();
 }
 
-void CstrDraw::blockFill(uw *data) {
+void CstrDraw::drawRect(uw *data) {
     TILEx *k = (TILEx *)data;
     
     GLColor4ub(k->c.a, k->c.b, k->c.c, COLOR_MAX);
@@ -179,12 +186,21 @@ void CstrDraw::drawSprite(uw *data, sh size) {
         GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
     }
     
+    GLEnable(GL_TEXTURE_2D);
+    //cache.fetchTexture(spriteTP, k->vx.tp);
+    
     GLStart(GL_TRIANGLE_STRIP);
-        GLVertex2s(k->vx.w,        k->vx.h);
-        GLVertex2s(k->vx.w + k->w, k->vx.h);
-        GLVertex2s(k->vx.w,        k->vx.h + k->h);
-        GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
+        GLTexCoord2s(k->vx.u,        k->vx.v);
+        GLVertex2s  (k->vx.w,        k->vx.h);
+        GLTexCoord2s(k->vx.u + k->w, k->vx.v);
+        GLVertex2s  (k->vx.w + k->w, k->vx.h);
+        GLTexCoord2s(k->vx.u,        k->vx.v + k->h);
+        GLVertex2s  (k->vx.w,        k->vx.h + k->h);
+        GLTexCoord2s(k->vx.u + k->w, k->vx.v + k->h);
+        GLVertex2s  (k->vx.w + k->w, k->vx.h + k->h);
     GLEnd();
+    
+    GLDisable(GL_TEXTURE_2D);
 }
 
 void CstrDraw::primitive(uw addr, uw *data) {
@@ -294,8 +310,9 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0xe1: // Texture P.
-            blend  = (data[0] >> 5) & 0x3;
-            vs.ret.status = vs.ret.status & ~(0x7ff);
+            blend = (data[0] >> 5) & 0x3;
+            spriteTP = data[0] & 0x7ff;
+            vs.ret.status = (vs.ret.status & ~(0x7ff)) | spriteTP;
             GLBlendFunc(bit[blend].src, bit[blend].dst);
             return;
             

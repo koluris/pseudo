@@ -35,13 +35,16 @@ typedef int8_t  sb; // bite
 #define GLClear         glClear
 #define GLClearColor    glClearColor
 #define GLColor4ub      glColor4ub
+#define GLDisable       glDisable
 #define GLEnable        glEnable
 #define GLEnd           glEnd
 #define GLFlush         glFlush
 #define GLID            glLoadIdentity
 #define GLMatrixMode    glMatrixMode
 #define GLOrtho         glOrtho
+#define GLScalef        glScalef
 #define GLStart         glBegin
+#define GLTexCoord2s    glTexCoord2s
 #define GLVertex2s      glVertex2s
 #define GLViewport      glViewport
 
@@ -50,6 +53,7 @@ typedef int8_t  sb; // bite
 
 // User imports
 #import "Bus.h"
+#import "Cache.h"
 #import "Counters.h"
 #import "Draw.h"
 #import "Graphics.h"
