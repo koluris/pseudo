@@ -327,6 +327,10 @@ uh CstrAudio::read(uw addr) {
         case 0x1d8a: // Sound On 2
         case 0x1d8c: // Sound Off 1
         case 0x1d8e: // Sound Off 2
+        case 0x1d94: // Noise Mode On 1
+        case 0x1d96: // Noise Mode On 2
+        case 0x1d98: // Reverb Mode On 1
+        case 0x1d9a: // Reverb Mode On 2
         case 0x1daa: // Control
         case 0x1dac: // ?
         case 0x1dae: // Status

@@ -1,34 +1,32 @@
 class CstrDraw {
     // Basic
-    TYPEDEF struct { ub r, c, b, a; } COLOR;
-    TYPEDEF struct { sh w, h; } POINTF;
-    TYPEDEF struct { sh w, h; ub u, v; uh clut; } POINTFT;
-    TYPEDEF struct { COLOR co; sh w, h; } POINTG;
-    TYPEDEF struct { COLOR co; sh w, h; ub u, v; uh clut; } POINTGT;
+    struct COLOR   { ub r, c, b, a; };
+    struct POINTF  { sh w, h; };
+    struct POINTFT { sh w, h; ub u, v; uh clut; };
+    struct POINTG  { COLOR co; sh w, h; };
+    struct POINTGT { COLOR co; sh w, h; ub u, v; uh clut; };
     
     // VertexF & LineF
-    TYPEDEF struct { COLOR co; POINTF v[2]; } F2;
-    TYPEDEF struct { COLOR co; POINTF v[3]; } F3;
-    TYPEDEF struct { COLOR co; POINTF v[4]; } F4;
+    struct F2 { COLOR co; POINTF v[2]; };
+    struct F3 { COLOR co; POINTF v[3]; };
+    struct F4 { COLOR co; POINTF v[4]; };
     
     // VertexFT
-    TYPEDEF struct { COLOR co; POINTFT v[3]; } FT3;
-    TYPEDEF struct { COLOR co; POINTFT v[4]; } FT4;
+    struct FT3 { COLOR co; POINTFT v[3]; };
+    struct FT4 { COLOR co; POINTFT v[4]; };
     
     // VertexG & LineG
-    TYPEDEF struct { POINTG v[2]; } G2;
-    TYPEDEF struct { POINTG v[3]; } G3;
-    TYPEDEF struct { POINTG v[4]; } G4;
+    struct G2 { POINTG v[2]; };
+    struct G3 { POINTG v[3]; };
+    struct G4 { POINTG v[4]; };
     
     // VertexGT
-    TYPEDEF struct { POINTGT v[3]; } GT3;
-    TYPEDEF struct { POINTGT v[4]; } GT4;
+    struct GT3 { POINTGT v[3]; };
+    struct GT4 { POINTGT v[4]; };
     
     // BlockFill & Sprites
-    TYPEDEF struct { COLOR co; POINTF  v[1]; sh w, h; } BLK;
-    TYPEDEF struct { COLOR co; POINTFT v[1]; sh w, h; } SPRT;
-    
-    ub blend;
+    struct BLK  { COLOR co; POINTF  v[1]; sh w, h; };
+    struct SPRT { COLOR co; POINTFT v[1]; sh w, h; };
     
     // Setup blend values
     const struct {
@@ -39,6 +37,8 @@ class CstrDraw {
         { GL_ZERO,      GL_ONE_MINUS_SRC_COLOR,   0 },
         { GL_SRC_ALPHA, GL_ONE,                  64 },
     };
+    
+    ub blend;
     
     // Primitives
     void blockFill(uw *f);
