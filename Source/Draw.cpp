@@ -49,9 +49,8 @@ void CstrDraw::blockFill(uw *data) {
     GLEnd();
 }
 
-template <class T>
 void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
-    T *k = (T *)data;
+    PFx *k = (PFx *)data;
     
     ub b[] = {
         k->c.n & 2 ? blend : (ub)0,
@@ -63,15 +62,14 @@ void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
     GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
     
     GLStart(mode);
-    for (sw i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         GLVertex2s(k->vx[i].w, k->vx[i].h);
     }
     GLEnd();
 }
 
-template <class T>
 void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
-    T *k = (T *)data;
+    PGx *k = (PGx *)data;
     
     ub b[] = {
         k->vx[0].c.n & 2 ? blend : (ub)0,
@@ -81,16 +79,15 @@ void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
     GLStart(mode);
-    for (sw i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         GLColor4ub(k->vx[i].c.a, k->vx[i].c.b, k->vx[i].c.c, b[1]);
         GLVertex2s(k->vx[i].w, k->vx[i].h);
     }
     GLEnd();
 }
 
-template <class T>
 void CstrDraw::drawFT(uw *data, ub size) {
-    T *k = (T *)data;
+    PFTx *k = (PFTx *)data;
     
     blend = (k->vx[1].tp >> 5) & 3;
     
@@ -109,15 +106,14 @@ void CstrDraw::drawFT(uw *data, ub size) {
     }
     
     GLStart(GL_TRIANGLE_STRIP);
-    for (sw i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         GLVertex2s(k->vx[i].w, k->vx[i].h);
     }
     GLEnd();
 }
 
-template <class T>
 void CstrDraw::drawGT(uw *data, ub size) {
-    T *k = (T *)data;
+    PGTx *k = (PGTx *)data;
     
     blend = (k->vx[1].tp >> 5) & 3;
     
@@ -129,7 +125,7 @@ void CstrDraw::drawGT(uw *data, ub size) {
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
     GLStart(GL_TRIANGLE_STRIP);
-    for (sw i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         GLColor4ub(k->vx[i].c.a, k->vx[i].c.b, k->vx[i].c.c, b[1]);
         GLVertex2s(k->vx[i].w, k->vx[i].h);
     }
@@ -195,59 +191,59 @@ void CstrDraw::primitive(uw addr, uw *data) {
     // Primitives
     switch(addr & 0xfc) {
         case 0x20: // Vertex F3
-            drawF<PFx>(data, 3, GL_TRIANGLE_STRIP);
+            drawF(data, 3, GL_TRIANGLE_STRIP);
             return;
             
         case 0x24: // Vertex FT3
-            drawFT<PFTx>(data, 3);
+            drawFT(data, 3);
             return;
             
         case 0x28: // Vertex F4
-            drawF<PFx>(data, 4, GL_TRIANGLE_STRIP);
+            drawF(data, 4, GL_TRIANGLE_STRIP);
             return;
             
         case 0x2c: // Vertex FT4
-            drawFT<PFTx>(data, 4);
+            drawFT(data, 4);
             return;
             
         case 0x30: // Vertex G3
-            drawG<PGx>(data, 3, GL_TRIANGLE_STRIP);
+            drawG(data, 3, GL_TRIANGLE_STRIP);
             return;
             
         case 0x34: // Vertex GT3
-            drawGT<PGTx>(data, 3);
+            drawGT(data, 3);
             return;
             
         case 0x38: // Vertex G4
-            drawG<PGx>(data, 4, GL_TRIANGLE_STRIP);
+            drawG(data, 4, GL_TRIANGLE_STRIP);
             return;
             
         case 0x3c: // Vertex GT4
-            drawGT<PGTx>(data, 4);
+            drawGT(data, 4);
             return;
             
         case 0x40: // Line F2
-            drawF<PFx>(data, 2, GL_LINE_STRIP);
+            drawF(data, 2, GL_LINE_STRIP);
             return;
             
         case 0x48: // Line F3
-            drawF<PFx>(data, 3, GL_LINE_STRIP);
+            drawF(data, 3, GL_LINE_STRIP);
             return;
             
         case 0x4c: // Line F4
-            drawF<PFx>(data, 4, GL_LINE_STRIP);
+            drawF(data, 4, GL_LINE_STRIP);
             return;
             
         case 0x50: // Line G2
-            drawG<PGx>(data, 2, GL_LINE_STRIP);
+            drawG(data, 2, GL_LINE_STRIP);
             return;
             
         case 0x58: // Line G3
-            drawG<PGx>(data, 3, GL_LINE_STRIP);
+            drawG(data, 3, GL_LINE_STRIP);
             return;
             
         case 0x5c: // Line G4
-            drawG<PGx>(data, 4, GL_LINE_STRIP);
+            drawG(data, 4, GL_LINE_STRIP);
             return;
             
         case 0x60: // Tile
@@ -285,7 +281,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0x02: // Block Fill
-            blockFill(data);
+            drawRect(data);
             return;
             
         case 0x80: // TODO: Move photo

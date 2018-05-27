@@ -6,7 +6,7 @@ CstrBus bus;
 void CstrBus::reset() {
     ub size = sizeof(interrupts) / sizeof(interrupts[0]);
     
-    for (ub i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         interrupts[i].queued = IRQ_QUEUED_NO;
     }
 }
@@ -14,7 +14,7 @@ void CstrBus::reset() {
 void CstrBus::interruptsUpdate() { // A method to schedule when IRQs should fire
     ub size = sizeof(interrupts) / sizeof(interrupts[0]);
     
-    for (ub i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         interrupt *item = &interrupts[i];
         
         if (item->queued) {

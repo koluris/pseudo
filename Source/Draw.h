@@ -14,7 +14,7 @@ class CstrDraw {
     struct PGx   { PG  vx[4]; };
     struct PGTx  { PGT vx[4]; };
     
-    // BlockFill & Sprites
+    // Tile & Sprite
     struct TILEx { RGBC c; PF  vx; sh w, h; };
     struct SPRTx { RGBC c; PFT vx; sh w, h; };
     
@@ -31,22 +31,12 @@ class CstrDraw {
     ub blend;
     
     // Primitives
-    void blockFill(uw *f);
-    
-    template <class T>
-    void drawF(uw *, ub, GLenum);
-    
-    template <class T>
-    void drawG(uw *, ub, GLenum);
-    
-    template <class T>
-    void drawFT(uw *, ub);
-    
-    template <class T>
-    void drawGT(uw *, ub);
-    
-    void drawTile(uw *, sh);
-    
+    void drawRect  (uw *);
+    void drawF     (uw *, ub, GLenum);
+    void drawG     (uw *, ub, GLenum);
+    void drawFT    (uw *, ub);
+    void drawGT    (uw *, ub);
+    void drawTile  (uw *, sh);
     void drawSprite(uw *, sh);
     
 public:

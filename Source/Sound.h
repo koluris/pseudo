@@ -74,7 +74,7 @@ public:
         alGenSources(1, &source);
         alGenBuffers(ALC_BUF_AMOUNT, bfr);
         
-        for (ub i = 0; i < ALC_BUF_AMOUNT; i++) {
+        for (int i = 0; i < ALC_BUF_AMOUNT; i++) {
             alBufferData(bfr[i], AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
         }
         

@@ -20,7 +20,7 @@
 CstrCounters rootc;
 
 void CstrCounters::reset() {
-    for (ub i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         bounds[i] = RTC_BOUND;
     }
     
