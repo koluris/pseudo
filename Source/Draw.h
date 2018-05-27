@@ -1,32 +1,22 @@
 class CstrDraw {
     // Basic
-    struct COLOR   { ub r, c, b, a; };
-    struct POINTF  { sh w, h; };
-    struct POINTFT { sh w, h; ub u, v; uh clut; };
-    struct POINTG  { COLOR co; sh w, h; };
-    struct POINTGT { COLOR co; sh w, h; ub u, v; uh clut; };
+    struct RGBC  { ub a, b, c, n; };
+    struct PF    { sh w, h; };
+    struct PFT   { sh w, h; ub u, v; uh tp; };
+    struct PG    { RGBC c; sh w, h; };
+    struct PGT   { RGBC c; sh w, h; ub u, v; uh tp; };
     
-    // VertexF & LineF
-    struct F2 { COLOR co; POINTF v[2]; };
-    struct F3 { COLOR co; POINTF v[3]; };
-    struct F4 { COLOR co; POINTF v[4]; };
+    // Vertex & Line (F, FT)
+    struct PFx   { RGBC c; PF  vx[4]; };
+    struct PFTx  { RGBC c; PFT vx[4]; };
     
-    // VertexFT
-    struct FT3 { COLOR co; POINTFT v[3]; };
-    struct FT4 { COLOR co; POINTFT v[4]; };
-    
-    // VertexG & LineG
-    struct G2 { POINTG v[2]; };
-    struct G3 { POINTG v[3]; };
-    struct G4 { POINTG v[4]; };
-    
-    // VertexGT
-    struct GT3 { POINTGT v[3]; };
-    struct GT4 { POINTGT v[4]; };
+    // Vertex & Line (G, GT)
+    struct PGx   { PG  vx[4]; };
+    struct PGTx  { PGT vx[4]; };
     
     // BlockFill & Sprites
-    struct BLK  { COLOR co; POINTF  v[1]; sh w, h; };
-    struct SPRT { COLOR co; POINTFT v[1]; sh w, h; };
+    struct TILEx { RGBC c; PF  vx; sh w, h; };
+    struct SPRTx { RGBC c; PFT vx; sh w, h; };
     
     // Setup blend values
     const struct {
