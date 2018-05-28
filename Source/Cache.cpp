@@ -13,7 +13,7 @@ void CstrCache::reset() {
         GLBindTexture  (GL_TEXTURE_2D, cache[i].tex);
         GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, TEX_SIZE, TEX_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     }
     
     index = 0;
@@ -41,48 +41,56 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
         }
     }
     
-    uh *tex  = vs.vram.ptr + (tp & 15) * 64 + (tp & 16) * 16 * FRAME_W;
+    uh *tex  = vs.vram.ptr + (tp & 15) * 64 + (tp & 16) * (FRAME_W * 256/16);
     uh *ctbl = vs.vram.ptr + (clut & 0x7fff) * 16;
     
-    TEXEL bTexture[TEX_SIZE*TEX_SIZE], *data = bTexture;
-    TEXEL clut2[TEX_SIZE];
+    TEXEL bTexture[TEX_SIZE*TEX_SIZE], *t = bTexture;
+    TEXEL ctbl2[TEX_SIZE];
     
     switch((tp >> 7) & 3) {
         case 0: // 04-bit
-            pixel2texel(clut2, ctbl, TEX_SIZE / 16);
-            for (int v = 0; v < TEX_SIZE; v++) {
-                for (int h = 0; h < (TEX_SIZE / 4); h++) {
-                    *(data++) = clut2[(tex[h]    )&0xf];
-                    *(data++) = clut2[(tex[h]>> 4)&0xf];
-                    *(data++) = clut2[(tex[h]>> 8)&0xf];
-                    *(data++) = clut2[(tex[h]>>12)&0xf];
+            pixel2texel(ctbl2, ctbl, 16);
+            for (int v = 0; v < 256; v++) {
+                for (int h = 0; h < 256; h += 4) {
+                    int c = *tex++;
+                    t[0] = ctbl2[(c >> 0x0) & 15];
+                    t[1] = ctbl2[(c >> 0x4) & 15];
+                    t[2] = ctbl2[(c >> 0x8) & 15];
+                    t[3] = ctbl2[(c >> 0xc) & 15];
+                    t += 4;
                 }
-                tex += FRAME_W;
+                tex += FRAME_W - 256 / 4;
             }
             break;
             
         case 1: // 08-bit
-            pixel2texel(clut2, ctbl, TEX_SIZE);
-            for (int v = 0; v < TEX_SIZE; v++) {
-                for (int h = 0; h < (TEX_SIZE / 2); h++) {
-                    *(data++) = clut2[(tex[h]   )&255];
-                    *(data++) = clut2[(tex[h]>>8)&255];
+            pixel2texel(ctbl2, ctbl, 256);
+            for (int v = 0; v < 256; v++) {
+                for (int h = 0; h < 256; h += 2) {
+                    int c = *tex++;
+                    t[0] = ctbl2[(c >> 0x0) & 255];
+                    t[1] = ctbl2[(c >> 0x8) & 255];
+                    t += 2;
                 }
-                tex += FRAME_W;
+                tex += FRAME_W - 256 / 2;
             }
             break;
             
         case 2: // 15-bit direct
-            for (int v = 0; v < TEX_SIZE; v++) {
-                pixel2texel(data, tex, TEX_SIZE);
-                data += TEX_SIZE;
-                tex  += FRAME_W;
+            for (int v = 0; v < 256; v++) {
+                pixel2texel(t, tex, 256);
+                tex += FRAME_W;
+                t += 256;
             }
+            break;
+            
+        default:
+            printx("/// PSeudo Texture TP unknown: %d", ((tp >> 7) & 3));
             break;
     }
     
     GLBindTexture(GL_TEXTURE_2D, cache[index].tex);
-    GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, TEX_SIZE, TEX_SIZE, GL_RGBA, GL_UNSIGNED_BYTE, bTexture);
+    GLTexPhoto2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, bTexture);
     
     cache[index].uid = uid;
     index = (index+1)&(TCACHE_MAX-1);

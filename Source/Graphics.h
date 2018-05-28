@@ -87,6 +87,7 @@ public:
     
     struct {
         bool enabled;
+        uh *pvram;
         
         struct {
             sw p, start, end;
