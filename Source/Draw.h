@@ -18,6 +18,11 @@ class CstrDraw {
     struct TILEx { RGBC c; PF  vx; sh w, h; };
     struct SPRTx { RGBC c; PFT vx; sh w, h; };
     
+    // Offset
+    struct {
+        sh h, v;
+    } offset;
+    
     // Setup blend values
     const struct {
         sw src, dst; ub opaque;

@@ -10,10 +10,10 @@ void CstrCache::reset() {
         cache[i].tex = 0;
         
         GLGenTextures(1, &cache[i].tex);
-        GLBindTexture(GL_TEXTURE_2D, cache[i].tex);
+        GLBindTexture  (GL_TEXTURE_2D, cache[i].tex);
         GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        GLTexPhoto2D(GL_TEXTURE_2D, 0, GL_RGBA, TEX_SIZE, TEX_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, TEX_SIZE, TEX_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     }
     
     index = 0;
@@ -33,7 +33,6 @@ void CstrCache::pixel2texel(TEXEL *t, uh *p, sw n) {
 
 void CstrCache::fetchTexture(uw tp, uw clut) {
     GLuint uid = (clut << 16) | tp;
-    printf("/// PSeudo Texture: $%x, $%x -> $%x\n", tp, clut, uid);
     
     for (int i = 0; i < TCACHE_MAX; i++) {
         if (cache[i].uid == uid) {
@@ -49,7 +48,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     TEXEL clut2[TEX_SIZE];
     
     switch((tp >> 7) & 3) {
-        case 0: //4bit
+        case 0: // 04-bit
             pixel2texel(clut2, ctbl, TEX_SIZE / 16);
             for (int v = 0; v < TEX_SIZE; v++) {
                 for (int h = 0; h < (TEX_SIZE / 4); h++) {
@@ -61,6 +60,25 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
                 tex += FRAME_W;
             }
             break;
+            
+        case 1: // 08-bit
+            pixel2texel(clut2, ctbl, TEX_SIZE);
+            for (int v = 0; v < TEX_SIZE; v++) {
+                for (int h = 0; h < (TEX_SIZE / 2); h++) {
+                    *(data++) = clut2[(tex[h]   )&255];
+                    *(data++) = clut2[(tex[h]>>8)&255];
+                }
+                tex += FRAME_W;
+            }
+            break;
+            
+        case 2: // 15-bit direct
+            for (int v = 0; v < TEX_SIZE; v++) {
+                pixel2texel(data, tex, TEX_SIZE);
+                data += TEX_SIZE;
+                tex  += FRAME_W;
+            }
+            break;
     }
     
     GLBindTexture(GL_TEXTURE_2D, cache[index].tex);
@@ -68,6 +86,4 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     
     cache[index].uid = uid;
     index = (index+1)&(TCACHE_MAX-1);
-    
-    //printx("/// PSeudo Texture: %d", ((tp >> 7) & 3));
 }

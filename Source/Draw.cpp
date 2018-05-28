@@ -11,6 +11,7 @@
 CstrDraw draw;
 
 void CstrDraw::reset() {
+    memset(&offset, 0, sizeof(offset));
     blend    = 0;
     spriteTP = 0;
     
@@ -22,6 +23,8 @@ void CstrDraw::reset() {
     GLMatrixMode(GL_TEXTURE);
     GLID();
     GLScalef(1.0f / 256.0f, 1.0f / 256.0f, 1.0f);
+    GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+    GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP);
     
     GLEnable(GL_BLEND);
     GLClearColor(0, 0, 0, 0);
@@ -70,7 +73,7 @@ void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
     
     GLStart(mode);
     for (int i = 0; i < size; i++) {
-        GLVertex2s(k->vx[i].w, k->vx[i].h);
+        GLVertex2s(k->vx[i].w + offset.h, k->vx[i].h + offset.v);
     }
     GLEnd();
 }
@@ -88,7 +91,7 @@ void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
     GLStart(mode);
     for (int i = 0; i < size; i++) {
         GLColor4ub(k->vx[i].c.a, k->vx[i].c.b, k->vx[i].c.c, b[1]);
-        GLVertex2s(k->vx[i].w, k->vx[i].h);
+        GLVertex2s(k->vx[i].w + offset.h, k->vx[i].h + offset.v);
     }
     GLEnd();
 }
@@ -112,11 +115,17 @@ void CstrDraw::drawFT(uw *data, ub size) {
         GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
     }
     
+    GLEnable(GL_TEXTURE_2D);
+    cache.fetchTexture(k->vx[1].clut, k->vx[0].clut);
+    
     GLStart(GL_TRIANGLE_STRIP);
     for (int i = 0; i < size; i++) {
-        GLVertex2s(k->vx[i].w, k->vx[i].h);
+        GLTexCoord2s(k->vx[i].u, k->vx[i].v);
+        GLVertex2s  (k->vx[i].w + offset.h, k->vx[i].h + offset.v);
     }
     GLEnd();
+    
+    GLDisable(GL_TEXTURE_2D);
 }
 
 void CstrDraw::drawGT(uw *data, ub size) {
@@ -131,12 +140,18 @@ void CstrDraw::drawGT(uw *data, ub size) {
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
+    GLEnable(GL_TEXTURE_2D);
+    cache.fetchTexture(k->vx[1].clut, k->vx[0].clut);
+    
     GLStart(GL_TRIANGLE_STRIP);
     for (int i = 0; i < size; i++) {
-        GLColor4ub(k->vx[i].c.a, k->vx[i].c.b, k->vx[i].c.c, b[1]);
-        GLVertex2s(k->vx[i].w, k->vx[i].h);
+        GLColor4ub  (k->vx[i].c.a, k->vx[i].c.b, k->vx[i].c.c, b[1]);
+        GLTexCoord2s(k->vx[i].u, k->vx[i].v);
+        GLVertex2s  (k->vx[i].w + offset.h, k->vx[i].h + offset.v);
     }
     GLEnd();
+    
+    GLDisable(GL_TEXTURE_2D);
 }
 
 void CstrDraw::drawTile(uw *data, sh size) {
@@ -157,10 +172,10 @@ void CstrDraw::drawTile(uw *data, sh size) {
     GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
     
     GLStart(GL_TRIANGLE_STRIP);
-        GLVertex2s(k->vx.w,        k->vx.h);
-        GLVertex2s(k->vx.w + k->w, k->vx.h);
-        GLVertex2s(k->vx.w,        k->vx.h + k->h);
-        GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
+        GLVertex2s(k->vx.w + offset.h,        k->vx.h + offset.v);
+        GLVertex2s(k->vx.w + offset.h + k->w, k->vx.h + offset.v);
+        GLVertex2s(k->vx.w + offset.h,        k->vx.h + offset.v + k->h);
+        GLVertex2s(k->vx.w + offset.h + k->w, k->vx.h + offset.v + k->h);
     GLEnd();
 }
 
@@ -173,13 +188,13 @@ void CstrDraw::drawSprite(uw *data, sh size) {
     }
     
     ub b[] = {
-        k->c.n & 2 ? blend : (ub)0,
-        k->c.n & 2 ? bit[blend].opaque : (ub)COLOR_MAX
+        k->c.n&2 ? blend : (ub)0,
+        k->c.n&2 ? bit[blend].opaque : (ub)COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
-    if (k->c.n & 1) {
+    if (k->c.n&1) {
         GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
     }
     else {
@@ -190,14 +205,10 @@ void CstrDraw::drawSprite(uw *data, sh size) {
     cache.fetchTexture(spriteTP, k->vx.clut);
     
     GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(k->vx.u,        k->vx.v);
-        GLVertex2s  (k->vx.w,        k->vx.h);
-        GLTexCoord2s(k->vx.u + k->w, k->vx.v);
-        GLVertex2s  (k->vx.w + k->w, k->vx.h);
-        GLTexCoord2s(k->vx.u,        k->vx.v + k->h);
-        GLVertex2s  (k->vx.w,        k->vx.h + k->h);
-        GLTexCoord2s(k->vx.u + k->w, k->vx.v + k->h);
-        GLVertex2s  (k->vx.w + k->w, k->vx.h + k->h);
+        GLTexCoord2s(k->vx.u,      k->vx.v);      GLVertex2s(k->vx.w+offset.h,      k->vx.h+offset.v);
+        GLTexCoord2s(k->vx.u+k->w, k->vx.v);      GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v);
+        GLTexCoord2s(k->vx.u,      k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h,      k->vx.h+offset.v+k->h);
+        GLTexCoord2s(k->vx.u+k->w, k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v+k->h);
     GLEnd();
     
     GLDisable(GL_TEXTURE_2D);
@@ -327,6 +338,8 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0xe5: // TODO: Draw Offset
+            offset.h = ((sw)data[0] << 21) >> 21;
+            offset.v = ((sw)data[0] << 10) >> 21;
             return;
             
         case 0xe6: // STP

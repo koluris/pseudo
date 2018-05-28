@@ -48,6 +48,7 @@ typedef int8_t  sb; // bite
 #define GLScalef            glScalef
 #define GLStart             glBegin
 #define GLTexCoord2s        glTexCoord2s
+#define GLTexEnvi           glTexEnvi
 #define GLTexParameteri     glTexParameteri
 #define GLTexPhoto2D        glTexImage2D
 #define GLTexSubPhoto2D     glTexSubImage2D
