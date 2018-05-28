@@ -31,22 +31,28 @@ typedef int8_t  sb; // bite
 #define TYPEDEF         typedef
 
 // OpenGL
-#define GLBlendFunc     glBlendFunc
-#define GLClear         glClear
-#define GLClearColor    glClearColor
-#define GLColor4ub      glColor4ub
-#define GLDisable       glDisable
-#define GLEnable        glEnable
-#define GLEnd           glEnd
-#define GLFlush         glFlush
-#define GLID            glLoadIdentity
-#define GLMatrixMode    glMatrixMode
-#define GLOrtho         glOrtho
-#define GLScalef        glScalef
-#define GLStart         glBegin
-#define GLTexCoord2s    glTexCoord2s
-#define GLVertex2s      glVertex2s
-#define GLViewport      glViewport
+#define GLBindTexture       glBindTexture
+#define GLBlendFunc         glBlendFunc
+#define GLClear             glClear
+#define GLClearColor        glClearColor
+#define GLColor4ub          glColor4ub
+#define GLDeleteTextures    glDeleteTextures
+#define GLDisable           glDisable
+#define GLEnable            glEnable
+#define GLEnd               glEnd
+#define GLFlush             glFlush
+#define GLGenTextures       glGenTextures
+#define GLID                glLoadIdentity
+#define GLMatrixMode        glMatrixMode
+#define GLOrtho             glOrtho
+#define GLScalef            glScalef
+#define GLStart             glBegin
+#define GLTexCoord2s        glTexCoord2s
+#define GLTexParameteri     glTexParameteri
+#define GLTexPhoto2D        glTexImage2D
+#define GLTexSubPhoto2D     glTexSubImage2D
+#define GLVertex2s          glVertex2s
+#define GLViewport          glViewport
 
 // OpenAL
 #define alSourceStream  alSourcePlay

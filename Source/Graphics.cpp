@@ -8,8 +8,10 @@
 CstrGraphics vs;
 
 void CstrGraphics::reset() {
-    memset(& ret, 0, sizeof(ret));
-    memset(&pipe, 0, sizeof(pipe));
+    memset(vram.ptr, 0, vram.size);
+    memset(&   vrop, 0, sizeof(vrop));
+    memset(&    ret, 0, sizeof(ret));
+    memset(&   pipe, 0, sizeof(pipe));
     
     ret.data   = 0x400;
     ret.status = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
@@ -77,10 +79,63 @@ uw CstrGraphics::read(uw addr) {
     return 0;
 }
 
+int CstrGraphics::fetchMem(uh *ptr, sw size) {
+    int count = 0;
+    
+    if (!vrop.enabled) {
+        modeDMA = GPU_DMA_NONE;
+        return 0;
+    }
+    size <<= 1;
+    
+    while (vrop.v.p < vrop.v.end) {
+        while (vrop.h.p < vrop.h.end) {
+            vs.vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
+            
+            vrop.h.p++;
+            ptr++;
+            
+            if (++count == size) {
+                if (vrop.h.p == vrop.h.end) {
+                    vrop.h.p  = vrop.h.start;
+                    vrop.v.p++;
+                }
+                
+                return fetchEnd(count);
+            }
+        }
+        
+        vrop.h.p = vrop.h.start;
+        vrop.v.p++;
+    }
+    
+    return fetchEnd(count);
+}
+
+int CstrGraphics::fetchEnd(int count) {
+    if (vrop.v.p >= vrop.v.end) {
+        modeDMA = GPU_DMA_NONE;
+        vrop.enabled = false;
+        
+        // if (count%2 === 1) {
+        //     count++;
+        // }
+    }
+    
+    return count >> 1;
+}
+
 void CstrGraphics::dataWrite(uw *ptr, sw size) {
     sw i = 0;
     
     while (i < size) {
+        if (modeDMA == GPU_DMA_MEM2VRAM) {
+            if ((i += fetchMem((uh *)ptr, size-i)) >= size) {
+                continue;
+            }
+            ptr += i;
+        }
+        
         ret.data = *ptr;
         ptr++;
         i++;
@@ -111,6 +166,18 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
             draw.primitive(pipe.prim, pipe.data);
         }
     }
+}
+
+void CstrGraphics::photoRead(uw *data) {
+    uh *k = (uh *)data;
+    
+    vrop.enabled = true;
+    vrop.h.p     = vrop.h.start = k[2];
+    vrop.v.p     = vrop.v.start = k[3];
+    vrop.h.end   = vrop.h.start + k[4];
+    vrop.v.end   = vrop.v.start + k[5];
+    
+    modeDMA = GPU_DMA_MEM2VRAM;
 }
 
 void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {

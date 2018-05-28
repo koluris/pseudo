@@ -2,9 +2,9 @@ class CstrDraw {
     // Basic
     struct RGBC  { ub a, b, c, n; };
     struct PF    { sh w, h; };
-    struct PFT   { sh w, h; ub u, v; uh tp; };
+    struct PFT   { sh w, h; ub u, v; uh clut; };
     struct PG    { RGBC c; sh w, h; };
-    struct PGT   { RGBC c; sh w, h; ub u, v; uh tp; };
+    struct PGT   { RGBC c; sh w, h; ub u, v; uh clut; };
     
     // Vertex & Line (F, FT)
     struct PFx   { RGBC c; PF  vx[4]; };

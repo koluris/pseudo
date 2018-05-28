@@ -96,7 +96,7 @@ void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
 void CstrDraw::drawFT(uw *data, ub size) {
     PFTx *k = (PFTx *)data;
     
-    blend = (k->vx[1].tp >> 5) & 3;
+    blend = (k->vx[1].clut >> 5) & 3;
     
     ub b[] = {
         k->c.n & 2 ? blend : (ub)0,
@@ -122,7 +122,7 @@ void CstrDraw::drawFT(uw *data, ub size) {
 void CstrDraw::drawGT(uw *data, ub size) {
     PGTx *k = (PGTx *)data;
     
-    blend = (k->vx[1].tp >> 5) & 3;
+    blend = (k->vx[1].clut >> 5) & 3;
     
     ub b[] = {
         k->vx[0].c.n & 2 ? blend : (ub)0,
@@ -187,7 +187,7 @@ void CstrDraw::drawSprite(uw *data, sh size) {
     }
     
     GLEnable(GL_TEXTURE_2D);
-    //cache.fetchTexture(spriteTP, k->vx.tp);
+    cache.fetchTexture(spriteTP, k->vx.clut);
     
     GLStart(GL_TRIANGLE_STRIP);
         GLTexCoord2s(k->vx.u,        k->vx.v);
@@ -303,7 +303,8 @@ void CstrDraw::primitive(uw addr, uw *data) {
         case 0x80: // TODO: Move photo
             return;
             
-        case 0xa0: // TODO: Load photo
+        case 0xa0: // Load photo
+            vs.photoRead(data);
             return;
             
         case 0xc0: // TODO: Store photo

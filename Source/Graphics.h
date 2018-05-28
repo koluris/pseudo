@@ -14,6 +14,11 @@
 #define GPU_DMABITS          0x60000000
 #define GPU_ODDLINES         0x80000000
 
+#define FRAME_W\
+    1024
+
+#define FRAME_H\
+    512
 
 class CstrGraphics {
     enum {
@@ -51,6 +56,11 @@ class CstrGraphics {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xf0
     };
     
+    // VRAM
+    struct heap {
+        uh *ptr; uw size;
+    };
+    
     // Command buffer
     struct {
         uw data[100], prim, size, row;
@@ -58,22 +68,37 @@ class CstrGraphics {
     
     uw modeDMA;
     
+    int fetchMem(uh *, sw);
+    int fetchEnd(int);
     void dataWrite(uw *, sw);
     
 public:
+    CstrGraphics() {
+        vram.ptr = new uh[vram.size = ((FRAME_W * FRAME_H) * sizeof(uh))];
+    }
+    
+    ~CstrGraphics() {
+        delete[] vram.ptr;
+    }
+    
     struct {
         uw data, status;
     } ret;
     
+    struct {
+        bool enabled;
+        
+        struct {
+            sw p, start, end;
+        } h, v;
+    } vrop;
+    
+    heap vram;
+    
     void reset();
-    
-    // Store
     void write(uw, uw);
-    
-    // Load
     uw read(uw);
-    
-    // DMA
+    void photoRead(uw *);
     void executeDMA(CstrBus::castDMA *);
 };
 
