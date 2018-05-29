@@ -314,7 +314,16 @@ void CstrMips::step(bool branched) {
             printx("/// PSeudo $%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
             return;
             
-        case 18: // TODO: COP2
+        case 18: // COP2
+            switch(code & 63) {
+                case 0: // Basic
+                    switch(rs & 7) {
+                        case 0: // MFC2
+                            base[rt] = 0; // TODO
+                            return;
+                    }
+                    return;
+            }
             return;
             
         case 32: // LB
