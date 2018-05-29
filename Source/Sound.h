@@ -30,7 +30,8 @@ class CstrAudio {
         
         uw count;
         sw pos, size;
-        uh freq, raddr, saddr;
+        sh freq, raddr;
+        uw saddr;
         sh volumeL, volumeR;
     } spuVoices[MAX_CHANNELS];
     
@@ -75,7 +76,7 @@ public:
         alGenBuffers(ALC_BUF_AMOUNT, bfr);
         
         for (int i = 0; i < ALC_BUF_AMOUNT; i++) {
-            alBufferData(bfr[i], AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
+            alBufferData(bfr[i], AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE*2, SAMPLE_RATE);
         }
         
         alSourceQueueBuffers(source, ALC_BUF_AMOUNT, bfr);

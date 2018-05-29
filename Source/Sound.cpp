@@ -24,11 +24,11 @@ void CstrAudio::reset() {
     spuAddr    = ~(0);
     spuVolumeL = MAX_VOLUME;
     spuVolumeR = MAX_VOLUME;
-    stereo     = true;
+    stereo     = false;
 }
 
 void CstrAudio::depackVAG(voice *chn) {
-    uh p = chn->saddr;
+    uw p = chn->saddr;
     sh s_1 = 0;
     sh s_2 = 0;
     sh temp[28];
@@ -137,20 +137,20 @@ void CstrAudio::decodeStream() {
         // OpenAL
         ALint processed;
         alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-        
+
         if (processed >= ALC_BUF_AMOUNT) {
             // We have to free buffers
             printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
         }
-        
+
         while(--processed < 0) {
             stream();
             alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
         }
-        
+
         ALuint buffer;
         alSourceUnqueueBuffers(source, 1, &buffer);
-        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
+        alBufferData(buffer, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE*2, SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
         stream();
         
