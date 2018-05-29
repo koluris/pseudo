@@ -337,7 +337,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
         case 0xe4: // TODO: Draw Area End
             return;
             
-        case 0xe5: // TODO: Draw Offset
+        case 0xe5: // Draw Offset
             offset.h = ((sw)data[0] << 21) >> 21;
             offset.v = ((sw)data[0] << 10) >> 21;
             return;
@@ -346,7 +346,6 @@ void CstrDraw::primitive(uw addr, uw *data) {
             vs.ret.status = (vs.ret.status & (~(3 << 11))) | ((data[0] & 3) << 11);
             return;
     }
-    if (addr != 0) {
+    
     printx("/// PSeudo primitive: $%x", addr);
-    }
 }
