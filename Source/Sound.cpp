@@ -143,22 +143,15 @@ void CstrAudio::decodeStream() {
             printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
         }
         
-        int size = SBUF_SIZE;
-        ALuint buffer;
-        
-        while(size) {
-            if (processed-- <= 0) {
-                stream();
-                alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-                continue;
-            }
-            
-            alSourceUnqueueBuffers(source, 1, &buffer);
-            alBufferData(buffer, AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
-            alSourceQueueBuffers(source, 1, &buffer);
-            
-            size -= SBUF_SIZE;
+        while(--processed < 0) {
+            stream();
+            alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
         }
+        
+        ALuint buffer;
+        alSourceUnqueueBuffers(source, 1, &buffer);
+        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
+        alSourceQueueBuffers(source, 1, &buffer);
         stream();
         
         // Clear
