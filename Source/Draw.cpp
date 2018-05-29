@@ -346,6 +346,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             vs.ret.status = (vs.ret.status & (~(3 << 11))) | ((data[0] & 3) << 11);
             return;
     }
-    
+    if (addr != 0) {
     printx("/// PSeudo primitive: $%x", addr);
+    }
 }

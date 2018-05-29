@@ -79,128 +79,91 @@ uw CstrGraphics::read(uw addr) {
     return 0;
 }
 
-//int CstrGraphics::fetchMem(uh *ptr, sw size) {
-//    int count = 0;
-//
-//    if (!vrop.enabled) {
-//        modeDMA = GPU_DMA_NONE;
-//        return 0;
-//    }
-//    size <<= 1;
-//
-//    while (vrop.v.p < vrop.v.end) {
-//        while (vrop.h.p < vrop.h.end) {
-//            vs.vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
-//
-//            vrop.h.p++;
-//            ptr++;
-//
-//            if (++count == size) {
-//                if (vrop.h.p == vrop.h.end) {
-//                    vrop.h.p  = vrop.h.start;
-//                    vrop.v.p++;
-//                }
-//
-//                return fetchEnd(count);
-//            }
-//        }
-//
-//        vrop.h.p = vrop.h.start;
-//        vrop.v.p++;
-//    }
-//
-//    return fetchEnd(count);
-//}
-//
-//int CstrGraphics::fetchEnd(int count) {
-//    if (vrop.v.p >= vrop.v.end) {
-//        modeDMA = GPU_DMA_NONE;
-//        vrop.enabled = false;
-//
-//        // if (count%2 === 1) {
-//        //     count++;
-//        // }
-//    }
-//
-//    return count >> 1;
-//}
-//
-//void CstrGraphics::dataWrite(uw *ptr, sw size) {
-//    sw i = 0;
-//
-//    while (i < size) {
-//        if (modeDMA == GPU_DMA_MEM2VRAM) {
-//            if ((i += fetchMem((uh *)ptr, size-i)) >= size) {
-//                continue;
-//            }
-//            ptr += i;
-//        }
-//
-//        ret.data = *ptr;
-//        ptr++;
-//        i++;
-//
-//        if (!pipe.size) {
-//            ub prim  = GPU_COMMAND(ret.data);
-//            ub count = pSize[prim];
-//
-//            if (count) {
-//                pipe.data[0] = ret.data;
-//                pipe.prim = prim;
-//                pipe.size = count;
-//                pipe.row  = 1;
-//            }
-//            else {
-//                return;
-//            }
-//        }
-//        else {
-//            pipe.data[pipe.row] = ret.data;
-//            pipe.row++;
-//        }
-//
-//        if (pipe.size == pipe.row) {
-//            pipe.size = 0;
-//            pipe.row  = 0;
-//
-//            draw.primitive(pipe.prim, pipe.data);
-//        }
-//    }
-//}
+int CstrGraphics::fetchMem(uh *ptr, sw size) {
+    int count = 0;
+
+    if (!vrop.enabled) {
+        modeDMA = GPU_DMA_NONE;
+        return 0;
+    }
+    size <<= 1;
+
+    while (vrop.v.p < vrop.v.end) {
+        while (vrop.h.p < vrop.h.end) {
+            vs.vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
+
+            vrop.h.p++;
+            ptr++;
+
+            if (++count == size) {
+                if (vrop.h.p == vrop.h.end) {
+                    vrop.h.p  = vrop.h.start;
+                    vrop.v.p++;
+                }
+
+                return fetchEnd(count);
+            }
+        }
+
+        vrop.h.p = vrop.h.start;
+        vrop.v.p++;
+    }
+
+    return fetchEnd(count);
+}
+
+int CstrGraphics::fetchEnd(int count) {
+    if (vrop.v.p >= vrop.v.end) {
+        vrop.enabled = false;
+        modeDMA = GPU_DMA_NONE;
+
+        // if (count%2 === 1) {
+        //     count++;
+        // }
+    }
+
+    return count >> 1;
+}
 
 void CstrGraphics::dataWrite(uw *ptr, sw size) {
-    while(size) {
-        if (modeDMA) {
-            while(size--) {
-                uw data = *ptr++;
-                vram.ptr[vrop.h.p] = data;
-                if (++vrop.h.p >= vrop.h.end) {
-                    vrop.h.p = vrop.h.start;
-                    vram.ptr += 1024;
-                    if (++vrop.v.p >= vrop.v.end) {
-                        modeDMA = GPU_DMA_NONE;
-                        break;
-                    }
-                }
-                
-                vram.ptr[vrop.h.p] = data >> 16;
-                
-                if (++vrop.h.p >= vrop.h.end) {
-                    vrop.h.p = vrop.h.start;
-                    vram.ptr += 1024;
-                    
-                    if (++vrop.v.p >= vrop.v.end) {
-                        modeDMA = GPU_DMA_NONE;
-                        break;
-                    }
-                }
+    sw i = 0;
+
+    while (i < size) {
+        if (modeDMA == GPU_DMA_MEM2VRAM) {
+            if ((i += fetchMem((uh *)ptr, size-i)) >= size) {
+                continue;
+            }
+            ptr += i;
+        }
+
+        ret.data = *ptr;
+        ptr++;
+        i++;
+
+        if (!pipe.size) {
+            ub prim  = GPU_COMMAND(ret.data);
+            ub count = pSize[prim];
+
+            if (count) {
+                pipe.data[0] = ret.data;
+                pipe.prim = prim;
+                pipe.size = count;
+                pipe.row  = 1;
+            }
+            else {
+                return;
             }
         }
         else {
-            draw.primitive(*ptr >> 24, ptr);
-            int primsize = pSize[*ptr >> 24];
-            ptr  += primsize;
-            size -= primsize;
+            pipe.data[pipe.row] = ret.data;
+            pipe.row++;
+        }
+
+        if (pipe.size == pipe.row) {
+            pipe.size = 0;
+            pipe.row  = 0;
+
+            draw.primitive(pipe.prim, pipe.data);
         }
     }
 }
@@ -213,7 +176,6 @@ void CstrGraphics::photoRead(uw *data) {
     vrop.v.p     = vrop.v.start = k[3];
     vrop.h.end   = vrop.h.start + k[4];
     vrop.v.end   = vrop.v.start + k[5];
-    vrop.pvram = &vram.ptr[vrop.v.p * 1024];
     
     modeDMA = GPU_DMA_MEM2VRAM;
 }
@@ -236,7 +198,7 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
                 dataWrite(p, hdr >> 24);
                 dma->madr = hdr & 0xffffff;
             }
-            while (dma->madr != 0xffffff);
+            while(dma->madr != 0xffffff);
             return;
     }
     printx("/// PSeudo GPU DMA: $%x", dma->chcr);

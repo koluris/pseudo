@@ -15,9 +15,9 @@
 
 class CstrCounters {
     enum {
-        RTC_COUNT  = 0x0,
-        RTC_MODE   = 0x4,
-        RTC_TARGET = 0x8,
+        RTC_COUNT  = 0,
+        RTC_MODE   = 4,
+        RTC_TARGET = 8,
         RTC_BOUND  = 0xffff
     };
     
