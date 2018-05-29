@@ -33,7 +33,8 @@ class CstrDraw {
         { GL_SRC_ALPHA, GL_ONE,                  64 },
     };
     
-    ub blend, spriteTP;
+    ub blend;
+    uw spriteTP;
     
     // Primitives
     void drawRect  (uw *);

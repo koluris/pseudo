@@ -274,11 +274,11 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0x60: // Tile
-            drawTile(data, 0);
+            drawTile(data, NULL);
             return;
             
         case 0x64: // Sprite
-            drawSprite(data, 0);
+            drawSprite(data, NULL);
             return;
             
         case 0x68: // Tile 1
