@@ -147,19 +147,6 @@ ub CstrHardware::read08(uw addr) {
     switch(LO_BITS(addr)) {
         /* unused */
         case 0x1040: // SIO
-        {
-//            uw ret = 0;
-//            accessMem(mem.hwr, ub) = 0x00;
-//            if (cpu.pc == 0x00004678) ret=0x41;
-//            if (cpu.pc == 0x0000473c) ret=0x5a;
-//            if ((cpu.pc == 0x00004850) && (*(uh *)&mem.hwr.ptr[0x104a] == 0x1013)) {ret=0xff;}
-//            if ((cpu.pc == 0x00004910) && (*(uh *)&mem.hwr.ptr[0x104a] == 0x1013)) {ret=0xff;}
-//            if ((cpu.pc == 0x00004850) && (*(uh *)&mem.hwr.ptr[0x104a] == 0x3013)) {ret=0xff;}
-//            if ((cpu.pc == 0x00004910) && (*(uh *)&mem.hwr.ptr[0x104a] == 0x3013)) {ret=0xff;}
-            printf("cpu.pc = $%04x & $%04x\n", cpu.pc, *(uh *)&mem.hwr.ptr[0x104a]);
-            return accessMem(mem.hwr, ub);
-        }
-            
         case 0x1800 ... 0x1803: // CD-ROM
             return accessMem(mem.hwr, ub);
     }
