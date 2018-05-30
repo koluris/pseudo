@@ -15,6 +15,7 @@
 		429C3EBD206500B500915293 /* Mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBB206500B500915293 /* Mem.cpp */; };
 		429C3EC120650CB400915293 /* PSeudo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBF20650CB400915293 /* PSeudo.cpp */; };
 		429C3EC62065189C00915293 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429C3EC52065189C00915293 /* AppKit.framework */; };
+		42A88BC320BF1D6B00CCF660 /* SIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42A88BC120BF1D6B00CCF660 /* SIO.cpp */; };
 		42B6B61A20B57D5700D70027 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B6B61820B57D5700D70027 /* Sound.cpp */; };
 		42B9957B20626481009B67BE /* R3000A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B9957920626481009B67BE /* R3000A.cpp */; };
 		42CA2D3620AF4776003F72D0 /* Options.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42CA2D3520AF4776003F72D0 /* Options.mm */; };
@@ -43,6 +44,8 @@
 		429C3EBF20650CB400915293 /* PSeudo.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = PSeudo.cpp; sourceTree = "<group>"; };
 		429C3EC020650CB400915293 /* PSeudo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PSeudo.h; sourceTree = "<group>"; };
 		429C3EC52065189C00915293 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		42A88BC120BF1D6B00CCF660 /* SIO.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = SIO.cpp; sourceTree = "<group>"; };
+		42A88BC220BF1D6B00CCF660 /* SIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SIO.h; sourceTree = "<group>"; };
 		42B6B61820B57D5700D70027 /* Sound.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Sound.cpp; sourceTree = "<group>"; };
 		42B6B61920B57D5700D70027 /* Sound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
 		42B9957920626481009B67BE /* R3000A.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = R3000A.cpp; sourceTree = "<group>"; };
@@ -168,6 +171,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		42A88BC020BF1D4A00CCF660 /* SIO */ = {
+			isa = PBXGroup;
+			children = (
+				42A88BC120BF1D6B00CCF660 /* SIO.cpp */,
+				42A88BC220BF1D6B00CCF660 /* SIO.h */,
+			);
+			name = SIO;
+			sourceTree = "<group>";
+		};
 		42B6B61720B57D4500D70027 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
@@ -187,6 +199,7 @@
 				429C3EBA2064FDC500915293 /* Mem */,
 				429C3EBE20650C9B00915293 /* PSeudo */,
 				420AD1C12063BB0F006C22D9 /* R3000A */,
+				42A88BC020BF1D4A00CCF660 /* SIO */,
 				42B6B61720B57D4500D70027 /* Sound */,
 				420AD1C22063BB24006C22D9 /* Global.h */,
 			);
@@ -334,6 +347,7 @@
 				42DB69702070DF0800000D08 /* Graphics.cpp in Sources */,
 				429C3EC120650CB400915293 /* PSeudo.cpp in Sources */,
 				42032C1820B483DD00B032A8 /* Draw.cpp in Sources */,
+				42A88BC320BF1D6B00CCF660 /* SIO.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

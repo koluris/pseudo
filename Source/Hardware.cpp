@@ -68,9 +68,7 @@ void CstrHardware::write16(uw addr, uh data) {
             
         /* unused */
         case 0x1014: // ?
-        case 0x1048: // SIO
-        case 0x104a:
-        case 0x104e:
+        case 0x1048 ... 0x104e: // SIO Mode, Control, Baud
         case 0x1074: // iMask
             accessMem(mem.hwr, uh) = data;
             return;
@@ -81,7 +79,7 @@ void CstrHardware::write16(uw addr, uh data) {
 void CstrHardware::write08(uw addr, ub data) {
     switch(LO_BITS(addr)) {
         /* unused */
-        case 0x1040: // SIO
+        case 0x1040: // SIO Data
         case 0x1800 ... 0x1803: // CD-ROM
         case 0x2041:
             accessMem(mem.hwr, ub) = data;
@@ -122,8 +120,8 @@ uw CstrHardware::read32(uw addr) {
 
 uh CstrHardware::read16(uw addr) {
     switch(LO_BITS(addr)) {
-        case 0x1044: // SIO
-            return 0xffff; // Nice :)
+        case 0x1044: // SIO Status
+            return sio.read16();
             
         case 0x1110 ... 0x1128: // Rootcounters
             return rootc.read<uh>(addr);
@@ -132,7 +130,7 @@ uh CstrHardware::read16(uw addr) {
             return audio.read(addr);
             
         /* unused */
-        case 0x104a: // SIO
+        case 0x104a: // SIO Control
         case 0x1014: // ?
         case 0x1070: // iStatus
         case 0x1074: // iMask
@@ -146,7 +144,9 @@ uh CstrHardware::read16(uw addr) {
 ub CstrHardware::read08(uw addr) {
     switch(LO_BITS(addr)) {
         /* unused */
-        case 0x1040: // SIO
+        case 0x1040: // SIO Data
+            return sio.read08();
+            
         case 0x1800 ... 0x1803: // CD-ROM
             return accessMem(mem.hwr, ub);
     }

@@ -68,4 +68,5 @@ typedef int8_t  sb; // bite
 #import "Mem.h"
 #import "PSeudo.h"
 #import "R3000A.h"
+#import "SIO.h"
 #import "Sound.h"

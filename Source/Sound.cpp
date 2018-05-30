@@ -24,7 +24,7 @@ void CstrAudio::reset() {
     spuAddr    = ~(0);
     spuVolumeL = MAX_VOLUME;
     spuVolumeR = MAX_VOLUME;
-    stereo     = false;
+    stereo     = true;
 }
 
 void CstrAudio::depackVAG(voice *chn) {
@@ -150,7 +150,7 @@ void CstrAudio::decodeStream() {
 
         ALuint buffer;
         alSourceUnqueueBuffers(source, 1, &buffer);
-        alBufferData(buffer, AL_FORMAT_MONO16, sbuf.fin, SBUF_SIZE*2, SAMPLE_RATE);
+        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
         stream();
         
@@ -327,6 +327,8 @@ uh CstrAudio::read(uw addr) {
         case 0x1daa: // Control
         case 0x1dac: // ?
         case 0x1dae: // Status
+        case 0x1db8:
+        case 0x1dba:
         case 0x1e00:
         case 0x1e02:
         case 0x1e04:

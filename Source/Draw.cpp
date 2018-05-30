@@ -53,7 +53,11 @@ void CstrDraw::resize(uh w, uh h) {
 
 void CstrDraw::refresh() {
     vs.ret.status ^= GPU_ODDLINES;
-    GLFlush();
+    
+    static int hi = 0;
+    if (hi++ % 2) {
+        GLFlush();
+    }
 }
 
 void CstrDraw::drawRect(uw *data) {

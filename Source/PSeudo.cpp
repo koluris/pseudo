@@ -34,6 +34,7 @@ void CstrPSeudo::reset() {
       cpu.reset();
       mem.reset();
     rootc.reset();
+      sio.reset();
        vs.reset();
     
 #ifdef MAC_OS_X
