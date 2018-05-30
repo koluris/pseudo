@@ -20,6 +20,10 @@ void CstrMem::write32(uw addr, uw data) {
             }
             return;
             
+        case 0x1f800000 ... (0x1f800400-1): // Scratchpad
+            accessMem(hwr, uw) = data;
+            return;
+            
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             io.write32(addr, data);
             return;
@@ -38,6 +42,10 @@ void CstrMem::write16(uw addr, uh data) {
             accessMem(ram, uh) = data;
             return;
             
+        case 0x1f800000 ... (0x1f800400-1): // Scratchpad
+            accessMem(hwr, uh) = data;
+            return;
+            
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             io.write16(addr, data);
             return;
@@ -51,6 +59,10 @@ void CstrMem::write08(uw addr, ub data) {
         case 0x80000000 ... (0x80800000-1):
         case 0xa0000000 ... (0xa0200000-1):
             accessMem(ram, ub) = data;
+            return;
+            
+        case 0x1f800000 ... (0x1f800400-1): // Scratchpad
+            accessMem(hwr, ub) = data;
             return;
             
         case 0x1f801000 ... (0x1f804000-1): // Hardware
@@ -70,6 +82,9 @@ uw CstrMem::read32(uw addr) {
         case 0xbfc00000 ... (0xbfc80000-1): // ROM
             return accessMem(rom, uw);
             
+        case 0x1f800000 ... (0x1f800400-1): // Scratchpad
+            return accessMem(hwr, uw);
+            
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             return io.read32(addr);
     }
@@ -86,6 +101,9 @@ uh CstrMem::read16(uw addr) {
             
         case 0xbfc00000 ... (0xbfc80000-1): // ROM
             return accessMem(rom, uh);
+            
+        case 0x1f800000 ... (0x1f800400-1): // Scratchpad
+            return accessMem(hwr, uh);
             
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             return io.read16(addr);
@@ -106,6 +124,9 @@ ub CstrMem::read08(uw addr) {
             
         case 0x1f000084: // Serial?
             return 0;
+            
+        case 0x1f800000 ... (0x1f800400-1): // Scratchpad
+            return accessMem(hwr, ub);
             
         case 0x1f801000 ... (0x1f804000-1): // Hardware
             return io.read08(addr);
