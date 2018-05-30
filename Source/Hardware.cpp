@@ -9,7 +9,7 @@ void CstrHardware::write32(uw addr, uw data) {
             data32 &= data & mask32;
             return;
             
-        case 0x10a0 ... 0x10e8: // DMA
+        case 0x1080 ... 0x10e8: // DMA
             if (addr & 8) {
                 bus.checkDMA(addr, data);
                 return;
@@ -21,7 +21,7 @@ void CstrHardware::write32(uw addr, uw data) {
             dicr = (dicr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
             return;
             
-        case 0x1114 ... 0x1118: // Rootcounters
+        case 0x1104 ... 0x1124: // Rootcounters
             rootc.write<uw>(addr, data);
             return;
             
@@ -40,8 +40,12 @@ void CstrHardware::write32(uw addr, uw data) {
         case 0x101c: // ?
         case 0x1020: // COM
         case 0x1060: // RAM Size
+            
         case 0x1074: // iMask
         case 0x10f0: // DPCR
+            
+        case 0x1820: // MDEC
+        case 0x1824:
             accessMem(mem.hwr, uw) = data;
             return;
     }
@@ -96,13 +100,19 @@ uw CstrHardware::read32(uw addr) {
             
         /* unused */
         case 0x1014: // ?
+            
         case 0x1070: // iStatus
         case 0x1074: // iMask
-        case 0x10a8: // DMA
+            
+        case 0x1098: // DMA
+        case 0x10a8:
         case 0x10c8:
         case 0x10e8:
+            
         case 0x10f0: // DPCR
         case 0x10f4: // DICR
+            
+        case 0x1824: // MDEC Read 1
             return accessMem(mem.hwr, uw);
     }
     printx("/// PSeudo Hardware Read 32: $%x", addr);
@@ -137,6 +147,19 @@ ub CstrHardware::read08(uw addr) {
     switch(LO_BITS(addr)) {
         /* unused */
         case 0x1040: // SIO
+        {
+//            uw ret = 0;
+//            accessMem(mem.hwr, ub) = 0x00;
+//            if (cpu.pc == 0x00004678) ret=0x41;
+//            if (cpu.pc == 0x0000473c) ret=0x5a;
+//            if ((cpu.pc == 0x00004850) && (*(uh *)&mem.hwr.ptr[0x104a] == 0x1013)) {ret=0xff;}
+//            if ((cpu.pc == 0x00004910) && (*(uh *)&mem.hwr.ptr[0x104a] == 0x1013)) {ret=0xff;}
+//            if ((cpu.pc == 0x00004850) && (*(uh *)&mem.hwr.ptr[0x104a] == 0x3013)) {ret=0xff;}
+//            if ((cpu.pc == 0x00004910) && (*(uh *)&mem.hwr.ptr[0x104a] == 0x3013)) {ret=0xff;}
+            printf("cpu.pc = $%04x & $%04x\n", cpu.pc, *(uh *)&mem.hwr.ptr[0x104a]);
+            return accessMem(mem.hwr, ub);
+        }
+            
         case 0x1800 ... 0x1803: // CD-ROM
             return accessMem(mem.hwr, ub);
     }

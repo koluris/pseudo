@@ -39,6 +39,10 @@ void CstrBus::checkDMA(uw addr, uw data) {
         dma->chcr = data;
         
         switch(chan) {
+            case DMA_MDEC_IN: // TODO
+            case DMA_MDEC_OUT:
+                break;
+                
             case DMA_GPU:
                 vs.executeDMA(dma);
                 break;

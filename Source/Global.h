@@ -35,6 +35,7 @@ typedef int8_t  sb; // bite
 #define GLBlendFunc         glBlendFunc
 #define GLClear             glClear
 #define GLClearColor        glClearColor
+#define GLClipPlane         glClipPlane
 #define GLColor4ub          glColor4ub
 #define GLDeleteTextures    glDeleteTextures
 #define GLDisable           glDisable

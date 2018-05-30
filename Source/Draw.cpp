@@ -20,16 +20,26 @@ void CstrDraw::reset() {
     GLMatrixMode(GL_MODELVIEW);
     GLID();
     
+    // Textures
     GLMatrixMode(GL_TEXTURE);
     GLID();
     GLScalef(1.0f / 256.0f, 1.0f / 256.0f, 1.0f);
     GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP);
     
+    // Clip area
+    GLEnable(GL_CLIP_PLANE0);
+    GLEnable(GL_CLIP_PLANE1);
+    GLEnable(GL_CLIP_PLANE2);
+    GLEnable(GL_CLIP_PLANE3);
+    
+    // Blend
     GLEnable(GL_BLEND);
+    
+    // Redraw
+    resize(320, 240);
     GLClearColor(0, 0, 0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
-    resize(320, 240);
     GLFlush();
 }
 
@@ -49,6 +59,11 @@ void CstrDraw::refresh() {
 void CstrDraw::drawRect(uw *data) {
     TILEx *k = (TILEx *)data;
     
+    GLDisable(GL_CLIP_PLANE0);
+    GLDisable(GL_CLIP_PLANE1);
+    GLDisable(GL_CLIP_PLANE2);
+    GLDisable(GL_CLIP_PLANE3);
+    
     GLColor4ub(k->c.a, k->c.b, k->c.c, COLOR_MAX);
     
     GLStart(GL_TRIANGLE_STRIP);
@@ -57,14 +72,19 @@ void CstrDraw::drawRect(uw *data) {
         GLVertex2s(k->vx.w,        k->vx.h + k->h);
         GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
     GLEnd();
+    
+    GLEnable(GL_CLIP_PLANE0);
+    GLEnable(GL_CLIP_PLANE1);
+    GLEnable(GL_CLIP_PLANE2);
+    GLEnable(GL_CLIP_PLANE3);
 }
 
 void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
     PFx *k = (PFx *)data;
     
     ub b[] = {
-        k->c.n & 2 ? blend : (ub)0,
-        k->c.n & 2 ? bit[blend].opaque : (ub)COLOR_MAX
+        k->c.n & 2 ? blend : 0,
+        k->c.n & 2 ? bit[blend].opaque : COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
@@ -82,8 +102,8 @@ void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
     PGx *k = (PGx *)data;
     
     ub b[] = {
-        k->vx[0].c.n & 2 ? blend : (ub)0,
-        k->vx[0].c.n & 2 ? bit[blend].opaque : (ub)COLOR_MAX
+        k->vx[0].c.n & 2 ? blend : 0,
+        k->vx[0].c.n & 2 ? bit[blend].opaque : COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
@@ -102,8 +122,8 @@ void CstrDraw::drawFT(uw *data, ub size) {
     blend = (k->vx[1].clut >> 5) & 3;
     
     ub b[] = {
-        k->c.n & 2 ? blend : (ub)0,
-        k->c.n & 2 ? bit[blend].opaque : (ub)COLOR_MAX
+        k->c.n & 2 ? blend : 0,
+        k->c.n & 2 ? bit[blend].opaque : COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
@@ -134,8 +154,8 @@ void CstrDraw::drawGT(uw *data, ub size) {
     blend = (k->vx[1].clut >> 5) & 3;
     
     ub b[] = {
-        k->vx[0].c.n & 2 ? blend : (ub)0,
-        k->vx[0].c.n & 2 ? bit[blend].opaque : (ub)COLOR_MAX
+        k->vx[0].c.n & 2 ? blend : 0,
+        k->vx[0].c.n & 2 ? bit[blend].opaque : COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
@@ -163,8 +183,8 @@ void CstrDraw::drawTile(uw *data, sh size) {
     }
     
     ub b[] = {
-        k->c.n & 2 ? blend : (ub)0,
-        k->c.n & 2 ? bit[blend].opaque : (ub)COLOR_MAX
+        k->c.n & 2 ? blend : 0,
+        k->c.n & 2 ? bit[blend].opaque : COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
@@ -188,8 +208,8 @@ void CstrDraw::drawSprite(uw *data, sh size) {
     }
     
     ub b[] = {
-        k->c.n&2 ? blend : (ub)0,
-        k->c.n&2 ? bit[blend].opaque : (ub)COLOR_MAX
+        k->c.n&2 ? blend : 0,
+        k->c.n&2 ? bit[blend].opaque : COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
@@ -331,10 +351,26 @@ void CstrDraw::primitive(uw addr, uw *data) {
         case 0xe2: // TODO: Texture Window
             return;
             
-        case 0xe3: // TODO: Draw Area Start
+        case 0xe3: // Draw Area Start
+        {
+            sh p[] = {
+                data[0] & 0x3ff, (data[0] >> 10) & 0x1ff
+            };
+            
+            GLdouble e1[] = { 1.0, 0.0, 0.0, -p[0] }; GLClipPlane(GL_CLIP_PLANE0, e1);
+            GLdouble e2[] = { 0.0, 1.0, 0.0, -p[1] }; GLClipPlane(GL_CLIP_PLANE1, e2);
+        }
             return;
             
-        case 0xe4: // TODO: Draw Area End
+        case 0xe4: // Draw Area End
+        {
+            sh p[] = {
+                data[0] & 0x3ff, (data[0] >> 10) & 0x1ff
+            };
+            
+            GLdouble e1[] = {-1.0, 0.0, 0.0, p[0] }; GLClipPlane(GL_CLIP_PLANE2, e1);
+            GLdouble e2[] = { 0.0,-1.0, 0.0, p[1] }; GLClipPlane(GL_CLIP_PLANE3, e2);
+        }
             return;
             
         case 0xe5: // Draw Offset
