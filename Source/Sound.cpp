@@ -27,6 +27,25 @@ void CstrAudio::reset() {
     stereo     = true;
 }
 
+sh CstrAudio::setVolume(sh data) {
+    sh ret = data;
+    
+    if (data & 0x8000) {
+        if (data & 0x1000) {
+            ret ^= 0xffff;
+        }
+        ret = ((ret & 0x7f) + 1) / 2;
+        ret += ret / (2 * ((data & 0x2000) ? -1 : 1));
+        ret *= 128;
+    }
+    else {
+        if (data & 0x4000) {
+            ret = 0x3fff - (data & 0x3fff);
+        }
+    }
+    return ret & 0x3fff;
+}
+
 void CstrAudio::depackVAG(voice *chn) {
     uw p = chn->saddr;
     sh s_1 = 0;
@@ -195,11 +214,11 @@ void CstrAudio::write(uw addr, uh data) {
         
         switch(addr & 0xf) {
             case 0x0: // Volume L
-                spuVoices[n].volumeL = data & MAX_VOLUME;
+                spuVoices[n].volumeL = setVolume(data);
                 return;
                 
             case 0x2: // Volume R
-                spuVoices[n].volumeR = data & MAX_VOLUME;
+                spuVoices[n].volumeR = setVolume(data);
                 return;
                 
             case 0x4: // Pitch
@@ -232,11 +251,11 @@ void CstrAudio::write(uw addr, uh data) {
     // HW
     switch(addr) {
         case 0x1d80: // Volume L
-            spuVolumeL = data & MAX_VOLUME;
+            spuVolumeL = setVolume(data);
             return;
         
         case 0x1d82: // Volume R
-            spuVolumeR = data & MAX_VOLUME;
+            spuVolumeR = setVolume(data);
             return;
         
         case 0x1d88: // Sound On 1

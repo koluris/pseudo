@@ -50,6 +50,7 @@ class CstrAudio {
     
     void stream();
     void depackVAG(voice *);
+    sh setVolume(sh);
     void voiceOn(uh);
     void voiceOff(uh);
     void dataWrite(uw, uw);
