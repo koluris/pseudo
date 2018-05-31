@@ -28,11 +28,9 @@ class CstrAudio {
             ub iub[USHRT_MAX * 2];
         } buffer;
         
-        uw count;
+        uw count, saddr;
         sw pos, size;
-        sh freq, raddr;
-        uw saddr;
-        sh volumeL, volumeR;
+        sh volumeL, volumeR, freq, raddr;
     } spuVoices[MAX_CHANNELS];
     
     struct {

@@ -28,7 +28,7 @@ typedef int16_t sh; // halfword
 typedef int8_t  sb; // bite
 
 // Defines
-#define TYPEDEF         typedef
+#define TYPEDEF typedef
 
 // OpenGL
 #define GLBindTexture       glBindTexture

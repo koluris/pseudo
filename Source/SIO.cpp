@@ -16,8 +16,14 @@
 #define baud\
     *(uh *)&mem.hwr.ptr[0x104e]
 
-#define hi(btn)\
-    0xffff ^ (1 << btn)
+// Check for pushed button
+#define btnCheck(btn)\
+    if (pushed) {\
+        btnState &=  (0xffff ^ (1 << btn));\
+    }\
+    else {\
+        btnState |= ~(0xffff ^ (1 << btn));\
+    }
 
 
 CstrSerial sio;
@@ -36,25 +42,28 @@ void CstrSerial::reset() {
 
 void CstrSerial::padListener(int code, bool pushed) {
     switch(code) {
-        case 7: // Cross
-            if (pushed)
-                btnState &=  (hi(PAD_BTN_CROSS));
-            else
-                btnState |= ~(hi(PAD_BTN_CROSS));
+        case 126: // Up
+            btnCheck(PAD_BTN_UP);
+            break;
+            
+        case 124: // R
+            btnCheck(PAD_BTN_RIGHT);
             break;
             
         case 125: // Down
-            if (pushed)
-                btnState &=  (hi(PAD_BTN_DOWN));
-            else
-                btnState |= ~(hi(PAD_BTN_DOWN));
+            btnCheck(PAD_BTN_DOWN);
             break;
             
-        case 126: // Up
-            if (pushed)
-                btnState &=  (hi(PAD_BTN_UP));
-            else
-                btnState |= ~(hi(PAD_BTN_UP));
+        case 123: // Left
+            btnCheck(PAD_BTN_LEFT);
+            break;
+            
+        case   7: // X
+            btnCheck(PAD_BTN_CIRCLE);
+            break;
+            
+        case   6: // Z
+            btnCheck(PAD_BTN_CROSS);
             break;
     }
     

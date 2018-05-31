@@ -79,7 +79,7 @@ void CstrPSeudo::executable(const char *path) {
 void CstrPSeudo::console(uw *r, uw addr) {
     if (addr == 0xb0) {
         if (r[9] == 59 || r[9] == 61) {
-            char put = toupper(r[4]&0xff);
+            char put = toupper(r[4] & 0xff);
 #ifdef MAC_OS_X
             [app consolePrint:[NSChars charsWithFormat:@"%c", put]];
 #endif
