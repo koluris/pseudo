@@ -16,12 +16,15 @@
 #define baud\
     *(uh *)&mem.hwr.ptr[0x104e]
 
+#define hi(btn)\
+    0xffff ^ (1 << btn)
+
 
 CstrSerial sio;
 
 void CstrSerial::reset() {
     cnt = 0;
-    fireInterrupt = false;
+    btnState = 0xffff;
     
     // Pad Buffer
     bfr[0] = 0x00;
@@ -29,24 +32,43 @@ void CstrSerial::reset() {
     bfr[2] = 0x5a;
     bfr[3] = 0xff;
     bfr[4] = 0xff;
+}
+
+void CstrSerial::padListener(int code, bool pushed) {
+    switch(code) {
+        case 7: // Cross
+            if (pushed)
+                btnState &=  (hi(PAD_BTN_CROSS));
+            else
+                btnState |= ~(hi(PAD_BTN_CROSS));
+            break;
+            
+        case 125: // Down
+            if (pushed)
+                btnState &=  (hi(PAD_BTN_DOWN));
+            else
+                btnState |= ~(hi(PAD_BTN_DOWN));
+            break;
+            
+        case 126: // Up
+            if (pushed)
+                btnState &=  (hi(PAD_BTN_UP));
+            else
+                btnState |= ~(hi(PAD_BTN_UP));
+            break;
+    }
     
-    // Hardwire (X) cross button
-    const uh btn = 0x0040; // ~(0xffbf)
-    bfr[3] = (ub)(btn);
-    bfr[4] = (ub)(btn >> 8);
+    bfr[3] = (ub)(btnState);
+    bfr[4] = (ub)(btnState >> 8);
 }
 
 uh CstrSerial::read16() {
-    if (fireInterrupt) {
-        bus.interruptSet(CstrBus::IRQ_SIO0);
-    }
+    bus.interruptSet(CstrBus::IRQ_SIO0);
     return 0xd02b; // 0xffff
 }
 
 ub CstrSerial::read08() {
     if ((control & 0xffef) == 0x1003) { // SIO0
-        fireInterrupt = true;
-        
         if (data == 0x42 /*|| data == 0x43 || data == 0x45*/) {
             cnt = 1;
         }
@@ -56,7 +78,6 @@ ub CstrSerial::read08() {
             
             if (++cnt == sizeof(bfr)) {
                 cnt = 0;
-                fireInterrupt = false;
             }
             return ret;
         }

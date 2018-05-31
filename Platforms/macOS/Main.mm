@@ -18,6 +18,17 @@
     [self.console setFrame:CGRectMake(self.screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
     
+    // Pad init
+    [NSEvent addLocalMonitorForEventsMask:NSDownMask handler:^NSEvent* (NSEvent* event) {
+        sio.padListener([event kCode], true);
+        return nil;
+    }];
+    
+    [NSEvent addLocalMonitorForEventsMask:NSUpMask handler:^NSEvent* (NSEvent* event) {
+        sio.padListener([event kCode], false);
+        return nil;
+    }];
+    
     // OpenGL init
     draw.reset();
     
@@ -149,7 +160,6 @@
 
     });
 }
-
 
 @end
 
