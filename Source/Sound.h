@@ -55,6 +55,7 @@ class CstrAudio {
     void voiceOn(uh);
     void voiceOff(uh);
     void dataWrite(uw, uw);
+    void dataRead(uw, uw);
     
 public:
     CstrAudio() {

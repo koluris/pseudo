@@ -352,6 +352,14 @@ void CstrAudio::dataWrite(uw addr, uw size) {
     }
 }
 
+void CstrAudio::dataRead(uw addr, uw size) {
+    while(size-- > 0) {
+        accessMem(mem.ram, uh) = spuMem.ish[spuAddr >> 1]; addr+=2;
+        spuAddr += 2;
+        spuAddr &= 0x3ffff;
+    }
+}
+
 void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
     sw size = (dma->bcr >> 16) * (dma->bcr & 0xffff) * 2;
     
@@ -360,9 +368,9 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
             dataWrite(dma->madr, size);
             return;
             
-//        case 0x01000200:
-//            dataMem.read(madr, size);
-//            return;
+        case 0x01000200:
+            dataRead(dma->madr, size);
+            return;
     }
     
     printx("/// PSeudo SPU DMA: $%x", dma->chcr);
