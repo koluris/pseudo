@@ -1,19 +1,6 @@
 #import "Global.h"
 
 
-/*  5-bit */
-#define sa\
-    ((code >>  6) & 31)
-
-#define rd\
-    ((code >> 11) & 31)
-
-#define rt\
-    ((code >> 16) & 31)
-
-#define rs\
-    ((code >> 21) & 31)
-
 /*  6-bit */
 #define opcode\
     ((code >> 26) & 63)
@@ -58,7 +45,7 @@ void CstrMips::reset() {
     copr[15] = 0x2; // Co-processor Revision
     
     pc = 0xbfc00000;
-    res.u64 = opcodeCount = 0;
+    res.s64 = opcodeCount = 0;
 }
 
 void CstrMips::bootstrap() {
@@ -143,11 +130,11 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 24: // MULT
-                    res.u64 = (sd)(sw)base[rs] * (sw)base[rt];
+                    res.s64 = (sd)(sw)base[rs] * (sw)base[rt];
                     return;
                     
                 case 25: // MULTU
-                    res.u64 = (sd)base[rs] * base[rt];
+                    res.s64 = (sd)base[rs] * base[rt];
                     return;
                     
                 case 26: // DIV
@@ -315,15 +302,7 @@ void CstrMips::step(bool branched) {
             return;
             
         case 18: // COP2
-            switch(code & 63) {
-                case 0: // Basic
-                    switch(rs & 7) {
-                        case 0: // MFC2
-                            base[rt] = 0; // TODO
-                            return;
-                    }
-                    return;
-            }
+            cop2.subroutine(code);
             return;
             
         case 32: // LB

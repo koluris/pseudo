@@ -16,7 +16,7 @@ class CstrAudio {
     };
     
     union {
-        sh ish[1024 * 256];
+        uh iuh[1024 * 256];
         ub iub[1024 * 256 * 2];
     } spuMem;
     

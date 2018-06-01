@@ -1,3 +1,17 @@
+/*  5-bit */
+#define sa\
+    ((code >>  6) & 31)
+
+#define rd\
+    ((code >> 11) & 31)
+
+#define rt\
+    ((code >> 16) & 31)
+
+#define rs\
+    ((code >> 21) & 31)
+
+
 class CstrMips {
     const uw mask[4][4] = {
         { 0x00ffffff, 0x0000ffff, 0x000000ff, 0x00000000 },
@@ -14,7 +28,7 @@ class CstrMips {
     };
     
     union { // Product & quotient (lo, hi)
-        sd u64; uw u32[2];
+        sd s64; uw u32[2];
     } res;
     
     uw opcodeCount;

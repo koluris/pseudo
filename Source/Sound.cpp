@@ -279,7 +279,7 @@ void CstrAudio::write(uw addr, uh data) {
             return;
             
         case 0x1da8: // Data
-            spuMem.ish[spuAddr >> 1] = data;
+            spuMem.iuh[spuAddr >> 1] = data;
             spuAddr += 2;
             spuAddr &= 0x3ffff;
             return;
@@ -365,7 +365,7 @@ uh CstrAudio::read(uw addr) {
 
 void CstrAudio::dataWrite(uw addr, uw size) {
     while(size-- > 0) {
-        spuMem.ish[spuAddr >> 1] = accessMem(mem.ram, uh); addr += 2;
+        spuMem.iuh[spuAddr >> 1] = accessMem(mem.ram, uh); addr += 2;
         spuAddr += 2;
         spuAddr &= 0x3ffff;
     }
@@ -373,7 +373,7 @@ void CstrAudio::dataWrite(uw addr, uw size) {
 
 void CstrAudio::dataRead(uw addr, uw size) {
     while(size-- > 0) {
-        accessMem(mem.ram, uh) = spuMem.ish[spuAddr >> 1]; addr+=2;
+        accessMem(mem.ram, uh) = spuMem.iuh[spuAddr >> 1]; addr+=2;
         spuAddr += 2;
         spuAddr &= 0x3ffff;
     }

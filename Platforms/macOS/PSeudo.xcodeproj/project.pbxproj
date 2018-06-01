@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		42032C1820B483DD00B032A8 /* Draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42032C1620B483DD00B032A8 /* Draw.cpp */; };
+		4216B0E020C176BB00F0CB17 /* GTE.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4216B0DE20C176BB00F0CB17 /* GTE.cpp */; };
 		425720D220BB4FF00081114F /* Cache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 425720D020BB4FF00081114F /* Cache.cpp */; };
 		42587A882068BEFF0054BEC8 /* Hardware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42587A862068BEFF0054BEC8 /* Hardware.cpp */; };
 		428D389620B5B549002856FC /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D389520B5B549002856FC /* OpenAL.framework */; };
@@ -32,6 +33,8 @@
 		42032C1720B483DD00B032A8 /* Draw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Draw.h; sourceTree = "<group>"; };
 		420AD1BC2063B8B7006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
+		4216B0DE20C176BB00F0CB17 /* GTE.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = GTE.cpp; sourceTree = "<group>"; };
+		4216B0DF20C176BB00F0CB17 /* GTE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GTE.h; sourceTree = "<group>"; };
 		425720D020BB4FF00081114F /* Cache.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Cache.cpp; sourceTree = "<group>"; };
 		425720D120BB4FF00081114F /* Cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cache.h; sourceTree = "<group>"; };
 		42587A862068BEFF0054BEC8 /* Hardware.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Hardware.cpp; sourceTree = "<group>"; };
@@ -110,6 +113,7 @@
 		420AD1C12063BB0F006C22D9 /* R3000A */ = {
 			isa = PBXGroup;
 			children = (
+				42A6797E20C17696001D8111 /* GTE */,
 				42B9957920626481009B67BE /* R3000A.cpp */,
 				42B9957A20626481009B67BE /* R3000A.h */,
 			);
@@ -169,6 +173,15 @@
 				42DE0D5820711EA200EEB549 /* OpenGL.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		42A6797E20C17696001D8111 /* GTE */ = {
+			isa = PBXGroup;
+			children = (
+				4216B0DE20C176BB00F0CB17 /* GTE.cpp */,
+				4216B0DF20C176BB00F0CB17 /* GTE.h */,
+			);
+			name = GTE;
 			sourceTree = "<group>";
 		};
 		42A88BC020BF1D4A00CCF660 /* SIO */ = {
@@ -339,6 +352,7 @@
 				429C3EBD206500B500915293 /* Mem.cpp in Sources */,
 				425720D220BB4FF00081114F /* Cache.cpp in Sources */,
 				42B6B61A20B57D5700D70027 /* Sound.cpp in Sources */,
+				4216B0E020C176BB00F0CB17 /* GTE.cpp in Sources */,
 				428EAF2F207376EF003BC141 /* Bus.cpp in Sources */,
 				42EBBCD32062482200824B95 /* Main.mm in Sources */,
 				42B9957B20626481009B67BE /* R3000A.cpp in Sources */,

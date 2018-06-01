@@ -18,17 +18,6 @@
     [self.console setFrame:CGRectMake(self.screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
     
-    // Pad init
-    [NSEvent addLocalMonitorForEventsMask:NSDownMask handler:^NSEvent* (NSEvent* event) {
-        sio.padListener([event kCode], true);
-        return nil;
-    }];
-    
-    [NSEvent addLocalMonitorForEventsMask:NSUpMask handler:^NSEvent* (NSEvent* event) {
-        sio.padListener([event kCode], false);
-        return nil;
-    }];
-    
     // OpenGL init
     draw.reset();
     
@@ -61,8 +50,9 @@
             [self emulationStop];
 
             // Load executable
-            NSChars *file = [[op URL] path];
-            psx.executable([file UTF8Chars]);
+            NSURL *file = [op URL];
+            [self setWindowCaption:[file lastPathComponent]];
+            psx.executable([[file path] UTF8Chars]);
 
             // Start new emulation process
             [self emulationStart];
@@ -85,6 +75,17 @@
 - (void)enableEmulator:(NSChars *)path {
     self.menuOpen .enabled = YES;
     self.menuShell.enabled = YES;
+    
+    // Pad init
+    [NSEvent addLocalMonitorForEventsMask:NSDownMask handler:^NSEvent* (NSEvent* event) {
+        sio.padListener([event kCode], true);
+        return nil;
+    }];
+    
+    [NSEvent addLocalMonitorForEventsMask:NSUpMask handler:^NSEvent* (NSEvent* event) {
+        sio.padListener([event kCode], false);
+        return nil;
+    }];
     
     // Startup
     psx.init([path UTF8Chars]);
@@ -159,6 +160,10 @@
         [[self.consoleView textStore] appendAttributedChars:attr];
 
     });
+}
+
+- (void)setWindowCaption:(NSChars *)text {
+    self.window.title = [NSChars charsWithFormat:@"PSeudo™ : Alpha (%@)", text];
 }
 
 @end

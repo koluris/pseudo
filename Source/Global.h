@@ -63,6 +63,7 @@ typedef int8_t  sb; // bite
 #import "Cache.h"
 #import "Counters.h"
 #import "Draw.h"
+#import "GTE.h"
 #import "Graphics.h"
 #import "Hardware.h"
 #import "Mem.h"
