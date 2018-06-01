@@ -41,30 +41,28 @@ void CstrSerial::reset() {
 }
 
 void CstrSerial::padListener(int code, bool pushed) {
-    switch(code) {
-        case 126: // Up
-            btnCheck(PAD_BTN_UP);
-            break;
-            
-        case 124: // R
-            btnCheck(PAD_BTN_RIGHT);
-            break;
-            
-        case 125: // Down
-            btnCheck(PAD_BTN_DOWN);
-            break;
-            
-        case 123: // Left
-            btnCheck(PAD_BTN_LEFT);
-            break;
-            
-        case   7: // X
-            btnCheck(PAD_BTN_CIRCLE);
-            break;
-            
-        case   6: // Z
-            btnCheck(PAD_BTN_CROSS);
-            break;
+    if (code == 126) { // Up
+        btnCheck(PAD_BTN_UP);
+    }
+    
+    if (code == 124) { // R
+        btnCheck(PAD_BTN_RIGHT);
+    }
+    
+    if (code == 125) { // Down
+        btnCheck(PAD_BTN_DOWN);
+    }
+    
+    if (code == 123) { // Left
+        btnCheck(PAD_BTN_LEFT);
+    }
+    
+    if (code ==   7) { // X
+        btnCheck(PAD_BTN_CIRCLE);
+    }
+    
+    if (code ==   6) { // Z
+        btnCheck(PAD_BTN_CROSS);
     }
     
     bfr[3] = (ub)(btnState);

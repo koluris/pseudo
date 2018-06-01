@@ -175,8 +175,6 @@ void CstrAudio::decodeStream() {
         
         // Clear
         memset(&sbuf.temp, 0, sizeof(sbuf.temp));
-        
-        //usleep(1000);
     }
 }
 
@@ -383,11 +381,11 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
     sw size = (dma->bcr >> 16) * (dma->bcr & 0xffff) * 2;
     
     switch(dma->chcr) {
-        case 0x01000201: // Write DMA Mem
+        case 0x01000201: // Write
             dataWrite(dma->madr, size);
             return;
             
-        case 0x01000200:
+        case 0x01000200: // Read
             dataRead(dma->madr, size);
             return;
     }
