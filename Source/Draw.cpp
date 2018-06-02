@@ -24,7 +24,7 @@ void CstrDraw::reset() {
     GLMatrixMode(GL_TEXTURE);
     GLID();
     GLScalef(1.0f / 256.0f, 1.0f / 256.0f, 1.0f);
-    GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+    GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE); //GL_REPLACE GL_COMBINE
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP);
     
     // Clip area
