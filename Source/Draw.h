@@ -27,10 +27,10 @@ class CstrDraw {
     const struct {
         sw src, dst; ub opaque;
     } bit[4] = {
-        { GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 127 },
+        { GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 128 },
         { GL_ONE,       GL_ONE_MINUS_SRC_ALPHA,   0 },
         { GL_ZERO,      GL_ONE_MINUS_SRC_COLOR,   0 },
-        { GL_SRC_ALPHA, GL_ONE,                  63 },
+        { GL_SRC_ALPHA, GL_ONE,                  64 },
     };
     
     ub blend;

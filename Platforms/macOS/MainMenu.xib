@@ -32,7 +32,7 @@
                     <constraint firstAttribute="trailing" secondItem="gyI-cr-EPE" secondAttribute="trailing" id="w1V-x8-ZBE"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-840" y="80"/>
+            <point key="canvasLocation" x="-897" y="37"/>
         </window>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="gn3-gZ-vsZ" customClass="Options">

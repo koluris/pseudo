@@ -41,6 +41,14 @@ void CstrSerial::reset() {
 }
 
 void CstrSerial::padListener(int code, bool pushed) {
+    if (code == 19) { // Select
+        btnCheck(PAD_BTN_SELECT);
+    }
+    
+    if (code == 18) { // Start
+        btnCheck(PAD_BTN_START);
+    }
+    
     if (code == 126) { // Up
         btnCheck(PAD_BTN_UP);
     }

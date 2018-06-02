@@ -47,7 +47,7 @@ void CstrDraw::resize(uh w, uh h) {
     if (w && h) {
         GLMatrixMode(GL_PROJECTION);
         GLID();
-        GLOrtho(0.0, w, h, 0.0, 1.0, -1.0);
+        GLOrtho(0.0, w - 1.0, h - 1.0, 0.0, 1.0, -1.0);
     }
 }
 
