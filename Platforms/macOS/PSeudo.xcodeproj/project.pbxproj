@@ -21,6 +21,7 @@
 		42B9957B20626481009B67BE /* R3000A.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42B9957920626481009B67BE /* R3000A.cpp */; };
 		42CA2D3620AF4776003F72D0 /* Options.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42CA2D3520AF4776003F72D0 /* Options.mm */; };
 		42CB1D6E206E34680023337A /* Counters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42CB1D6C206E34680023337A /* Counters.cpp */; };
+		42D8F31020C2C3CE008BA088 /* Square.icns in Resources */ = {isa = PBXBuildFile; fileRef = 42D8F30F20C2C3CE008BA088 /* Square.icns */; };
 		42DB69702070DF0800000D08 /* Graphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42DB696E2070DF0800000D08 /* Graphics.cpp */; };
 		42DE0D5920711EA200EEB549 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42DE0D5820711EA200EEB549 /* OpenGL.framework */; };
 		42EBBCD32062482200824B95 /* Main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42EBBCD22062482200824B95 /* Main.mm */; };
@@ -57,6 +58,7 @@
 		42CA2D3720AF479A003F72D0 /* Options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Options.h; sourceTree = "<group>"; };
 		42CB1D6C206E34680023337A /* Counters.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Counters.cpp; sourceTree = "<group>"; };
 		42CB1D6D206E34680023337A /* Counters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Counters.h; sourceTree = "<group>"; };
+		42D8F30F20C2C3CE008BA088 /* Square.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = Square.icns; path = ../../../../../../Users/dk/Downloads/Square.icns; sourceTree = "<group>"; };
 		42DB696E2070DF0800000D08 /* Graphics.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Graphics.cpp; sourceTree = "<group>"; };
 		42DB696F2070DF0800000D08 /* Graphics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Graphics.h; sourceTree = "<group>"; };
 		42DE0D5820711EA200EEB549 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -272,6 +274,7 @@
 			isa = PBXGroup;
 			children = (
 				42EBBCD42062482200824B95 /* Assets.xcassets */,
+				42D8F30F20C2C3CE008BA088 /* Square.icns */,
 				42EBBCE32062494200824B95 /* MainMenu.xib */,
 				42EBBCD92062482200824B95 /* Info.plist */,
 			);
@@ -338,6 +341,7 @@
 			files = (
 				42EBBCD52062482200824B95 /* Assets.xcassets in Resources */,
 				42EBBCE42062494200824B95 /* MainMenu.xib in Resources */,
+				42D8F31020C2C3CE008BA088 /* Square.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
