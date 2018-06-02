@@ -37,14 +37,13 @@ void CstrPSeudo::reset() {
       sio.reset();
        vs.reset();
     
+    // BIOS version, ex: "ROM Version 4.1 12/16/97 E"
+    ub version[0x1b];
+    memcp(version, &mem.rom.ptr[mem.rom.size - 0xc7], 0x1b);
+    
 #ifdef MAC_OS_X
     [app consoleClear];
-    
-    // BIOS version, ex: "ROM Version 4.1 12/16/97 E"
-    for (int i = 0xc7; i > 0xac; i--) {
-        [app consolePrint:[NSChars charsWithFormat:@"%c", mem.rom.ptr[mem.rom.size - i]]];
-    }
-    [app consolePrint:@"\n\nPSeudo™ : Alpha 0.7\n-> reset complete\n"];
+    [app consolePrint:[NSChars charsWithFormat:@"%s\n\nPSeudo™ : Alpha 0.7\n-> reset complete\n", version]];
 #endif
 }
 

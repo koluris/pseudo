@@ -29,6 +29,7 @@ typedef int8_t  sb; // bite
 
 // Defines
 #define TYPEDEF typedef
+#define memcp   memcpy
 
 // OpenGL
 #define GLBindTexture       glBindTexture
