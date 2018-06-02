@@ -39,7 +39,7 @@ void CstrPSeudo::reset() {
     
     // BIOS version, ex: "ROM Version 4.1 12/16/97 E"
     ub version[0x1b];
-    memcp(version, &mem.rom.ptr[mem.rom.size - 0xc7], 0x1b);
+    memcp(version, &mem.rom.ptr[mem.rom.size - 0xc7], sizeof(version));
     
 #ifdef MAC_OS_X
     [app consoleClear];
