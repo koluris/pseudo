@@ -38,7 +38,7 @@ class CstrAudio {
         sh  fin[SBUF_SIZE * 2];
     } sbuf;
     
-    sw spuAddr;
+    uw spuAddr;
     sh spuVolumeL, spuVolumeR;
     bool stereo;
     
@@ -50,11 +50,13 @@ class CstrAudio {
     
     void stream();
     void depackVAG(voice *);
+    
+    // Volume
     sh setVolume(sh);
-    void voiceOn(uh);
+    
+    // Voices
+    void voiceOn (uh);
     void voiceOff(uh);
-    void dataWrite(uw, uw);
-    void dataRead(uw, uw);
     
 public:
     CstrAudio() {

@@ -362,32 +362,25 @@ uh CstrAudio::read(uw addr) {
     return 0;
 }
 
-void CstrAudio::dataWrite(uw addr, uw size) {
-    while(size-- > 0) {
-        spuMem.iuh[spuAddr >> 1] = accessMem(mem.ram, uh); addr += 2;
-        spuAddr += 2;
-        spuAddr &= 0x3ffff;
-    }
-}
-
-void CstrAudio::dataRead(uw addr, uw size) {
-    while(size-- > 0) {
-        accessMem(mem.ram, uh) = spuMem.iuh[spuAddr >> 1]; addr+=2;
-        spuAddr += 2;
-        spuAddr &= 0x3ffff;
-    }
-}
-
 void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
-    sw size = (dma->bcr >> 16) * (dma->bcr & 0xffff) * 2;
+    uh *p   = (uh *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
+    uw size = (dma->bcr >> 16) * (dma->bcr & 0xffff) * 2;
     
     switch(dma->chcr) {
         case 0x01000201: // Write
-            dataWrite(dma->madr, size);
+            for (uw i = 0; i < size; i++) {
+                spuMem.iuh[spuAddr >> 1] = *p++;
+                spuAddr += 2;
+                spuAddr &= 0x3ffff;
+            }
             return;
             
         case 0x01000200: // Read
-            dataRead(dma->madr, size);
+            for (uw i = 0; i < size; i++) {
+                *p++ = spuMem.iuh[spuAddr >> 1];
+                spuAddr += 2;
+                spuAddr &= 0x3ffff;
+            }
             return;
     }
     

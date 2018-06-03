@@ -16,6 +16,8 @@ void CstrGraphics::reset() {
     ret.data   = 0x400;
     ret.status = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA    = GPU_DMA_NONE;
+    vpos       = 0;
+    vdiff      = 0;
     
     // Reset canvas
     draw.reset();
@@ -44,16 +46,38 @@ void CstrGraphics::write(uw addr, uw data) {
                     ret.status &= ~GPU_DMABITS;
                     return;
                     
+                case 0x05:
+                    vpos = MAX(vpos, (data >> 10) & 0x3ff);
+                    return;
+                    
+                case 0x07:
+                    vdiff = ((data >> 10) & 0x3ff) - (data & 0x3ff);
+                    return;
+                    
                 case 0x08:
-                    draw.resize(resMode[(data & 3) | ((data & 0x40) >> 4)], (data & 4) ? 480 : 240);
+                {
+                    // Basic info
+                    uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];
+                    uh h = (data & 4) ? 480 : 240;
+                    
+                    if ((data >> 5) & 1) { // No distinction for interlaced
+                        draw.resize(w, h);
+                    }
+                    else { // Normal modes
+                        if (h == vdiff) {
+                            draw.resize(w, h);
+                        }
+                        else {
+                            draw.resize(w, vpos ? vpos : vdiff);
+                        }
+                    }
+                }
                     return;
                     
                 /* unused */
                 case 0x02:
                 case 0x03:
-                case 0x05:
                 case 0x06:
-                case 0x07:
                 case 0x10: // TODO: Information
                     return;
             }
@@ -80,48 +104,45 @@ uw CstrGraphics::read(uw addr) {
 }
 
 int CstrGraphics::fetchMem(uh *ptr, sw size) {
-    int count = 0;
-
     if (!vrop.enabled) {
         modeDMA = GPU_DMA_NONE;
         return 0;
     }
+    
+    int count = 0;
     size <<= 1;
-
+    
     while (vrop.v.p < vrop.v.end) {
         while (vrop.h.p < vrop.h.end) {
             vs.vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
-
+            
             vrop.h.p++;
             ptr++;
-
+            
             if (++count == size) {
                 if (vrop.h.p == vrop.h.end) {
                     vrop.h.p  = vrop.h.start;
                     vrop.v.p++;
                 }
-
-                return fetchEnd(count);
+                
+                redirect VRAM_END;
             }
         }
-
+        
         vrop.h.p = vrop.h.start;
         vrop.v.p++;
     }
-
-    return fetchEnd(count);
-}
-
-int CstrGraphics::fetchEnd(int count) {
+    
+VRAM_END:
     if (vrop.v.p >= vrop.v.end) {
         vrop.enabled = false;
         modeDMA = GPU_DMA_NONE;
-
+        
         // if (count%2 === 1) {
         //     count++;
         // }
     }
-
+    
     return count >> 1;
 }
 
@@ -201,5 +222,6 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
             while(dma->madr != 0xffffff);
             return;
     }
+    
     printx("/// PSeudo GPU DMA: $%x", dma->chcr);
 }

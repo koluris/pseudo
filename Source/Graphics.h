@@ -32,6 +32,7 @@ class CstrGraphics {
         GPU_REG_STATUS = 4
     };
     
+    // Width
     const uh resMode[8] = {
         256, 320, 512, 640, 368, 384, 512, 640
     };
@@ -56,7 +57,7 @@ class CstrGraphics {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xf0
     };
     
-    // VRAM
+    // VRAM Structure
     struct heap {
         uh *ptr; uw size;
     };
@@ -67,9 +68,9 @@ class CstrGraphics {
     } pipe;
     
     uw modeDMA;
+    uh vpos, vdiff;
     
     int fetchMem(uh *, sw);
-    int fetchEnd(int);
     void dataWrite(uw *, sw);
     
 public:
@@ -81,19 +82,21 @@ public:
         delete[] vram.ptr;
     }
     
+    // Data, Status
     struct {
         uw data, status;
     } ret;
     
+    // VRAM operations
     struct {
         bool enabled;
-        uh *pvram;
         
         struct {
             sw p, start, end;
         } h, v;
     } vrop;
     
+    // VRAM
     heap vram;
     
     void reset();

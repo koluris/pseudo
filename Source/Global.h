@@ -28,8 +28,9 @@ typedef int16_t sh; // halfword
 typedef int8_t  sb; // bite
 
 // Defines
-#define TYPEDEF typedef
-#define memcp   memcpy
+#define TYPEDEF     typedef
+#define memcp       memcpy
+#define redirect    goto
 
 // OpenGL
 #define GLBindTexture       glBindTexture
