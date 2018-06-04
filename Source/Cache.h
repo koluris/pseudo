@@ -10,6 +10,15 @@ class CstrCache {
     };
     
     struct {
+        struct { // Mem position of texture and color lookup table
+            uw w, h, cc;
+        } pos;
+        
+        // Texture and color lookup table buffer
+        uw bfr[256][256], cc[256];
+    } tex;
+    
+    struct {
         GLuint uid, tex;
     } cache[TCACHE_MAX];
     
