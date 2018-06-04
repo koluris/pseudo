@@ -1,9 +1,6 @@
 #define TCACHE_MAX\
     2048
 
-#define TEX_SIZE\
-    256
-
 
 class CstrCache {
     struct {
