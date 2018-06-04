@@ -10,13 +10,9 @@ class CstrCache {
         GLuint uid, tex;
     } cache[TCACHE_MAX];
     
-    struct TEXEL {
-        ub c, m, k, a;
-    };
-    
     uh index;
     
-    void pixel2texel(TEXEL *, uh *, sw);
+    uw pixel2texel(uh);
     
 public:
     ~CstrCache() {
