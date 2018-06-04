@@ -147,7 +147,7 @@ VRAM_END:
 }
 
 void CstrGraphics::dataWrite(uw *ptr, sw size) {
-    sw i = 0;
+    int i = 0;
 
     while (i < size) {
         if (modeDMA == GPU_DMA_MEM2VRAM) {

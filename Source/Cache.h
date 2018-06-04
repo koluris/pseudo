@@ -3,12 +3,17 @@
 
 
 class CstrCache {
+    enum {
+        TCACHE_04BIT,
+        TCACHE_08BIT,
+        TCACHE_15BIT,
+    };
+    
     struct {
         GLuint uid, tex;
     } cache[TCACHE_MAX];
     
     uh index;
-    
     uw pixel2texel(uh);
     
 public:

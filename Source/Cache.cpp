@@ -56,7 +56,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     //printf("0x%x | 0x%x 0x%x\n", ((tp & 15) * 64 + (tp & 16) * 16 * FRAME_W), pos.tex.w, pos.tex.h);
     
     switch((tp >> 7) & 3) {
-        case 0: // 04-bit
+        case TCACHE_04BIT:
             for (int i = 0; i < 16; i++) { // Color lookup table
                 cc[i] = pixel2texel(vs.vram.ptr[pos.cc]);
                 pos.cc++;
@@ -64,16 +64,16 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < 256; w+=4) {
-                    uh hi = vs.vram.ptr[((pos.tex.h + h) * 4096 + pos.tex.w * 4 + w) / 4];
-                    tex[h][w + 0] = cc[(hi >> 0x0) & 15];
-                    tex[h][w + 1] = cc[(hi >> 0x4) & 15];
-                    tex[h][w + 2] = cc[(hi >> 0x8) & 15];
-                    tex[h][w + 3] = cc[(hi >> 0xc) & 15];
+                    const uh p = vs.vram.ptr[((pos.tex.h + h) * 4096 + pos.tex.w * 4 + w) / 4];
+                    tex[h][w + 0] = cc[(p >> 0x0) & 15];
+                    tex[h][w + 1] = cc[(p >> 0x4) & 15];
+                    tex[h][w + 2] = cc[(p >> 0x8) & 15];
+                    tex[h][w + 3] = cc[(p >> 0xc) & 15];
                 }
             }
             break;
             
-        case 1: // 08-bit
+        case TCACHE_08BIT:
             for (int i = 0; i < 256; i++) { // Color lookup table
                 cc[i] = pixel2texel(vs.vram.ptr[pos.cc]);
                 pos.cc++;
@@ -81,14 +81,14 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < 256; w+=2) {
-                    uh hi = vs.vram.ptr[((pos.tex.h + h) * 2048 + pos.tex.w * 2 + w) / 2];
-                    tex[h][w + 0] = cc[(hi >> 0) & 255];
-                    tex[h][w + 1] = cc[(hi >> 8) & 255];
+                    const uh p = vs.vram.ptr[((pos.tex.h + h) * 2048 + pos.tex.w * 2 + w) / 2];
+                    tex[h][w + 0] = cc[(p >> 0) & 255];
+                    tex[h][w + 1] = cc[(p >> 8) & 255];
                 }
             }
             break;
             
-        case 2: // 15-bit direct
+        case TCACHE_15BIT:
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < 256; w++) {
                     tex[h][w] = pixel2texel(vs.vram.ptr[(pos.tex.h + h) * FRAME_W + pos.tex.w + w]);
