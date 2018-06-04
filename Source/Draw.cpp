@@ -17,8 +17,11 @@ void CstrDraw::reset() {
     
     // OpenGL
     GLViewport(0, 0, 320*2, 240*2);
-    GLMatrixMode(GL_MODELVIEW);
-    GLID();
+    GLEnable(GL_BLEND);
+    GLEnable(GL_CLIP_PLANE0);
+    GLEnable(GL_CLIP_PLANE1);
+    GLEnable(GL_CLIP_PLANE2);
+    GLEnable(GL_CLIP_PLANE3);
     
     // Textures
     GLMatrixMode(GL_TEXTURE);
@@ -26,15 +29,6 @@ void CstrDraw::reset() {
     GLScalef(1.0f / 256.0f, 1.0f / 256.0f, 1.0f);
     GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE); //GL_REPLACE GL_COMBINE
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP);
-    
-    // Clip area
-    GLEnable(GL_CLIP_PLANE0);
-    GLEnable(GL_CLIP_PLANE1);
-    GLEnable(GL_CLIP_PLANE2);
-    GLEnable(GL_CLIP_PLANE3);
-    
-    // Blend
-    GLEnable(GL_BLEND);
     
     // Redraw
     resize(320, 240);
@@ -54,8 +48,8 @@ void CstrDraw::resize(uh w, uh h) {
 void CstrDraw::refresh() {
     vs.ret.status ^= GPU_ODDLINES;
     
-    static int hi = 0;
-    if (hi++ % 2) {
+    static int bias = 0;
+    if (bias++ % 2) { // Show half the rendered frames
         GLFlush();
     }
 }

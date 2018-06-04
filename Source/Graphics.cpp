@@ -157,8 +157,7 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
             ptr += i;
         }
 
-        ret.data = *ptr;
-        ptr++;
+        ret.data = *ptr++;
         i++;
 
         if (!pipe.size) {

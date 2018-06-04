@@ -27,10 +27,10 @@ uw CstrCache::pixel2texel(uh p) {
 }
 
 void CstrCache::fetchTexture(uw tp, uw clut) {
-    GLuint uid = (clut << 16) | tp;
+    GLuint uid = (clut << 16) | tp; // Generate a unique texture ID
     
     for (int i = 0; i < TCACHE_MAX; i++) {
-        if (cache[i].uid == uid) {
+        if (cache[i].uid == uid) { // Found cached texture
             GLBindTexture(GL_TEXTURE_2D, cache[i].tex);
             return;
         }
@@ -47,14 +47,14 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     //printf("0x%x 0x%x | 0x%x 0x%x\n", ((tp & 15) * 64), ((tp & 16) * 16 * FRAME_W), tex.pos.w, tex.pos.h);
     
     switch((tp >> 7) & 3) {
-        case TCACHE_04BIT: // 16 color palette
+        case TEX_04BIT: // 16 color palette
             for (int i = 0; i < 16; i++) {
                 tex.cc[i] = pixel2texel(vs.vram.ptr[tex.pos.cc]);
                 tex.pos.cc++;
             }
             
             for (int h = 0; h < 256; h++) {
-                for (int w = 0; w < 256; w+=4) {
+                for (int w = 0; w < 256; w += 4) {
                     const uh p = vs.vram.ptr[((tex.pos.h + h) * 4096 + tex.pos.w * 4 + w) / 4];
                     tex.bfr[h][w + 0] = tex.cc[(p >> 0x0) & 15];
                     tex.bfr[h][w + 1] = tex.cc[(p >> 0x4) & 15];
@@ -64,14 +64,14 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             }
             break;
             
-        case TCACHE_08BIT: // 256 color palette
+        case TEX_08BIT: // 256 color palette
             for (int i = 0; i < 256; i++) {
                 tex.cc[i] = pixel2texel(vs.vram.ptr[tex.pos.cc]);
                 tex.pos.cc++;
             }
             
             for (int h = 0; h < 256; h++) {
-                for (int w = 0; w < 256; w+=2) {
+                for (int w = 0; w < 256; w += 2) {
                     const uh p = vs.vram.ptr[((tex.pos.h + h) * 2048 + tex.pos.w * 2 + w) / 2];
                     tex.bfr[h][w + 0] = tex.cc[(p >> 0) & 255];
                     tex.bfr[h][w + 1] = tex.cc[(p >> 8) & 255];
@@ -79,7 +79,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             }
             break;
             
-        case TCACHE_15BIT: // No color palette
+        case TEX_15BIT: // No color palette
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < 256; w++) {
                     tex.bfr[h][w] = pixel2texel(vs.vram.ptr[(tex.pos.h + h) * FRAME_W + tex.pos.w + w]);
@@ -94,5 +94,5 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     
     // Advance cache counter
     cache[index].uid = uid;
-    index = (index+1)&(TCACHE_MAX-1);
+    index = (index + 1) & (TCACHE_MAX - 1);
 }

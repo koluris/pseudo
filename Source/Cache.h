@@ -1,12 +1,12 @@
-#define TCACHE_MAX\
-    2048
-
-
 class CstrCache {
     enum {
-        TCACHE_04BIT,
-        TCACHE_08BIT,
-        TCACHE_15BIT,
+        // Texture modes
+        TEX_04BIT,
+        TEX_08BIT,
+        TEX_15BIT,
+        
+        // Maximum texture cache
+        TCACHE_MAX = 2048
     };
     
     struct {

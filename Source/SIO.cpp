@@ -32,7 +32,7 @@ void CstrSerial::reset() {
     cnt = 0;
     btnState = 0xffff;
     
-    // Pad Buffer
+    // Default pad buffer
     bfr[0] = 0x00;
     bfr[1] = 0x41;
     bfr[2] = 0x5a;
@@ -41,11 +41,11 @@ void CstrSerial::reset() {
 }
 
 void CstrSerial::padListener(int code, bool pushed) {
-    if (code == 19) { // Select
+    if (code ==  19) { // Select
         btnCheck(PAD_BTN_SELECT);
     }
     
-    if (code == 18) { // Start
+    if (code ==  18) { // Start
         btnCheck(PAD_BTN_START);
     }
     

@@ -1,5 +1,5 @@
-#define accessMem(mem, dt)\
-    *(dt *)&mem.ptr[addr & (mem.size - 1)]
+#define accessMem(mem, dataT)\
+    *(dataT *)&mem.ptr[addr & (mem.size - 1)]
 
 
 class CstrMem {
