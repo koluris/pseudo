@@ -307,15 +307,15 @@ void CstrMips::step(bool branched) {
         case 18: // COP2
             switch(rs) {
                 case MFC:
-                    base[rt] = cop2.base[rd].d;
+                    base[rt] = cop2.cop2d.iuw[rd];
                     return;
                     
                 case CFC:
-                    base[rt] = cop2.base[rd].c;
+                    base[rt] = cop2.cop2c.iuw[rd];
                     return;
                     
                 case CTC:
-                    cop2.base[rd].c = base[rt];
+                    cop2.cop2c.iuw[rd] = base[rt];
                     return;
             }
             
@@ -371,11 +371,11 @@ void CstrMips::step(bool branched) {
             return;
             
         case 50: // LWC2
-            cop2.base[rt].d = mem.read32(ob);
+            cop2.cop2d.iuw[rt] = mem.read32(ob);
             return;
             
         case 58: // SWC2
-            mem.write32(ob, cop2.base[rt].d);
+            mem.write32(ob, cop2.cop2d.iuw[rt]);
             return;
     }
     
