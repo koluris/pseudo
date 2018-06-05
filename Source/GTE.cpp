@@ -7,12 +7,6 @@ void CstrCop2::reset() {
     memset(&base, 0, sizeof(base));
 }
 
-#define FIX(a)\
-    ((a) >> 12)
-
-#define LIMIT(a, min, max)\
-    if (a < min) a = min; else if (a > max) a = max
-
 #define VX0  ((short *)&base[ 0].d)[0]
 #define VY0  ((short *)&base[ 0].d)[1]
 #define VZ0  ((short *)&base[ 1].d)[0]
@@ -26,17 +20,19 @@ void CstrCop2::reset() {
 #define IR1  ((int   *)&base[ 9].d)[0]
 #define IR2  ((int   *)&base[10].d)[0]
 #define IR3  ((int   *)&base[11].d)[0]
+#define SXY0 base[12].d
 #define SX0  ((short *)&base[12].d)[0]
 #define SY0  ((short *)&base[12].d)[1]
+#define SXY1 base[13].d
 #define SX1  ((short *)&base[13].d)[0]
 #define SY1  ((short *)&base[13].d)[1]
+#define SXY2 base[14].d
 #define SX2  ((short *)&base[14].d)[0]
 #define SY2  ((short *)&base[14].d)[1]
 #define SZ0  base[16].d
 #define SZ1  base[17].d
 #define SZ2  base[18].d
 #define SZ3  base[19].d
-#define SZx  base[19].d
 #define MAC0 ((int   *)&base[24].d)[0]
 #define MAC1 ((int   *)&base[25].d)[0]
 #define MAC2 ((int   *)&base[26].d)[0]
@@ -61,31 +57,25 @@ void CstrCop2::reset() {
 #define DQB  ((int   *)&base[28].c)[0]
 #define FLAG ((int   *)&base[31].c)[0]
 
+#define FIX(a) \
+    ((a)>>12)
 
+#define LIM(a, min, max, bit) \
+    (((a) < min) ? (FLAG |= (1<<bit), min) : \
+    (((a) > max) ? (FLAG |= (1<<bit), max) : ((a))))
 
+#define limB1(a) LIM(a, -32768.0, 32767.0, 24)
+#define limB2(a) LIM(a, -32768.0, 32767.0, 23)
+#define limB3(a) LIM(a, -32768.0, 32767.0, 22)
+#define limD(a)  LIM(a,      0.0, 65535.0, 18)
+#define limG1(a) LIM(a,  -1024.0,  1023.0, 14)
+#define limG2(a) LIM(a,  -1024.0,  1023.0, 13)
+#define limH(a)  LIM(a,      0.0,  4096.0, 12)
 
-
-
-#define lim(X, MIN, MAX, BIT) ((X < MIN) ? (FLAG |= (1 << BIT), MIN) : ((X > MAX) ? (FLAG |= (1 << BIT), MAX) : X))
-
-#define limA1S(sz) lim(sz, -32768.0, 32767.0, 24)
-#define limA2S(sz) lim(sz, -32768.0, 32767.0, 23)
-#define limA3S(sz) lim(sz, -32768.0, 32767.0, 22)
-#define limA1U(sz) lim(sz,      0.0, 32767.0, 24)
-#define limA2U(sz) lim(sz,      0.0, 32767.0, 23)
-#define limA3U(sz) lim(sz,      0.0, 32767.0, 22)
-#define limB1( sz) lim(sz,      0.0,   255.0, 21)
-#define limB2( sz) lim(sz,      0.0,   255.0, 20)
-#define limB3( sz) lim(sz,      0.0,   255.0, 19)
-#define limC(  sz) lim(sz,      0.0, 65535.0, 18)
-#define limD1( sz) lim(sz,  -1024.0,  1023.0, 14)
-#define limD2( sz) lim(sz,  -1024.0,  1023.0, 13)
-#define limE(  sz) lim(sz,      0.0,  4095.0, 12)
-
-#define MAC2IR0() IR1 = limA1S(MAC1); IR2 = limA2S(MAC2); IR3 = limA3S(MAC3);
-#define MAC2IR1() IR1 = limA1U(MAC1); IR2 = limA2U(MAC2); IR3 = limA3U(MAC3);
-
-double RZ;
+#define MAC2IR()\
+    IR1 = limB1(MAC1);\
+    IR2 = limB2(MAC2);\
+    IR3 = limB3(MAC3)
 
 void CstrCop2::subroutine(uw code, uw rss) {
     switch(code & 0x1ffffff) {
@@ -93,130 +83,32 @@ void CstrCop2::subroutine(uw code, uw rss) {
         {
             FLAG = 0;
             
-            MAC1 = (R11*VX0 + R12*VY0 + R13*VZ0) / 4096.0 + TRX;
-            MAC2 = (R21*VX0 + R22*VY0 + R23*VZ0) / 4096.0 + TRY;
-            MAC3 = (R31*VX0 + R32*VY0 + R33*VZ0) / 4096.0 + TRZ;
+            MAC1 = FIX(R11 * VX0 + R12 * VY0 + R13 * VZ0) + TRX;
+            MAC2 = FIX(R21 * VX0 + R22 * VY0 + R23 * VZ0) + TRY;
+            MAC3 = FIX(R31 * VX0 + R32 * VY0 + R33 * VZ0) + TRZ;
             
-            RZ = H / limC(MAC3); if (RZ > 2147483647.0) { RZ = 2.0; FLAG |= (1<<17); }
+            MAC2IR();
             
-            SZ0 = SZ1;
-            SZ1 = SZ2;
-            SZ2 = SZ3; SZ3 = limC(MAC3);
+            SZ0  = SZ1;
+            SZ1  = SZ2;
+            SZ2  = SZ3;
+            SZ3  = limD(MAC3);
             
-            base[12].d = base[13].d;
-            base[13].d = base[14].d;
+            sw quotient = H * 4096.0 / SZ3;
             
-            SX2 = limD1(OFX / 65536.0 + limA1S(MAC1) * RZ);
-            SY2 = limD2(OFY / 65536.0 + limA2S(MAC2) * RZ);
+            SXY0 = SXY1;
+            SXY1 = SXY2;
             
-            MAC2IR0();
+            SX2  = limG1(FIX(IR1 * quotient) + OFX);
+            SY2  = limG2(FIX(IR2 * quotient) + OFY);
             
-            MAC0 =      (DQB / 16777216.0 + DQA / 256.0 * RZ) * 16777216.0;
-            IR0  = limE((DQB / 16777216.0 + DQA / 256.0 * RZ) * 4096.0);
-            
-//            int vx, vy, vz, rz;
-//
-//            SZx = SZ0;
-//            SZ0 = SZ1;
-//            SZ1 = SZ2;
-//
-//            vx = FIX(R11 * VX0 + R12 * VY0 + R13 * VZ0) + TRX;
-//            vy = FIX(R21 * VX0 + R22 * VY0 + R23 * VZ0) + TRY;
-//            vz = FIX(R31 * VX0 + R32 * VY0 + R33 * VZ0) + TRZ;
-//
-//            LIMIT(vz, 0, 65535);
-//            rz = H * 4096 / vz;
-//
-//            SX2 = FIX(vx * rz) + OFX;
-//            SY2 = FIX(vy * rz) + OFY;
-//            SZ2 = vz;
+            MAC0 = FIX(DQA * quotient) + DQB;
+            IR0  = limH(MAC0);
         }
             return;
             
         case 0x0280030: // RTPT
         {
-            FLAG = 0;
-            
-            SZ0 = SZ3;
-            
-            MAC1 = (R11*VX0 + R12*VY0 + R13*VZ0) / 4096.0 + TRX;
-            MAC2 = (R21*VX0 + R22*VY0 + R23*VZ0) / 4096.0 + TRY;
-            MAC3 = (R31*VX0 + R32*VY0 + R33*VZ0) / 4096.0 + TRZ;
-            
-            RZ = H / limC(MAC3); if (RZ > 2147483647.0) { RZ = 2.0; FLAG |= (1<<17); }
-            
-            SZ1 = limC(MAC3);
-            
-            SX0 = limD1(OFX / 65536.0 + limA1S(MAC1) * RZ);
-            SY0 = limD2(OFY / 65536.0 + limA2S(MAC2) * RZ);
-            
-            MAC1 = (R11*VX1 + R12*VY1 + R13*VZ1) / 4096.0 + TRX;
-            MAC2 = (R21*VX1 + R22*VY1 + R23*VZ1) / 4096.0 + TRY;
-            MAC3 = (R31*VX1 + R32*VY1 + R33*VZ1) / 4096.0 + TRZ;
-            
-            RZ = H / limC(MAC3); if (RZ > 2147483647.0) { RZ = 2.0; FLAG |= (1<<17); }
-            
-            SZ2 = limC(MAC3);
-            
-            SX1 = limD1(OFX / 65536.0 + limA1S(MAC1) * RZ);
-            SY1 = limD2(OFY / 65536.0 + limA2S(MAC2) * RZ);
-            
-            MAC1 = (R11*VX2 + R12*VY2 + R13*VZ2) / 4096.0 + TRX;
-            MAC2 = (R21*VX2 + R22*VY2 + R23*VZ2) / 4096.0 + TRY;
-            MAC3 = (R31*VX2 + R32*VY2 + R33*VZ2) / 4096.0 + TRZ;
-            
-            RZ = H / limC(MAC3); if (RZ > 2147483647.0) { RZ = 2.0; FLAG |= (1<<17); }
-            
-            SZ3 = limC(MAC3);
-            
-            SX2 = limD1(OFX / 65536.0 + limA1S(MAC1) * RZ);
-            SY2 = limD2(OFY / 65536.0 + limA2S(MAC2) * RZ);
-            
-            MAC2IR0();
-            
-            MAC0 =      (DQB / 16777216.0 + DQA / 256.0 * RZ) * 16777216.0;
-            IR0  = limE((DQB / 16777216.0 + DQA / 256.0 * RZ) * 4096.0);
-            
-//            int vx, vy, vz, rz;
-//
-//            SZx = SZ2;
-//
-//            vx = FIX(R11 * VX0 + R12 * VY0 + R13 * VZ0) + TRX;
-//            vy = FIX(R21 * VX0 + R22 * VY0 + R23 * VZ0) + TRY;
-//            vz = FIX(R31 * VX0 + R32 * VY0 + R33 * VZ0) + TRZ;
-//
-//            LIMIT(vz, 0, 65535);
-//
-//            rz = H * 4096 / vz;
-//
-//            SX0 = FIX(vx * rz) + OFX;
-//            SY0 = FIX(vy * rz) + OFY;
-//
-//            SZ0 = vz;
-//
-//            vx = FIX(R11 * VX1 + R12 * VY1 + R13 * VZ1) + TRX;
-//            vy = FIX(R21 * VX1 + R22 * VY1 + R23 * VZ1) + TRY;
-//            vz = FIX(R31 * VX1 + R32 * VY1 + R33 * VZ1) + TRZ;
-//
-//            LIMIT(vz, 0, 65535);
-//            rz = H * 4096 / vz;
-//
-//            SX1 = FIX(vx * rz) + OFX;
-//            SY1 = FIX(vy * rz) + OFY;
-//
-//            SZ1 = vz;
-//
-//            vx = FIX(R11 * VX2 + R12 * VY2 + R13 * VZ2) + TRX;
-//            vy = FIX(R21 * VX2 + R22 * VY2 + R23 * VZ2) + TRY;
-//            vz = FIX(R31 * VX2 + R32 * VY2 + R33 * VZ2) + TRZ;
-//
-//            LIMIT(vz, 0, 65535);
-//            rz = H * 4096/vz;
-//
-//            SX2 = FIX(vx * rz) + OFX;
-//            SY2 = FIX(vy * rz) + OFY;
-//
-//            SZ2 = vz;
         }
             return;
     }
