@@ -13,6 +13,14 @@
 
 
 class CstrMips {
+    enum {
+        MFC =  0,
+        CFC =  2,
+        MTC =  4,
+        CTC =  6,
+        RFE = 16,
+    };
+    
     const uw mask[4][4] = {
         { 0x00ffffff, 0x0000ffff, 0x000000ff, 0x00000000 },
         { 0x00000000, 0xff000000, 0xffff0000, 0xffffff00 },

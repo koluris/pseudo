@@ -191,6 +191,7 @@ void CstrMips::step(bool branched) {
                     base[rd] = base[rs] < base[rt];
                     return;
             }
+            
             printx("/// PSeudo $%08x | Unknown special opcode $%08x | %d", pc, code, (code & 63));
             return;
             
@@ -216,6 +217,7 @@ void CstrMips::step(bool branched) {
                     }
                     return;
             }
+            
             printx("/// PSeudo $%08x | Unknown bcond opcode $%08x | %d", pc, code, rt);
             return;
             
@@ -286,23 +288,38 @@ void CstrMips::step(bool branched) {
             
         case 16: // COP0
             switch(rs) {
-                case 0: // MFC0
+                case MFC:
                     base[rt] = copr[rd];
                     return;
                     
-                case 4: // MTC0
+                case MTC:
                     copr[rd] = base[rt];
                     return;
                     
-                case 16: // RFE (Return From Exception)
+                case RFE: // Return from exception
                     copr[12] = (copr[12] & 0xfffffff0) | ((copr[12] >> 2) & 0xf);
                     return;
             }
+            
             printx("/// PSeudo $%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
             return;
             
         case 18: // COP2
-            cop2.subroutine(code);
+            switch(rs) {
+                case MFC:
+                    base[rt] = cop2.base[rd].d;
+                    return;
+                    
+                case CFC:
+                    base[rt] = cop2.base[rd].c;
+                    return;
+                    
+                case CTC:
+                    cop2.base[rd].c = base[rt];
+                    return;
+            }
+            
+            cop2.subroutine(code, rs);
             return;
             
         case 32: // LB
@@ -353,12 +370,15 @@ void CstrMips::step(bool branched) {
             opcodeSWx(<<, 3);
             return;
             
-        case 50: // TODO: LWC2
+        case 50: // LWC2
+            mem.write32(ob, cop2.base[rt].d);
             return;
             
-        case 58: // TODO: SWC2
+        case 58: // SWC2
+            cop2.base[rt].d = mem.read32(ob);
             return;
     }
+    
     printx("/// PSeudo $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
 }
 
