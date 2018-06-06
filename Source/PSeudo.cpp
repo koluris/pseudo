@@ -31,7 +31,6 @@ void CstrPSeudo::reset() {
     audio.reset();
       bus.reset();
     cache.reset();
-     cop2.reset();
       cpu.reset();
       mem.reset();
     rootc.reset();

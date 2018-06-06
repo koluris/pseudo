@@ -135,94 +135,117 @@
 
 // General
 #define FIX(a) \
-    ((a)>>12)
+    ((a) / 4096.0)
 
 #define LIM(a, min, max, bit) \
     (((a) < min) ? (FLAG |= (1<<bit), min) : \
     (((a) > max) ? (FLAG |= (1<<bit), max) : ((a))))
 
-#define limB1(a) LIM(a, -32768.0, 32767.0, 24)
-#define limB2(a) LIM(a, -32768.0, 32767.0, 23)
-#define limB3(a) LIM(a, -32768.0, 32767.0, 22)
-#define limD(a)  LIM(a,      0.0, 65535.0, 18)
-#define limG1(a) LIM(a,  -1024.0,  1023.0, 14)
-#define limG2(a) LIM(a,  -1024.0,  1023.0, 13)
-#define limH(a)  LIM(a,      0.0,  4096.0, 12)
+#define LIM_A1S(n) LIM(n, -32768.0, 32767.0, 24)
+#define LIM_A2S(n) LIM(n, -32768.0, 32767.0, 23)
+#define LIM_A3S(n) LIM(n, -32768.0, 32767.0, 22)
+#define LIM_A1U(n) LIM(n,      0.0, 32767.0, 24)
+#define LIM_A2U(n) LIM(n,      0.0, 32767.0, 23)
+#define LIM_A3U(n) LIM(n,      0.0, 32767.0, 22)
+#define LIM_B1( n) LIM(n,      0.0,   255.0, 21)
+#define LIM_B2( n) LIM(n,      0.0,   255.0, 20)
+#define LIM_B3( n) LIM(n,      0.0,   255.0, 19)
+#define LIM_C(  n) LIM(n,      0.0, 65535.0, 18)
+#define LIM_D1( n) LIM(n,  -1024.0,  1023.0, 14)
+#define LIM_D2( n) LIM(n,  -1024.0,  1023.0, 13)
+#define LIM_E(  n) LIM(n,      0.0,  4095.0, 12)
 
-#define MAC2IR() {\
-    IR1 = limB1(MAC1);\
-    IR2 = limB2(MAC2);\
-    IR3 = limB3(MAC3);\
+#define MAC2IR0() { \
+    IR1 = LIM_A1S(MAC1); \
+    IR2 = LIM_A2S(MAC2); \
+    IR3 = LIM_A3S(MAC3); \
 }
 
-
-CstrCop2 cop2;
-
-void CstrCop2::reset() {
-    memset(&cop2c, 0, sizeof(cop2c));
-    memset(&cop2d, 0, sizeof(cop2d));
+#define MAC2IR1() { \
+    IR1 = LIM_A1U(MAC1); \
+    IR2 = LIM_A2U(MAC2); \
+    IR3 = LIM_A3U(MAC3); \
 }
 
-void CstrCop2::subroutine(uw code, uw rss) {
-    switch(code & 0x1ffffff) {
-        case 0x0180001: // RTPS
+void CstrMips::cop2exec(uw code) {
+    switch(code & 63) {
+        case 0: // Basic
+            printx("/// PSeudo Unknown cop2 basic $%08x | %d", code, (rs & 7));
+            return;
+            
+        case 1: // RTPS
         {
             FLAG = 0;
-
+            
             MAC1 = FIX(R11 * VX0 + R12 * VY0 + R13 * VZ0) + TRX;
             MAC2 = FIX(R21 * VX0 + R22 * VY0 + R23 * VZ0) + TRY;
             MAC3 = FIX(R31 * VX0 + R32 * VY0 + R33 * VZ0) + TRZ;
-
-            MAC2IR();
-
-            SZ0  = SZ1;
-            SZ1  = SZ2;
-            SZ2  = SZ3;
-            SZ3  = limD(MAC3);
-
-            sw quotient = H * 4096.0 / SZ3;
-
+            
+            double quotient = H / LIM_C(MAC3); if (quotient > 2147483647.0) { quotient = 2.0; FLAG |= (1<<17); }
+            
+            SZ0 = SZ1;
+            SZ1 = SZ2;
+            SZ2 = SZ3;
+            SZ3 = LIM_C(MAC3);
+            
             SXY0 = SXY1;
             SXY1 = SXY2;
-
-            SX2  = limG1(FIX(IR1 * quotient) + OFX);
-            SY2  = limG2(FIX(IR2 * quotient) + OFY);
-
-            MAC0 = FIX(DQA * quotient) + DQB;
-            IR0  = limH(MAC0);
+            
+            SX2 = LIM_D1(OFX / 65536.0 + LIM_A1S(MAC1) * quotient);
+            SY2 = LIM_D2(OFY / 65536.0 + LIM_A2S(MAC2) * quotient);
+            
+            MAC2IR0();
+            
+            MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
+            IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
         }
             return;
-            
-        case 0x0280030: // RTPT
+    
+        case 48: // RTPT
         {
-            sw quotient = 0;
+            double quotient = 0;
             
             FLAG = 0;
             SZ0  = SZ3;
             
             for (int v = 0; v < 3; v++) {
-                sh v1 = VX(v);
-                sh v2 = VY(v);
-                sh v3 = VZ(v);
+                MAC1 = FIX(R11 * VX(v) + R12 * VY(v) + R13 * VZ(v)) + TRX;
+                MAC2 = FIX(R21 * VX(v) + R22 * VY(v) + R23 * VZ(v)) + TRY;
+                MAC3 = FIX(R31 * VX(v) + R32 * VY(v) + R33 * VZ(v)) + TRZ;
                 
-                MAC1 = FIX(R11 * v1 + R12 * v2 + R13 * v3) + TRX;
-                MAC2 = FIX(R21 * v1 + R22 * v2 + R23 * v3) + TRY;
-                MAC3 = FIX(R31 * v1 + R32 * v2 + R33 * v3) + TRZ;
+                quotient = H / LIM_C(MAC3); if (quotient > 2147483647.0) { quotient = 2.0; FLAG |= (1<<17); }
                 
-                MAC2IR();
+                SZ(v) = LIM_C(MAC3);
                 
-                SZ(v) = limD(MAC3);
-                quotient = H * 4096.0 / SZ(v);
-                
-                SX(v) = limG1(FIX(IR1 * quotient) + OFX);
-                SY(v) = limG2(FIX(IR2 * quotient) + OFY);
+                SX(v) = LIM_D1(OFX / 65536.0 + LIM_A1S(MAC1) * quotient);
+                SY(v) = LIM_D2(OFY / 65536.0 + LIM_A2S(MAC2) * quotient);
             }
             
-            MAC0 = FIX(DQA * quotient) + DQB;
-            IR0  = limH(MAC0);
+            MAC2IR0();
+
+            MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
+            IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
+        }
+            return;
+            
+        case 45: // AVSZ3
+        {
+            FLAG = 0;
+            
+            MAC0 = (SZ1 + SZ2 + SZ3) * (ZSF3 / 4096.0);
+            OTZ  = LIM_C(MAC0);
+        }
+            return;
+            
+        case 46: // AVSZ4
+        {
+            FLAG = 0;
+            
+            MAC0 = (SZ0 + SZ1 + SZ2 + SZ3) * (ZSF4 / 4096.0);
+            OTZ  = LIM_C(MAC0);
         }
             return;
     }
     
-    printx("/// PSeudo Unknown cop2 opcode $%08x | %d | $%x", code, rss, (code & 0x1ffffff));
+    printx("/// PSeudo Unknown cop2 opcode $%08x | %d", code, (code & 63));
 }

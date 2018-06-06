@@ -38,8 +38,10 @@ CstrMips cpu;
 //  0 |  0 |  0 |  1 |  0 |  0 |
 
 void CstrMips::reset() {
-    memset(base, 0, sizeof(base));
-    memset(copr, 0, sizeof(copr));
+    memset(&base , 0, sizeof(base));
+    memset(&copr , 0, sizeof(copr));
+    memset(&cop2c, 0, sizeof(pair));
+    memset(&cop2d, 0, sizeof(pair));
     
     copr[12] = 0x10900000;
     copr[15] = 0x2; // Co-processor Revision
@@ -307,19 +309,20 @@ void CstrMips::step(bool branched) {
         case 18: // COP2
             switch(rs) {
                 case MFC:
-                    base[rt] = cop2.cop2d.iuw[rd];
+                    base[rt] = cop2d.iuw[rd];
                     return;
-                    
+                
                 case CFC:
-                    base[rt] = cop2.cop2c.iuw[rd];
+                    base[rt] = cop2c.iuw[rd];
                     return;
-                    
+                
                 case CTC:
-                    cop2.cop2c.iuw[rd] = base[rt];
+                    cop2c.iuw[rd] = base[rt];
                     return;
             }
             
-            cop2.subroutine(code, rs);
+            // Execute GTE opcode
+            cop2exec(code);
             return;
             
         case 32: // LB
@@ -371,11 +374,11 @@ void CstrMips::step(bool branched) {
             return;
             
         case 50: // LWC2
-            cop2.cop2d.iuw[rt] = mem.read32(ob);
+            cop2d.iuw[rt] = mem.read32(ob);
             return;
             
         case 58: // SWC2
-            mem.write32(ob, cop2.cop2d.iuw[rt]);
+            mem.write32(ob, cop2d.iuw[rt]);
             return;
     }
     

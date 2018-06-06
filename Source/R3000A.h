@@ -13,12 +13,13 @@
 
 
 class CstrMips {
+    // Co-processor specifics
     enum {
-        MFC =  0,
-        CFC =  2,
-        MTC =  4,
-        CTC =  6,
-        RFE = 16,
+        MFC = 0x00,
+        CFC = 0x02,
+        MTC = 0x04,
+        CTC = 0x06,
+        RFE = 0x10,
     };
     
     const uw mask[4][4] = {
@@ -39,11 +40,18 @@ class CstrMips {
         sd s64; uw u32[2];
     } res;
     
+    // Co-processor 2 (GTE)
+    union pair {
+        uw iuw[32]; uh iuh[32*2]; ub iub[32*4];
+        sw isw[32]; sh ish[32*2]; sb isb[32*4];
+    } cop2c, cop2d;
+    
     uw opcodeCount;
     
     void step(bool);
     void branch(uw);
     void exception(uw, bool);
+    void cop2exec(uw);
     
 public:
     uw base[32], copr[16], pc;
