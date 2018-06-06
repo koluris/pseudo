@@ -35,7 +35,6 @@
 		420AD1BC2063B8B7006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		420AD1C22063BB24006C22D9 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
 		4216B0DE20C176BB00F0CB17 /* GTE.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = GTE.cpp; sourceTree = "<group>"; };
-		4216B0DF20C176BB00F0CB17 /* GTE.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GTE.h; sourceTree = "<group>"; };
 		425720D020BB4FF00081114F /* Cache.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Cache.cpp; sourceTree = "<group>"; };
 		425720D120BB4FF00081114F /* Cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cache.h; sourceTree = "<group>"; };
 		42587A862068BEFF0054BEC8 /* Hardware.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Hardware.cpp; sourceTree = "<group>"; };
@@ -181,7 +180,6 @@
 			isa = PBXGroup;
 			children = (
 				4216B0DE20C176BB00F0CB17 /* GTE.cpp */,
-				4216B0DF20C176BB00F0CB17 /* GTE.h */,
 			);
 			name = GTE;
 			sourceTree = "<group>";

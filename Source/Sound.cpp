@@ -25,6 +25,8 @@ void CstrAudio::reset() {
     spuVolumeL = MAX_VOLUME;
     spuVolumeR = MAX_VOLUME;
     stereo     = true;
+    
+    //bus.interruptSet(CstrBus::IRQ_SPU);
 }
 
 sh CstrAudio::setVolume(sh data) {

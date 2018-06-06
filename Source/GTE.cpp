@@ -2,15 +2,15 @@
 
 
 // 32-bit accessor
-#define oooo(base, index)\
+#define oooo(base, index) \
     base[(index)]
 
 // 16-bit accessor
-#define __oo(base, index, offset)\
+#define __oo(base, index, offset) \
     base[(index<<1)+offset]
 
 // 08-bit accessor
-#define ___o(base, index, offset)\
+#define ___o(base, index, offset) \
     base[(index<<2)+offset]
 
 // Cop2c
@@ -167,83 +167,181 @@
     IR3 = LIM_A3U(MAC3); \
 }
 
-void CstrMips::cop2exec(uw code) {
+void CstrMips::writeCop2(uw addr) {
+    switch(addr) {
+        case  9:
+        case 10:
+        case 11:
+            oooo(cop2d.iuw, addr) = __oo(cop2d.ish, addr, 0);
+            return;
+            
+        case 17:
+        case 18:
+        case 19:
+            oooo(cop2d.iuw, addr) = __oo(cop2d.iuh, addr, 0);
+            return;
+            
+        case 30:
+            {
+                LZCR = 0;
+                uw sbit = (LZCS & 0x80000000) ? LZCS : ~LZCS;
+                
+                for (; sbit & 0x80000000; sbit <<= 1) {
+                    LZCR++;
+                }
+            }
+            return;
+            
+        /* unused */
+        case  0:
+        case  1:
+            return;
+    }
+    
+    printx("/// PSeudo Unknown Cop2 write: %d", addr);
+}
+
+void CstrMips::readCop2(uw addr) {
+    switch(addr) {
+        /* unused */
+        case  7:
+        case  9:
+        case 10:
+        case 11:
+        case 19:
+        case 25:
+        case 26:
+        case 27:
+        case 31:
+            return;
+    }
+    
+    printx("/// PSeudo Unknown Cop2 read: %d", addr);
+}
+
+void CstrMips::executeCop2(uw code) {
     switch(code & 63) {
         case 0: // Basic
             printx("/// PSeudo Unknown cop2 basic $%08x | %d", code, (rs & 7));
             return;
             
         case 1: // RTPS
-        {
-            FLAG = 0;
-            
-            MAC1 = FIX(R11 * VX0 + R12 * VY0 + R13 * VZ0) + TRX;
-            MAC2 = FIX(R21 * VX0 + R22 * VY0 + R23 * VZ0) + TRY;
-            MAC3 = FIX(R31 * VX0 + R32 * VY0 + R33 * VZ0) + TRZ;
-            
-            double quotient = H / LIM_C(MAC3); if (quotient > 2147483647.0) { quotient = 2.0; FLAG |= (1<<17); }
-            
-            SZ0 = SZ1;
-            SZ1 = SZ2;
-            SZ2 = SZ3;
-            SZ3 = LIM_C(MAC3);
-            
-            SXY0 = SXY1;
-            SXY1 = SXY2;
-            
-            SX2 = LIM_D1(OFX / 65536.0 + LIM_A1S(MAC1) * quotient);
-            SY2 = LIM_D2(OFY / 65536.0 + LIM_A2S(MAC2) * quotient);
-            
-            MAC2IR0();
-            
-            MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
-            IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
-        }
+            {
+                FLAG = 0;
+                
+                MAC1 = FIX(R11 * VX0 + R12 * VY0 + R13 * VZ0) + TRX;
+                MAC2 = FIX(R21 * VX0 + R22 * VY0 + R23 * VZ0) + TRY;
+                MAC3 = FIX(R31 * VX0 + R32 * VY0 + R33 * VZ0) + TRZ;
+                
+                double quotient = H / LIM_C(MAC3); if (quotient > 2147483647.0) { quotient = 2.0; FLAG |= (1<<17); }
+                
+                SZ0 = SZ1;
+                SZ1 = SZ2;
+                SZ2 = SZ3;
+                SZ3 = LIM_C(MAC3);
+                
+                SXY0 = SXY1;
+                SXY1 = SXY2;
+                
+                SX2 = LIM_D1(OFX / 65536.0 + LIM_A1S(MAC1) * quotient);
+                SY2 = LIM_D2(OFY / 65536.0 + LIM_A2S(MAC2) * quotient);
+                
+                MAC2IR0();
+                
+                MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
+                IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
+            }
             return;
     
         case 48: // RTPT
-        {
-            double quotient = 0;
-            
-            FLAG = 0;
-            SZ0  = SZ3;
-            
-            for (int v = 0; v < 3; v++) {
-                MAC1 = FIX(R11 * VX(v) + R12 * VY(v) + R13 * VZ(v)) + TRX;
-                MAC2 = FIX(R21 * VX(v) + R22 * VY(v) + R23 * VZ(v)) + TRY;
-                MAC3 = FIX(R31 * VX(v) + R32 * VY(v) + R33 * VZ(v)) + TRZ;
+            {
+                double quotient = 0;
                 
-                quotient = H / LIM_C(MAC3); if (quotient > 2147483647.0) { quotient = 2.0; FLAG |= (1<<17); }
+                FLAG = 0;
+                SZ0  = SZ3;
                 
-                SZ(v) = LIM_C(MAC3);
+                for (int v = 0; v < 3; v++) {
+                    MAC1 = FIX(R11 * VX(v) + R12 * VY(v) + R13 * VZ(v)) + TRX;
+                    MAC2 = FIX(R21 * VX(v) + R22 * VY(v) + R23 * VZ(v)) + TRY;
+                    MAC3 = FIX(R31 * VX(v) + R32 * VY(v) + R33 * VZ(v)) + TRZ;
+                    
+                    quotient = H / LIM_C(MAC3); if (quotient > 2147483647.0) { quotient = 2.0; FLAG |= (1<<17); }
+                    
+                    SZ(v) = LIM_C(MAC3);
+                    
+                    SX(v) = LIM_D1(OFX / 65536.0 + LIM_A1S(MAC1) * quotient);
+                    SY(v) = LIM_D2(OFY / 65536.0 + LIM_A2S(MAC2) * quotient);
+                }
                 
-                SX(v) = LIM_D1(OFX / 65536.0 + LIM_A1S(MAC1) * quotient);
-                SY(v) = LIM_D2(OFY / 65536.0 + LIM_A2S(MAC2) * quotient);
-            }
-            
-            MAC2IR0();
+                MAC2IR0();
 
-            MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
-            IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
-        }
+                MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
+                IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
+            }
             return;
             
         case 45: // AVSZ3
-        {
             FLAG = 0;
             
             MAC0 = (SZ1 + SZ2 + SZ3) * (ZSF3 / 4096.0);
             OTZ  = LIM_C(MAC0);
-        }
             return;
             
         case 46: // AVSZ4
-        {
             FLAG = 0;
             
             MAC0 = (SZ0 + SZ1 + SZ2 + SZ3) * (ZSF4 / 4096.0);
             OTZ  = LIM_C(MAC0);
-        }
+            return;
+            
+        case 6: // NCLIP
+            FLAG = 0;
+            
+            MAC0 = SX0 * (SY1 - SY2) + SX1 * (SY2 - SY0) + SX2 * (SY0 - SY1);
+            return;
+            
+        case 18: // MVMVA
+            FLAG = 0;
+            
+            switch(code & 0xf8000) {
+                case 0x18000:
+                    MAC1 = ((sh)IR1 * R11 + (sh)IR2 * R12 + (sh)IR3 * R13);
+                    MAC2 = ((sh)IR1 * R21 + (sh)IR2 * R22 + (sh)IR3 * R23);
+                    MAC3 = ((sh)IR1 * R31 + (sh)IR2 * R32 + (sh)IR3 * R33);
+                    break;
+                    
+                case 0x98000:
+                    MAC1 = FIX((sh)IR1 * R11 + (sh)IR2 * R12 + (sh)IR3 * R13);
+                    MAC2 = FIX((sh)IR1 * R21 + (sh)IR2 * R22 + (sh)IR3 * R23);
+                    MAC3 = FIX((sh)IR1 * R31 + (sh)IR2 * R32 + (sh)IR3 * R33);
+                    break;
+                    
+                case 0x80000:
+                    MAC1 = FIX(VX0 * R11 + VY0 * R12 + VZ0 * R13);
+                    MAC2 = FIX(VX0 * R21 + VY0 * R22 + VZ0 * R23);
+                    MAC3 = FIX(VX0 * R31 + VY0 * R32 + VZ0 * R33);
+                    break;
+                    
+                default:
+                    printf("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) $%08x\n", (code & 0xf8000));
+                    break;
+            }
+            
+            switch(code & 0x6000) {
+                case 0x6000:
+                    break;
+                    
+                default:
+                    printf("/// PSeudo Unknown cop2 mvmva (code & 0x6000) $%08x\n", (code & 0x6000));
+                    break;
+            }
+            
+            if (code & 0x400) {
+                MAC2IR1();
+            }
+            else {
+                MAC2IR0();
+            }
             return;
     }
     

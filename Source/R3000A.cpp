@@ -309,11 +309,17 @@ void CstrMips::step(bool branched) {
         case 18: // COP2
             switch(rs) {
                 case MFC:
+                    readCop2(rd);
                     base[rt] = cop2d.iuw[rd];
                     return;
                 
                 case CFC:
                     base[rt] = cop2c.iuw[rd];
+                    return;
+                    
+                case MTC:
+                    cop2d.iuw[rd] = base[rt];
+                    writeCop2(rd);
                     return;
                 
                 case CTC:
@@ -322,7 +328,7 @@ void CstrMips::step(bool branched) {
             }
             
             // Execute GTE opcode
-            cop2exec(code);
+            executeCop2(code);
             return;
             
         case 32: // LB
