@@ -28,7 +28,7 @@ void CstrDraw::reset() {
     GLID();
     GLScalef(1.0f / 256.0f, 1.0f / 256.0f, 1.0f);
     GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE); //GL_REPLACE GL_COMBINE
-    GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP);
+    GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP); // GL_ALPHA_SCALE
     
     // Redraw
     resize(320, 240);
@@ -206,13 +206,13 @@ void CstrDraw::drawSprite(uw *data, sh size) {
     }
     
     ub b[] = {
-        k->c.n&2 ? blend : 0,
-        k->c.n&2 ? bit[blend].opaque : COLOR_MAX
+        k->c.n & 2 ? blend : 0,
+        k->c.n & 2 ? bit[blend].opaque : COLOR_MAX
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
-    if (k->c.n&1) {
+    if (k->c.n & 1) {
         GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
     }
     else {
@@ -343,7 +343,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             spriteTP = data[0] & 0x7ff;
             vs.ret.status = (vs.ret.status & ~(0x7ff)) | spriteTP;
             
-            blend = (data[0] >> 5) & 0x3;
+            blend = (data[0] >> 5) & 3;
             GLBlendFunc(bit[blend].src, bit[blend].dst);
             return;
             

@@ -136,11 +136,12 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
 VRAM_END:
     if (vrop.v.p >= vrop.v.end) {
         vrop.enabled = false;
-        modeDMA = GPU_DMA_NONE;
         
-        // if (count%2 === 1) {
-        //     count++;
-        // }
+        if (count%2 == 1) {
+            count++;
+        }
+        
+        modeDMA = GPU_DMA_NONE;
     }
     
     return count >> 1;
