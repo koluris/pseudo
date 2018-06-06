@@ -283,10 +283,8 @@ void CstrAudio::write(uw addr, uh data) {
             spuAddr += 2;
             spuAddr &= 0x3ffff;
             return;
-        
-        case 0x1daa: // Control
-            return;
-        
+            
+        /* unused */
         case 0x1d84: // Reverb Volume L
         case 0x1d86: // Reverb Volume R
         case 0x1d90: // FM Mode On 1
@@ -297,6 +295,7 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1d9a: // Reverb Mode On 2
         case 0x1d9c: // Mute 1
         case 0x1d9e: // Mute 2
+        case 0x1daa: // Control
         case 0x1da2: // Reverb Address
         case 0x1dac:
         case 0x1db0: // CD Volume L
@@ -316,6 +315,7 @@ uh CstrAudio::read(uw addr) {
     // Channels
     if (addr >= 0x1c00 && addr <= 0x1d7e) {
         switch(addr & 0xf) {
+            /* unused */
             case 0x0:
             case 0x2:
             case 0x4:
@@ -335,6 +335,7 @@ uh CstrAudio::read(uw addr) {
         case 0x1da6: // Transfer Address
             return spuAddr >> 3;
             
+        /* unused */
         case 0x1d88: // Sound On 1
         case 0x1d8a: // Sound On 2
         case 0x1d8c: // Sound Off 1
