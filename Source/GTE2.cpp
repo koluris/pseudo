@@ -202,8 +202,80 @@
 #define ZSF4  __oo(cop2c.ish, 30, 0)
 #define FLAG  oooo(cop2c.iuw, 31)
 
+#define lim(res, min, max, bit) \
+    (res) < min ? FLAG |= (1<<bit), min : \
+    (res) > max ? FLAG |= (1<<bit), max : (res)
+
+#define limA1S(res) \
+    lim(res, -32768.0, 32767.0, 24)
+
+#define limA2S(res) \
+    lim(res, -32768.0, 32767.0, 23)
+
+#define limA3S(res) \
+    lim(res, -32768.0, 32767.0, 22)
+
+#define limC(res) \
+    lim(res,      0.0, 65535.0, 18)
+
+#define limD1(res) \
+    lim(res,  -1024.0,  1023.0, 14)
+
+#define limD2(res) \
+    lim(res,  -1024.0,  1023.0, 13)
+
+#define limE(res) \
+    lim(res,      0.0,  4095.0, 12)
+
 void CstrMips::executeCop2(uw code) {
     switch(code & 63) {
+        case  1: // RTPS
+            {
+                double SSX, SSY, SSZ, SX, SY, P;
+                
+                SSX = TRX + (R11*VX0 + R12*VY0 + R13*VZ0) / 4096.0; // <1>
+                SSY = TRY + (R21*VX0 + R22*VY0 + R23*VZ0) / 4096.0; // <2>
+                SSZ = TRZ + (R31*VX0 + R32*VY0 + R33*VZ0) / 4096.0; // <3>
+                
+                //printf("%f %f %f\n", SSX, SSY, SSZ);
+
+                IR1 = limA1S(SSX);
+                IR2 = limA2S(SSY);
+                IR3 = limA3S(SSZ);
+                
+                //printf("%hd %hd %hd\n", IR1, IR2, IR3);
+
+                SZ0 = SZ1;
+                SZ1 = SZ2;
+                SZ2 = SZ3;
+                SZ3 = limC(SSZ);
+                
+                printf("%hu\n", SZ3);
+
+                SX = (OFX / 65536.0) + IR1 * (H / SZ3); // <4>
+                SY = (OFY / 65536.0) + IR2 * (H / SZ3); // <4>
+
+                P = (DQB / 16777216.0) + (DQA / 256.0) * (H / SZ3); // <4>
+
+                IR0 = limE(P);
+
+                SX0 = SX1;
+                SX1 = SX2;
+                SX2 = limD1(SX);
+                
+                SY0 = SY1;
+                SY1 = SY2;
+                SY2 = limD2(SY);
+
+                MAC0 = P;
+                MAC1 = SSX;
+                MAC2 = SSY;
+                MAC3 = SSZ;
+            }
+            return;
+            
+        case 48: // RTPT
+            return;
     }
     
     printx("/// PSeudo Unknown Cop2 opcode: %d", (code & 63));
