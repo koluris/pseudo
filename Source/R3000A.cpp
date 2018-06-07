@@ -413,7 +413,7 @@ void CstrMips::branch(uw addr) {
 
 void CstrMips::exception(uw code, bool branched) {
     if (branched) {
-        printx("/// PSeudo Exception branched", 0);
+        printx("/// PSeudo Exception %s", "branched");
     }
     
     copr[12] = (copr[12] & 0xffffffc0) | ((copr[12] << 2) & 0x3f);

@@ -28,6 +28,47 @@ void CstrCounters::reset() {
     hbk = 0;
 }
 
+void CstrCounters::update() {
+    count(0) += mode(0) & 0x100 ? PSX_CYCLE : PSX_CYCLE / 8;
+    
+    if (count(0) >= bound(0)) {
+        printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 0, 0);
+    }
+    
+    if (!(mode(1) & 0x100)) {
+        count(1) += PSX_CYCLE;
+        
+        if (count(1) >= bound(1)) {
+            printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 1, 1);
+        }
+    }
+    else if ((hbk += PSX_CYCLE) >= PSX_HSYNC) { hbk = 0;
+        if (++count(1) >= bound(1)) {
+            count(1) = 0;
+            if (mode(1) & 0x50) {
+                bus.interruptSet(CstrBus::IRQ_RTC1);
+            }
+        }
+    }
+    
+    if (!(mode(2) & 1)) {
+        count(2) += mode(2) & 0x200 ? PSX_CYCLE / 8 : PSX_CYCLE;
+        
+        if (count(2) >= bound(2)) {
+            count(2) = 0;
+            if (mode(2) & 0x50) {
+                bus.interruptSet(CstrBus::IRQ_RTC2);
+            }
+        }
+    }
+    
+    // VBlank
+    if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
+        draw.refresh();
+        bus.interruptSet(CstrBus::IRQ_VSYNC);
+    }
+}
+
 template <class T>
 void CstrCounters::write(uw addr, T data) {
     ub p = RTC_PORT(addr);
@@ -75,44 +116,3 @@ T CstrCounters::read(uw addr) {
 
 template uw CstrCounters::read<uw>(uw);
 template uh CstrCounters::read<uh>(uw);
-
-void CstrCounters::update() {
-    count(0) += mode(0) & 0x100 ? PSX_CYCLE : PSX_CYCLE / 8;
-    
-    if (count(0) >= bound(0)) {
-        printx("/// PSeudo RTC timer[0].count >= timer[0].bound", 0);
-    }
-    
-    if (!(mode(1) & 0x100)) {
-        count(1) += PSX_CYCLE;
-        
-        if (count(1) >= bound(1)) {
-            printx("/// PSeudo RTC timer[1].count >= timer[1].bound", 0);
-        }
-    }
-    else if ((hbk += PSX_CYCLE) >= PSX_HSYNC) { hbk = 0;
-        if (++count(1) >= bound(1)) {
-            count(1) = 0;
-            if (mode(1) & 0x50) {
-                bus.interruptSet(CstrBus::IRQ_RTC1);
-            }
-        }
-    }
-    
-    if (!(mode(2) & 1)) {
-        count(2) += mode(2) & 0x200 ? PSX_CYCLE / 8 : PSX_CYCLE;
-        
-        if (count(2) >= bound(2)) {
-            count(2) = 0;
-            if (mode(2) & 0x50) {
-                bus.interruptSet(CstrBus::IRQ_RTC2);
-            }
-        }
-    }
-    
-    // VBlank
-    if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
-        draw.refresh();
-        bus.interruptSet(CstrBus::IRQ_VSYNC);
-    }
-}
