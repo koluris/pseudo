@@ -1,5 +1,6 @@
 #import "Global.h"
 
+#if 0
 
 // 32-bit accessor
 #define oooo(base, index) \
@@ -347,3 +348,5 @@ void CstrMips::executeCop2(uw code) {
     
     printx("/// PSeudo Unknown cop2 opcode $%08x | %d", code, (code & 63));
 }
+
+#endif

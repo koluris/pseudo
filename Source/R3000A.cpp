@@ -309,7 +309,7 @@ void CstrMips::step(bool branched) {
         case 18: // COP2
             switch(rs) {
                 case MFC:
-                    readCop2(rd);
+                    //readCop2(rd);
                     base[rt] = cop2d.iuw[rd];
                     return;
                 
@@ -319,7 +319,7 @@ void CstrMips::step(bool branched) {
                     
                 case MTC:
                     cop2d.iuw[rd] = base[rt];
-                    writeCop2(rd);
+                    //writeCop2(rd);
                     return;
                 
                 case CTC:
