@@ -110,6 +110,14 @@
 #define LZCS  oooo(cop2d.isw, 30)
 #define LZCR  oooo(cop2d.iuw, 31)
 
+#define VX(n) __oo(cop2d.ish, ((n << 1) + 0), 0)
+#define VY(n) __oo(cop2d.ish, ((n << 1) + 0), 1)
+#define VZ(n) __oo(cop2d.ish, ((n << 1) + 1), 0)
+
+#define SX(n) __oo(cop2d.ish, (n + 12), 0)
+#define SY(n) __oo(cop2d.ish, (n + 12), 1)
+#define SZ(n) __oo(cop2d.iuh, (n + 17), 0)
+
 // Cop2c
 // --------------------------------
 //  0 | R12         | R11         | Rotation matrix (1.3.12)
@@ -202,79 +210,103 @@
 #define ZSF4  __oo(cop2c.ish, 30, 0)
 #define FLAG  oooo(cop2c.iuw, 31)
 
-#define lim(res, min, max, bit) \
+// Limit definition
+#define LIM(res, min, max, bit) \
     (res) < min ? FLAG |= (1<<bit), min : \
     (res) > max ? FLAG |= (1<<bit), max : (res)
 
-#define limA1S(res) \
-    lim(res, -32768.0, 32767.0, 24)
+// Limits
+#define LIM_A1S(res) \
+    LIM(res, -32768.0, 32767.0, 24)
 
-#define limA2S(res) \
-    lim(res, -32768.0, 32767.0, 23)
+#define LIM_A2S(res) \
+    LIM(res, -32768.0, 32767.0, 23)
 
-#define limA3S(res) \
-    lim(res, -32768.0, 32767.0, 22)
+#define LIM_A3S(res) \
+    LIM(res, -32768.0, 32767.0, 22)
 
-#define limC(res) \
-    lim(res,      0.0, 65535.0, 18)
+#define LIM_C(res) \
+    LIM(res,      0.0, 65535.0, 18)
 
-#define limD1(res) \
-    lim(res,  -1024.0,  1023.0, 14)
+#define LIM_D1(res) \
+    LIM(res,  -1024.0,  1023.0, 14)
 
-#define limD2(res) \
-    lim(res,  -1024.0,  1023.0, 13)
+#define LIM_D2(res) \
+    LIM(res,  -1024.0,  1023.0, 13)
 
-#define limE(res) \
-    lim(res,      0.0,  4095.0, 12)
+#define LIM_E(res) \
+    LIM(res,      0.0,  4095.0, 12)
+
+// Common
+#define MAC2IR() { \
+    IR1 = LIM_A1S(MAC1); \
+    IR2 = LIM_A2S(MAC2); \
+    IR3 = LIM_A3S(MAC3); \
+}
+
 
 void CstrMips::executeCop2(uw code) {
+    FLAG = 0;
+    
     switch(code & 63) {
         case  1: // RTPS
             {
-                double SSX, SSY, SSZ, SX, SY, P;
+                double sx, su, quotient = 0.0;
                 
-                SSX = TRX + (R11*VX0 + R12*VY0 + R13*VZ0) / 4096.0; // <1>
-                SSY = TRY + (R21*VX0 + R22*VY0 + R23*VZ0) / 4096.0; // <2>
-                SSZ = TRZ + (R31*VX0 + R32*VY0 + R33*VZ0) / 4096.0; // <3>
+                MAC1 = TRX + (R11*VX0 + R12*VY0 + R13*VZ0) / 4096.0; /* <1> */
+                MAC2 = TRY + (R21*VX0 + R22*VY0 + R23*VZ0) / 4096.0; /* <2> */
+                MAC3 = TRZ + (R31*VX0 + R32*VY0 + R33*VZ0) / 4096.0; /* <3> */
                 
-                //printf("%f %f %f\n", SSX, SSY, SSZ);
-
-                IR1 = limA1S(SSX);
-                IR2 = limA2S(SSY);
-                IR3 = limA3S(SSZ);
+                MAC2IR();
                 
-                //printf("%hd %hd %hd\n", IR1, IR2, IR3);
-
                 SZ0 = SZ1;
                 SZ1 = SZ2;
                 SZ2 = SZ3;
-                SZ3 = limC(SSZ);
+                SZ3 = LIM_C(MAC3);
                 
-                printf("%hu\n", SZ3);
-
-                SX = (OFX / 65536.0) + IR1 * (H / SZ3); // <4>
-                SY = (OFY / 65536.0) + IR2 * (H / SZ3); // <4>
-
-                P = (DQB / 16777216.0) + (DQA / 256.0) * (H / SZ3); // <4>
-
-                IR0 = limE(P);
-
+                quotient = H / SZ3;
+                sx = (OFX / 65536.0) + IR1 * quotient; /* <4> */
+                su = (OFY / 65536.0) + IR2 * quotient; /* <4> */
+                
                 SX0 = SX1;
                 SX1 = SX2;
-                SX2 = limD1(SX);
+                SX2 = LIM_D1(sx);
                 
                 SY0 = SY1;
                 SY1 = SY2;
-                SY2 = limD2(SY);
-
-                MAC0 = P;
-                MAC1 = SSX;
-                MAC2 = SSY;
-                MAC3 = SSZ;
+                SY2 = LIM_D2(su);
+                
+                MAC0 = (DQB / 16777216.0) + (DQA / 256.0) * quotient; /* <4> */
+                IR0  = LIM_E(MAC0);
             }
             return;
             
         case 48: // RTPT
+            {
+                double sx, su, quotient = 0.0;
+                
+                SZ0 = SZ3;
+                
+                for (int n = 0; n < 3; n++) {
+                    MAC1 = TRX + (R11*VX(n) + R12*VY(n) + R13*VZ(n)) / 4096.0; /* <1> */
+                    MAC2 = TRY + (R21*VX(n) + R22*VY(n) + R23*VZ(n)) / 4096.0; /* <2> */
+                    MAC3 = TRZ + (R31*VX(n) + R32*VY(n) + R33*VZ(n)) / 4096.0; /* <3> */
+                    
+                    MAC2IR();
+                    
+                    SZ(n) = LIM_C(MAC3);
+                    
+                    quotient = H / SZ(n);
+                    sx = (OFX / 65536.0) + IR1 * quotient; /* <4> */
+                    su = (OFY / 65536.0) + IR2 * quotient; /* <4> */
+                    
+                    SX(n) = LIM_D1(sx);
+                    SY(n) = LIM_D2(su);
+                }
+                
+                MAC0 = (DQB / 16777216.0) + (DQA / 256.0) * quotient; /* <4> */
+                IR0  = LIM_E(MAC0);
+            }
             return;
     }
     
