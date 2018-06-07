@@ -8,6 +8,9 @@
 #define __oo(base, index, offset) \
     base[(index << 1) + offset]
 
+#define ___o(base, index, offset) \
+    base[(index << 2) + offset]
+
 // Cop2d
 // --------------------------------
 //  0 | VY0         | VX0         | Vector X, Y, Z (1.15.0) or (1.3.12)
@@ -115,7 +118,7 @@
 //  3 | R32         | R31         |
 //  4 |             | R33         |
 // --------------------------------
-//  5 | TRX                       | Translation vector (1.31.0)
+//  5 | TRX                       | Translation vector X, Y, X (1.31.0)
 //  6 | TRY                       |
 //  7 | TRZ                       |
 // --------------------------------
@@ -125,7 +128,7 @@
 // 11 | L32         | L31         |
 // 12 |             | L33         |
 // --------------------------------
-// 13 | RBK                       | Peripheral color (1.19.12)
+// 13 | RBK                       | Peripheral color R, G, B (1.19.12)
 // 14 | GBK                       |
 // 15 | BBK                       |
 // --------------------------------
@@ -135,18 +138,18 @@
 // 19 | LB2         | LB1         |
 // 20 |             | LB3         |
 // --------------------------------
-// 21 | RFC                       | Far color (1.27.4)
+// 21 | RFC                       | Far color R, G, B (1.27.4)
 // 22 | BFC                       |
 // 23 | GFC                       |
 // --------------------------------
-// 24 | OFX                       | Screen offset (1.15.16)
+// 24 | OFX                       | Screen offset X, Y (1.15.16)
 // 25 | OFY                       |
 // --------------------------------
 // 26 |             | H           | Screen position (0.16.0)
 // --------------------------------
-// 27 |             | DQA         | Depth parameter A (1.7.8)
+// 27 |             | DQA         | Depth parameter A Coefficient (1.7.8)
 // --------------------------------
-// 28 | DQB                       | Depth parameter B (1.7.24)
+// 28 | DQB                       | Depth parameter B Offset (1.7.24)
 // --------------------------------
 // 29 |             | ZSF3        | Z scale factor (1.3.12)
 // 30 |             | ZSF4        |
