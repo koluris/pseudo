@@ -238,6 +238,15 @@
 #define LIM_A3S(res) \
     LIM(res, -32768.0, 32767.0, 22)
 
+#define LIM_A1U(res) \
+    LIM(res,      0.0, 32767.0, 24)
+
+#define LIM_A2U(res) \
+    LIM(res,      0.0, 32767.0, 23)
+
+#define LIM_A3U(res) \
+    LIM(res,      0.0, 32767.0, 22)
+
 #define LIM_C(  res) \
     LIM(res,      0.0, 65535.0, 18)
 
@@ -250,15 +259,35 @@
 #define LIM_E(  res) \
     LIM(res,      0.0,  4095.0, 12)
 
+// Overflows (not implemented)
+#define A1(n) \
+    n
+
+#define A2(n) \
+    n
+
+#define A3(n) \
+    n
+
+#define A4(n) \
+    n
+
 // Common
-#define MAC2IR() { \
+#define MAC2IR0() { \
     IR1 = LIM_A1S(MAC1); \
     IR2 = LIM_A2S(MAC2); \
     IR3 = LIM_A3S(MAC3); \
 }
 
+#define MAC2IR1() { \
+    IR1 = LIM_A1U(MAC1); \
+    IR2 = LIM_A2U(MAC2); \
+    IR3 = LIM_A3U(MAC3); \
+}
+
 void CstrMips::writeCop2(uw addr) {
     switch(addr) {
+        case  8:
         case  9:
         case 10:
         case 11:
@@ -285,6 +314,15 @@ void CstrMips::writeCop2(uw addr) {
         /* unused */
         case  0:
         case  1:
+        case  2:
+        case  3:
+        case  4:
+        case  5:
+        case  6:
+        case 12:
+        case 13:
+        case 14:
+        case 20:
             return;
     }
     
@@ -310,6 +348,7 @@ void CstrMips::readCop2(uw addr) {
 }
 
 void CstrMips::executeCop2(uw code) {
+    // Reset
     FLAG = 0;
     
     switch(code & 63) {
@@ -317,20 +356,20 @@ void CstrMips::executeCop2(uw code) {
             {
                 double sx, su, quotient = 0.0;
                 
-                MAC1 = TRX + FPN_12(R11*VX0 + R12*VY0 + R13*VZ0); /* <1> */
-                MAC2 = TRY + FPN_12(R21*VX0 + R22*VY0 + R23*VZ0); /* <2> */
-                MAC3 = TRZ + FPN_12(R31*VX0 + R32*VY0 + R33*VZ0); /* <3> */
+                MAC1 = A1(TRX + FPN_12(R11*VX0 + R12*VY0 + R13*VZ0));
+                MAC2 = A2(TRY + FPN_12(R21*VX0 + R22*VY0 + R23*VZ0));
+                MAC3 = A3(TRZ + FPN_12(R31*VX0 + R32*VY0 + R33*VZ0));
                 
-                MAC2IR();
+                MAC2IR0();
                 
                 SZ0 = SZ1;
                 SZ1 = SZ2;
                 SZ2 = SZ3;
                 SZ3 = LIM_C(MAC3);
                 
-                quotient = H / SZ3;
-                sx = FPN_16(OFX) + IR1 * quotient; /* <4> */
-                su = FPN_16(OFY) + IR2 * quotient; /* <4> */
+                quotient = H / LIM_C(MAC3); // Substituted SZ3 because it becomes 0
+                sx = A4(FPN_16(OFX) + IR1 * quotient);
+                su = A4(FPN_16(OFY) + IR2 * quotient);
                 
                 SX0 = SX1;
                 SX1 = SX2;
@@ -340,19 +379,65 @@ void CstrMips::executeCop2(uw code) {
                 SY1 = SY2;
                 SY2 = LIM_D2(su);
                 
-                MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient; /* <4> */
+                MAC0 = A4(FPN_24(DQB) + FPN_08(DQA) * quotient);
                 IR0  = LIM_E(MAC0);
             }
             return;
             
         case 18: // MVMVA
             {
+                switch(code & 0xf8000) {
+                    case 0x18000:
+                        MAC1 = ((sh)IR1*R11 + (sh)IR2*R12 + (sh)IR3*R13);
+                        MAC2 = ((sh)IR1*R21 + (sh)IR2*R22 + (sh)IR3*R23);
+                        MAC3 = ((sh)IR1*R31 + (sh)IR2*R32 + (sh)IR3*R33);
+                        break;
+                        
+                    case 0x98000:
+                        MAC1 = FPN_12((sh)IR1*R11 + (sh)IR2*R12 + (sh)IR3*R13);
+                        MAC2 = FPN_12((sh)IR1*R21 + (sh)IR2*R22 + (sh)IR3*R23);
+                        MAC3 = FPN_12((sh)IR1*R31 + (sh)IR2*R32 + (sh)IR3*R33);
+                        break;
+                        
+                    case 0x80000:
+                        MAC1 = FPN_12(VX0*R11 + VY0*R12 + VZ0*R13);
+                        MAC2 = FPN_12(VX0*R21 + VY0*R22 + VZ0*R23);
+                        MAC3 = FPN_12(VX0*R31 + VY0*R32 + VZ0*R33);
+                        break;
+                        
+                    default:
+                        printf("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) $%08x\n", (code & 0xf8000));
+                        break;
+                }
+                
+                switch(code & 0x6000) {
+                    case 0x6000:
+                        break;
+                        
+                    default:
+                        printf("/// PSeudo Unknown cop2 mvmva (code & 0x6000) $%08x\n", (code & 0x6000));
+                        break;
+                }
+                
+                if (code & 0x400) {
+                    MAC2IR1();
+                }
+                else {
+                    MAC2IR0();
+                }
             }
             return;
             
         case 45: // AVSZ3
             {
-                MAC0 = (SZ1 + SZ2 + SZ3) * FPN_12(ZSF3); /* <4> */
+                MAC0 = A4((SZ1 + SZ2 + SZ3) * FPN_12(ZSF3));
+                OTZ  = LIM_C(MAC0);
+            }
+            return;
+            
+        case 46: // AVSZ4
+            {
+                MAC0 = A4((SZ0 + SZ1 + SZ2 + SZ3) * FPN_12(ZSF4));
                 OTZ  = LIM_C(MAC0);
             }
             return;
@@ -364,23 +449,23 @@ void CstrMips::executeCop2(uw code) {
                 SZ0 = SZ3;
                 
                 for (int n = 0; n < 3; n++) {
-                    MAC1 = TRX + FPN_12(R11*VX(n) + R12*VY(n) + R13*VZ(n)); /* <1> */
-                    MAC2 = TRY + FPN_12(R21*VX(n) + R22*VY(n) + R23*VZ(n)); /* <2> */
-                    MAC3 = TRZ + FPN_12(R31*VX(n) + R32*VY(n) + R33*VZ(n)); /* <3> */
+                    MAC1 = A1(TRX + FPN_12(R11*VX(n) + R12*VY(n) + R13*VZ(n)));
+                    MAC2 = A2(TRY + FPN_12(R21*VX(n) + R22*VY(n) + R23*VZ(n)));
+                    MAC3 = A3(TRZ + FPN_12(R31*VX(n) + R32*VY(n) + R33*VZ(n)));
                     
-                    MAC2IR();
+                    MAC2IR0();
                     
                     SZ(n) = LIM_C(MAC3);
                     
-                    quotient = H / LIM_C(MAC3);
-                    sx = FPN_16(OFX) + IR1 * quotient; /* <4> */
-                    su = FPN_16(OFY) + IR2 * quotient; /* <4> */
+                    quotient = H / LIM_C(MAC3); // Substituted SZ(n) because it becomes 0
+                    sx = A4(FPN_16(OFX) + IR1 * quotient);
+                    su = A4(FPN_16(OFY) + IR2 * quotient);
                     
                     SX(n) = LIM_D1(sx);
                     SY(n) = LIM_D2(su);
                 }
                 
-                MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient; /* <4> */
+                MAC0 = A4(FPN_24(DQB) + FPN_08(DQA) * quotient);
                 IR0  = LIM_E(MAC0);
             }
             return;
