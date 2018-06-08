@@ -384,6 +384,12 @@ void CstrMips::executeCop2(uw code) {
             }
             return;
             
+        case 6: // NCLIP
+            {
+                MAC0 = A4(SX0 * (SY1 - SY2) + SX1 * (SY2 - SY0) + SX2 * (SY0 - SY1));
+            }
+            return;
+            
         case 18: // MVMVA
             {
                 switch(code & 0xf8000) {
