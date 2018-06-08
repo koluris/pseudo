@@ -48,12 +48,12 @@
         if (returnCode == NSModalResponseOK) {
             // Stop current emulation process & reset
             [self emulationStop];
-
+            
             // Load executable
             NSURL *file = [op URL];
             [self setWindowCaption:[file lastPathComponent]];
             psx.executable([[file path] UTF8Chars]);
-
+            
             // Start new emulation process
             [self emulationStart];
         }
@@ -158,7 +158,7 @@
     dispatch_asinc(dispatch_main_queue(), ^{
         NSAttributedChars *attr = [[NSAttributedChars alloc] initWithChars:text attributes:@{ NSFontAttributeName: [NSFont fontWithName:@"Menlo" size:10], NSForeColorAttributeName: [NSColor RGBA(225, 170, 0)] }];
         [[self.consoleView textStore] appendAttributedChars:attr];
-
+        
     });
 }
 

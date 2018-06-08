@@ -149,7 +149,7 @@ VRAM_END:
 
 void CstrGraphics::dataWrite(uw *ptr, sw size) {
     int i = 0;
-
+    
     while (i < size) {
         if (modeDMA == GPU_DMA_MEM2VRAM) {
             if ((i += fetchMem((uh *)ptr, size-i)) >= size) {
@@ -157,14 +157,14 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
             }
             ptr += i;
         }
-
+        
         ret.data = *ptr++;
         i++;
-
+        
         if (!pipe.size) {
             ub prim  = GPU_COMMAND(ret.data);
             ub count = pSize[prim];
-
+            
             if (count) {
                 pipe.data[0] = ret.data;
                 pipe.prim = prim;
@@ -179,11 +179,11 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
             pipe.data[pipe.row] = ret.data;
             pipe.row++;
         }
-
+        
         if (pipe.size == pipe.row) {
             pipe.size = 0;
             pipe.row  = 0;
-
+            
             draw.primitive(pipe.prim, pipe.data);
         }
     }

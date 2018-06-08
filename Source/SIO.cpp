@@ -87,7 +87,7 @@ ub CstrSerial::read08() {
         if (data == 0x42 /*|| data == 0x43 || data == 0x45*/) {
             cnt = 1;
         }
-
+        
         if (cnt) {
             ub ret = bfr[cnt];
             

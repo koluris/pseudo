@@ -140,7 +140,7 @@ ub CstrMem::read08(uw addr) {
 // OTC
 void CstrMem::executeDMA(CstrBus::castDMA *dma) {
     uw *p = (uw *)&ram.ptr[dma->madr & (ram.size - 1)];
-
+    
     if (dma->chcr == 0x11000002) {
         while(dma->bcr--) {
             *p-- = (dma->madr - 4) & 0xffffff;
