@@ -1,7 +1,7 @@
 # PSeudo
-A simple cross-platform PSX emulator
+PSeudo aims to be the world's simplest PSX emulator both in terms of user experience and software implementation. It is coded in C++ and is utilizing modern APIs such as OpenGL for visuals and OpenAL for audio. I have been developing this emulator on a Mac, so for the time being it is not portable on other platforms. This will change in future releases, as I am aiming for a cross-platform solution.
 
-![Demos](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Demos.jpg)
+![Interface](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Interface.jpg)
 
 ## Completion
 Here's a list with the overall progress of the emulator, broken down in distinct parts. Components with 0% progress are not listed.
@@ -17,4 +17,4 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 * `50% -> Serial IO`
 * `45% -> DMA`
 
-![Interface](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Interface.jpg)
+![Demos](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Demos.jpg)
