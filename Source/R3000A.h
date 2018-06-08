@@ -53,8 +53,8 @@ class CstrMips {
     } cop2c, cop2d;
     
     void executeCop2(uw);
-    //void   writeCop2(uw);
-    //void    readCop2(uw);
+    void   writeCop2(uw);
+    void    readCop2(uw);
     
 public:
     uw base[32], copr[16], pc;

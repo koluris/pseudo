@@ -225,8 +225,8 @@
 
 // Limit definition
 #define LIM(res, min, max, bit) \
-    (res) < min ? FLAG |= (1<<bit), min : \
-    (res) > max ? FLAG |= (1<<bit), max : (res)
+    ( (res) < min ? FLAG |= (1<<bit), min : \
+      (res) > max ? FLAG |= (1<<bit), max : (res) )
 
 // Limits
 #define LIM_A1S(res) \
@@ -257,11 +257,63 @@
     IR3 = LIM_A3S(MAC3); \
 }
 
+void CstrMips::writeCop2(uw addr) {
+    switch(addr) {
+        case  9:
+        case 10:
+        case 11:
+            oooo(cop2d.iuw, addr) = __oo(cop2d.ish, addr, 0);
+            return;
+            
+        case 17:
+        case 18:
+        case 19:
+            oooo(cop2d.iuw, addr) = __oo(cop2d.iuh, addr, 0);
+            return;
+            
+        case 30:
+            {
+                LZCR = 0;
+                uw sbit = (LZCS & 0x80000000) ? LZCS : ~LZCS;
+                
+                for (; sbit & 0x80000000; sbit <<= 1) {
+                    LZCR++;
+                }
+            }
+            return;
+            
+        /* unused */
+        case  0:
+        case  1:
+            return;
+    }
+    
+    printx("/// PSeudo Unknown Cop2 write: %d", addr);
+}
+
+void CstrMips::readCop2(uw addr) {
+    switch(addr) {
+        /* unused */
+        case  7:
+        case  9:
+        case 10:
+        case 11:
+        case 19:
+        case 25:
+        case 26:
+        case 27:
+        case 31:
+            return;
+    }
+    
+    printx("/// PSeudo Unknown Cop2 read: %d", addr);
+}
+
 void CstrMips::executeCop2(uw code) {
     FLAG = 0;
     
     switch(code & 63) {
-        case  1: // RTPS
+        case 1: // RTPS
             {
                 double sx, su, quotient = 0.0;
                 
@@ -293,6 +345,18 @@ void CstrMips::executeCop2(uw code) {
             }
             return;
             
+        case 18: // MVMVA
+            {
+            }
+            return;
+            
+        case 45: // AVSZ3
+            {
+                MAC0 = (SZ1 + SZ2 + SZ3) * FPN_12(ZSF3); /* <4> */
+                OTZ  = LIM_C(MAC0);
+            }
+            return;
+            
         case 48: // RTPT
             {
                 double sx, su, quotient = 0.0;
@@ -308,7 +372,7 @@ void CstrMips::executeCop2(uw code) {
                     
                     SZ(n) = LIM_C(MAC3);
                     
-                    quotient = H / SZ(n);
+                    quotient = H / LIM_C(MAC3);
                     sx = FPN_16(OFX) + IR1 * quotient; /* <4> */
                     su = FPN_16(OFY) + IR2 * quotient; /* <4> */
                     
