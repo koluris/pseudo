@@ -6,7 +6,7 @@
     (PSX_CLK / 60)
 
 #define PSX_HSYNC\
-    (PSX_CLK / 15734)
+    (PSX_VSYNC / 212)
 
 // This is uttermost experimental, it's the Achilles' heel
 #define PSX_CYCLE\
