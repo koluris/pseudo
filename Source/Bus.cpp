@@ -4,23 +4,19 @@
 CstrBus bus;
 
 void CstrBus::reset() {
-    ub size = sizeof(interrupts) / sizeof(interrupts[0]);
-    
-    for (int i = 0; i < size; i++) {
-        interrupts[i].queued = IRQ_QUEUED_NO;
+    for (int i = 0; i < INT_TOTAL; i++) {
+        interrupts[i].queued = INT_DISABLED;
     }
 }
 
 void CstrBus::interruptsUpdate() { // A method to schedule when IRQs should fire
-    ub size = sizeof(interrupts) / sizeof(interrupts[0]);
-    
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < INT_TOTAL; i++) {
         interrupt *item = &interrupts[i];
         
         if (item->queued) {
             if (item->queued++ == item->dest) {
-                item->queued = IRQ_QUEUED_NO;
-                data16 |= (1 << item->code);
+                item->queued = INT_DISABLED;
+                data16 |= 1 << item->code;
                 break;
             }
         }
@@ -28,7 +24,7 @@ void CstrBus::interruptsUpdate() { // A method to schedule when IRQs should fire
 }
 
 void CstrBus::interruptSet(ub code) {
-    interrupts[code].queued = IRQ_QUEUED_YES;
+    interrupts[code].queued = INT_ENABLED;
 }
 
 void CstrBus::checkDMA(uw addr, uw data) {
@@ -63,7 +59,7 @@ void CstrBus::checkDMA(uw addr, uw data) {
         
         if (dicr & (1 << (16 + chan))) {
             dicr |= 1 << (24 + chan);
-            bus.interruptSet(CstrBus::IRQ_DMA);
+            bus.interruptSet(CstrBus::INT_DMA);
         }
     }
 }

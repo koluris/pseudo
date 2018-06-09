@@ -2,66 +2,6 @@
 
 #if 0
 
-// 32-bit accessor
-#define oooo(base, index) \
-    base[(index)]
-
-// 16-bit accessor
-#define __oo(base, index, offset) \
-    base[(index<<1)+offset]
-
-// 08-bit accessor
-#define ___o(base, index, offset) \
-    base[(index<<2)+offset]
-
-// Cop2c
-#define R11R12 oooo(cop2c.isw,  0)    /* Rotation matrix */
-#define R11    __oo(cop2c.ish,  0, 0) /* Rotation matrix */
-#define R12    __oo(cop2c.ish,  0, 1) /* Rotation matrix */
-#define R13    __oo(cop2c.ish,  1, 0) /* Rotation matrix */
-#define R21    __oo(cop2c.ish,  1, 1) /* Rotation matrix */
-#define R22R23 oooo(cop2c.isw,  2)    /* Rotation matrix */
-#define R22    __oo(cop2c.ish,  2, 0) /* Rotation matrix */
-#define R23    __oo(cop2c.ish,  2, 1) /* Rotation matrix */
-#define R31    __oo(cop2c.ish,  3, 0) /* Rotation matrix */
-#define R32    __oo(cop2c.ish,  3, 1) /* Rotation matrix */
-#define R33    __oo(cop2c.ish,  4, 0) /* Rotation matrix */
-#define TRX    oooo(cop2c.isw,  5)    /* Translation vector (X) */
-#define TRY    oooo(cop2c.isw,  6)    /* Translation vector (Y) */
-#define TRZ    oooo(cop2c.isw,  7)    /* Translation vector (Z) */
-#define L11    __oo(cop2c.ish,  8, 0) /* Lite source direction vector X 3 */
-#define L12    __oo(cop2c.ish,  8, 1) /* Lite source direction vector X 3 */
-#define L13    __oo(cop2c.ish,  9, 0) /* Lite source direction vector X 3 */
-#define L21    __oo(cop2c.ish,  9, 1) /* Lite source direction vector X 3 */
-#define L22    __oo(cop2c.ish, 10, 0) /* Lite source direction vector X 3 */
-#define L23    __oo(cop2c.ish, 10, 1) /* Lite source direction vector X 3 */
-#define L31    __oo(cop2c.ish, 11, 0) /* Lite source direction vector X 3 */
-#define L32    __oo(cop2c.ish, 11, 1) /* Lite source direction vector X 3 */
-#define L33    __oo(cop2c.ish, 12, 0) /* Lite source direction vector X 3 */
-#define RBK    oooo(cop2c.isw, 13)    /* Peripheral color (R) */
-#define GBK    oooo(cop2c.isw, 14)    /* Peripheral color (G) */
-#define BBK    oooo(cop2c.isw, 15)    /* Peripheral color (B) */
-#define LR1    __oo(cop2c.ish, 16, 0) /* Lite source color X 3 */
-#define LR2    __oo(cop2c.ish, 16, 1) /* Lite source color X 3 */
-#define LR3    __oo(cop2c.ish, 17, 0) /* Lite source color X 3 */
-#define LG1    __oo(cop2c.ish, 17, 1) /* Lite source color X 3 */
-#define LG2    __oo(cop2c.ish, 18, 0) /* Lite source color X 3 */
-#define LG3    __oo(cop2c.ish, 18, 1) /* Lite source color X 3 */
-#define LB1    __oo(cop2c.ish, 19, 0) /* Lite source color X 3 */
-#define LB2    __oo(cop2c.ish, 19, 1) /* Lite source color X 3 */
-#define LB3    __oo(cop2c.ish, 20, 0) /* Lite source color X 3 */
-#define RFC    oooo(cop2c.isw, 21)    /* Far color (R) */
-#define GFC    oooo(cop2c.isw, 22)    /* Far color (G) */
-#define BFC    oooo(cop2c.isw, 23)    /* Far color (B) */
-#define OFX    oooo(cop2c.isw, 24)    /* Screen offset (X) */
-#define OFY    oooo(cop2c.isw, 25)    /* Screen offset (Y) */
-#define H      __oo(cop2c.ish, 26, 0) /* Screen position */
-#define DQA    __oo(cop2c.ish, 27, 0) /* Depth parameter A (coefficient) */
-#define DQB    oooo(cop2c.isw, 28)    /* Depth parameter B (offset) */
-#define ZSF3   __oo(cop2c.ish, 29, 0) /* Z scale factor */
-#define ZSF4   __oo(cop2c.ish, 30, 0) /* Z scale factor */
-#define FLAG   oooo(cop2c.iuw, 31)    /* ! */
-
 // Cop2d
 #define VXY0   oooo(cop2d.iuw,  0)    /* Vector #0 (X/Y) */
 #define VX0    __oo(cop2d.ish,  0, 0) /* Vector #0 (X) */
@@ -126,99 +66,54 @@
 #define LZCS   oooo(cop2d.iuw, 30)    /* Lead zero/one count source data */
 #define LZCR   oooo(cop2d.iuw, 31)    /* Lead zero/one count process result */
 
-#define VX(n)  __oo(cop2d.ish, ((n<<1)+0), 0)
-#define VY(n)  __oo(cop2d.ish, ((n<<1)+0), 1)
-#define VZ(n)  __oo(cop2d.ish, ((n<<1)+1), 0)
+// Cop2c
+#define R11R12 oooo(cop2c.isw,  0)    /* Rotation matrix */
+#define R11    __oo(cop2c.ish,  0, 0) /* Rotation matrix */
+#define R12    __oo(cop2c.ish,  0, 1) /* Rotation matrix */
+#define R13    __oo(cop2c.ish,  1, 0) /* Rotation matrix */
+#define R21    __oo(cop2c.ish,  1, 1) /* Rotation matrix */
+#define R22R23 oooo(cop2c.isw,  2)    /* Rotation matrix */
+#define R22    __oo(cop2c.ish,  2, 0) /* Rotation matrix */
+#define R23    __oo(cop2c.ish,  2, 1) /* Rotation matrix */
+#define R31    __oo(cop2c.ish,  3, 0) /* Rotation matrix */
+#define R32    __oo(cop2c.ish,  3, 1) /* Rotation matrix */
+#define R33    __oo(cop2c.ish,  4, 0) /* Rotation matrix */
+#define TRX    oooo(cop2c.isw,  5)    /* Translation vector (X) */
+#define TRY    oooo(cop2c.isw,  6)    /* Translation vector (Y) */
+#define TRZ    oooo(cop2c.isw,  7)    /* Translation vector (Z) */
+#define L11    __oo(cop2c.ish,  8, 0) /* Lite source direction vector X 3 */
+#define L12    __oo(cop2c.ish,  8, 1) /* Lite source direction vector X 3 */
+#define L13    __oo(cop2c.ish,  9, 0) /* Lite source direction vector X 3 */
+#define L21    __oo(cop2c.ish,  9, 1) /* Lite source direction vector X 3 */
+#define L22    __oo(cop2c.ish, 10, 0) /* Lite source direction vector X 3 */
+#define L23    __oo(cop2c.ish, 10, 1) /* Lite source direction vector X 3 */
+#define L31    __oo(cop2c.ish, 11, 0) /* Lite source direction vector X 3 */
+#define L32    __oo(cop2c.ish, 11, 1) /* Lite source direction vector X 3 */
+#define L33    __oo(cop2c.ish, 12, 0) /* Lite source direction vector X 3 */
+#define RBK    oooo(cop2c.isw, 13)    /* Peripheral color (R) */
+#define GBK    oooo(cop2c.isw, 14)    /* Peripheral color (G) */
+#define BBK    oooo(cop2c.isw, 15)    /* Peripheral color (B) */
+#define LR1    __oo(cop2c.ish, 16, 0) /* Lite source color X 3 */
+#define LR2    __oo(cop2c.ish, 16, 1) /* Lite source color X 3 */
+#define LR3    __oo(cop2c.ish, 17, 0) /* Lite source color X 3 */
+#define LG1    __oo(cop2c.ish, 17, 1) /* Lite source color X 3 */
+#define LG2    __oo(cop2c.ish, 18, 0) /* Lite source color X 3 */
+#define LG3    __oo(cop2c.ish, 18, 1) /* Lite source color X 3 */
+#define LB1    __oo(cop2c.ish, 19, 0) /* Lite source color X 3 */
+#define LB2    __oo(cop2c.ish, 19, 1) /* Lite source color X 3 */
+#define LB3    __oo(cop2c.ish, 20, 0) /* Lite source color X 3 */
+#define RFC    oooo(cop2c.isw, 21)    /* Far color (R) */
+#define GFC    oooo(cop2c.isw, 22)    /* Far color (G) */
+#define BFC    oooo(cop2c.isw, 23)    /* Far color (B) */
+#define OFX    oooo(cop2c.isw, 24)    /* Screen offset (X) */
+#define OFY    oooo(cop2c.isw, 25)    /* Screen offset (Y) */
+#define H      __oo(cop2c.ish, 26, 0) /* Screen position */
+#define DQA    __oo(cop2c.ish, 27, 0) /* Depth parameter A (coefficient) */
+#define DQB    oooo(cop2c.isw, 28)    /* Depth parameter B (offset) */
+#define ZSF3   __oo(cop2c.ish, 29, 0) /* Z scale factor */
+#define ZSF4   __oo(cop2c.ish, 30, 0) /* Z scale factor */
+#define FLAG   oooo(cop2c.iuw, 31)    /* ! */
 
-#define SX(n)  __oo(cop2d.ish, (n+12), 0)
-#define SY(n)  __oo(cop2d.ish, (n+12), 1)
-#define SZ(n)  __oo(cop2d.iuh, (n+17), 0)
-
-// General
-#define FIX(a) \
-    ((a) / 4096.0)
-
-#define LIM(a, min, max, bit) \
-    (((a) < min) ? (FLAG |= (1<<bit), min) : \
-    (((a) > max) ? (FLAG |= (1<<bit), max) : ((a))))
-
-#define LIM_A1S(n) LIM(n, -32768.0, 32767.0, 24)
-#define LIM_A2S(n) LIM(n, -32768.0, 32767.0, 23)
-#define LIM_A3S(n) LIM(n, -32768.0, 32767.0, 22)
-#define LIM_A1U(n) LIM(n,      0.0, 32767.0, 24)
-#define LIM_A2U(n) LIM(n,      0.0, 32767.0, 23)
-#define LIM_A3U(n) LIM(n,      0.0, 32767.0, 22)
-#define LIM_B1( n) LIM(n,      0.0,   255.0, 21)
-#define LIM_B2( n) LIM(n,      0.0,   255.0, 20)
-#define LIM_B3( n) LIM(n,      0.0,   255.0, 19)
-#define LIM_C(  n) LIM(n,      0.0, 65535.0, 18)
-#define LIM_D1( n) LIM(n,  -1024.0,  1023.0, 14)
-#define LIM_D2( n) LIM(n,  -1024.0,  1023.0, 13)
-#define LIM_E(  n) LIM(n,      0.0,  4095.0, 12)
-
-#define MAC2IR0() { \
-    IR1 = LIM_A1S(MAC1); \
-    IR2 = LIM_A2S(MAC2); \
-    IR3 = LIM_A3S(MAC3); \
-}
-
-#define MAC2IR1() { \
-    IR1 = LIM_A1U(MAC1); \
-    IR2 = LIM_A2U(MAC2); \
-    IR3 = LIM_A3U(MAC3); \
-}
-
-void CstrMips::writeCop2(uw addr) {
-    switch(addr) {
-        case  9:
-        case 10:
-        case 11:
-            oooo(cop2d.iuw, addr) = __oo(cop2d.ish, addr, 0);
-            return;
-            
-        case 17:
-        case 18:
-        case 19:
-            oooo(cop2d.iuw, addr) = __oo(cop2d.iuh, addr, 0);
-            return;
-            
-        case 30:
-            {
-                LZCR = 0;
-                uw sbit = (LZCS & 0x80000000) ? LZCS : ~LZCS;
-                
-                for (; sbit & 0x80000000; sbit <<= 1) {
-                    LZCR++;
-                }
-            }
-            return;
-            
-        /* unused */
-        case  0:
-        case  1:
-            return;
-    }
-    
-    printx("/// PSeudo Unknown Cop2 write: %d", addr);
-}
-
-void CstrMips::readCop2(uw addr) {
-    switch(addr) {
-        /* unused */
-        case  7:
-        case  9:
-        case 10:
-        case 11:
-        case 19:
-        case 25:
-        case 26:
-        case 27:
-        case 31:
-            return;
-    }
-    
-    printx("/// PSeudo Unknown Cop2 read: %d", addr);
-}
 
 void CstrMips::executeCop2(uw code) {
     switch(code & 63) {
@@ -278,70 +173,6 @@ void CstrMips::executeCop2(uw code) {
 
                 MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
                 IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
-            }
-            return;
-            
-        case 45: // AVSZ3
-            FLAG = 0;
-            
-            MAC0 = (SZ1 + SZ2 + SZ3) * (ZSF3 / 4096.0);
-            OTZ  = LIM_C(MAC0);
-            return;
-            
-        case 46: // AVSZ4
-            FLAG = 0;
-            
-            MAC0 = (SZ0 + SZ1 + SZ2 + SZ3) * (ZSF4 / 4096.0);
-            OTZ  = LIM_C(MAC0);
-            return;
-            
-        case 6: // NCLIP
-            FLAG = 0;
-            
-            MAC0 = SX0 * (SY1 - SY2) + SX1 * (SY2 - SY0) + SX2 * (SY0 - SY1);
-            return;
-            
-        case 18: // MVMVA
-            FLAG = 0;
-            
-            switch(code & 0xf8000) {
-                case 0x18000:
-                    MAC1 = ((sh)IR1 * R11 + (sh)IR2 * R12 + (sh)IR3 * R13);
-                    MAC2 = ((sh)IR1 * R21 + (sh)IR2 * R22 + (sh)IR3 * R23);
-                    MAC3 = ((sh)IR1 * R31 + (sh)IR2 * R32 + (sh)IR3 * R33);
-                    break;
-                    
-                case 0x98000:
-                    MAC1 = FIX((sh)IR1 * R11 + (sh)IR2 * R12 + (sh)IR3 * R13);
-                    MAC2 = FIX((sh)IR1 * R21 + (sh)IR2 * R22 + (sh)IR3 * R23);
-                    MAC3 = FIX((sh)IR1 * R31 + (sh)IR2 * R32 + (sh)IR3 * R33);
-                    break;
-                    
-                case 0x80000:
-                    MAC1 = FIX(VX0 * R11 + VY0 * R12 + VZ0 * R13);
-                    MAC2 = FIX(VX0 * R21 + VY0 * R22 + VZ0 * R23);
-                    MAC3 = FIX(VX0 * R31 + VY0 * R32 + VZ0 * R33);
-                    break;
-                    
-                default:
-                    printf("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) $%08x\n", (code & 0xf8000));
-                    break;
-            }
-            
-            switch(code & 0x6000) {
-                case 0x6000:
-                    break;
-                    
-                default:
-                    printf("/// PSeudo Unknown cop2 mvmva (code & 0x6000) $%08x\n", (code & 0x6000));
-                    break;
-            }
-            
-            if (code & 0x400) {
-                MAC2IR1();
-            }
-            else {
-                MAC2IR0();
             }
             return;
     }

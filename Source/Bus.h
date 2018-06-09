@@ -7,8 +7,10 @@
 
 class CstrBus {
     enum {
-        IRQ_QUEUED_NO,
-        IRQ_QUEUED_YES
+        INT_DISABLED,
+        INT_ENABLED,
+        
+        INT_TOTAL = 11
     };
     
     enum {
@@ -23,33 +25,33 @@ class CstrBus {
     
     struct interrupt {
         const uw code, dest; ub queued;
-    } interrupts[11] = {
-        { IRQ_VSYNC, 1 },
-        { IRQ_GPU,   1 },
-        { IRQ_CD,    4 },
-        { IRQ_DMA,   1 },
-        { IRQ_RTC0,  1 },
-        { IRQ_RTC1,  1 },
-        { IRQ_RTC2,  1 },
-        { IRQ_SIO0,  8 },
-        { IRQ_SIO1,  8 },
-        { IRQ_SPU,   1 },
-        { IRQ_PIO,   1 },
+    } interrupts[INT_TOTAL] = {
+        { INT_VSYNC, 1 },
+        { INT_GPU,   1 },
+        { INT_CD,    4 },
+        { INT_DMA,   1 },
+        { INT_RTC0,  1 },
+        { INT_RTC1,  1 },
+        { INT_RTC2,  1 },
+        { INT_SIO0,  8 },
+        { INT_SIO1,  8 },
+        { INT_SPU,   1 },
+        { INT_PIO,   1 },
     };
     
 public:
     enum {
-        IRQ_VSYNC,
-        IRQ_GPU,
-        IRQ_CD,
-        IRQ_DMA,
-        IRQ_RTC0,
-        IRQ_RTC1,
-        IRQ_RTC2,
-        IRQ_SIO0,
-        IRQ_SIO1,
-        IRQ_SPU,
-        IRQ_PIO
+        INT_VSYNC,
+        INT_GPU,
+        INT_CD,
+        INT_DMA,
+        INT_RTC0,
+        INT_RTC1,
+        INT_RTC2,
+        INT_SIO0,
+        INT_SIO1,
+        INT_SPU,
+        INT_PIO
     };
     
     struct castDMA {
