@@ -208,6 +208,9 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
         case 0x00000401: // Disable DMA?
             return;
             
+        case 0x01000200: // TODO: dataRead
+            return;
+            
         case 0x01000201:
             dataWrite(p, size);
             return;

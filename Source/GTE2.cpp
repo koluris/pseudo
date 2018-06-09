@@ -247,6 +247,15 @@
 #define LIM_A3U(n) \
     LIM(n,      0.0, 32767.0, 22)
 
+#define LIM_B1(n) \
+    LIM(n,      0.0,   255.0, 21)
+
+#define LIM_B2(n) \
+    LIM(n,      0.0,   255.0, 20)
+
+#define LIM_B3(n) \
+    LIM(n,      0.0,   255.0, 19)
+
 #define LIM_C(  n) \
     LIM(n,      0.0, 65535.0, 18)
 
@@ -259,26 +268,9 @@
 #define LIM_E(  n) \
     LIM(n,      0.0,  4095.0, 12)
 
-// Overflow definition
-#undef  OVERFLOW
-#define OVERFLOW(n, max, bit) \
-    ( (n) > max ? FLAG |= (1<<bit), max : (n) )
-
-// Overflows (not implemented)
-#define A1(n) \
-    n
-
-#define A2(n) \
-    n
-
-#define A3(n) \
-    n
-
-#define A4(n) \
-    n
-
+// Division overflow
 #define DIV_OVERFLOW(n) \
-    OVERFLOW(n, 2.0, 17)
+    ( (n) > 2.0 ? FLAG |= (1<<17), 2.0 : (n) )
 
 // Common
 #define MAC2IR0() { \
@@ -366,9 +358,9 @@ void CstrMips::executeCop2(uw code) {
             {
                 double sx, su, quotient = 0.0;
                 
-                MAC1 = A1(TRX + FPN_12(R11*VX0 + R12*VY0 + R13*VZ0));
-                MAC2 = A2(TRY + FPN_12(R21*VX0 + R22*VY0 + R23*VZ0));
-                MAC3 = A3(TRZ + FPN_12(R31*VX0 + R32*VY0 + R33*VZ0));
+                MAC1 = TRX + FPN_12(R11*VX0 + R12*VY0 + R13*VZ0);
+                MAC2 = TRY + FPN_12(R21*VX0 + R22*VY0 + R23*VZ0);
+                MAC3 = TRZ + FPN_12(R31*VX0 + R32*VY0 + R33*VZ0);
                 
                 MAC2IR0();
                 
@@ -379,8 +371,8 @@ void CstrMips::executeCop2(uw code) {
                 
                 quotient = DIV_OVERFLOW(H / (double)SZ3);
                 
-                sx = A4(FPN_16(OFX) + IR1 * quotient);
-                su = A4(FPN_16(OFY) + IR2 * quotient);
+                sx = FPN_16(OFX) + IR1 * quotient;
+                su = FPN_16(OFY) + IR2 * quotient;
                 
                 SX0 = SX1;
                 SX1 = SX2;
@@ -390,14 +382,14 @@ void CstrMips::executeCop2(uw code) {
                 SY1 = SY2;
                 SY2 = LIM_D2(su);
                 
-                MAC0 = A4(FPN_24(DQB) + FPN_08(DQA) * quotient);
+                MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient;
                 IR0  = LIM_E(MAC0);
             }
             return;
             
         case 6: // NCLIP
             {
-                MAC0 = A4(SX0 * (SY1 - SY2) + SX1 * (SY2 - SY0) + SX2 * (SY0 - SY1));
+                MAC0 = SX0 * (SY1 - SY2) + SX1 * (SY2 - SY0) + SX2 * (SY0 - SY1);
             }
             return;
             
@@ -422,12 +414,24 @@ void CstrMips::executeCop2(uw code) {
                         MAC3 = FPN_12(VX0*R31 + VY0*R32 + VZ0*R33);
                         break;
                         
+                    case 0xa0000:
+                        MAC1 = FPN_12(VX0*L11 + VY0*L12 + VZ0*L13);
+                        MAC2 = FPN_12(VX0*L21 + VY0*L22 + VZ0*L23);
+                        MAC3 = FPN_12(VX0*L31 + VY0*L32 + VZ0*L33);
+                        break;
+                        
                     default:
                         printf("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) $%08x\n", (code & 0xf8000));
                         break;
                 }
                 
                 switch(code & 0x6000) {
+                    case 0x0000:
+                        MAC1 += TRX;
+                        MAC2 += TRY;
+                        MAC3 += TRZ;
+                        break;
+                        
                     case 0x6000:
                         break;
                         
@@ -445,16 +449,52 @@ void CstrMips::executeCop2(uw code) {
             }
             return;
             
+        case 27: // NCCS
+            {
+                double LL1, LL2, LL3, RRLT, GGLT, BBLT;
+                
+                LL1 = LIM_A1U(FPN_24(L11*VX0 + L12*VY0 + L13*VZ0));
+                LL2 = LIM_A2U(FPN_24(L21*VX0 + L22*VY0 + L23*VZ0));
+                LL3 = LIM_A3U(FPN_24(L31*VX0 + L32*VY0 + L33*VZ0));
+                
+                RRLT = FPN_12(RBK + LR1*LL1 + LR2*LL2 + LR3*LL3);
+                GGLT = FPN_12(GBK + LG1*LL1 + LG2*LL2 + LG3*LL3);
+                BBLT = FPN_12(BBK + LB1*LL1 + LB2*LL2 + LB3*LL3);
+                
+                MAC1 = R*LIM_A1U(RRLT);
+                MAC2 = G*LIM_A2U(GGLT);
+                MAC3 = B*LIM_A3U(BBLT);
+                
+                CD0 = CD1;
+                CD1 = CD2;
+                CD2 = CODE;
+                
+                R0 = R1;
+                R1 = R2;
+                R2 = LIM_B1(MAC1);
+                
+                G0 = G1;
+                G1 = G2;
+                G2 = LIM_B2(MAC2);
+                
+                B0 = B1;
+                B1 = B2;
+                B2 = LIM_B3(MAC3);
+                
+                MAC2IR1();
+            }
+            return;
+            
         case 45: // AVSZ3
             {
-                MAC0 = A4((SZ1 + SZ2 + SZ3) * FPN_12(ZSF3));
+                MAC0 = (SZ1 + SZ2 + SZ3) * FPN_12(ZSF3);
                 OTZ  = LIM_C(MAC0);
             }
             return;
             
         case 46: // AVSZ4
             {
-                MAC0 = A4((SZ0 + SZ1 + SZ2 + SZ3) * FPN_12(ZSF4));
+                MAC0 = (SZ0 + SZ1 + SZ2 + SZ3) * FPN_12(ZSF4);
                 OTZ  = LIM_C(MAC0);
             }
             return;
@@ -466,9 +506,9 @@ void CstrMips::executeCop2(uw code) {
                 SZ0 = SZ3;
                 
                 for (int n = 0; n < 3; n++) {
-                    MAC1 = A1(TRX + FPN_12(R11*VX(n) + R12*VY(n) + R13*VZ(n)));
-                    MAC2 = A2(TRY + FPN_12(R21*VX(n) + R22*VY(n) + R23*VZ(n)));
-                    MAC3 = A3(TRZ + FPN_12(R31*VX(n) + R32*VY(n) + R33*VZ(n)));
+                    MAC1 = TRX + FPN_12(R11*VX(n) + R12*VY(n) + R13*VZ(n));
+                    MAC2 = TRY + FPN_12(R21*VX(n) + R22*VY(n) + R23*VZ(n));
+                    MAC3 = TRZ + FPN_12(R31*VX(n) + R32*VY(n) + R33*VZ(n));
                     
                     MAC2IR0();
                     
@@ -476,18 +516,59 @@ void CstrMips::executeCop2(uw code) {
                     
                     quotient = DIV_OVERFLOW(H / (double)SZ(n));
                     
-                    sx = A4(FPN_16(OFX) + IR1 * quotient);
-                    su = A4(FPN_16(OFY) + IR2 * quotient);
+                    sx = FPN_16(OFX) + IR1 * quotient;
+                    su = FPN_16(OFY) + IR2 * quotient;
                     
                     SX(n) = LIM_D1(sx);
                     SY(n) = LIM_D2(su);
                 }
                 
-                MAC0 = A4(FPN_24(DQB) + FPN_08(DQA) * quotient);
+                MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient;
                 IR0  = LIM_E(MAC0);
+            }
+            return;
+            
+        case 63: // NCCT
+            {
+                double LL1, LL2, LL3, RRLT, GGLT, BBLT;
+                
+                for (int n = 0; n < 3; n++) {
+                    LL1 = LIM_A1U(FPN_24(L11*VX(n) + L12*VY(n) + L13*VZ(n)));
+                    LL2 = LIM_A2U(FPN_24(L21*VX(n) + L22*VY(n) + L23*VZ(n)));
+                    LL3 = LIM_A3U(FPN_24(L31*VX(n) + L32*VY(n) + L33*VZ(n)));
+                    
+                    RRLT = FPN_12(RBK + LR1*LL1 + LR2*LL2 + LR3*LL3);
+                    GGLT = FPN_12(GBK + LG1*LL1 + LG2*LL2 + LG3*LL3);
+                    BBLT = FPN_12(BBK + LB1*LL1 + LB2*LL2 + LB3*LL3);
+                    
+                    MAC1 = R * LIM_A1U(RRLT);
+                    MAC2 = G * LIM_A2U(GGLT);
+                    MAC3 = B * LIM_A3U(BBLT);
+                    
+                    CD0 = CD1;
+                    CD1 = CD2;
+                    CD2 = CODE;
+                    
+                    R0 = R1;
+                    R1 = R2;
+                    R2 = LIM_B1(MAC1);
+                    
+                    G0 = G1;
+                    G1 = G2;
+                    G2 = LIM_B2(MAC2);
+                    
+                    B0 = B1;
+                    B1 = B2;
+                    B2 = LIM_B3(MAC3);
+                }
+                
+                MAC2IR1();
             }
             return;
     }
     
     printx("/// PSeudo Unknown Cop2 opcode: %d", (code & 63));
 }
+
+//MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
+//IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);

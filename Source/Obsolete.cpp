@@ -1,5 +1,3 @@
-#import "Global.h"
-
 #if 0
 
 // Cop2d
@@ -113,71 +111,5 @@
 #define ZSF3   __oo(cop2c.ish, 29, 0) /* Z scale factor */
 #define ZSF4   __oo(cop2c.ish, 30, 0) /* Z scale factor */
 #define FLAG   oooo(cop2c.iuw, 31)    /* ! */
-
-
-void CstrMips::executeCop2(uw code) {
-    switch(code & 63) {
-        case 0: // Basic
-            printx("/// PSeudo Unknown cop2 basic $%08x | %d", code, (rs & 7));
-            return;
-            
-        case 1: // RTPS
-            {
-                FLAG = 0;
-                
-                MAC1 = FIX(R11 * VX0 + R12 * VY0 + R13 * VZ0) + TRX;
-                MAC2 = FIX(R21 * VX0 + R22 * VY0 + R23 * VZ0) + TRY;
-                MAC3 = FIX(R31 * VX0 + R32 * VY0 + R33 * VZ0) + TRZ;
-                
-                double quotient = H / LIM_C(MAC3); if (quotient > 2147483647.0) { quotient = 2.0; FLAG |= (1<<17); }
-                
-                SZ0 = SZ1;
-                SZ1 = SZ2;
-                SZ2 = SZ3;
-                SZ3 = LIM_C(MAC3);
-                
-                SXY0 = SXY1;
-                SXY1 = SXY2;
-                
-                SX2 = LIM_D1(OFX / 65536.0 + LIM_A1S(MAC1) * quotient);
-                SY2 = LIM_D2(OFY / 65536.0 + LIM_A2S(MAC2) * quotient);
-                
-                MAC2IR0();
-                
-                MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
-                IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
-            }
-            return;
-    
-        case 48: // RTPT
-            {
-                double quotient = 0;
-                
-                FLAG = 0;
-                SZ0  = SZ3;
-                
-                for (int v = 0; v < 3; v++) {
-                    MAC1 = FIX(R11 * VX(v) + R12 * VY(v) + R13 * VZ(v)) + TRX;
-                    MAC2 = FIX(R21 * VX(v) + R22 * VY(v) + R23 * VZ(v)) + TRY;
-                    MAC3 = FIX(R31 * VX(v) + R32 * VY(v) + R33 * VZ(v)) + TRZ;
-                    
-                    quotient = H / LIM_C(MAC3); if (quotient > 2147483647.0) { quotient = 2.0; FLAG |= (1<<17); }
-                    
-                    SZ(v) = LIM_C(MAC3);
-                    
-                    SX(v) = LIM_D1(OFX / 65536.0 + LIM_A1S(MAC1) * quotient);
-                    SY(v) = LIM_D2(OFY / 65536.0 + LIM_A2S(MAC2) * quotient);
-                }
-                
-                MAC2IR0();
-
-                MAC0 =       (DQB / 16777216.0 + DQA / 256.0 * quotient) * 16777216.0;
-                IR0  = LIM_E((DQB / 16777216.0 + DQA / 256.0 * quotient) * 4096.0);
-            }
-            return;
-    }
-    
-    printx("/// PSeudo Unknown cop2 opcode $%08x | %d", code, (code & 63));
-}
 
 #endif
