@@ -224,40 +224,45 @@
     ((n) /      256.0)
 
 // Limit definition
-#define LIM(res, min, max, bit) \
-    ( (res) < min ? FLAG |= (1<<bit), min : \
-      (res) > max ? FLAG |= (1<<bit), max : (res) )
+#define LIM(n, min, max, bit) \
+    ( (n) < min ? FLAG |= (1<<bit), min : \
+      (n) > max ? FLAG |= (1<<bit), max : (n) )
 
 // Limits
-#define LIM_A1S(res) \
-    LIM(res, -32768.0, 32767.0, 24)
+#define LIM_A1S(n) \
+    LIM(n, -32768.0, 32767.0, 24)
 
-#define LIM_A2S(res) \
-    LIM(res, -32768.0, 32767.0, 23)
+#define LIM_A2S(n) \
+    LIM(n, -32768.0, 32767.0, 23)
 
-#define LIM_A3S(res) \
-    LIM(res, -32768.0, 32767.0, 22)
+#define LIM_A3S(n) \
+    LIM(n, -32768.0, 32767.0, 22)
 
-#define LIM_A1U(res) \
-    LIM(res,      0.0, 32767.0, 24)
+#define LIM_A1U(n) \
+    LIM(n,      0.0, 32767.0, 24)
 
-#define LIM_A2U(res) \
-    LIM(res,      0.0, 32767.0, 23)
+#define LIM_A2U(n) \
+    LIM(n,      0.0, 32767.0, 23)
 
-#define LIM_A3U(res) \
-    LIM(res,      0.0, 32767.0, 22)
+#define LIM_A3U(n) \
+    LIM(n,      0.0, 32767.0, 22)
 
-#define LIM_C(  res) \
-    LIM(res,      0.0, 65535.0, 18)
+#define LIM_C(  n) \
+    LIM(n,      0.0, 65535.0, 18)
 
-#define LIM_D1( res) \
-    LIM(res,  -1024.0,  1023.0, 14)
+#define LIM_D1( n) \
+    LIM(n,  -1024.0,  1023.0, 14)
 
-#define LIM_D2( res) \
-    LIM(res,  -1024.0,  1023.0, 13)
+#define LIM_D2( n) \
+    LIM(n,  -1024.0,  1023.0, 13)
 
-#define LIM_E(  res) \
-    LIM(res,      0.0,  4095.0, 12)
+#define LIM_E(  n) \
+    LIM(n,      0.0,  4095.0, 12)
+
+// Overflow definition
+#undef  OVERFLOW
+#define OVERFLOW(n, max, bit) \
+    ( (n) > max ? FLAG |= (1<<bit), max : (n) )
 
 // Overflows (not implemented)
 #define A1(n) \
@@ -272,6 +277,9 @@
 #define A4(n) \
     n
 
+#define DIV_OVERFLOW(n) \
+    OVERFLOW(n, 2.0, 17)
+
 // Common
 #define MAC2IR0() { \
     IR1 = LIM_A1S(MAC1); \
@@ -284,6 +292,7 @@
     IR2 = LIM_A2U(MAC2); \
     IR3 = LIM_A3U(MAC3); \
 }
+
 
 void CstrMips::writeCop2(uw addr) {
     switch(addr) {
@@ -337,6 +346,7 @@ void CstrMips::readCop2(uw addr) {
         case 10:
         case 11:
         case 19:
+        case 24:
         case 25:
         case 26:
         case 27:
@@ -367,7 +377,8 @@ void CstrMips::executeCop2(uw code) {
                 SZ2 = SZ3;
                 SZ3 = LIM_C(MAC3);
                 
-                quotient = H / LIM_C(MAC3); // Substituted SZ3 because it becomes 0
+                quotient = DIV_OVERFLOW(H / (double)SZ3);
+                
                 sx = A4(FPN_16(OFX) + IR1 * quotient);
                 su = A4(FPN_16(OFY) + IR2 * quotient);
                 
@@ -463,7 +474,8 @@ void CstrMips::executeCop2(uw code) {
                     
                     SZ(n) = LIM_C(MAC3);
                     
-                    quotient = H / LIM_C(MAC3); // Substituted SZ(n) because it becomes 0
+                    quotient = DIV_OVERFLOW(H / (double)SZ(n));
+                    
                     sx = A4(FPN_16(OFX) + IR1 * quotient);
                     su = A4(FPN_16(OFY) + IR2 * quotient);
                     
