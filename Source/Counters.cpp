@@ -30,14 +30,14 @@ void CstrCounters::reset() {
 
 void CstrCounters::update() {
     count(0) += mode(0) & 0x100 ? PSX_CYCLE : PSX_CYCLE / 8;
-    
+
     if (count(0) >= bound(0)) {
         printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 0, 0);
     }
-    
+
     if (!(mode(1) & 0x100)) {
         count(1) += PSX_CYCLE;
-        
+
         if (count(1) >= bound(1)) {
             printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 1, 1);
         }
@@ -50,10 +50,10 @@ void CstrCounters::update() {
             }
         }
     }
-    
+
     if (!(mode(2) & 1)) {
         count(2) += mode(2) & 0x200 ? PSX_CYCLE / 8 : PSX_CYCLE;
-        
+
         if (count(2) >= bound(2)) {
             count(2) = 0;
             if (mode(2) & 0x50) {
@@ -79,13 +79,13 @@ void CstrCounters::write(uw addr, T data) {
             return;
             
         case RTC_MODE:
-             mode(p) = data;
-            bound(p) = mode(p) & 8 ? dst(p) : RTC_BOUND;
+            mode( p) = data;
+            bound(p) = ((mode(p) & 8) && dst(p)) ? dst(p) : RTC_BOUND;
             return;
             
         case RTC_TARGET:
-              dst(p) = data & 0xffff;
-            bound(p) = mode(p) & 8 ? dst(p) : RTC_BOUND;
+            dst(  p) = data & 0xffff;
+            bound(p) = ((mode(p) & 8) && dst(p)) ? dst(p) : RTC_BOUND;
             return;
     }
     
@@ -104,10 +104,10 @@ T CstrCounters::read(uw addr) {
             return count(p);
             
         case RTC_MODE:
-            return  mode(p);
+            return mode( p);
             
         case RTC_TARGET:
-            return   dst(p);
+            return dst(  p);
     }
     
     printx("/// PSeudo RTC Read(%lu): $%x", sizeof(T), (addr & 0xf));

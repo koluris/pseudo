@@ -67,6 +67,7 @@
 #define VX2   __oo(cop2d.ish,  4, 0)
 #define VY2   __oo(cop2d.ish,  4, 1)
 #define VZ2   __oo(cop2d.ish,  5, 0)
+#define RGB   oooo(cop2d.iuw,  6)
 #define R     ___o(cop2d.iub,  6, 0)
 #define G     ___o(cop2d.iub,  6, 1)
 #define B     ___o(cop2d.iub,  6, 2)
@@ -76,26 +77,33 @@
 #define IR1   __oo(cop2d.ish,  9, 0)
 #define IR2   __oo(cop2d.ish, 10, 0)
 #define IR3   __oo(cop2d.ish, 11, 0)
+#define SXY0  oooo(cop2d.iuw, 12)
 #define SX0   __oo(cop2d.ish, 12, 0)
 #define SY0   __oo(cop2d.ish, 12, 1)
+#define SXY1  oooo(cop2d.iuw, 13)
 #define SX1   __oo(cop2d.ish, 13, 0)
 #define SY1   __oo(cop2d.ish, 13, 1)
+#define SXY2  oooo(cop2d.iuw, 14)
 #define SX2   __oo(cop2d.ish, 14, 0)
 #define SY2   __oo(cop2d.ish, 14, 1)
+#define SXYP  oooo(cop2d.iuw, 15)
 #define SXP   __oo(cop2d.ish, 15, 0)
 #define SYP   __oo(cop2d.ish, 15, 1)
 #define SZ0   __oo(cop2d.iuh, 16, 0)
 #define SZ1   __oo(cop2d.iuh, 17, 0)
 #define SZ2   __oo(cop2d.iuh, 18, 0)
 #define SZ3   __oo(cop2d.iuh, 19, 0)
+#define RGB0  oooo(cop2d.iuw, 20)
 #define R0    ___o(cop2d.iub, 20, 0)
 #define G0    ___o(cop2d.iub, 20, 1)
 #define B0    ___o(cop2d.iub, 20, 2)
 #define CD0   ___o(cop2d.iub, 20, 3)
+#define RGB1  oooo(cop2d.iuw, 21)
 #define R1    ___o(cop2d.iub, 21, 0)
 #define G1    ___o(cop2d.iub, 21, 1)
 #define B1    ___o(cop2d.iub, 21, 2)
 #define CD1   ___o(cop2d.iub, 21, 3)
+#define RGB2  oooo(cop2d.iuw, 22)
 #define R2    ___o(cop2d.iub, 22, 0)
 #define G2    ___o(cop2d.iub, 22, 1)
 #define B2    ___o(cop2d.iub, 22, 2)
@@ -114,9 +122,9 @@
 #define VY(n) __oo(cop2d.ish, ((n << 1) + 0), 1)
 #define VZ(n) __oo(cop2d.ish, ((n << 1) + 1), 0)
 
-#define SX(n) __oo(cop2d.ish, (n + 12), 0)
-#define SY(n) __oo(cop2d.ish, (n + 12), 1)
-#define SZ(n) __oo(cop2d.iuh, (n + 17), 0)
+//#define SX(n) __oo(cop2d.ish, (n + 12), 0)
+//#define SY(n) __oo(cop2d.ish, (n + 12), 1)
+//#define SZ(n) __oo(cop2d.iuh, (n + 17), 0)
 
 // Cop2c
 // --------------------------------
@@ -358,9 +366,9 @@ void CstrMips::executeCop2(uw code) {
             {
                 double sx, su, quotient = 0.0;
                 
-                MAC1 = TRX + FPN_12(R11*VX0 + R12*VY0 + R13*VZ0);
-                MAC2 = TRY + FPN_12(R21*VX0 + R22*VY0 + R23*VZ0);
-                MAC3 = TRZ + FPN_12(R31*VX0 + R32*VY0 + R33*VZ0);
+                MAC1 = TRX + FPN_12(R11*VX(0) + R12*VY(0) + R13*VZ(0));
+                MAC2 = TRY + FPN_12(R21*VX(0) + R22*VY(0) + R23*VZ(0));
+                MAC3 = TRZ + FPN_12(R31*VX(0) + R32*VY(0) + R33*VZ(0));
                 
                 MAC2IR0();
                 
@@ -374,13 +382,42 @@ void CstrMips::executeCop2(uw code) {
                 sx = FPN_16(OFX) + IR1 * quotient;
                 su = FPN_16(OFY) + IR2 * quotient;
                 
-                SX0 = SX1;
-                SX1 = SX2;
-                SX2 = LIM_D1(sx);
+                SXY0 = SXY1;
+                SXY1 = SXY2;
+                SX2  = LIM_D1(sx);
+                SY2  = LIM_D2(su);
                 
-                SY0 = SY1;
-                SY1 = SY2;
-                SY2 = LIM_D2(su);
+                MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient;
+                IR0  = LIM_E(MAC0);
+            }
+            return;
+            
+        case 48: // RTPT
+            {
+                double sx, su, quotient = 0.0;
+                
+                for (int n = 0; n < 3; n++) {
+                    MAC1 = TRX + FPN_12(R11*VX(n) + R12*VY(n) + R13*VZ(n));
+                    MAC2 = TRY + FPN_12(R21*VX(n) + R22*VY(n) + R23*VZ(n));
+                    MAC3 = TRZ + FPN_12(R31*VX(n) + R32*VY(n) + R33*VZ(n));
+                    
+                    MAC2IR0();
+                    
+                    SZ0 = SZ1;
+                    SZ1 = SZ2;
+                    SZ2 = SZ3;
+                    SZ3 = LIM_C(MAC3);
+                    
+                    quotient = DIV_OVERFLOW(H / (double)SZ3);
+                    
+                    sx = FPN_16(OFX) + IR1 * quotient;
+                    su = FPN_16(OFY) + IR2 * quotient;
+                    
+                    SXY0 = SXY1;
+                    SXY1 = SXY2;
+                    SX2  = LIM_D1(sx);
+                    SY2  = LIM_D2(su);
+                }
                 
                 MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient;
                 IR0  = LIM_E(MAC0);
@@ -461,70 +498,19 @@ void CstrMips::executeCop2(uw code) {
                 GGLT = FPN_12(GBK + LG1*LL1 + LG2*LL2 + LG3*LL3);
                 BBLT = FPN_12(BBK + LB1*LL1 + LB2*LL2 + LB3*LL3);
                 
-                MAC1 = R*LIM_A1U(RRLT);
-                MAC2 = G*LIM_A2U(GGLT);
-                MAC3 = B*LIM_A3U(BBLT);
+                MAC1 = R * LIM_A1U(RRLT);
+                MAC2 = G * LIM_A2U(GGLT);
+                MAC3 = B * LIM_A3U(BBLT);
                 
-                CD0 = CD1;
-                CD1 = CD2;
+                RGB0 = RGB1;
+                RGB1 = RGB2;
+                
+                R2  = LIM_B1(MAC1);
+                G2  = LIM_B2(MAC2);
+                B2  = LIM_B3(MAC3);
                 CD2 = CODE;
                 
-                R0 = R1;
-                R1 = R2;
-                R2 = LIM_B1(MAC1);
-                
-                G0 = G1;
-                G1 = G2;
-                G2 = LIM_B2(MAC2);
-                
-                B0 = B1;
-                B1 = B2;
-                B2 = LIM_B3(MAC3);
-                
                 MAC2IR1();
-            }
-            return;
-            
-        case 45: // AVSZ3
-            {
-                MAC0 = (SZ1 + SZ2 + SZ3) * FPN_12(ZSF3);
-                OTZ  = LIM_C(MAC0);
-            }
-            return;
-            
-        case 46: // AVSZ4
-            {
-                MAC0 = (SZ0 + SZ1 + SZ2 + SZ3) * FPN_12(ZSF4);
-                OTZ  = LIM_C(MAC0);
-            }
-            return;
-            
-        case 48: // RTPT
-            {
-                double sx, su, quotient = 0.0;
-                
-                SZ0 = SZ3;
-                
-                for (int n = 0; n < 3; n++) {
-                    MAC1 = TRX + FPN_12(R11*VX(n) + R12*VY(n) + R13*VZ(n));
-                    MAC2 = TRY + FPN_12(R21*VX(n) + R22*VY(n) + R23*VZ(n));
-                    MAC3 = TRZ + FPN_12(R31*VX(n) + R32*VY(n) + R33*VZ(n));
-                    
-                    MAC2IR0();
-                    
-                    SZ(n) = LIM_C(MAC3);
-                    
-                    quotient = DIV_OVERFLOW(H / (double)SZ(n));
-                    
-                    sx = FPN_16(OFX) + IR1 * quotient;
-                    su = FPN_16(OFY) + IR2 * quotient;
-                    
-                    SX(n) = LIM_D1(sx);
-                    SY(n) = LIM_D2(su);
-                }
-                
-                MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient;
-                IR0  = LIM_E(MAC0);
             }
             return;
             
@@ -545,24 +531,30 @@ void CstrMips::executeCop2(uw code) {
                     MAC2 = G * LIM_A2U(GGLT);
                     MAC3 = B * LIM_A3U(BBLT);
                     
-                    CD0 = CD1;
-                    CD1 = CD2;
+                    RGB0 = RGB1;
+                    RGB1 = RGB2;
+                    
+                    R2  = LIM_B1(MAC1);
+                    G2  = LIM_B2(MAC2);
+                    B2  = LIM_B3(MAC3);
                     CD2 = CODE;
-                    
-                    R0 = R1;
-                    R1 = R2;
-                    R2 = LIM_B1(MAC1);
-                    
-                    G0 = G1;
-                    G1 = G2;
-                    G2 = LIM_B2(MAC2);
-                    
-                    B0 = B1;
-                    B1 = B2;
-                    B2 = LIM_B3(MAC3);
                 }
                 
                 MAC2IR1();
+            }
+            return;
+            
+        case 45: // AVSZ3
+            {
+                MAC0 = (SZ1 + SZ2 + SZ3) * FPN_12(ZSF3);
+                OTZ  = LIM_C(MAC0);
+            }
+            return;
+            
+        case 46: // AVSZ4
+            {
+                MAC0 = (SZ0 + SZ1 + SZ2 + SZ3) * FPN_12(ZSF4);
+                OTZ  = LIM_C(MAC0);
             }
             return;
     }
