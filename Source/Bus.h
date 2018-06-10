@@ -1,7 +1,7 @@
-#define dpcr\
+#define dpcr \
     *(uw *)&mem.hwr.ptr[0x10f0]
 
-#define dicr\
+#define dicr \
     *(uw *)&mem.hwr.ptr[0x10f4]
 
 

@@ -1,10 +1,10 @@
 #import "Global.h"
 
 
-#define COLOR_MAX\
+#define COLOR_MAX \
     255
 
-#define COLOR_HALF\
+#define COLOR_HALF \
     COLOR_MAX >> 1
 
 

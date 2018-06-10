@@ -1,28 +1,28 @@
 #import "Global.h"
 
 
-#define data\
+#define data \
     *(ub *)&mem.hwr.ptr[0x1040]
 
-#define status\
+#define status \
     *(uw *)&mem.hwr.ptr[0x1044]
 
-#define mode\
+#define mode \
     *(uh *)&mem.hwr.ptr[0x1048]
 
-#define control\
+#define control \
     *(uh *)&mem.hwr.ptr[0x104a]
 
-#define baud\
+#define baud \
     *(uh *)&mem.hwr.ptr[0x104e]
 
 // Check for pushed button
-#define btnCheck(btn)\
-    if (pushed) {\
-        btnState &=  (0xffff ^ (1 << btn));\
-    }\
-    else {\
-        btnState |= ~(0xffff ^ (1 << btn));\
+#define btnCheck(btn) \
+    if (pushed) { \
+        btnState &=  (0xffff ^ (1 << btn)); \
+    } \
+    else { \
+        btnState |= ~(0xffff ^ (1 << btn)); \
     }
 
 

@@ -1,13 +1,13 @@
-#define data32\
+#define data32 \
     *(uw *)&mem.hwr.ptr[0x1070]
 
-#define mask32\
+#define mask32 \
     *(uw *)&mem.hwr.ptr[0x1074]
 
-#define data16\
+#define data16 \
     *(uh *)&mem.hwr.ptr[0x1070]
 
-#define mask16\
+#define mask16 \
     *(uh *)&mem.hwr.ptr[0x1074]
 
 

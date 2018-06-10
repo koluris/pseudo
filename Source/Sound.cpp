@@ -1,10 +1,10 @@
 #import "Global.h"
 
 
-#define spuAcc(addr)\
+#define spuAcc(addr) \
     *(uh *)&mem.hwr.ptr[addr]
 
-#define spuChannel(addr)\
+#define spuChannel(addr) \
     (addr >> 4) & 0x1f
 
 

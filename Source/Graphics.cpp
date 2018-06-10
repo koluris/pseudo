@@ -1,7 +1,7 @@
 #import "Global.h"
 
 
-#define GPU_COMMAND(x)\
+#define GPU_COMMAND(x) \
     (x >> 24) & 0xff
 
 

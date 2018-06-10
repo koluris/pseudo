@@ -14,10 +14,10 @@
 #define GPU_DMABITS          0x60000000
 #define GPU_ODDLINES         0x80000000
 
-#define FRAME_W\
+#define FRAME_W \
     1024
 
-#define FRAME_H\
+#define FRAME_H \
     512
 
 class CstrGraphics {

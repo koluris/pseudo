@@ -2,30 +2,30 @@
 
 
 /*  6-bit */
-#define opcode\
+#define opcode \
     ((code >> 26) & 63)
 
 /* 16-bit */
-#define imm\
+#define imm \
     ((sh)code)
 
-#define immu\
+#define immu \
     (code & 0xffff)
 
 /* 32-bit */
-#define ob\
+#define ob \
     (base[rs] + imm)
 
-#define baddr\
+#define baddr \
     (pc + (imm << 2))
 
-#define saddr\
+#define saddr \
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
-#define opcodeSWx(o, d)\
+#define opcodeSWx(o, d) \
     mem.write32(ob & ~3, (base[rt] o shift[d][ob & 3]) | (mem.read32(ob & ~3) & mask[d][ob & 3]))
 
-#define opcodeLWx(o, d)\
+#define opcodeLWx(o, d) \
     base[rt] = (base[rt] & mask[d][ob & 3]) | (mem.read32(ob & ~3) o shift[d][ob & 3])
 
 

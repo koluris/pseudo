@@ -1,7 +1,7 @@
 #import "Global.h"
 
 
-#define COLOR_32BIT(a, b, c, r)\
+#define COLOR_32BIT(a, b, c, r) \
     ( (((ub)(a))<<24) | (((ub)(b))<<16) | (((ub)(c))<<8) | ((ub)(r)) )
 
 

@@ -1,19 +1,19 @@
 #import "Global.h"
 
 
-#define count(n)\
+#define count(n) \
     *(uh *)&mem.hwr.ptr[0x1100 + (n << 4)]
 
-#define  mode(n)\
+#define mode( n) \
     *(uw *)&mem.hwr.ptr[0x1104 + (n << 4)]
 
-#define   dst(n)\
+#define dst(  n) \
     *(uh *)&mem.hwr.ptr[0x1108 + (n << 4)]
 
-#define bound(n)\
+#define bound(n) \
     bounds[n]
 
-#define RTC_PORT(addr)\
+#define RTC_PORT(addr) \
     (addr >> 4) & 3
 
 

@@ -1,14 +1,14 @@
 /*  5-bit */
-#define sa\
+#define sa \
     ((code >>  6) & 31)
 
-#define rd\
+#define rd \
     ((code >> 11) & 31)
 
-#define rt\
+#define rt \
     ((code >> 16) & 31)
 
-#define rs\
+#define rs \
     ((code >> 21) & 31)
 
 

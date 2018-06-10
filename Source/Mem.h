@@ -1,4 +1,4 @@
-#define accessMem(mem, dataT)\
+#define accessMem(mem, dataT) \
     *(dataT *)&mem.ptr[addr & (mem.size - 1)]
 
 
