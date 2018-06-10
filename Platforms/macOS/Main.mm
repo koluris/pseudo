@@ -54,18 +54,6 @@
     }];
 }
 
-- (void)openPSXfile:(NSURL *)path {
-    // Stop current emulation process & reset
-    [self emulationStop];
-    
-    // Load executable
-    [self setWindowCaption:[path lastPathComponent]];
-    psx.executable([[path path] UTF8Chars]);
-    
-    // Start new emulation process
-    [self emulationStart];
-}
-
 - (IBAction)menuShell:(id)sender {
     // Stop current emulation process & reset
     [self emulationStop];
@@ -120,6 +108,18 @@
     // Wait for NSOperationQueue to exit
     [self.queue waitUntilAllOperationsAreFinished];
     psx.reset();
+}
+
+- (void)openPSXfile:(NSURL *)path {
+    // Stop current emulation process & reset
+    [self emulationStop];
+    
+    // Load executable
+    [self setWindowCaption:[path lastPathComponent]];
+    psx.executable([[path path] UTF8Chars]);
+    
+    // Start new emulation process
+    [self emulationStart];
 }
 
 // Options
