@@ -17,7 +17,7 @@
 }
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
-    return YES;
+    return [app isEmulatorEnabled];
 }
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {

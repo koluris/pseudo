@@ -10,10 +10,10 @@
 @prop (unsafe_unretained) IBOutlet NSTextView *consoleView;
 
 // Members
-@prop NSRect screenFrame;
 @prop (nonatomic, retain) NSOperationQueue *queue;
 
 // Exposed Functions
+- (BOOL)emulatorEnabled;
 - (void)openPSXfile:(NSURL *)path;
 - (void)consoleClear;
 - (void)consolePrint:(NSChars *)text;

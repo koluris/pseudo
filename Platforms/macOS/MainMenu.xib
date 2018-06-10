@@ -15,14 +15,14 @@
         <window title="PSeudo™ : Alpha" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="gP8-RP-mk9">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="136" y="163" width="640" height="480"/>
+            <rect key="contentRect" x="136" y="163" width="320" height="240"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
             <view key="contentView" id="QG3-5Z-1j1">
-                <rect key="frame" x="0.0" y="0.0" width="640" height="480"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <openGLView useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gyI-cr-EPE" customClass="OpenGLView">
-                        <rect key="frame" x="0.0" y="0.0" width="640" height="480"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                     </openGLView>
                 </subviews>
                 <constraints>
@@ -32,7 +32,7 @@
                     <constraint firstAttribute="trailing" secondItem="gyI-cr-EPE" secondAttribute="trailing" id="w1V-x8-ZBE"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-897" y="37"/>
+            <point key="canvasLocation" x="-991" y="-112"/>
         </window>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="gn3-gZ-vsZ" customClass="Options">
@@ -240,7 +240,7 @@
                         </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="jqK-ou-Q3F">
-                        <rect key="frame" x="20" y="57" width="370" height="141"/>
+                        <rect key="frame" x="20" y="57" width="370" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59n-2H-qrx">
@@ -439,7 +439,7 @@
                     <constraint firstItem="3tq-n3-hIB" firstAttribute="top" secondItem="DNN-Yf-iEu" secondAttribute="top" id="gs3-Mr-5uq"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-180" y="44"/>
+            <point key="canvasLocation" x="-548" y="-67"/>
         </window>
     </objects>
 </document>

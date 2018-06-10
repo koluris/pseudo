@@ -8,18 +8,33 @@
 
 @implementation Main
 
-- (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
-    app = (Main *)[[NSApplication sharedApplication] del];
-    self.screenFrame = [[NSScreen mainScreen] frame];
-    self.queue = [[NSOperationQueue alloc] init];
+// Executed first
+- (void)awakeFromNib {
+    const NSRect screenFrame = [[NSScreen mainScreen] frame];
+    const NSSize size = [self.console frame].size;
     
     // Window
     [self.window center];
     
     // Console
-    NSSize size = [self.console frame].size;
-    [self.console setFrame:CGRectMake(self.screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
-    self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
+    [self.console setFrame:CGRectMake(screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
+    [self.consoleView setTextContainerInset:NSMakeSize(5.0f, 8.0f)];
+}
+
+- (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
+    app = (Main *)[[NSApplication sharedApplication] del];
+    self.queue = [[NSOperationQueue alloc] init];
+    
+    // Pad init
+    [NSEvent addLocalMonitorForEventsMask:NSDownMask handler:^NSEvent* (NSEvent* event) {
+        sio.padListener([event kCode], true);
+        return nil;
+    }];
+    
+    [NSEvent addLocalMonitorForEventsMask:NSUpMask handler:^NSEvent* (NSEvent* event) {
+        sio.padListener([event kCode], false);
+        return nil;
+    }];
     
     // OpenGL init
     [self setWindowResolution];
@@ -27,12 +42,12 @@
     // Check for valid BIOS file
     NSChars *path = [self.options readTextFrom:@"biosFile"];
     
-    if ([path isEqualToChars:@""]) {
-        [self menuPreferences:nil];
-        return;
+    if (![path isEqualToChars:@""]) {
+        [self emulatorEnable:path];
     }
-    
-    [self enableEmulator:path];
+    else {
+        [self menuPreferences:nil];
+    }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -56,70 +71,13 @@
 
 - (IBAction)menuShell:(id)sender {
     // Stop current emulation process & reset
-    [self emulationStop];
+    [self emulatorStopAndReset:YES];
     
     // Start new emulation process
-    [self emulationStart];
+    [self emulatorStart];
 }
 
 - (IBAction)menuConsole:(id)sender {
-}
-
-// Emulation
-- (void)enableEmulator:(NSChars *)path {
-    self.menuOpen .enabled = YES;
-    self.menuShell.enabled = YES;
-    
-    // Pad init
-    [NSEvent addLocalMonitorForEventsMask:NSDownMask handler:^NSEvent* (NSEvent* event) {
-        sio.padListener([event kCode], true);
-        return nil;
-    }];
-    
-    [NSEvent addLocalMonitorForEventsMask:NSUpMask handler:^NSEvent* (NSEvent* event) {
-        sio.padListener([event kCode], false);
-        return nil;
-    }];
-    
-    // Startup
-    psx.init([path UTF8Chars]);
-}
-
-- (void)emulationStart {
-    // Reset state
-    psx.suspended = false;
-    
-    // CPU & Graphics
-    [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
-        [[self.openGLView openGLContext] makeCurrentContext];
-        
-        cpu.run();
-    }]];
-    
-    // Audio
-    [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
-        audio.decodeStream();
-    }]];
-}
-
-- (void)emulationStop {
-    psx.suspended = true;
-    
-    // Wait for NSOperationQueue to exit
-    [self.queue waitUntilAllOperationsAreFinished];
-    psx.reset();
-}
-
-- (void)openPSXfile:(NSURL *)path {
-    // Stop current emulation process & reset
-    [self emulationStop];
-    
-    // Load executable
-    [self setWindowCaption:[path lastPathComponent]];
-    psx.executable([[path path] UTF8Chars]);
-    
-    // Start new emulation process
-    [self emulationStart];
 }
 
 // Options
@@ -127,7 +85,14 @@
     // Check for valid BIOS file
     NSChars *path = [self.options readTextFrom:@"biosFile"];
     
-    if ([path isEqualToChars:@""]) {
+    if (![path isEqualToChars:@""]) {
+        [self.window endSheet:self.options];
+        
+        [self emulatorStopAndReset:NO];
+        [self setWindowResolution];
+        [self emulatorEnable:path];
+    }
+    else {
         NSAlert *alert = [[NSAlert alloc] init];
         
         // Information
@@ -146,18 +111,60 @@
                 [self.window endSheet:self.options];
             }
         }];
-        return;
     }
+}
+
+// Emulation
+- (BOOL)emulatorEnabled {
+    return self.menuOpen.isEnabled;
+}
+
+- (void)emulatorEnable:(NSChars *)path {
+    self.menuOpen .enabled = YES;
+    self.menuShell.enabled = YES;
     
-    // Close sheet
-    [self.window endSheet:self.options];
+    // Startup
+    psx.init([path UTF8Chars]);
+}
+
+- (void)emulatorStart {
+    // Reset state
+    psx.suspended = false;
     
-    // Resize window
-    [self setWindowResolution];
+    // CPU & Graphics
+    [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
+        [[self.openGLView openGLContext] makeCurrentContext];
+        
+        cpu.run();
+    }]];
     
-    // Continue
-    path = [self.options readTextFrom:@"biosFile"];
-    [self enableEmulator:path];
+    // Audio
+    [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
+        audio.decodeStream();
+    }]];
+}
+
+- (void)emulatorStopAndReset:(BOOL)reset {
+    psx.suspended = true;
+    
+    // Wait for NSOperationQueue to exit
+    [self.queue waitUntilAllOperationsAreFinished];
+    
+    if (reset) {
+        psx.reset();
+    }
+}
+
+- (void)openPSXfile:(NSURL *)path {
+    // Stop current emulation process & reset
+    [self emulatorStopAndReset:YES];
+    
+    // Load executable
+    [self setWindowCaption:[path lastPathComponent]];
+    psx.executable([[path path] UTF8Chars]);
+    
+    // Start new emulation process
+    [self emulatorStart];
 }
 
 // Console
@@ -169,10 +176,10 @@
     dispatch_asinc(dispatch_main_queue(), ^{
         NSAttributedChars *attr = [[NSAttributedChars alloc] initWithChars:text attributes:@{ NSFontAttributeName: [NSFont fontWithName:@"Menlo" size:10], NSForeColorAttributeName: [NSColor RGBA(225, 170, 0)] }];
         [[self.consoleView textStore] appendAttributedChars:attr];
-        
     });
 }
 
+// Set title for executable
 - (void)setWindowCaption:(NSChars *)text {
     self.window.title = [NSChars charsWithFormat:@"PSeudo™ : Alpha (%@)", text];
 }
