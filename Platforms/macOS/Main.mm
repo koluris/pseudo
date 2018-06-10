@@ -2,10 +2,13 @@
 #import "../../Source/Global.h"
 
 
+#define TITLEBAR_HEIGHT \
+    22
+
+
 @implementation Main
 
 - (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
-    //NSURL *uri = [[NSBundle mainBundle] bundleURL];
     app = (Main *)[[NSApplication sharedApplication] del];
     self.screenFrame = [[NSScreen mainScreen] frame];
     self.queue = [[NSOperationQueue alloc] init];
@@ -19,7 +22,7 @@
     self.consoleView.textContainerInset = NSMakeSize(5.0f, 8.0f);
     
     // OpenGL init
-    draw.reset();
+    [self setWindowResolution];
     
     // Check for valid BIOS file
     NSChars *path = [self.options readTextFrom:@"biosFile"];
@@ -143,8 +146,13 @@
         return;
     }
     
-    // Startup
+    // Close sheet
     [self.window endSheet:self.options];
+    
+    // Resize window
+    [self setWindowResolution];
+    
+    // Continue
     path = [self.options readTextFrom:@"biosFile"];
     [self enableEmulator:path];
 }
@@ -164,6 +172,26 @@
 
 - (void)setWindowCaption:(NSChars *)text {
     self.window.title = [NSChars charsWithFormat:@"PSeudo™ : Alpha (%@)", text];
+}
+
+- (void)setWindowResolution {
+    NSChars *code = [self.options readTextFrom:@"windowResolution"];
+    
+    if (![code isEqualToChars:@""]) {
+        int multiplier = [code intValue] + 1;
+        int w = 320 * multiplier;
+        int h = 240 * multiplier + TITLEBAR_HEIGHT;
+        
+        // Resize window
+        NSRect frame = self.window.frame;
+        frame.size.width = w;
+        frame.size.hei   = h;
+        [self.window setFrame:frame disp:YES];
+        [self.window center];
+        
+        // Set emulator dimensions
+        draw.setWindowResolution(320, 240);
+    }
 }
 
 @end

@@ -16,7 +16,7 @@ void CstrDraw::reset() {
     spriteTP = 0;
     
     // OpenGL
-    GLViewport(0, 0, 320*2, 240*2);
+    GLViewport(0, 0, res.h, res.v);
     GLEnable(GL_BLEND);
     GLEnable(GL_CLIP_PLANE0);
     GLEnable(GL_CLIP_PLANE1);
@@ -31,10 +31,17 @@ void CstrDraw::reset() {
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP); // GL_ALPHA_SCALE
     
     // Redraw
-    resize(320, 240);
+    resize(res.h, res.v);
     GLClearColor(0, 0, 0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
     GLFlush();
+}
+
+void CstrDraw::setWindowResolution(uh w, uh h) {
+    res.h = w;
+    res.v = h;
+    
+    draw.reset();
 }
 
 void CstrDraw::resize(uh w, uh h) {

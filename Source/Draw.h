@@ -21,7 +21,7 @@ class CstrDraw {
     // Offset
     struct {
         sh h, v;
-    } offset;
+    } res, offset;
     
     // Setup blend values
     const struct {
@@ -47,6 +47,7 @@ class CstrDraw {
     
 public:
     void reset();
+    void setWindowResolution(uh, uh);
     void resize(uh, uh);
     void refresh();
     void primitive(uw, uw *);
