@@ -21,7 +21,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="640" height="480"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <openGLView useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gyI-cr-EPE">
+                    <openGLView useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gyI-cr-EPE" customClass="OpenGLView">
                         <rect key="frame" x="0.0" y="0.0" width="640" height="480"/>
                     </openGLView>
                 </subviews>
@@ -240,7 +240,7 @@
                         </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="jqK-ou-Q3F">
-                        <rect key="frame" x="20" y="57" width="370" height="5"/>
+                        <rect key="frame" x="20" y="57" width="370" height="141"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59n-2H-qrx">

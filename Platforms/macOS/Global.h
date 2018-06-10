@@ -38,6 +38,6 @@
 #define NSDownMask                      NSKeyDownMask
 #define NSUpMask                        NSKeyUpMask
 
-
+#import "OpenGLView.h"
 #import "Options.h"
 #import "Main.h"

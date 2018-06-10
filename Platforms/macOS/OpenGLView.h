@@ -1,0 +1,3 @@
+@interface OpenGLView : NSOpenGLView
+
+@end

@@ -49,18 +49,21 @@
     
     [op startSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
         if (returnCode == NSModalResponseOK) {
-            // Stop current emulation process & reset
-            [self emulationStop];
-            
-            // Load executable
-            NSURL *file = [op URL];
-            [self setWindowCaption:[file lastPathComponent]];
-            psx.executable([[file path] UTF8Chars]);
-            
-            // Start new emulation process
-            [self emulationStart];
+            [self openPSXfile:[op URL]];
         }
     }];
+}
+
+- (void)openPSXfile:(NSURL *)path {
+    // Stop current emulation process & reset
+    [self emulationStop];
+    
+    // Load executable
+    [self setWindowCaption:[path lastPathComponent]];
+    psx.executable([[path path] UTF8Chars]);
+    
+    // Start new emulation process
+    [self emulationStart];
 }
 
 - (IBAction)menuShell:(id)sender {
@@ -180,17 +183,17 @@
     if (![code isEqualToChars:@""]) {
         int multiplier = [code intValue] + 1;
         int w = 320 * multiplier;
-        int h = 240 * multiplier + TITLEBAR_HEIGHT;
+        int h = 240 * multiplier;
         
         // Resize window
         NSRect frame = self.window.frame;
         frame.size.width = w;
-        frame.size.hei   = h;
+        frame.size.hei   = h + TITLEBAR_HEIGHT;
         [self.window setFrame:frame disp:YES];
         [self.window center];
         
         // Set emulator dimensions
-        draw.setWindowResolution(320, 240);
+        draw.setWindowResolution(w, h);
     }
 }
 

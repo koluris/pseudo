@@ -14,6 +14,7 @@
 @prop (nonatomic, retain) NSOperationQueue *queue;
 
 // Exposed Functions
+- (void)openPSXfile:(NSURL *)path;
 - (void)consoleClear;
 - (void)consolePrint:(NSChars *)text;
 
