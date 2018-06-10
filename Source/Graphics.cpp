@@ -55,23 +55,23 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x08:
-                {
-                    // Basic info
-                    uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];
-                    uh h = (data & 4) ? 480 : 240;
-                    
-                    if ((data >> 5) & 1) { // No distinction for interlaced
-                        draw.resize(w, h);
-                    }
-                    else { // Normal modes
-                        if (h == vdiff) {
+                    {
+                        // Basic info
+                        uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];
+                        uh h = (data & 4) ? 480 : 240;
+                        
+                        if ((data >> 5) & 1) { // No distinction for interlaced
                             draw.resize(w, h);
                         }
-                        else {
-                            draw.resize(w, vpos ? vpos : vdiff);
+                        else { // Normal modes
+                            if (h == vdiff) {
+                                draw.resize(w, h);
+                            }
+                            else {
+                                draw.resize(w, vpos ? vpos : vdiff);
+                            }
                         }
                     }
-                }
                     return;
                     
                 /* unused */

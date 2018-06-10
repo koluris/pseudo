@@ -3,6 +3,17 @@
 
 CstrPSeudo psx;
 
+// Exposed functions
+//
+// psx.init(const char *path)
+// psx.reset()
+// psx.executable(const char *path)
+// draw.setWindowResolution(uh w, uh h)
+
+// Exposed variables
+//
+// psx.suspended
+
 void CstrPSeudo::init(const char *path) {
     FILE *fp = fopen(path, "rb");
     

@@ -41,6 +41,7 @@ void CstrSerial::reset() {
 }
 
 void CstrSerial::padListener(int code, bool pushed) {
+#ifdef MAC_OS_X
     if (code ==  19) { // Select
         btnCheck(PAD_BTN_SELECT);
     }
@@ -72,6 +73,7 @@ void CstrSerial::padListener(int code, bool pushed) {
     if (code ==   6) { // Z
         btnCheck(PAD_BTN_CROSS);
     }
+#endif
     
     bfr[3] = (ub)(btnState);
     bfr[4] = (ub)(btnState >> 8);
