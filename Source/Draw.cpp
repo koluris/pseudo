@@ -53,12 +53,12 @@ void CstrDraw::resize(uh w, uh h) {
 }
 
 void CstrDraw::refresh() {
-    static int bias = 0;
-    
-    if (bias++ % 2) { // Show half the rendered frames
+    static int odd = 0;
+
+    if (odd++ % 2) {
         vs.ret.status ^= GPU_ODDLINES;
-        GLFlush();
     }
+    GLFlush();
 }
 
 void CstrDraw::drawRect(uw *data) {
