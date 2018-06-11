@@ -54,7 +54,7 @@ void CstrDraw::resize(uh w, uh h) {
 
 void CstrDraw::refresh() {
     static int odd = 0;
-
+    
     if (odd++ % 2) {
         vs.ret.status ^= GPU_ODDLINES;
     }
