@@ -357,71 +357,75 @@ void CstrMips::readCop2(uw addr) {
     printx("/// PSeudo Unknown Cop2 read: %d", addr);
 }
 
+void CstrMips::opcodeRTPS(ub vectors) {
+    double sx, su, quotient = 0.0;
+    
+    for (int i = 0; i < vectors; i++) {
+        MAC1 = TRX + FPN_12(R11*VX(i) + R12*VY(i) + R13*VZ(i));
+        MAC2 = TRY + FPN_12(R21*VX(i) + R22*VY(i) + R23*VZ(i));
+        MAC3 = TRZ + FPN_12(R31*VX(i) + R32*VY(i) + R33*VZ(i));
+        
+        MAC2IR0();
+        
+        SZ0 = SZ1;
+        SZ1 = SZ2;
+        SZ2 = SZ3;
+        SZ3 = LIM_C(MAC3);
+        
+        quotient = DIV_OVERFLOW(H / (double)SZ3);
+        
+        sx = FPN_16(OFX) + IR1 * quotient;
+        su = FPN_16(OFY) + IR2 * quotient;
+        
+        SXY0 = SXY1;
+        SXY1 = SXY2;
+        SX2  = LIM_D1(sx);
+        SY2  = LIM_D2(su);
+    }
+    
+    MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient;
+    IR0  = LIM_E(MAC0);
+}
+
+void CstrMips::opcodeNCCS(ub vectors) {
+    double LL1, LL2, LL3, RRLT, GGLT, BBLT;
+    
+    for (int n = 0; n < vectors; n++) {
+        LL1 = LIM_A1U(FPN_24(L11*VX(n) + L12*VY(n) + L13*VZ(n)));
+        LL2 = LIM_A2U(FPN_24(L21*VX(n) + L22*VY(n) + L23*VZ(n)));
+        LL3 = LIM_A3U(FPN_24(L31*VX(n) + L32*VY(n) + L33*VZ(n)));
+        
+        RRLT = FPN_12(RBK + LR1*LL1 + LR2*LL2 + LR3*LL3);
+        GGLT = FPN_12(GBK + LG1*LL1 + LG2*LL2 + LG3*LL3);
+        BBLT = FPN_12(BBK + LB1*LL1 + LB2*LL2 + LB3*LL3);
+        
+        MAC1 = R * LIM_A1U(RRLT);
+        MAC2 = G * LIM_A2U(GGLT);
+        MAC3 = B * LIM_A3U(BBLT);
+        
+        RGB0 = RGB1;
+        RGB1 = RGB2;
+        
+        R2  = LIM_B1(MAC1);
+        G2  = LIM_B2(MAC2);
+        B2  = LIM_B3(MAC3);
+        CD2 = CODE;
+    }
+    
+    MAC2IR1();
+}
+
 void CstrMips::executeCop2(uw code) {
     // Reset
     FLAG = 0;
     
     switch(code & 63) {
         case 1: // RTPS
-            {
-                double sx, su, quotient = 0.0;
-                
-                MAC1 = TRX + FPN_12(R11*VX(0) + R12*VY(0) + R13*VZ(0));
-                MAC2 = TRY + FPN_12(R21*VX(0) + R22*VY(0) + R23*VZ(0));
-                MAC3 = TRZ + FPN_12(R31*VX(0) + R32*VY(0) + R33*VZ(0));
-                
-                MAC2IR0();
-                
-                SZ0 = SZ1;
-                SZ1 = SZ2;
-                SZ2 = SZ3;
-                SZ3 = LIM_C(MAC3);
-                
-                quotient = DIV_OVERFLOW(H / (double)SZ3);
-                
-                sx = FPN_16(OFX) + IR1 * quotient;
-                su = FPN_16(OFY) + IR2 * quotient;
-                
-                SXY0 = SXY1;
-                SXY1 = SXY2;
-                SX2  = LIM_D1(sx);
-                SY2  = LIM_D2(su);
-                
-                MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient;
-                IR0  = LIM_E(MAC0);
-            }
+            opcodeRTPS(1);
             return;
             
         case 48: // RTPT
-            {
-                double sx, su, quotient = 0.0;
-                
-                for (int n = 0; n < 3; n++) {
-                    MAC1 = TRX + FPN_12(R11*VX(n) + R12*VY(n) + R13*VZ(n));
-                    MAC2 = TRY + FPN_12(R21*VX(n) + R22*VY(n) + R23*VZ(n));
-                    MAC3 = TRZ + FPN_12(R31*VX(n) + R32*VY(n) + R33*VZ(n));
-                    
-                    MAC2IR0();
-                    
-                    SZ0 = SZ1;
-                    SZ1 = SZ2;
-                    SZ2 = SZ3;
-                    SZ3 = LIM_C(MAC3);
-                    
-                    quotient = DIV_OVERFLOW(H / (double)SZ3);
-                    
-                    sx = FPN_16(OFX) + IR1 * quotient;
-                    su = FPN_16(OFY) + IR2 * quotient;
-                    
-                    SXY0 = SXY1;
-                    SXY1 = SXY2;
-                    SX2  = LIM_D1(sx);
-                    SY2  = LIM_D2(su);
-                }
-                
-                MAC0 = FPN_24(DQB) + FPN_08(DQA) * quotient;
-                IR0  = LIM_E(MAC0);
-            }
+            opcodeRTPS(3);
             return;
             
         case 6: // NCLIP
@@ -487,61 +491,11 @@ void CstrMips::executeCop2(uw code) {
             return;
             
         case 27: // NCCS
-            {
-                double LL1, LL2, LL3, RRLT, GGLT, BBLT;
-                
-                LL1 = LIM_A1U(FPN_24(L11*VX0 + L12*VY0 + L13*VZ0));
-                LL2 = LIM_A2U(FPN_24(L21*VX0 + L22*VY0 + L23*VZ0));
-                LL3 = LIM_A3U(FPN_24(L31*VX0 + L32*VY0 + L33*VZ0));
-                
-                RRLT = FPN_12(RBK + LR1*LL1 + LR2*LL2 + LR3*LL3);
-                GGLT = FPN_12(GBK + LG1*LL1 + LG2*LL2 + LG3*LL3);
-                BBLT = FPN_12(BBK + LB1*LL1 + LB2*LL2 + LB3*LL3);
-                
-                MAC1 = R * LIM_A1U(RRLT);
-                MAC2 = G * LIM_A2U(GGLT);
-                MAC3 = B * LIM_A3U(BBLT);
-                
-                RGB0 = RGB1;
-                RGB1 = RGB2;
-                
-                R2  = LIM_B1(MAC1);
-                G2  = LIM_B2(MAC2);
-                B2  = LIM_B3(MAC3);
-                CD2 = CODE;
-                
-                MAC2IR1();
-            }
+            opcodeNCCS(1);
             return;
             
         case 63: // NCCT
-            {
-                double LL1, LL2, LL3, RRLT, GGLT, BBLT;
-                
-                for (int n = 0; n < 3; n++) {
-                    LL1 = LIM_A1U(FPN_24(L11*VX(n) + L12*VY(n) + L13*VZ(n)));
-                    LL2 = LIM_A2U(FPN_24(L21*VX(n) + L22*VY(n) + L23*VZ(n)));
-                    LL3 = LIM_A3U(FPN_24(L31*VX(n) + L32*VY(n) + L33*VZ(n)));
-                    
-                    RRLT = FPN_12(RBK + LR1*LL1 + LR2*LL2 + LR3*LL3);
-                    GGLT = FPN_12(GBK + LG1*LL1 + LG2*LL2 + LG3*LL3);
-                    BBLT = FPN_12(BBK + LB1*LL1 + LB2*LL2 + LB3*LL3);
-                    
-                    MAC1 = R * LIM_A1U(RRLT);
-                    MAC2 = G * LIM_A2U(GGLT);
-                    MAC3 = B * LIM_A3U(BBLT);
-                    
-                    RGB0 = RGB1;
-                    RGB1 = RGB2;
-                    
-                    R2  = LIM_B1(MAC1);
-                    G2  = LIM_B2(MAC2);
-                    B2  = LIM_B3(MAC3);
-                    CD2 = CODE;
-                }
-                
-                MAC2IR1();
-            }
+            opcodeNCCS(3);
             return;
             
         case 45: // AVSZ3

@@ -46,8 +46,19 @@ void CstrMips::reset() {
     copr[12] = 0x10900000;
     copr[15] = 0x2; // Co-processor Revision
     
-    pc = 0xbfc00000;
+    setpc(0xbfc00000);
     res.s64 = opcodeCount = 0;
+}
+
+void CstrMips::setpc(uw addr) {
+    pc = addr;
+    
+    if ((pc >> 20) == 0xbfc) {
+        instCache = (uw *)&mem.rom.ptr[addr & 0x000fffff];
+    }
+    else {
+        instCache = (uw *)&mem.ram.ptr[addr & 0x00ffffff];
+    }
 }
 
 void CstrMips::bootstrap() {
@@ -64,7 +75,7 @@ void CstrMips::run() {
 }
 
 void CstrMips::step(bool branched) {
-    uw code = mem.read32(pc); pc += 4;
+    uw code = *instCache++; pc += 4;
     base[0] = 0;
     opcodeCount++;
     
@@ -312,7 +323,7 @@ void CstrMips::step(bool branched) {
                     readCop2(rd);
                     base[rt] = cop2d.iuw[rd];
                     return;
-                
+                    
                 case CFC:
                     base[rt] = cop2c.iuw[rd];
                     return;
@@ -321,7 +332,7 @@ void CstrMips::step(bool branched) {
                     cop2d.iuw[rd] = base[rt];
                     writeCop2(rd);
                     return;
-                
+                    
                 case CTC:
                     cop2c.iuw[rd] = base[rt];
                     return;
@@ -394,7 +405,7 @@ void CstrMips::step(bool branched) {
 void CstrMips::branch(uw addr) {
     // Execute instruction in slot
     step(true);
-    pc = addr;
+    setpc(addr);
     
     if (opcodeCount >= PSX_CYCLE) {
         // Rootcounters, interrupts
@@ -420,5 +431,5 @@ void CstrMips::exception(uw code, bool branched) {
     copr[13] = code;
     copr[14] = pc;
     
-    pc = 0x80;
+    setpc(0x80);
 }

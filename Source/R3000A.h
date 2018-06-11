@@ -40,7 +40,7 @@ class CstrMips {
         sd s64; uw u32[2];
     } res;
     
-    uw opcodeCount;
+    uw *instCache, opcodeCount;
     
     void step(bool);
     void branch(uw);
@@ -56,10 +56,14 @@ class CstrMips {
     void   writeCop2(uw);
     void    readCop2(uw);
     
+    void opcodeRTPS(ub);
+    void opcodeNCCS(ub);
+    
 public:
     uw base[32], copr[16], pc;
     
     void reset();
+    void setpc(uw);
     void bootstrap();
     void run();
 };

@@ -72,7 +72,7 @@ void CstrPSeudo::executable(const char *path) {
             fseek(fp, 0x800, SEEK_SET);
             fread(&mem.ram.ptr[header.t_addr & (mem.ram.size - 1)], 1, header.t_size, fp);
             
-            cpu.pc = header.pc0;
+            cpu.setpc(header.pc0);
             
             // GP0 and SAddr
             cpu.base[28] = header.cp0;
