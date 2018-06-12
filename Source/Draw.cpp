@@ -65,11 +65,7 @@ void CstrDraw::resize(uh w, uh h) {
 // 1,000         Milli
 // 1             Base unit, 1 second
 
-double timeInMicroseconds() {
-    return mach_absolute_time() / 1000;
-}
-
-double then = timeInMicroseconds();
+double then = 1.0;
 
 void CstrDraw::refresh() {
     static int odd = 0;
@@ -79,12 +75,11 @@ void CstrDraw::refresh() {
     }
     
     // FPS throttle
-    double now = timeInMicroseconds();
-    then = now < (then + CLOCKS_PER_SEC) ? then + NTSC : now;
+    double now = mach_absolute_time() / 1000.0;
+    then = now > (then + CLOCKS_PER_SEC) ? now : then + NTSC;
     
-    while(then >= now) {
-        usleep(1000);
-        now = timeInMicroseconds();
+    if (then > now) {
+        usleep(then - now);
     }
     
     // Draw
