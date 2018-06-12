@@ -392,9 +392,11 @@ void CstrMips::step(bool branched) {
             
         case 50: // LWC2
             cop2d.iuw[rt] = mem.read32(ob);
+            writeCop2(rt);
             return;
             
         case 58: // SWC2
+            readCop2(rt);
             mem.write32(ob, cop2d.iuw[rt]);
             return;
     }
