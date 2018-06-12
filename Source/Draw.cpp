@@ -76,7 +76,7 @@ void CstrDraw::refresh() {
     
     // FPS throttle
     double now = mach_absolute_time() / 1000.0;
-    then = now > (then + CLOCKS_PER_SEC) ? now : then + NTSC;
+    then = now > (then + CLOCKS_PER_SEC) ? now : then + (vs.isVideoPAL ? PAL : NTSC);
     
     if (then > now) {
         usleep(then - now);

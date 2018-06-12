@@ -18,6 +18,7 @@ void CstrGraphics::reset() {
     modeDMA    = GPU_DMA_NONE;
     vpos       = 0;
     vdiff      = 0;
+    isVideoPAL = false;
     
     // Reset canvas
     draw.reset();
@@ -55,6 +56,8 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x08:
+                    isVideoPAL = data & 8;
+                    
                     {
                         // Basic info
                         uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];

@@ -98,6 +98,7 @@ public:
     
     // VRAM
     heap vram;
+    bool isVideoPAL;
     
     void reset();
     void write(uw, uw);
