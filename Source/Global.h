@@ -3,6 +3,7 @@
 #import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
+#import <mach/mach_time.h>
 #import <OpenGL/gl.h>
 
 // Apple macOS
