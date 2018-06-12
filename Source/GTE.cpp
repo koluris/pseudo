@@ -340,10 +340,12 @@ void CstrMips::writeCop2(uw addr) {
 
 void CstrMips::readCop2(uw addr) {
     switch(addr) {
-        case  8:
-        case 12: // ?
+        case  8: // ?
+        case 12:
         case 13:
         case 14:
+        case 17:
+        case 18:
         case 20:
         case 21:
         case 22:

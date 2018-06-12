@@ -52,10 +52,11 @@ void CstrDraw::resize(uh w, uh h) {
     }
 }
 
-double NTSC = CLOCKS_PER_SEC / 59.94;
-double PAL  = CLOCKS_PER_SEC / 50.00;
+#define NTSC \
+    (CLOCKS_PER_SEC / 59.94)
 
-double then = 0;
+#define PAL \
+    (CLOCKS_PER_SEC / 50.00)
 
 // Function "mach_absolute_time()" returns Nanoseconds
 
@@ -68,18 +69,14 @@ double timeInMicroseconds() {
     return mach_absolute_time() / 1000;
 }
 
+double then = timeInMicroseconds();
+
 void throttle() {
-    double now  = timeInMicroseconds();
-    double dest = (now < (then + CLOCKS_PER_SEC)) ? then + NTSC : now;
+    double now = timeInMicroseconds();
+    then = now < (then + CLOCKS_PER_SEC) ? then + NTSC : now;
     
-    then = dest;
-    
-    while (now < dest) {
-        double ticks = dest - now;
-        
-        if (ticks >= 500.0f) {
-            usleep((useconds_t)ticks - 200);
-        }
+    while(then >= now) {
+        usleep(1000);
         now = timeInMicroseconds();
     }
 }
