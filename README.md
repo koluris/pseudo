@@ -3,7 +3,8 @@ PSeudo aims to be the world's simplest PSX emulator both in terms of user experi
 
 [Get the latest PSeudo 0.72 release for Mac](https://github.com/dkoluris/pseudo/releases/tag/version-0.72)
 
-![Interface](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Interface.jpg)
+Check out the video below, for a homebrew demo/cracktro showcase (no audio):
+[![YouTube video](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Paradox.png)](http://www.youtube.com/watch?v=H71e5W6tfIQ "PSeudo emulator showcase")
 
 ## Completion
 Here's a list with the overall progress of the emulator, broken down in distinct parts. Components with 0% progress are not listed.
@@ -18,5 +19,3 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 * `55% -> Rootcounters`
 * `50% -> Serial IO`
 * `45% -> DMA`
-
-![Demos](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Demos.jpg)
