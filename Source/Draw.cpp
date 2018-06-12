@@ -60,26 +60,16 @@ void CstrDraw::resize(uh w, uh h) {
 
 // Function "mach_absolute_time()" returns Nanoseconds
 
-// 1,000,000,000 Nanoseconds
-// 1,000,000     Microseconds
-// 1,000         Milliseconds
-// 1             Seconds
+// 1,000,000,000 Nano
+// 1,000,000     Micro
+// 1,000         Milli
+// 1             Base unit, 1 second
 
 double timeInMicroseconds() {
     return mach_absolute_time() / 1000;
 }
 
 double then = timeInMicroseconds();
-
-void throttle() {
-    double now = timeInMicroseconds();
-    then = now < (then + CLOCKS_PER_SEC) ? then + NTSC : now;
-    
-    while(then >= now) {
-        usleep(1000);
-        now = timeInMicroseconds();
-    }
-}
 
 void CstrDraw::refresh() {
     static int odd = 0;
@@ -88,7 +78,16 @@ void CstrDraw::refresh() {
         vs.ret.status ^= GPU_ODDLINES;
     }
     
-    throttle();
+    // FPS throttle
+    double now = timeInMicroseconds();
+    then = now < (then + CLOCKS_PER_SEC) ? then + NTSC : now;
+    
+    while(then >= now) {
+        usleep(1000);
+        now = timeInMicroseconds();
+    }
+    
+    // Draw
     GLFlush();
 }
 
