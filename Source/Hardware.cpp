@@ -40,12 +40,10 @@ void CstrHardware::write32(uw addr, uw data) {
         case 0x101c: // ?
         case 0x1020: // COM
         case 0x1060: // RAM Size
-            
         case 0x1074: // iMask
         case 0x10f0: // DPCR
-            
-        case 0x1820: // MDEC
-        case 0x1824:
+        case 0x1820: // MDEC 0
+        case 0x1824: // MDEC 1
             accessMem(mem.hwr, uw) = data;
             return;
     }
@@ -99,19 +97,15 @@ uw CstrHardware::read32(uw addr) {
         /* unused */
         case 0x1014: // ?
         case 0x1060: // RAM Size
-            
         case 0x1070: // iStatus
         case 0x1074: // iMask
-            
         case 0x1098: // DMA
         case 0x10a8:
         case 0x10c8:
         case 0x10e8:
-            
         case 0x10f0: // DPCR
         case 0x10f4: // DICR
-            
-        case 0x1824: // MDEC Read 1
+        case 0x1824: // MDEC 1
             return accessMem(mem.hwr, uw);
     }
     printx("/// PSeudo Hardware Read 32: $%x", addr);
@@ -145,10 +139,10 @@ uh CstrHardware::read16(uw addr) {
 
 ub CstrHardware::read08(uw addr) {
     switch(LO_BITS(addr)) {
-        /* unused */
         case 0x1040: // SIO Data
             return sio.read08();
             
+        /* unused */
         case 0x1800 ... 0x1803: // CD-ROM
             return accessMem(mem.hwr, ub);
     }

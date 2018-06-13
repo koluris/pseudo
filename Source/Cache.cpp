@@ -2,7 +2,7 @@
 
 
 #define COLOR_32BIT(a, b, c, r) \
-    ( (((ub)(a))<<24) | (((ub)(b))<<16) | (((ub)(c))<<8) | ((ub)(r)) )
+    (((ub)(a))<<24) | (((ub)(b))<<16) | (((ub)(c))<<8) | ((ub)(r))
 
 
 CstrCache cache;
@@ -43,8 +43,6 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     tex.pos.w  = (tp & 15) * 64;
     tex.pos.h  = ((tp >> 4) & 1) * 256;
     tex.pos.cc = (clut & 0x7fff) * 16;
-    
-    //printf("0x%x 0x%x | 0x%x 0x%x\n", ((tp & 15) * 64), ((tp & 16) * 16 * FRAME_W), tex.pos.w, tex.pos.h);
     
     switch((tp >> 7) & 3) {
         case TEX_04BIT: // 16 color palette
