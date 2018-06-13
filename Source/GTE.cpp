@@ -122,6 +122,11 @@
 #define VY(n) __oo(cop2d.ish, ((n << 1) + 0), 1)
 #define VZ(n) __oo(cop2d.ish, ((n << 1) + 1), 0)
 
+#define RR(n) ___o(cop2d.iub, (n + 20), 0)
+#define GG(n) ___o(cop2d.iub, (n + 20), 1)
+#define BB(n) ___o(cop2d.iub, (n + 20), 2)
+#define CD(n) ___o(cop2d.iub, (n + 20), 3)
+
 //#define SX(n) __oo(cop2d.ish, (n + 12), 0)
 //#define SY(n) __oo(cop2d.ish, (n + 12), 1)
 //#define SZ(n) __oo(cop2d.iuh, (n + 17), 0)
@@ -475,51 +480,156 @@ void CstrMips::executeCop2(uw code) {
                         MAC2 = ((sh)IR1*R21 + (sh)IR2*R22 + (sh)IR3*R23);
                         MAC3 = ((sh)IR1*R31 + (sh)IR2*R32 + (sh)IR3*R33);
                         break;
-                        
-                    case 0x98000:
-                        MAC1 = FPN_12((sh)IR1*R11 + (sh)IR2*R12 + (sh)IR3*R13);
-                        MAC2 = FPN_12((sh)IR1*R21 + (sh)IR2*R22 + (sh)IR3*R23);
-                        MAC3 = FPN_12((sh)IR1*R31 + (sh)IR2*R32 + (sh)IR3*R33);
-                        break;
-                        
+
                     case 0x80000:
                         MAC1 = FPN_12(VX0*R11 + VY0*R12 + VZ0*R13);
                         MAC2 = FPN_12(VX0*R21 + VY0*R22 + VZ0*R23);
                         MAC3 = FPN_12(VX0*R31 + VY0*R32 + VZ0*R33);
                         break;
-                        
+
+                    case 0x98000:
+                        MAC1 = FPN_12((sh)IR1*R11 + (sh)IR2*R12 + (sh)IR3*R13);
+                        MAC2 = FPN_12((sh)IR1*R21 + (sh)IR2*R22 + (sh)IR3*R23);
+                        MAC3 = FPN_12((sh)IR1*R31 + (sh)IR2*R32 + (sh)IR3*R33);
+                        break;
+
                     case 0xa0000:
                         MAC1 = FPN_12(VX0*L11 + VY0*L12 + VZ0*L13);
                         MAC2 = FPN_12(VX0*L21 + VY0*L22 + VZ0*L23);
                         MAC3 = FPN_12(VX0*L31 + VY0*L32 + VZ0*L33);
                         break;
-                        
+
                     default:
-                        printf("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) $%08x\n", (code & 0xf8000));
+                        printx("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) $%08x\n", (code & 0xf8000));
                         break;
                 }
-                
+
                 switch(code & 0x6000) {
                     case 0x0000:
                         MAC1 += TRX;
                         MAC2 += TRY;
                         MAC3 += TRZ;
                         break;
-                        
+
                     case 0x6000:
                         break;
-                        
+
                     default:
-                        printf("/// PSeudo Unknown cop2 mvmva (code & 0x6000) $%08x\n", (code & 0x6000));
+                        printx("/// PSeudo Unknown cop2 mvmva (code & 0x6000) $%08x\n", (code & 0x6000));
                         break;
                 }
-                
+
                 if (code & 0x400) {
                     MAC2IR1();
                 }
                 else {
                     MAC2IR0();
                 }
+                
+//#define C11 LR1
+//#define C12 LR2
+//#define C13 LR3
+//#define C21 LG1
+//#define C22 LG2
+//#define C23 LG3
+//#define C31 LB1
+//#define C32 LB2
+//#define C33 LB3
+//
+//#define MVMVA_FUNC(v0, v1, v2, mx) { \
+//    SSX = v0 * mx##11 + v1 * mx##12 + v2 * mx##13; \
+//    SSY = v0 * mx##21 + v1 * mx##22 + v2 * mx##23; \
+//    SSZ = v0 * mx##31 + v1 * mx##32 + v2 * mx##33; \
+//}
+//
+//                double SSX, SSY, SSZ;
+//
+//                switch(code & 0x78000) {
+//                    case 0x00000:
+//                        MVMVA_FUNC(VX0, VY0, VZ0, R);
+//                        break;
+//
+//                    case 0x08000:
+//                        MVMVA_FUNC(VX1, VY1, VZ1, R);
+//                        break;
+//
+//                    case 0x10000:
+//                        MVMVA_FUNC(VX2, VY2, VZ2, R);
+//                        break;
+//
+//                    case 0x18000:
+//                        MVMVA_FUNC((sh)IR1, (sh)IR2, (sh)IR3, R);
+//                        break;
+//
+//                    case 0x20000:
+//                        MVMVA_FUNC(VX0, VY0, VZ0, L);
+//                        break;
+//
+//                    case 0x28000:
+//                        MVMVA_FUNC(VX1, VY1, VZ1, L);
+//                        break;
+//
+//                    case 0x30000:
+//                        MVMVA_FUNC(VX2, VY2, VZ2, L);
+//                        break;
+//
+//                    case 0x38000:
+//                        MVMVA_FUNC((sh)IR1, (sh)IR2, (sh)IR3, L);
+//                        break;
+//
+//                    case 0x40000:
+//                        MVMVA_FUNC(VX0, VY0, VZ0, C);
+//                        break;
+//
+//                    case 0x48000:
+//                        MVMVA_FUNC(VX1, VY1, VZ1, C);
+//                        break;
+//
+//                    case 0x50000:
+//                        MVMVA_FUNC(VX2, VY2, VZ2, C);
+//                        break;
+//
+//                    case 0x58000:
+//                        MVMVA_FUNC((sh)IR1, (sh)IR2, (sh)IR3, C);
+//                        break;
+//
+//                    default:
+//                        SSX = SSY = SSZ = 0;
+//                        break;
+//                }
+//
+//                if (code & 0x80000) {
+//                    MAC1 = FPN_12(SSX);
+//                    MAC2 = FPN_12(SSY);
+//                    MAC3 = FPN_12(SSZ);
+//                }
+//
+//                switch(code & 0x6000) {
+//                    case 0x0000:
+//                        MAC1 += TRX;
+//                        MAC2 += TRY;
+//                        MAC3 += TRZ;
+//                        break;
+//
+//                    case 0x2000:
+//                        MAC1 += RBK;
+//                        MAC2 += GBK;
+//                        MAC3 += BBK;
+//                        break;
+//
+//                    case 0x4000:
+//                        MAC1 += RFC;
+//                        MAC2 += GFC;
+//                        MAC3 += BFC;
+//                        break;
+//                }
+//
+//                if (code & 0x400) {
+//                    MAC2IR1();
+//                }
+//                else {
+//                    MAC2IR0();
+//                }
             }
             return;
             
@@ -539,8 +649,6 @@ void CstrMips::executeCop2(uw code) {
                 MAC2 = G*GLT + IR0*LIM_A2S(GFC - G*GLT);
                 MAC3 = B*BLT + IR0*LIM_A3S(BFC - B*BLT);
                 
-                MAC2IR1();
-                
                 RGB0 = RGB1;
                 RGB1 = RGB2;
                 
@@ -548,6 +656,8 @@ void CstrMips::executeCop2(uw code) {
                 G2  = LIM_B2(MAC2);
                 B2  = LIM_B3(MAC3);
                 CD2 = CODE;
+                
+                MAC2IR1();
             }
             return;
             
@@ -573,8 +683,6 @@ void CstrMips::executeCop2(uw code) {
                 MAC2 = G*IR2 + IR0*LIM_A2S(GFC - G*IR2);
                 MAC3 = B*IR3 + IR0*LIM_A3S(BFC - B*IR3);
                 
-                MAC2IR0();
-                
                 RGB0 = RGB1;
                 RGB1 = RGB2;
                 
@@ -582,24 +690,42 @@ void CstrMips::executeCop2(uw code) {
                 G2  = LIM_B2(MAC2);
                 B2  = LIM_B3(MAC3);
                 CD2 = CODE;
+                
+                MAC2IR0();
             }
             return;
             
         case 42: // DPCT
             {
-//                MAC1 = R*1.0 + IR0*LIM_A1S(RFC-R*1.0);
-//                MAC2 = G*1.0 + IR0*LIM_A2S(GFC-G*1.0);
-//                MAC3 = B*1.0 + IR0*LIM_A3S(BFC-B*1.0);
+//                ub vectors = 3;
+//                ub Rx, Gx, Bx;
+//
+//                for (int n = 0; n < vectors; n++) {
+////                    if (vectors == 1) {
+////                        Rx = R;
+////                        Gx = G;
+////                        Bx = B;
+////                    }
+////                    else {
+////                        Rx = RR(n);
+////                        Gx = GG(n);
+////                        Bx = BB(n);
+////                    }
+//
+//                    MAC1 = RR(n)*16.0 + FPN_12(IR0*LIM_A1S(RFC - R*16.0));
+//                    MAC2 = GG(n)*16.0 + FPN_12(IR0*LIM_A2S(GFC - G*16.0));
+//                    MAC3 = BB(n)*16.0 + FPN_12(IR0*LIM_A3S(BFC - B*16.0));
+//
+//                    //RGB0 = RGB1;
+//                    //RGB1 = RGB2;
+//
+//                    RR(n) = LIM_B1(MAC1 / 16.0);
+//                    GG(n) = LIM_B2(MAC2 / 16.0);
+//                    BB(n) = LIM_B3(MAC3 / 16.0);
+//                    CD(n) = CODE;
+//                }
 //
 //                MAC2IR0();
-//
-//                RGB0 = RGB1;
-//                RGB1 = RGB2;
-//
-//                R2  = LIM_B1(MAC1);
-//                G2  = LIM_B2(MAC2);
-//                B2  = LIM_B3(MAC3);
-//                CD2 = CODE;
             }
             return;
             
