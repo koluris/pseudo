@@ -72,6 +72,7 @@ class CstrGraphics {
     
     int fetchMem(uh *, sw);
     void dataWrite(uw *, sw);
+    void dataRead(uw *, sw);
     
 public:
     CstrGraphics() {

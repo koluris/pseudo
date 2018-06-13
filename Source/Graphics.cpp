@@ -192,6 +192,38 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
     }
 }
 
+//void CstrGraphics::dataRead(uw *ptr, sw size) {
+//    if (modeDMA == GPU_DMA_VRAM2MEM) {
+//        ret.status &= ~0x14000000;
+//
+//        do {
+//            uw data = (uw)vrop.pvram[vrop.h.p];
+//
+//            if (++vrop.h.p >= vrop.h.end) {
+//                vrop.h.p = vrop.h.start;
+//                vrop.pvram += FRAME_W;
+//            }
+//
+//            data |= (uw)vrop.pvram[vrop.h.p] << 16;
+//            *ptr++ = data;
+//
+//            if (++vrop.h.p >= vrop.h.end) {
+//                vrop.h.p = vrop.h.start;
+//                vrop.pvram += FRAME_W;
+//
+//                if (++vrop.v.p >= vrop.v.end) {
+//                    modeDMA = GPU_DMA_NONE;
+//                    ret.status &= ~GPU_READYFORVRAM;
+//                    break;
+//                }
+//            }
+//        }
+//        while(--size);
+//
+//        ret.status = (ret.status | 0x14000000) & (~GPU_DMABITS);
+//    }
+//}
+
 void CstrGraphics::photoRead(uw *data) {
     uh *k = (uh *)data;
     
@@ -211,7 +243,8 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
         case 0x00000401: // Disable DMA?
             return;
             
-        case 0x01000200: // TODO: dataRead
+        case 0x01000200:
+            //dataRead(p, size);
             return;
             
         case 0x01000201:
