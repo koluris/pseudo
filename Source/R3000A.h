@@ -58,6 +58,7 @@ class CstrMips {
     
     void opcodeRTPS(ub);
     void opcodeNCCS(ub);
+    void opcodeNCS (ub);
     
 public:
     uw base[32], copr[16], pc;

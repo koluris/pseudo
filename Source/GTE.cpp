@@ -340,22 +340,21 @@ void CstrMips::writeCop2(uw addr) {
 
 void CstrMips::readCop2(uw addr) {
     switch(addr) {
-        case  8: // ?
+        /* unused */
+        case  7:
+        case  8:
+        case  9:
+        case 10:
+        case 11:
         case 12:
         case 13:
         case 14:
         case 17:
         case 18:
+        case 19:
         case 20:
         case 21:
         case 22:
-            
-        /* unused */
-        case  7:
-        case  9:
-        case 10:
-        case 11:
-        case 19:
         case 24:
         case 25:
         case 26:
@@ -398,20 +397,20 @@ void CstrMips::opcodeRTPS(ub vectors) {
 }
 
 void CstrMips::opcodeNCCS(ub vectors) {
-    double LL1, LL2, LL3, RRLT, GGLT, BBLT;
+    double L1, L2, L3, RLT, GLT, BLT;
     
     for (int n = 0; n < vectors; n++) {
-        LL1 = LIM_A1U(FPN_24(L11*VX(n) + L12*VY(n) + L13*VZ(n)));
-        LL2 = LIM_A2U(FPN_24(L21*VX(n) + L22*VY(n) + L23*VZ(n)));
-        LL3 = LIM_A3U(FPN_24(L31*VX(n) + L32*VY(n) + L33*VZ(n)));
+        L1  = LIM_A1U(FPN_24(L11*VX(n) + L12*VY(n) + L13*VZ(n)));
+        L2  = LIM_A2U(FPN_24(L21*VX(n) + L22*VY(n) + L23*VZ(n)));
+        L3  = LIM_A3U(FPN_24(L31*VX(n) + L32*VY(n) + L33*VZ(n)));
         
-        RRLT = FPN_12(RBK + LR1*LL1 + LR2*LL2 + LR3*LL3);
-        GGLT = FPN_12(GBK + LG1*LL1 + LG2*LL2 + LG3*LL3);
-        BBLT = FPN_12(BBK + LB1*LL1 + LB2*LL2 + LB3*LL3);
+        RLT = FPN_12(RBK + LR1*L1 + LR2*L2 + LR3*L3);
+        GLT = FPN_12(GBK + LG1*L1 + LG2*L2 + LG3*L3);
+        BLT = FPN_12(BBK + LB1*L1 + LB2*L2 + LB3*L3);
         
-        MAC1 = R * LIM_A1U(RRLT);
-        MAC2 = G * LIM_A2U(GGLT);
-        MAC3 = B * LIM_A3U(BBLT);
+        MAC1 = R * LIM_A1U(RLT);
+        MAC2 = G * LIM_A2U(GLT);
+        MAC3 = B * LIM_A3U(BLT);
         
         RGB0 = RGB1;
         RGB1 = RGB2;
@@ -419,6 +418,30 @@ void CstrMips::opcodeNCCS(ub vectors) {
         R2  = LIM_B1(MAC1);
         G2  = LIM_B2(MAC2);
         B2  = LIM_B3(MAC3);
+        CD2 = CODE;
+    }
+    
+    MAC2IR1();
+}
+
+void CstrMips::opcodeNCS(ub vectors) {
+    double L1, L2, L3;
+    
+    for (int n = 0; n < vectors; n++) {
+        L1 = LIM_A1U(FPN_12(L11*VX(n) + L12*VY(n) + L13*VZ(n)));
+        L2 = LIM_A2U(FPN_12(L21*VX(n) + L22*VY(n) + L23*VZ(n)));
+        L3 = LIM_A3U(FPN_12(L31*VX(n) + L32*VY(n) + L33*VZ(n)));
+    
+        MAC1 = FPN_12(RBK + LR1*L1 + LR2*L2 + LR3*L3);
+        MAC2 = FPN_12(GBK + LG1*L1 + LG2*L2 + LG3*L3);
+        MAC3 = FPN_12(BBK + LB1*L1 + LB2*L2 + LB3*L3);
+    
+        RGB0 = RGB1;
+        RGB1 = RGB2;
+    
+        R2  = LIM_B1(MAC1 / 16.0);
+        G2  = LIM_B2(MAC2 / 16.0);
+        B2  = LIM_B3(MAC3 / 16.0);
         CD2 = CODE;
     }
     
@@ -500,12 +523,84 @@ void CstrMips::executeCop2(uw code) {
             }
             return;
             
+        case 19: // NCDS
+            {
+                double L1, L2, L3, RLT, GLT, BLT;
+                
+                L1  = LIM_A1U(FPN_24(L11*VX0 + L12*VY0 + L13*VZ0));
+                L2  = LIM_A1U(FPN_24(L21*VX0 + L22*VY0 + L23*VZ0));
+                L3  = LIM_A1U(FPN_24(L31*VX0 + L32*VY0 + L33*VZ0));
+                
+                RLT = LIM_A1U(FPN_12(RBK + LR1*L1 + LR2*L2 + LR3*L3));
+                GLT = LIM_A2U(FPN_12(GBK + LG1*L1 + LG2*L2 + LG3*L3));
+                BLT = LIM_A3U(FPN_12(BBK + LB1*L1 + LB2*L2 + LB3*L3));
+                
+                MAC1 = R*RLT + IR0*LIM_A1S(RFC - R*RLT);
+                MAC2 = G*GLT + IR0*LIM_A2S(GFC - G*GLT);
+                MAC3 = B*BLT + IR0*LIM_A3S(BFC - B*BLT);
+                
+                MAC2IR1();
+                
+                RGB0 = RGB1;
+                RGB1 = RGB2;
+                
+                R2  = LIM_B1(MAC1);
+                G2  = LIM_B2(MAC2);
+                B2  = LIM_B3(MAC3);
+                CD2 = CODE;
+            }
+            return;
+            
         case 27: // NCCS
             opcodeNCCS(1);
             return;
             
         case 63: // NCCT
             opcodeNCCS(3);
+            return;
+            
+        case 30: // NCS
+            opcodeNCS(1);
+            return;
+            
+        case 32: // NCT
+            opcodeNCS(3);
+            return;
+            
+        case 41: // DPCL
+            {
+                MAC1 = R*IR1 + IR0*LIM_A1S(RFC - R*IR1);
+                MAC2 = G*IR2 + IR0*LIM_A2S(GFC - G*IR2);
+                MAC3 = B*IR3 + IR0*LIM_A3S(BFC - B*IR3);
+                
+                MAC2IR0();
+                
+                RGB0 = RGB1;
+                RGB1 = RGB2;
+                
+                R2  = LIM_B1(MAC1);
+                G2  = LIM_B2(MAC2);
+                B2  = LIM_B3(MAC3);
+                CD2 = CODE;
+            }
+            return;
+            
+        case 42: // DPCT
+            {
+//                MAC1 = R*1.0 + IR0*LIM_A1S(RFC-R*1.0);
+//                MAC2 = G*1.0 + IR0*LIM_A2S(GFC-G*1.0);
+//                MAC3 = B*1.0 + IR0*LIM_A3S(BFC-B*1.0);
+//
+//                MAC2IR0();
+//
+//                RGB0 = RGB1;
+//                RGB1 = RGB2;
+//
+//                R2  = LIM_B1(MAC1);
+//                G2  = LIM_B2(MAC2);
+//                B2  = LIM_B3(MAC3);
+//                CD2 = CODE;
+            }
             return;
             
         case 45: // AVSZ3
@@ -519,6 +614,31 @@ void CstrMips::executeCop2(uw code) {
             {
                 MAC0 = (SZ0 + SZ1 + SZ2 + SZ3) * FPN_12(ZSF4);
                 OTZ  = LIM_C(MAC0);
+            }
+            return;
+            
+        case 61: // GPF
+            {
+                if (code & 0x80000) {
+                    MAC1 = FPN_12(IR0 * IR1);
+                    MAC2 = FPN_12(IR0 * IR2);
+                    MAC3 = FPN_12(IR0 * IR3);
+                    
+                    IR1 = LIM_A1S(MAC1);
+                    IR2 = LIM_A1S(MAC2);
+                    IR3 = LIM_A1S(MAC3);
+                }
+                else {
+                    printx("GPF %d", 2);
+                }
+                
+                RGB0 = RGB1;
+                RGB1 = RGB2;
+                
+                R2  = LIM_B1(MAC1);
+                G2  = LIM_B2(MAC2);
+                B2  = LIM_B3(MAC3);
+                CD2 = CODE;
             }
             return;
     }

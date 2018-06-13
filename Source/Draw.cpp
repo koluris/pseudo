@@ -53,7 +53,7 @@ void CstrDraw::resize(uh w, uh h) {
 }
 
 #define NTSC \
-    (CLOCKS_PER_SEC / 59.94)
+    (CLOCKS_PER_SEC / 159.94)
 
 #define PAL \
     (CLOCKS_PER_SEC / 50.00)
