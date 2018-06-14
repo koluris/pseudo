@@ -406,7 +406,7 @@ void CstrMips::step(bool branched) {
 
 void CstrMips::branch(uw addr) {
     // Execute instruction in slot
-    step(true);
+    step (true);
     setpc(addr);
     
     if (opcodeCount >= 64) {
