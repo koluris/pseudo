@@ -20,29 +20,28 @@
 CstrCounters rootc;
 
 void CstrCounters::reset() {
-    for (int i = 0; i < 3; i++) {
-        bounds[i] = RTC_BOUND;
+    for (auto &item : bounds) {
+        item = RTC_BOUND;
     }
     
-    vbk = 0;
-    hbk = 0;
+    vbk = hbk = 0;
 }
 
 void CstrCounters::update() {
-    count(0) += mode(0) & 0x100 ? PSX_CYCLE : PSX_CYCLE / 8;
-
+    count(0) += mode(0) & 0x100 ? PSX_BIAS : PSX_BIAS / 8;
+    
     if (count(0) >= bound(0)) {
         printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 0, 0);
     }
-
+    
     if (!(mode(1) & 0x100)) {
-        count(1) += PSX_CYCLE;
-
+        count(1) += PSX_BIAS;
+        
         if (count(1) >= bound(1)) {
             printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 1, 1);
         }
     }
-    else if ((hbk += PSX_CYCLE) >= PSX_HSYNC) { hbk = 0;
+    else if ((hbk += PSX_BIAS) >= PSX_HSYNC) { hbk = 0;
         if (++count(1) >= bound(1)) {
             count(1) = 0;
             if (mode(1) & 0x50) {
@@ -50,10 +49,10 @@ void CstrCounters::update() {
             }
         }
     }
-
+    
     if (!(mode(2) & 1)) {
-        count(2) += mode(2) & 0x200 ? PSX_CYCLE / 8 : PSX_CYCLE;
-
+        count(2) += mode(2) & 0x200 ? PSX_BIAS / 8 : PSX_BIAS;
+        
         if (count(2) >= bound(2)) {
             count(2) = 0;
             if (mode(2) & 0x50) {
@@ -63,7 +62,7 @@ void CstrCounters::update() {
     }
     
     // VBlank
-    if ((vbk += PSX_CYCLE) >= PSX_VSYNC) { vbk = 0;
+    if ((vbk += PSX_BIAS) >= PSX_VSYNC_NTSC) { vbk = 0;
         draw.refresh();
         bus.interruptSet(CstrBus::INT_VSYNC);
     }

@@ -21,6 +21,7 @@
     512
 
 class CstrGraphics {
+    // Constant enumerations
     enum {
         GPU_DMA_NONE,
         GPU_DMA_MEM2VRAM = 2,
