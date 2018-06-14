@@ -52,12 +52,12 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             }
             
             for (int h = 0; h < 256; h++) {
-                for (int w = 0; w < 256; w += 4) {
-                    const uh p = vs.vram.ptr[((tex.pos.h + h) * 4096 + tex.pos.w * 4 + w) / 4];
-                    tex.bfr[h][w + 0] = tex.cc[(p >> 0x0) & 15];
-                    tex.bfr[h][w + 1] = tex.cc[(p >> 0x4) & 15];
-                    tex.bfr[h][w + 2] = tex.cc[(p >> 0x8) & 15];
-                    tex.bfr[h][w + 3] = tex.cc[(p >> 0xc) & 15];
+                for (int w = 0; w < (256 / 4); w++) {
+                    const uh p = vs.vram.ptr[(tex.pos.h + h) * FRAME_W + tex.pos.w + w];
+                    tex.bfr[h][w*4 + 0] = tex.cc[(p >> 0x0) & 15];
+                    tex.bfr[h][w*4 + 1] = tex.cc[(p >> 0x4) & 15];
+                    tex.bfr[h][w*4 + 2] = tex.cc[(p >> 0x8) & 15];
+                    tex.bfr[h][w*4 + 3] = tex.cc[(p >> 0xc) & 15];
                 }
             }
             break;
@@ -69,10 +69,10 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             }
             
             for (int h = 0; h < 256; h++) {
-                for (int w = 0; w < 256; w += 2) {
-                    const uh p = vs.vram.ptr[((tex.pos.h + h) * 2048 + tex.pos.w * 2 + w) / 2];
-                    tex.bfr[h][w + 0] = tex.cc[(p >> 0) & 255];
-                    tex.bfr[h][w + 1] = tex.cc[(p >> 8) & 255];
+                for (int w = 0; w < (256 / 2); w++) {
+                    const uh p = vs.vram.ptr[(tex.pos.h + h) * FRAME_W + tex.pos.w + w];
+                    tex.bfr[h][w*2 + 0] = tex.cc[(p >> 0) & 255];
+                    tex.bfr[h][w*2 + 1] = tex.cc[(p >> 8) & 255];
                 }
             }
             break;
@@ -80,7 +80,8 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
         case TEX_15BIT: // No color palette
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < 256; w++) {
-                    tex.bfr[h][w] = pixel2texel(vs.vram.ptr[(tex.pos.h + h) * FRAME_W + tex.pos.w + w]);
+                    const uh p = vs.vram.ptr[(tex.pos.h + h) * FRAME_W + tex.pos.w + w];
+                    tex.bfr[h][w] = pixel2texel(p);
                 }
             }
             break;
