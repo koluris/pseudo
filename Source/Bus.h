@@ -8,24 +8,22 @@
 class CstrBus {
     enum {
         INT_DISABLED,
-        INT_ENABLED,
-        
-        INT_TOTAL = 11
+        INT_ENABLED
     };
     
     enum {
-        /* 0 */ DMA_MDEC_IN,
-        /* 1 */ DMA_MDEC_OUT,
-        /* 2 */ DMA_GPU,
-        /* 3 */ DMA_CD,
-        /* 4 */ DMA_SPU,
-        /* 5 */ DMA_PARALLEL,
-        /* 6 */ DMA_CLEAR_OT
+        DMA_MDEC_IN,
+        DMA_MDEC_OUT,
+        DMA_GPU,
+        DMA_CD,
+        DMA_SPU,
+        DMA_PARALLEL,
+        DMA_CLEAR_OT
     };
     
     struct interrupt {
         const uw code, dest; ub queued;
-    } interrupts[INT_TOTAL] = {
+    } interrupts[11] = {
         { INT_VSYNC, 1 },
         { INT_GPU,   1 },
         { INT_CD,    4 },
@@ -59,8 +57,8 @@ public:
     };
     
     void reset();
-    void interruptsUpdate();
     void interruptSet(ub);
+    void interruptsUpdate();
     void checkDMA(uw, uw);
 };
 

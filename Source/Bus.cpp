@@ -4,27 +4,24 @@
 CstrBus bus;
 
 void CstrBus::reset() {
-    for (int i = 0; i < INT_TOTAL; i++) {
-        interrupts[i].queued = INT_DISABLED;
-    }
-}
-
-void CstrBus::interruptsUpdate() { // A method to schedule when IRQs should fire
-    for (int i = 0; i < INT_TOTAL; i++) {
-        interrupt *item = &interrupts[i];
-        
-        if (item->queued) {
-            if (item->queued++ == item->dest) {
-                item->queued = INT_DISABLED;
-                data16 |= 1 << item->code;
-                break;
-            }
-        }
+    for (auto &item : interrupts) {
+        item.queued = INT_DISABLED;
     }
 }
 
 void CstrBus::interruptSet(ub code) {
     interrupts[code].queued = INT_ENABLED;
+}
+
+void CstrBus::interruptsUpdate() { // A method to schedule when IRQs should fire
+    for (auto &item : interrupts) {
+        if (item.queued) {
+            if (item.queued++ == item.dest) {
+                item.queued = INT_DISABLED;
+                data16 |= 1 << item.code;
+            }
+        }
+    }
 }
 
 void CstrBus::checkDMA(uw addr, uw data) {

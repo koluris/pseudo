@@ -1,19 +1,13 @@
-#define PSX_CLK \
-    33868800
-
-// Assume NTSC for now
-#define PSX_VSYNC \
-    (PSX_CLK / (60 / 1.001))
-
-#define PSX_HSYNC \
-    (PSX_CLK / 15734)
-
-// This is uttermost experimental, it's the Achilles' heel
-#define PSX_CYCLE \
-    64
-
-
 class CstrCounters {
+    // Constant enumerations
+    enum {
+        PSX_CLOCK      = 33868800,
+        PSX_VSYNC_NTSC = PSX_CLOCK / 60,
+        PSX_VSYNC_PAL  = PSX_CLOCK / 50,
+        PSX_HSYNC      = PSX_CLOCK / 15734,
+        PSX_BIAS       = 64 // This is uttermost experimental, it's the Achilles' heel
+    };
+    
     enum {
         RTC_COUNT  = 0,
         RTC_MODE   = 4,

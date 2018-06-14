@@ -1,4 +1,5 @@
 class CstrCache {
+    // Constant enumerations
     enum {
         // Texture modes
         TEX_04BIT,

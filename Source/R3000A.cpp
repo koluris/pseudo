@@ -38,8 +38,8 @@ CstrMips cpu;
 //  0 |  0 |  0 |  1 |  0 |  0 |
 
 void CstrMips::reset() {
-    memset(&base , 0, sizeof(base));
-    memset(&copr , 0, sizeof(copr));
+    memset(& base, 0, sizeof(base));
+    memset(& copr, 0, sizeof(copr));
     memset(&cop2c, 0, sizeof(pair));
     memset(&cop2d, 0, sizeof(pair));
     
@@ -409,7 +409,7 @@ void CstrMips::branch(uw addr) {
     step(true);
     setpc(addr);
     
-    if (opcodeCount >= PSX_CYCLE) {
+    if (opcodeCount >= 64) {
         // Rootcounters, interrupts
         rootc.update();
         bus.interruptsUpdate();
@@ -420,7 +420,7 @@ void CstrMips::branch(uw addr) {
                 exception(0x400, false);
             }
         }
-        opcodeCount %= PSX_CYCLE;
+        opcodeCount %= 64;
     }
 }
 

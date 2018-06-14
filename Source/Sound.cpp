@@ -16,8 +16,8 @@ void CstrAudio::reset() {
     memset(&  sbuf, 0, sizeof(sbuf));
     
     // Channels reset
-    for (int n = 0; n < MAX_CHANNELS; n++) {
-        memset(&spuVoices[n], 0, sizeof(spuVoices[n]));
+    for (auto  &item : spuVoices) {
+        memset(&item, 0, sizeof(item));
     }
     
     // Variables
@@ -55,7 +55,7 @@ void CstrAudio::depackVAG(voice *chn) {
     sh temp[28];
     memset(&temp, 0, 28);
     
-    while (1) {
+    while(1) {
         ub shift  = spuMem.iub[p] & 15;
         ub filter = spuMem.iub[p] >> 4;
         
@@ -108,38 +108,37 @@ void CstrAudio::stream() {
 
 void CstrAudio::decodeStream() {
     while(!psx.suspended) {
-        for (int n = 0; n < MAX_CHANNELS; n++) {
-            voice *chn = &spuVoices[n];
-            
+        for (auto &chn : spuVoices) {
             // Channel on?
-            if (chn->on == false) {
+            if (chn.on == false) {
                 continue;
             }
             
             for (int i = 0; i < SBUF_SIZE; i++) {
-                chn->count += chn->freq;
-                if (chn->count >= SAMPLE_RATE) {
-                    chn->pos += chn->count/SAMPLE_RATE;
-                    chn->count %= SAMPLE_RATE;
+                chn.count += chn.freq;
+                
+                if (chn.count >= SAMPLE_RATE) {
+                    chn.pos   += chn.count / SAMPLE_RATE;
+                    chn.count %= SAMPLE_RATE;
                 }
                 
                 // Mix Channel Samples
                 if (stereo) {
-                    sbuf.temp[i*2+0] += (+chn->buffer.ish[chn->pos] * chn->volumeL) / MAX_VOLUME;
-                    sbuf.temp[i*2+1] += (-chn->buffer.ish[chn->pos] * chn->volumeR) / MAX_VOLUME;
+                    sbuf.temp[i*2+0] += (+chn.buffer.ish[chn.pos] * chn.volumeL) / MAX_VOLUME;
+                    sbuf.temp[i*2+1] += (-chn.buffer.ish[chn.pos] * chn.volumeR) / MAX_VOLUME;
                 }
                 else {
-                    sbuf.temp[i] += (chn->buffer.ish[chn->pos] * ((chn->volumeL + chn->volumeR) / 2)) / MAX_VOLUME;
+                    sbuf.temp[i] += (chn.buffer.ish[chn.pos] * ((chn.volumeL + chn.volumeR) / 2)) / MAX_VOLUME;
                 }
                 
                 // End of Sample
-                if (chn->pos >= chn->size) {
-                    if (chn->raddr > 0) { // Repeat?
-                        chn->pos = chn->raddr;
-                        chn->count = 0;
+                if (chn.pos >= chn.size) {
+                    if (chn.raddr > 0) { // Repeat?
+                        chn.pos   = chn.raddr;
+                        chn.count = 0;
                         continue;
                     }
-                    chn->on = false;
+                    chn.on = false;
                     break;
                 }
             }
