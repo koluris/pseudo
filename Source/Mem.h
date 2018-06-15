@@ -9,15 +9,14 @@ class CstrMem {
         MEM_BOUNDS_HWR = 0x00804000,
         MEM_BOUNDS_ROM = 0x00c80000,
         
+        // This mask unifies the RAM mirrors (0, 8, A) into one unique case
         MEM_MASK = 0x00ffffff
     };
     
-    struct heap {
-        ub *ptr; uw size;
-    };
-    
 public:
-    heap ram, rom, hwr;
+    struct {
+        ub *ptr; uw size;
+    } ram, rom, hwr;
     
     CstrMem() {
         ram.ptr = new ub[ram.size = 0x200000];
