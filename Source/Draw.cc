@@ -407,7 +407,6 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0xe6: // STP
-            vs.ret.status = (vs.ret.status & (~(3 << 11))) | ((data[0] & 3) << 11);
             return;
     }
     
