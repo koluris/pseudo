@@ -3,6 +3,15 @@
 
 
 class CstrMem {
+    enum {
+        MEM_BOUNDS_RAM = 0x00800000,
+        MEM_BOUNDS_SCR = 0x00800400,
+        MEM_BOUNDS_HWR = 0x00804000,
+        MEM_BOUNDS_ROM = 0x00c80000,
+        
+        MEM_MASK = 0x00ffffff
+    };
+    
     struct heap {
         ub *ptr; uw size;
     };

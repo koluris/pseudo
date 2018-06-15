@@ -10,29 +10,27 @@ void CstrMem::reset() {
 }
 
 void CstrMem::write32(uw addr, uw data) {
-    switch(addr) {
-        case 0x00000000 ... (0x00800000-1): // RAM
-        case 0x80000000 ... (0x80800000-1):
-        case 0xa0000000 ... (0xa0200000-1):
-            // A shorter alternative to allow mem write
-            if (!(cpu.copr[12] & 0x10000)) {
-                accessMem(ram, uw) = data;
-            }
-            return;
-            
-        case 0x1f800000 ... (0x1f800400-1): // Scratchpad
-            accessMem(hwr, uw) = data;
-            return;
-            
-        case 0x1f801000 ... (0x1f804000-1): // Hardware
-            io.write32(addr, data);
-            return;
-            
-        case 0xfffe0130: // Possible values: $804, $800, $1e988
-            //printf("$fffe0130 <- $%x\n", data);
-            return;
+    if ((addr & MEM_MASK) < MEM_BOUNDS_RAM) { // RAM
+        // A shorter alternative to allow mem write
+        if (!(cpu.copr[12] & 0x10000)) {
+            accessMem(ram, uw) = data;
+        }
+        return;
     }
-    printx("/// PSeudo Mem Write 32: $%x <- $%x", addr, data);
+    
+    if ((addr & MEM_MASK) < MEM_BOUNDS_SCR) { // Scratchpad
+        accessMem(hwr, uw) = data;
+        return;
+    }
+    
+    if ((addr & MEM_MASK) < MEM_BOUNDS_HWR) { // Hardware
+        io.write32(addr, data);
+        return;
+    }
+    
+    if ((addr) != 0xfffe0130) { // Possible values: $804, $800, $1e988
+        printx("/// PSeudo Mem Write 32: $%x <- $%x", addr, data);
+    }
 }
 
 void CstrMem::write16(uw addr, uh data) {
