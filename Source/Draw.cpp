@@ -68,11 +68,7 @@ void CstrDraw::resize(uh w, uh h) {
 double then = 1.0;
 
 void CstrDraw::refresh() {
-    static int odd = 0;
-    
-    if (odd++ % 2) {
-        vs.ret.status ^= GPU_ODDLINES;
-    }
+    vs.ret.status ^= GPU_ODDLINES;
     
     // FPS throttle
     double now = mach_absolute_time() / 1000.0;
@@ -83,6 +79,9 @@ void CstrDraw::refresh() {
     }
     
     // Draw
+    if (vs.ret.disabled) {
+        GLClear(GL_COLOR_BUFFER_BIT);
+    }
     GLFlush();
 }
 

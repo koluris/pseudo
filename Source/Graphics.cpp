@@ -13,12 +13,13 @@ void CstrGraphics::reset() {
     memset(&    ret, 0, sizeof(ret));
     memset(&   pipe, 0, sizeof(pipe));
     
-    ret.data   = 0x400;
-    ret.status = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
-    modeDMA    = GPU_DMA_NONE;
-    vpos       = 0;
-    vdiff      = 0;
-    isVideoPAL = false;
+    ret.disabled = true;
+    ret.data     = 0;//0x400;
+    ret.status   = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
+    modeDMA      = GPU_DMA_NONE;
+    vpos         = 0;
+    vdiff        = 0;
+    isVideoPAL   = false;
     
     // Reset canvas
     draw.reset();
@@ -33,22 +34,24 @@ void CstrGraphics::write(uw addr, uw data) {
         case GPU_REG_STATUS:
             switch(GPU_COMMAND(data)) {
                 case 0x00:
-                    ret.status = 0x14802000;
+                    ret.status   = 0x14802000;
+                    ret.disabled = true;
                     return;
                     
                 case 0x01:
                     memset(&pipe, 0, sizeof(pipe));
                     return;
                     
+                case 0x03:
+                    ret.disabled = data & 1;
+                    return;
+                    
                 case 0x04:
                     modeDMA = data & 3;
-                    
-                    ret.status |= data << 29;
-                    ret.status &= ~GPU_DMABITS;
                     return;
                     
                 case 0x05:
-                    vpos = MAX(vpos, (data >> 10) & 0x3ff);
+                    vpos = MAX(vpos, (data >> 10) & 0x1ff);
                     return;
                     
                 case 0x07:
@@ -77,11 +80,18 @@ void CstrGraphics::write(uw addr, uw data) {
                     }
                     return;
                     
+                case 0x10: // TODO: Information
+                    switch(data & 0xffffff) {
+                        case 7:
+                            ret.data = 2;
+                            return;
+                    }
+                    //printx("/// PSeudo GPU Write Status Information: $%x", (data & 0xffffff));
+                    return;
+                    
                 /* unused */
                 case 0x02:
-                case 0x03:
                 case 0x06:
-                case 0x10: // TODO: Information
                     return;
             }
             printx("/// PSeudo GPU Write Status: $%x", (GPU_COMMAND(data)));
@@ -96,10 +106,8 @@ uw CstrGraphics::read(uw addr) {
             return ret.data;
             
         case GPU_REG_STATUS:
-            ret.status |=  GPU_READYFORVRAM;
-            ret.status &= ~GPU_DOUBLEHEIGHT;
-            
-            return ret.status;
+            //return (ret.status | (GPU_READYFORCOMMANDS | GPU_READYFORVRAM | GPU_IDLE)) & ~(GPU_INTERLACED | GPU_DOUBLEHEIGHT);
+            return ret.status | GPU_READYFORVRAM;
     }
     printx("/// PSeudo GPU Read: $%x", (addr & 0xf));
     
@@ -240,9 +248,6 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
     uw *p = (uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)], size = (dma->bcr >> 16) * (dma->bcr & 0xffff);
     
     switch(dma->chcr) {
-        case 0x00000401: // Disable DMA?
-            return;
-            
         case 0x01000200:
             //dataRead(p, size);
             return;
@@ -259,6 +264,10 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
                 dma->madr = hdr & 0xffffff;
             }
             while(dma->madr != 0xffffff);
+            return;
+            
+        /* unused */
+        case 0x00000401: // Disable DMA?
             return;
     }
     

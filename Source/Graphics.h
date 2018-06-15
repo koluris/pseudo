@@ -58,11 +58,6 @@ class CstrGraphics {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0xf0
     };
     
-    // VRAM Structure
-    struct heap {
-        uh *ptr; uw size;
-    };
-    
     // Command buffer
     struct {
         uw data[100], prim, size, row;
@@ -73,7 +68,7 @@ class CstrGraphics {
     
     int fetchMem(uh *, sw);
     void dataWrite(uw *, sw);
-    void dataRead(uw *, sw);
+    void dataRead (uw *, sw);
     
 public:
     CstrGraphics() {
@@ -84,22 +79,25 @@ public:
         delete[] vram.ptr;
     }
     
-    // Data, Status
-    struct {
-        uw data, status;
-    } ret;
+    // VRAM
+    struct heap {
+        uh *ptr; uw size;
+    } vram;
     
     // VRAM operations
     struct {
         bool enabled;
         
         struct {
-            sw p, start, end;
+            sw start, end, p;
         } h, v;
     } vrop;
     
-    // VRAM
-    heap vram;
+    // Data, Status
+    struct {
+        bool disabled; uw data, status;
+    } ret;
+    
     bool isVideoPAL;
     
     void reset();
@@ -110,3 +108,34 @@ public:
 };
 
 extern CstrGraphics vs;
+
+//union {
+//    struct {
+//        uw tw         : 4;
+//        uw th         : 1;
+//        uw abr        : 2;
+//        uw tp         : 2;
+//        uw dtd        : 1;
+//        uw dfe        : 1;
+//        uw md         : 1;
+//        uw me         : 1;
+//        uw reserved   : 1;
+//        uw rev        : 1;
+//        uw texdisable : 1;
+//        uw w          : 3;
+//        uw h          : 1;
+//        uw video      : 1;
+//        uw is24       : 1;
+//        uw isinter    : 1;
+//        uw den        : 1;
+//        uw irq1       : 1;
+//        uw dmareq     : 1;
+//        uw occupied   : 1;
+//        uw photo      : 1;
+//        uw com        : 1;
+//        uw dmadir     : 2;
+//        uw lcf        : 1;
+//    };
+//    
+//    uw raw;
+//} stat;
