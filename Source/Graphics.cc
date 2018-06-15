@@ -14,7 +14,7 @@ void CstrGraphics::reset() {
     memset(&   pipe, 0, sizeof(pipe));
     
     ret.disabled = true;
-    ret.data     = 0;//0x400;
+    ret.data     = 0; //0x400;
     ret.status   = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA      = GPU_DMA_NONE;
     vpos         = 0;

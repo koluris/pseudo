@@ -372,8 +372,6 @@ void CstrDraw::primitive(uw addr, uw *data) {
             
         case 0xe1: // Texture P.
             spriteTP = data[0] & 0x7ff;
-            vs.ret.status = (vs.ret.status & ~(0x7ff)) | spriteTP;
-            
             blend = (data[0] >> 5) & 3;
             GLBlendFunc(bit[blend].src, bit[blend].dst);
             return;
