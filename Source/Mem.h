@@ -4,19 +4,21 @@
 
 class CstrMem {
     enum {
-        MEM_BOUNDS_RAM = 0x00800000,
-        MEM_BOUNDS_SCR = 0x00800400,
-        MEM_BOUNDS_HWR = 0x00804000,
-        MEM_BOUNDS_ROM = 0x00c80000,
-        
         // This mask unifies the RAM mirrors (0, 8, A) into one unique case
-        MEM_MASK = 0x00ffffff
+        MEM_MASK = 0x00ffffff,
+        
+        MEM_BOUNDS_RAM = 0xf0800000 & MEM_MASK,
+        MEM_BOUNDS_SCR = 0x1f800400 & MEM_MASK,
+        MEM_BOUNDS_HWR = 0x1f804000 & MEM_MASK,
+        MEM_BOUNDS_ROM = 0xbfc80000 & MEM_MASK,
     };
     
 public:
-    struct {
+    struct heap {
         ub *ptr; uw size;
-    } ram, rom, hwr;
+    };
+    
+    heap ram, rom, hwr;
     
     CstrMem() {
         ram.ptr = new ub[ram.size = 0x200000];
