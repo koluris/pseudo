@@ -77,22 +77,6 @@ void GPUopen() {
         glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_RGBA,GL_UNSIGNED_BYTE,image);
     }
     
-//    glGenTextures(1,&xferTexture24);
-//    glBindTexture(GL_TEXTURE_2D,xferTexture24);
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-//    glTexImage2D(GL_TEXTURE_2D,0,3,1024,512,0,GL_RGB,GL_UNSIGNED_BYTE,0);
-//    
-//    glGenTextures(1,&xferTexture16);
-//    glBindTexture(GL_TEXTURE_2D,xferTexture16);
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-//    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-//    glTexImage2D(GL_TEXTURE_2D,0,4,1024,512,0,GL_RGBA,GL_UNSIGNED_BYTE,0);
-//    
-//    glGenTextures(1,&nullid);
-//    glBindTexture(GL_TEXTURE_2D,nullid);
-//    glTexImage2D(GL_TEXTURE_2D,0,4,0,0,0,GL_RGBA,GL_UNSIGNED_BYTE,0);
-    
     glClearColor(0.0f,0.0f,0.0f,0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     
@@ -117,7 +101,7 @@ void updateDisplay() {
     if (psxDisp.modeX > 0 && psxDisp.modeY > 0) {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, psxDisp.modeX, psxDisp.modeY, 0, 1.0, -1.0);
+        glOrtho(0, psxDisp.modeX - 1.0, psxDisp.modeY - 1.0, 0, 1.0, -1.0);
     }
 }
 

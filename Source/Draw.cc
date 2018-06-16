@@ -261,6 +261,21 @@ void CstrDraw::drawSprite(uw *data, sh size) {
         GLTexCoord2s(k->vx.u+k->w, k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v+k->h);
     GLEnd();
     
+//    if (k->c.n & 2) {
+//        glEnable(GL_ALPHA_TEST);
+//        glAlphaFunc(GL_GEQUAL, 1);
+//        glColor3ub(255,255,255);
+//        glDisable(GL_BLEND);
+//        glBegin(GL_TRIANGLE_STRIP);
+//        GLTexCoord2s(k->vx.u,      k->vx.v);      GLVertex2s(k->vx.w+offset.h,      k->vx.h+offset.v);
+//        GLTexCoord2s(k->vx.u+k->w, k->vx.v);      GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v);
+//        GLTexCoord2s(k->vx.u,      k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h,      k->vx.h+offset.v+k->h);
+//        GLTexCoord2s(k->vx.u+k->w, k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v+k->h);
+//        glEnd();
+//        glEnable(GL_BLEND);
+//        glDisable(GL_ALPHA_TEST);
+//    }
+    
     GLDisable(GL_TEXTURE_2D);
 }
 
