@@ -29,6 +29,8 @@
 		42EBBCD52062482200824B95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42EBBCD42062482200824B95 /* Assets.xcassets */; };
 		42EBBCE42062494200824B95 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42EBBCE32062494200824B95 /* MainMenu.xib */; };
 		42EDE0F320C2C5B2005CC990 /* Square.icns in Resources */ = {isa = PBXBuildFile; fileRef = 42EDE0F220C2C5B2005CC990 /* Square.icns */; };
+		42F492BA20D4E872000C5AAB /* Primitive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42F492B620D4E871000C5AAB /* Primitive.cc */; };
+		42F492BB20D4E872000C5AAB /* GPU.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42F492B820D4E872000C5AAB /* GPU.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +74,10 @@
 		42EBBCD92062482200824B95 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		42EBBCE32062494200824B95 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		42EDE0F220C2C5B2005CC990 /* Square.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Square.icns; sourceTree = "<group>"; };
+		42F492B620D4E871000C5AAB /* Primitive.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Primitive.cc; sourceTree = "<group>"; };
+		42F492B720D4E871000C5AAB /* GPU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPU.h; sourceTree = "<group>"; };
+		42F492B820D4E872000C5AAB /* GPU.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = GPU.cc; sourceTree = "<group>"; };
+		42F492B920D4E872000C5AAB /* Primitive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Primitive.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,6 +263,10 @@
 		42DB696D2070DEEC00000D08 /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
+				42F492B820D4E872000C5AAB /* GPU.cc */,
+				42F492B720D4E871000C5AAB /* GPU.h */,
+				42F492B620D4E871000C5AAB /* Primitive.cc */,
+				42F492B920D4E872000C5AAB /* Primitive.h */,
 				425720CF20BB4FE00081114F /* Cache */,
 				42032C1920B483E300B032A8 /* Draw */,
 				42DB696E2070DF0800000D08 /* Graphics.cc */,
@@ -366,7 +376,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42F492BB20D4E872000C5AAB /* GPU.cc in Sources */,
 				429C3EBD206500B500915293 /* Mem.cc in Sources */,
+				42F492BA20D4E872000C5AAB /* Primitive.cc in Sources */,
 				425720D220BB4FF00081114F /* Cache.cc in Sources */,
 				42B6B61A20B57D5700D70027 /* Sound.cc in Sources */,
 				4216B0E020C176BB00F0CB17 /* Obsolete.cc in Sources */,

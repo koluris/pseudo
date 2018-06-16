@@ -1,3 +1,5 @@
+#ifdef MYGPU
+
 class CstrCache {
     // Constant enumerations
     enum {
@@ -38,3 +40,5 @@ public:
 };
 
 extern CstrCache cache;
+
+#endif

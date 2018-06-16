@@ -37,7 +37,11 @@ void CstrBus::checkDMA(uw addr, uw data) {
                 break;
                 
             case DMA_GPU:
+#ifdef MYGPU
                 vs.executeDMA(dma);
+#else
+                executeDMA(dma);
+#endif
                 break;
                 
             case DMA_SPU:

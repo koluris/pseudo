@@ -1,3 +1,5 @@
+#ifdef MYGPU
+
 #define GPU_ODDLINES         0x80000000
 #define GPU_DMABITS          0x60000000
 #define GPU_READYFORCOMMANDS 0x10000000
@@ -139,3 +141,5 @@ extern CstrGraphics vs;
 //    
 //    uw raw;
 //} stat;
+
+#endif

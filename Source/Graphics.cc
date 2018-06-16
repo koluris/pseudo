@@ -1,6 +1,8 @@
 #import "Global.h"
 
 
+#ifdef MYGPU
+
 #define GPU_COMMAND(x) \
     (x >> 24) & 0xff
 
@@ -282,3 +284,5 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
     
     printx("/// PSeudo GPU DMA: $%x", dma->chcr);
 }
+
+#endif

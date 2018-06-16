@@ -1,6 +1,8 @@
 #import "Global.h"
 
 
+#ifdef MYGPU
+
 #define COLOR_MAX \
     255
 
@@ -242,7 +244,6 @@ void CstrDraw::drawSprite(uw *data, sh size) {
     };
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
-    
     if (k->c.n & 1) {
         GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
     }
@@ -412,3 +413,5 @@ void CstrDraw::primitive(uw addr, uw *data) {
     
     printx("/// PSeudo primitive: $%x", addr);
 }
+
+#endif

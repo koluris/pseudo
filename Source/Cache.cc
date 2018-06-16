@@ -1,6 +1,8 @@
 #import "Global.h"
 
 
+#ifdef MYGPU
+
 #define COLOR_32BIT(a, b, c, r) \
     (((ub)(a))<<24) | (((ub)(b))<<16) | (((ub)(c))<<8) | ((ub)(r))
 
@@ -95,3 +97,5 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     cache[index].uid = uid;
     index = (index + 1) & (TCACHE_MAX - 1);
 }
+
+#endif

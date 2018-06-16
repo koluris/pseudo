@@ -1,3 +1,5 @@
+#ifdef MYGPU
+
 class CstrDraw {
     // Basic
     struct RGBC  { ub a, b, c, n; };
@@ -54,3 +56,5 @@ public:
 };
 
 extern CstrDraw draw;
+
+#endif

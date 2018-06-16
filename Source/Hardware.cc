@@ -26,7 +26,19 @@ void CstrHardware::write32(uw addr, uw data) {
             return;
             
         case 0x1810 ... 0x1814: // Graphics
+#ifdef MYGPU
             vs.write(addr, data);
+#else
+            switch(addr&0xf) {
+                case 0:
+                    GPUwriteData(data);
+                    return;
+                    
+                case 4:
+                    GPUwriteStatus(data);
+                    return;
+            }
+#endif
             return;
             
         /* unused */
@@ -92,7 +104,17 @@ uw CstrHardware::read32(uw addr) {
             return rootc.read<uw>(addr);
             
         case 0x1810 ... 0x1814: // Graphics
+#ifdef MYGPU
             return vs.read(addr);
+#else
+            switch(addr&0xf) {
+                case 0:
+                    return GPUreadData();
+                    
+                case 4:
+                    return GPUreadStatus();
+            }
+#endif
             
         /* unused */
         case 0x1014: // ?
