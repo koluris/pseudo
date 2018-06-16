@@ -5,49 +5,31 @@
 
 #define GPUCOMMAND(x) ((x>>24) & 0xff)
 
-unsigned char psxVub[1024*520*2];
-unsigned short *psxVuw;
-uint32_t *psxVul;
-
-static int32_t GPUdataRet;
-int32_t GPUstatusRet;
-int32_t GPUInfoVals[16];
-
-static uint32_t gpuData[100];
-static unsigned char gpuCommand = 0;
-static int32_t gpuDataC = 0;
-static int32_t gpuDataP = 0;
-
-int drawingLines;
-
+ub psxVub[1024 * 520 * 2];
+uh *psxVuw;
+uw *psxVul;
+static sw GPUdataRet;
+sw GPUstatusRet;
+static uw gpuData[100];
+static ub gpuCommand = 0;
+static sw gpuDataC = 0;
+static sw gpuDataP = 0;
+sw drawingLines;
 VRAMLoad_t vramWrite;
-struct PSXDisplay_t psxDisp, oldpsxDisp;
+struct PSXDisplay_t psxDisp;
 struct PSXDraw_t psxDraw;
-
-short dispWidths[8] = {256,320,512,640,368,384,512,640};
-
-int dispLace = 0;
-int dispLaceNew;
-int imageTransfer;
-
-short imTYc,imTXc,imTY,imTX;
-int imSize;
-short imageX0,imageX1;
-short imageY0,imageY1;
-
-unsigned short textBuf[512*512];
-int newTextX0,newTextX1,newTextX2,newTextX3;
-int newTextY0,newTextY1,newTextY2,newTextY3;
-
-GLuint xferTexture16 = 0;
-GLuint xferTexture24 = 0;
+sh dispWidths[8] = { 256, 320, 512, 640, 368, 384, 512, 640};
+sw imageTransfer;
+sh imTYc, imTXc, imTY, imTX;
+sw imSize;
+sh imageX0, imageX1;
+sh imageY0, imageY1;
+uh textBuf[512 * 512];
 
 void GPUinit() {
-	psxVuw = (unsigned short *)psxVub;
-	psxVul = (uint32_t *)psxVub;
-
-	GPUstatusRet = 0x74000000;
-	memset(GPUInfoVals, 0x00, 16 * sizeof(uint32_t));
+	psxVuw = (uh *)psxVub;
+	psxVul = (uw *)psxVub;
+	GPUstatusRet = 0x14802000;
 }
 
 void GPUopen() {
@@ -106,37 +88,25 @@ void updateDisplay() {
 }
 
 void GPUupdateLace() {
-	drawingLines ^= 1;
+	GPUstatusRet ^= GPUSTATUS_ODDLINES;
     glFlush();
 }
 
-unsigned long GPUreadStatus() {
-	if (drawingLines == 1)
-		return GPUstatusRet;
-	else
-        return GPUstatusRet;// | 0x80000000;
+uw GPUreadStatus() {
+	return GPUstatusRet | GPUSTATUS_READYFORVRAM;
 }
 
-void GPUwriteStatus(uint32_t gdata) {
+void GPUwriteStatus(uw gdata) {
 	switch((gdata >> 24) & 0xff) {
         case 0x00:
-            GPUstatusRet=0x14802000;
+            GPUstatusRet = 0x14802000;
             return;
-        
-        case 0x03:
-            psxDisp.disabled = (gdata & 1);
-            return;
-        
+            
         case 0x04:
             if((gdata&0xffffff) == 0) imageTransfer = 0;
             if((gdata&0xffffff) == 2) imageTransfer = 3;
             return;
-        
-        case 0x05:
-        case 0x06:
-        case 0x07:
-            return;
-        
+            
         case 0x08:
             psxDisp.modeX = dispWidths[(gdata&0x3)|((gdata&0x40)>>4)];
             
@@ -147,47 +117,28 @@ void GPUwriteStatus(uint32_t gdata) {
             
             updateDisplay();
             return;
+            
+        case 0x03:
+        case 0x05:
+        case 0x06:
+        case 0x07:
+            return;
     }
 }
 
-unsigned long GPUreadData(void)
-{
-//    if(imageTransfer==2)
-//    {
-//        if ((imTY>=0) && (imTY<512) && (imTX>=0) && (imTX<1024))
-//        {
-//            GPUdataRet=psxVul[imTY*512+imTX/2];
-//        }
-//        imTX+=2;
-//        imTXc-=2;
-//        if(imTXc<=0)
-//        {
-//            imTX=imageX0;
-//            imTXc=imageX1;
-//            imTYc--;
-//            imTY++;
-//        }
-//        imSize--;
-//        if(imSize <= 0)
-//        {
-//            GPUstatusRet&=0xf7ffffff;
-//            imageTransfer=0;
-//        }
-//    }
+uw GPUreadData() {
 	return GPUdataRet;
 }
 
-int PullFromPsxRam(uint32_t *pMem, int size)
+sw PullFromPsxRam(uw *pMem, sw size)
 {
 	int count = 0;
-	unsigned short *input = (unsigned short*)pMem;
-	uint32_t *t = vramWrite.extratarget;
-	uint16_t *st = (uint16_t*)t;
-
-	short x2 = vramWrite.x + vramWrite.w;
-	short y2 = vramWrite.y + vramWrite.h;
+	uh *input = (uh *)pMem;
 	
-	unsigned short posx, posy;
+	sh x2 = vramWrite.x + vramWrite.w;
+	sh y2 = vramWrite.y + vramWrite.h;
+	
+	uh posx, posy;
 
 	if (vramWrite.enabled == 0) {
 		imageTransfer = 0;
@@ -198,19 +149,14 @@ int PullFromPsxRam(uint32_t *pMem, int size)
 
 	while(vramWrite.cury < y2)
 	{
-		posy = (unsigned short) vramWrite.cury;
+		posy = (uh)vramWrite.cury;
 		if (posy >= 512)
 			posy = 0;
 		while(vramWrite.curx < x2)
 		{
-			posx = (unsigned short) vramWrite.curx;
+			posx = (uh) vramWrite.curx;
 			if (posx >= 1024)
 				posx = 0;
-
-//            if (!psxDisp.colordepth24)
-//                *t++ = torgba[*input];
-//            else
-//                *st++ = *input;
 
 			psxVuw[(posy<<10)+posx] = *input;
 			
@@ -233,76 +179,20 @@ int PullFromPsxRam(uint32_t *pMem, int size)
 	}
 
 NOMOREIMAGEDATA:
-	if (vramWrite.cury >= y2)
-	{
-		float x,w;
-
+	if (vramWrite.cury >= y2) {
 		vramWrite.enabled = 0;
-
-//        glMatrixMode(GL_TEXTURE);
-//        glPushMatrix();
-//        glLoadIdentity();
-//        glScalef(1.0f/1024.0f,1.0f/512.0f,1.0f);
-//
-//        if (psxDisp.colordepth24)
-//        {
-//            x=vramWrite.x*2/3;
-//            w=vramWrite.w*2/3;
-//            glBindTexture(GL_TEXTURE_2D,xferTexture24);
-//            glTexSubImage2D(GL_TEXTURE_2D,0,0,0,w,vramWrite.h,GL_RGB,GL_UNSIGNED_BYTE,vramWrite.extratarget);
-//        }
-//        else
-//        {
-//            x=vramWrite.x;
-//            w=vramWrite.w;
-//            glBindTexture(GL_TEXTURE_2D,xferTexture16);
-//            glTexSubImage2D(GL_TEXTURE_2D,0,0,0,w,vramWrite.h,GL_RGBA,GL_UNSIGNED_BYTE,vramWrite.extratarget);
-//        }
-//
-//        glDisable(GL_BLEND);
-//        glDisable(GL_CLIP_PLANE0);
-//        glDisable(GL_CLIP_PLANE1);
-//        glDisable(GL_CLIP_PLANE2);
-//        glDisable(GL_CLIP_PLANE3);
-//
-//        glColor3ub(255,255,255);
-//
-//        glBegin(GL_POLYGON);
-//            glTexCoord2s(0, 0);
-//            glVertex2s(x,vramWrite.y);
-//
-//            glTexCoord2s(w, 0);
-//            glVertex2s(x+w,vramWrite.y);
-//
-//            glTexCoord2s(w, vramWrite.h);
-//            glVertex2s(x+w,vramWrite.y+vramWrite.h);
-//
-//            glTexCoord2s(0, vramWrite.h);
-//            glVertex2s(x,vramWrite.y+vramWrite.h);
-//        glEnd();
-//        glEnable(GL_BLEND);
-//
-//        glPopMatrix();
-//
-//        glEnable(GL_CLIP_PLANE0);
-//        glEnable(GL_CLIP_PLANE1);
-//        glEnable(GL_CLIP_PLANE2);
-//        glEnable(GL_CLIP_PLANE3);
-//
-//
-//        free(vramWrite.extratarget);
 		imageTransfer = 0;
-		if (count%2 == 1)
+		if (count % 2 == 1)
 			count++;
 	}
 
-	return count>>1;
+	return count >> 1;
 }
 
-void GPUwriteDataMem(uint32_t * pMem, int iSize) {
-	unsigned char command;
+void GPUwriteDataMem(uw * pMem, sw iSize) {
+	ub command;
 	int i = 0;
-	uint32_t gdata = 0;
+	uw gdata = 0;
 	
 	for(;i<iSize;)
 	{
@@ -321,7 +211,7 @@ void GPUwriteDataMem(uint32_t * pMem, int iSize) {
 		
 		if(gpuDataC == 0)
 		{
-			command = (unsigned char) (gdata>>24) & 0xff;
+			command = (ub)(gdata >> 24) & 0xff;
 			if (primTableC[command])
 			{
 				gpuDataC = primTableC[command];
@@ -335,28 +225,19 @@ void GPUwriteDataMem(uint32_t * pMem, int iSize) {
 		else
 		{
 			gpuData[gpuDataP] = gdata;
-//            if ( gpuDataC>128 )
-//            {
-//                if ( ( gpuDataC==254 && gpuDataP>=3 ) ||
-//                    ( gpuDataC==255 && gpuDataP>=4 && ! ( gpuDataP&1 ) ) )
-//                {
-//                    if ( ( gpuData[gpuDataP] & 0xF000F000 ) == 0x50005000 )
-//                        gpuDataP=gpuDataC-1;
-//                }
-//            }
 			gpuDataP++;
 		}
 		if(gpuDataP == gpuDataC)
 		{
 			gpuDataC=gpuDataP=0;
-			primTableJ[gpuCommand]((unsigned char *)gpuData);
+			primTableJ[gpuCommand]((ub *)gpuData);
 		}
 	}
 
-	//GPUdataRet=gdata;
+	GPUdataRet=gdata;
 }
 
-void GPUwriteData(uint32_t gdata) {
+void GPUwriteData(uw gdata) {
 	GPUwriteDataMem(&gdata, 1);
 }
 

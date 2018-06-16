@@ -1,6 +1,6 @@
 #ifndef MYGPU
 
-extern unsigned char primTableC[256];
-extern void (*primTableJ[256])(unsigned char *);
+extern ub primTableC[256];
+extern void (*primTableJ[256])(ub *);
 
 #endif
