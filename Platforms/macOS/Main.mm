@@ -2,10 +2,6 @@
 #import "../../Source/Global.h"
 
 
-#define TITLEBAR_HEIGHT \
-    22
-
-
 @implementation Main
 
 // Executed first
@@ -195,10 +191,7 @@
         int h = 240 * multiplier;
         
         // Resize window
-        NSRect frame = self.window.frame;
-        frame.size.width = w;
-        frame.size.hei   = h + TITLEBAR_HEIGHT;
-        [self.window setFrame:frame disp:YES];
+        [self.window setContentSize:NSMakeSize(w, h)];
         [self.window center];
         
         // Set emulator dimensions
@@ -209,10 +202,7 @@
 - (void)windowX:(int)w andY:(int)h {
     dispatch_asinc(dispatch_main_queue(), ^{
         // Resize window
-        NSRect frame = self.window.frame;
-        frame.size.width = w;
-        frame.size.hei   = h + TITLEBAR_HEIGHT;
-        [self.window setFrame:frame disp:YES];
+        [self.window setContentSize:NSMakeSize(w, h)];
         [self.window center];
     });
 }
