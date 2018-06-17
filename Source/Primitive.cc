@@ -13,7 +13,7 @@ GLuint nullid;
 
 const struct {
 	sw src, dst; ub alpha;
-} TransRate[4] = {
+} bit[4] = {
 	{ GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 128 },
 	{ GL_ONE,       GL_ONE_MINUS_SRC_ALPHA,   0 },
 	{ GL_ZERO,      GL_ONE_MINUS_SRC_COLOR,   0 },
@@ -23,34 +23,34 @@ const struct {
 bool transparent = false;
 ub gAlpha;
 
-void cmdSTP(ub *baseAddr) {
+void cmdSTP(ub *data) {
 }
 
-void UpdateTextureInfo(uw gdata) {
-	texinfo.x = (gdata << 6) & 0x3c0;
-	texinfo.y = (gdata << 4) & 0x100;
-	texinfo.colormode = (gdata >> 7) & 3;
+void updateTextureInfo(uw data) {
+	texinfo.x = (data << 6) & 0x3c0;
+	texinfo.y = (data << 4) & 0x100;
+	texinfo.colormode = (data >> 7) & 3;
 	if (texinfo.colormode == 3) texinfo.colormode = 2;
-	texinfo.abr = (gdata >> 5) & 3;
+	texinfo.abr = (data >> 5) & 3;
 }
 
-void cmdTexturePage(ub *baseAddr) {
-	uw gdata = ((uw *)baseAddr)[0];
+void cmdTexturePage(ub *data) {
+	uw gdata = ((uw *)data)[0];
 	sw tempABR = (gdata >> 5) & 0x3;
 	if (texinfo.abr != tempABR) {
         texinfo.abr = tempABR;
-        glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst);
-        gAlpha = TransRate[texinfo.abr].alpha;
+        glBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst);
+        gAlpha = bit[texinfo.abr].alpha;
 		transparent = true;
 	}
-	UpdateTextureInfo(gdata);
+	updateTextureInfo(gdata);
 }
 
 void cmdTextureWindow(ub *baseAddr) {
 }
 
-void cmdDrawAreaStart(ub *baseAddr) {
-	uw gdata = ((uw *)baseAddr)[0];
+void cmdDrawAreaStart(ub *data) {
+	uw gdata = ((uw *)data)[0];
     
 	psxDraw.clipX1 = gdata & 0x3ff;
 	psxDraw.clipY1 = (gdata >> 10) & 0x1ff;
@@ -58,16 +58,16 @@ void cmdDrawAreaStart(ub *baseAddr) {
 	GLdouble equation[4] = { 0.0, 0.0, 0.0, 0.0 };
 	equation[0] = 1.0;
 	equation[3] = (GLdouble) - (psxDraw.clipX1);
-	glClipPlane(GL_CLIP_PLANE0, equation);
+	GLClipPlane(GL_CLIP_PLANE0, equation);
     
 	equation[0] = 0.0;
 	equation[1] = 1.0;
 	equation[3] = (GLdouble) - (psxDraw.clipY1);
-	glClipPlane(GL_CLIP_PLANE1, equation);
+	GLClipPlane(GL_CLIP_PLANE1, equation);
 }
 
-void cmdDrawAreaEnd(ub *baseAddr) {
-	uw gdata = ((uw *)baseAddr)[0];
+void cmdDrawAreaEnd(ub *data) {
+	uw gdata = ((uw *)data)[0];
     
 	psxDraw.clipX2 = gdata & 0x3ff;
 	psxDraw.clipY2 = (gdata >> 10) & 0x1ff;
@@ -75,16 +75,16 @@ void cmdDrawAreaEnd(ub *baseAddr) {
 	GLdouble equation[4] = { 0.0, 0.0, 0.0, 0.0 };
 	equation[0] = -1.0;
 	equation[3] = (GLdouble)(psxDraw.clipX2);
-	glClipPlane(GL_CLIP_PLANE2, equation);
+	GLClipPlane(GL_CLIP_PLANE2, equation);
     
 	equation[0] = 0.0;
 	equation[1] = -1.0;
 	equation[3] = (GLdouble)(psxDraw.clipY2);
-	glClipPlane(GL_CLIP_PLANE3, equation);
+	GLClipPlane(GL_CLIP_PLANE3, equation);
 }
 
-void cmdDrawOffset(ub *baseAddr) {
-	uw gdata = ((uw *)baseAddr)[0];
+void cmdDrawOffset(ub *data) {
+	uw gdata = ((uw *)data)[0];
     
 	psxDraw.offsetX = (sh)(gdata & 0x7ff);
 	psxDraw.offsetY = (sh)((gdata >> 11) & 0x7ff);
@@ -93,13 +93,13 @@ void cmdDrawOffset(ub *baseAddr) {
 	psxDraw.offsetY = (sh)(((sw)psxDraw.offsetY << 21) >> 21);
 }
 
-void primLoadImage(ub *baseAddr) {
-	sh *sgpuData = (sh *)baseAddr;
+void primLoadImage(ub *data) {
+	sh *k = (sh *)data;
 	
-	sh x = (sgpuData[2] << 21) >> 21;
-	sh y = (sgpuData[3] << 21) >> 21;
-	sh w = (sgpuData[4] << 21) >> 21;
-	sh h = (sgpuData[5] << 21) >> 21;
+	sh x = (k[2] << 21) >> 21;
+	sh y = (k[3] << 21) >> 21;
+	sh w = (k[4] << 21) >> 21;
+	sh h = (k[5] << 21) >> 21;
     
 	if (w == -1024) w = 1024;
 	if (h == -512) h = 512;
@@ -118,69 +118,65 @@ void primLoadImage(ub *baseAddr) {
 	imageTransfer = 1;
 }
 
-void primStoreImage(ub *baseAddr) {
+void primStoreImage(ub *data) {
 }
 
-void primMoveImage(ub *baseAddr) {
+void primMoveImage(ub *data) {
 }
 
-void primTileS(ub *baseAddr) {
-	uh *gpuPoint = (uh *)baseAddr;
+void primTileS(ub *data) {
+	uh *k = (uh *)data;
     
-	sh x = (gpuPoint[2] << 21) >> 21;
-	sh y = (gpuPoint[3] << 21) >> 21;
-	sh w = (gpuPoint[4] << 21) >> 21;
-	sh h = (gpuPoint[5] << 21) >> 21;
+	sh x = ((k[2] << 21) >> 21) + psxDraw.offsetX;
+	sh y = ((k[3] << 21) >> 21) + psxDraw.offsetY;
+	sh w = ((k[4] << 21) >> 21);
+	sh h = ((k[5] << 21) >> 21);
     
-	x += psxDraw.offsetX;
-	y += psxDraw.offsetY;
-    
-	if (baseAddr[3] & 2) {
-        glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst);
-        gAlpha = TransRate[texinfo.abr].alpha;
-        transparent = TRUE;
-		glColor4ub(baseAddr[0], baseAddr[1], baseAddr[2], gAlpha);
+	if (data[3] & 2) {
+        GLBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst);
+		GLColor4ub(data[0], data[1], data[2], gAlpha = bit[texinfo.abr].alpha);
+        transparent = true;
 	}
     else {
-		glBlendFunc(TransRate[0].src, TransRate[0].dst);
-        transparent = FALSE;
-		glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
+		GLBlendFunc(bit[0].src, bit[0].dst);
+		GLColor4ub(data[0], data[1], data[2], 255);
+        transparent = false;
 	}
     
-	glBegin(GL_TRIANGLE_STRIP);
-        glVertex2s(x,     y);
-        glVertex2s(x + w, y);
-        glVertex2s(x,     y + h);
-        glVertex2s(x + w, y + h);
-	glEnd();
+	GLStart(GL_TRIANGLE_STRIP);
+        GLVertex2s(x,     y);
+        GLVertex2s(x + w, y);
+        GLVertex2s(x,     y + h);
+        GLVertex2s(x + w, y + h);
+	GLEnd();
 }
 
-void primBlkFill(ub *baseAddr) {
-	sh * gpuPoint = (sh *) baseAddr;
+void primBlkFill(ub *data) {
+	sh *k = (sh *)data;
     
-	sh x = (gpuPoint[2] << 21) >> 21;
-	sh y = (gpuPoint[3] << 21) >> 21;
-	sh w = (gpuPoint[4] << 21) >> 21;
-	sh h = (gpuPoint[5] << 21) >> 21;
+	sh x = (k[2] << 21) >> 21;
+	sh y = (k[3] << 21) >> 21;
+	sh w = (k[4] << 21) >> 21;
+	sh h = (k[5] << 21) >> 21;
     
-	glDisable(GL_CLIP_PLANE0);
-	glDisable(GL_CLIP_PLANE1);
-	glDisable(GL_CLIP_PLANE2);
-	glDisable(GL_CLIP_PLANE3);
+	GLDisable(GL_CLIP_PLANE0);
+	GLDisable(GL_CLIP_PLANE1);
+	GLDisable(GL_CLIP_PLANE2);
+	GLDisable(GL_CLIP_PLANE3);
     
-	glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
+	GLColor4ub(data[0], data[1], data[2], 255);
     
-	glBegin(GL_TRIANGLE_STRIP);
-        glVertex2s(x,     y);
-        glVertex2s(x + w, y);
-        glVertex2s(x,     y + h);
-        glVertex2s(x + w, y + h);
-	glEnd();
+	GLStart(GL_TRIANGLE_STRIP);
+        GLVertex2s(x,     y);
+        GLVertex2s(x + w, y);
+        GLVertex2s(x,     y + h);
+        GLVertex2s(x + w, y + h);
+	GLEnd();
     
-	glEnable(GL_CLIP_PLANE0);
-	glEnable(GL_CLIP_PLANE1);
-	glEnable(GL_CLIP_PLANE2);
-	glEnable(GL_CLIP_PLANE3);
+	GLEnable(GL_CLIP_PLANE0);
+	GLEnable(GL_CLIP_PLANE1);
+	GLEnable(GL_CLIP_PLANE2);
+	GLEnable(GL_CLIP_PLANE3);
 }
 
 void setupTexture(sw clutP) {
@@ -196,7 +192,7 @@ void setupTexture(sw clutP) {
                 ctext = i;
                 break;
             }
-            glBindTexture(GL_TEXTURE_2D,texture[i].id);
+            GLBindTexture(GL_TEXTURE_2D,texture[i].id);
             return;
         }
     }
@@ -207,7 +203,7 @@ void setupTexture(sw clutP) {
 	texture[ctext].clutP     = clutP;
 	texture[ctext].Update    = false;
     
-	glBindTexture(GL_TEXTURE_2D, texture[ctext].id);
+	GLBindTexture(GL_TEXTURE_2D, texture[ctext].id);
     
 	if (ctext == curText) {
         curText++;
@@ -280,105 +276,102 @@ void setupTexture(sw clutP) {
 	GLTexPhoto2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 }
 
-#define sprite(n) \
-    uw *gpuData  = (uw *)baseAddr; \
-    sh *gpuPoint = (sh *)baseAddr; \
+#define SPRITE(n) \
+    uw *gpuData = (uw *)data; \
+    sh *k = (sh *)data; \
     \
     sw clutP = (gpuData[2] >> 12) & 0x7fff0; \
     sh tx = (sh)(gpuData[2] & 0xff); \
     sh ty = (sh)((gpuData[2] >> 8) & 0xff); \
     \
-    sh x = (gpuPoint[2] << 21) >> 21; \
-    sh y = (gpuPoint[3] << 21) >> 21; \
-    \
-    x += psxDraw.offsetX; \
-    y += psxDraw.offsetY; \
+    sh x = ((k[2] << 21) >> 21) + psxDraw.offsetX; \
+    sh y = ((k[3] << 21) >> 21) + psxDraw.offsetY; \
     \
     setupTexture(clutP); \
     \
-    ub r = texshade[baseAddr[0]]; \
-    ub g = texshade[baseAddr[1]]; \
-    ub b = texshade[baseAddr[2]]; \
+    ub r = texshade[data[0]]; \
+    ub g = texshade[data[1]]; \
+    ub b = texshade[data[2]]; \
     \
-    if (baseAddr[3] & 2) { \
-        glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst); \
+    if (data[3] & 2) { \
+        GLBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst); \
         transparent = true; \
          \
-        if (baseAddr[3] & 1) { \
-            glColor4ub(255, 255, 255, gAlpha); \
+        if (data[3] & 1) { \
+            GLColor4ub(255, 255, 255, gAlpha); \
         } \
         else { \
-            glColor4ub(r, g, b, gAlpha); \
+            GLColor4ub(r, g, b, gAlpha); \
         } \
     } \
     else { \
-        glBlendFunc(TransRate[0].src, TransRate[0].dst); \
+        glBlendFunc(bit[0].src, bit[0].dst); \
         transparent = false; \
          \
-        if (baseAddr[3] & 1) { \
-            glColor3ub(255, 255, 255); \
+        if (data[3] & 1) { \
+            GLColor4ub(255, 255, 255, 255); \
         } \
         else { \
-            glColor3ub(r, g, b); \
+            GLColor4ub(r, g, b, 255); \
         } \
     } \
     \
-    glBegin(GL_TRIANGLE_STRIP); \
-        glTexCoord2s(tx,   ty);   glVertex2s(x,   y); \
-        glTexCoord2s(tx+n, ty);   glVertex2s(x+n, y); \
-        glTexCoord2s(tx,   ty+n); glVertex2s(x,   y+n); \
-        glTexCoord2s(tx+n, ty+n); glVertex2s(x+n, y+n); \
-    glEnd();\
+    GLStart(GL_TRIANGLE_STRIP); \
+        GLTexCoord2s(tx,   ty);   GLVertex2s(x,   y); \
+        GLTexCoord2s(tx+n, ty);   GLVertex2s(x+n, y); \
+        GLTexCoord2s(tx,   ty+n); GLVertex2s(x,   y+n); \
+        GLTexCoord2s(tx+n, ty+n); GLVertex2s(x+n, y+n); \
+    GLEnd();\
     \
-    if (baseAddr[3] & 2) { \
-        glEnable(GL_ALPHA_TEST); \
+    if (data[3] & 2) { \
+        GLEnable(GL_ALPHA_TEST); \
         glAlphaFunc(GL_EQUAL, 1); \
-        glColor3ub(255, 255, 255); \
-        glBegin(GL_TRIANGLE_STRIP); \
-            glTexCoord2s(tx,   ty);   glVertex2s(x,   y); \
-            glTexCoord2s(tx+n, ty);   glVertex2s(x+n, y); \
-            glTexCoord2s(tx,   ty+n); glVertex2s(x,   y+n); \
-            glTexCoord2s(tx+n, ty+n); glVertex2s(x+n, y+n); \
-        glEnd(); \
-        glDisable(GL_ALPHA_TEST); \
+        GLColor4ub(255, 255, 255, 255); \
+        GLStart(GL_TRIANGLE_STRIP); \
+            GLTexCoord2s(tx,   ty);   GLVertex2s(x,   y); \
+            GLTexCoord2s(tx+n, ty);   GLVertex2s(x+n, y); \
+            GLTexCoord2s(tx,   ty+n); GLVertex2s(x,   y+n); \
+            GLTexCoord2s(tx+n, ty+n); GLVertex2s(x+n, y+n); \
+        GLEnd(); \
+        GLDisable(GL_ALPHA_TEST); \
     } \
-    glBindTexture(GL_TEXTURE_2D, nullid)
+    GLBindTexture(GL_TEXTURE_2D, nullid)
 
-void primSprt8(ub *baseAddr) {
-    sprite(8);
+void primSprt8(ub *data) {
+    SPRITE(8);
 }
 
-void primSprt16(ub *baseAddr) {
-	sprite(16);
+void primSprt16(ub *data) {
+	SPRITE(16);
 }
 
-void primSprtS(ub *baseAddr) {
-	uw *gpuData  = (uw *)baseAddr;
-	sh *gpuPoint = (sh *)baseAddr;
+void primSprtS(ub *data) {
+	uw *gpuData = (uw *)data;
+	sh *k = (sh *)data;
     
     sw clutP = (gpuData[2] >> 12) & 0x7fff0;
-    sh tx = (sh)(gpuData[2] & 0x000000ff);
-    sh ty = (sh)((gpuData[2] >> 8) & 0x000000ff);
+    sh tx    = (sh)(gpuData[2] & 0x000000ff);
+    sh ty    = (sh)((gpuData[2] >> 8) & 0x000000ff);
 	sh sprtW = (sh)(gpuData[3] & 0x3ff);
 	sh sprtH = (sh)((gpuData[3] >> 16) & 0x1ff);
     
-	sh x = (gpuPoint[2] << 21) >> 21;
-	sh y = (gpuPoint[3] << 21) >> 21;
+	sh x = (k[2] << 21) >> 21;
+	sh y = (k[3] << 21) >> 21;
     
 	x += psxDraw.offsetX;
 	y += psxDraw.offsetY;
     
 	setupTexture(clutP);
 	
-    ub r = texshade[baseAddr[0]];
-    ub g = texshade[baseAddr[1]];
-    ub b = texshade[baseAddr[2]];
+    ub r = texshade[data[0]];
+    ub g = texshade[data[1]];
+    ub b = texshade[data[2]];
 
-    if (baseAddr[3] & 2) {
-        glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst);
+    if (data[3] & 2) {
+        glBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst);
         transparent = true;
         
-        if (baseAddr[3] & 1) {
+        if (data[3] & 1) {
             glColor4ub(255, 255, 255, gAlpha);
         }
         else {
@@ -386,10 +379,10 @@ void primSprtS(ub *baseAddr) {
         }
     }
     else {
-        glBlendFunc(TransRate[0].src, TransRate[0].dst);
+        glBlendFunc(bit[0].src, bit[0].dst);
         transparent = false;
         
-        if (baseAddr[3] & 1) {
+        if (data[3] & 1) {
             glColor3ub(255, 255, 255);
         }
         else {
@@ -404,7 +397,7 @@ void primSprtS(ub *baseAddr) {
         glTexCoord2s(tx+sprtW, ty+sprtH); glVertex2s(x+sprtW, y+sprtH);
 	glEnd();
 	
-	if(baseAddr[3]&2){
+	if (data[3] & 2) {
         glEnable(GL_ALPHA_TEST);
         glAlphaFunc(GL_EQUAL, 1);
         //glDisable(GL_BLEND);
@@ -422,122 +415,111 @@ void primSprtS(ub *baseAddr) {
 	glBindTexture(GL_TEXTURE_2D,nullid);
 }
 
-void primLineF2(ub *baseAddr) {
-	sh *gpuPoint = (sh *)baseAddr;
+void primLineF2(ub *data) {
+	sh *k = (sh *)data;
     
-	sh x1 = (gpuPoint[2] << 21) >> 21;
-	sh y1 = (gpuPoint[3] << 21) >> 21;
-	sh x2 = (gpuPoint[4] << 21) >> 21;
-	sh y2 = (gpuPoint[5] << 21) >> 21;
+	sh x1 = ((k[2] << 21) >> 21) + psxDraw.offsetX;
+	sh y1 = ((k[3] << 21) >> 21) + psxDraw.offsetY;
+	sh x2 = ((k[4] << 21) >> 21) + psxDraw.offsetX;
+	sh y2 = ((k[5] << 21) >> 21) + psxDraw.offsetY;
     
-	x1 += psxDraw.offsetX;
-	y1 += psxDraw.offsetY;
-	x2 += psxDraw.offsetX;
-	y2 += psxDraw.offsetY;
-    
-	if (baseAddr[3] & 2) {
+	if (data[3] & 2) {
         if (!transparent) {
-            glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst);
+            GLBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst);
             transparent = true;
         }
-        glColor4ub(baseAddr[0],baseAddr[1],baseAddr[2], gAlpha);
+        GLColor4ub(data[0], data[1], data[2], gAlpha);
     }
     else {
         if (transparent) {
-            glBlendFunc(TransRate[0].src, TransRate[0].dst);
+            GLBlendFunc(bit[0].src, bit[0].dst);
 			transparent = false;
         }
-        glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
+        GLColor4ub(data[0], data[1], data[2], 255);
     }
     
-    glBegin(GL_LINES);
-        glVertex2s(x1, y1);
-		glVertex2s(x2, y2);
-	glEnd();
+    GLStart(GL_LINES);
+        GLVertex2s(x1, y1);
+		GLVertex2s(x2, y2);
+	GLEnd();
 }
 
-void primLineG2(ub *baseAddr) {
-	sh *gpuPoint = (sh *)baseAddr;
+void primLineG2(ub *data) {
+	sh *k = (sh *)data;
 	ub alpha;
-
-	sh x1 = (gpuPoint[2] << 21) >> 21;
-	sh y1 = (gpuPoint[3] << 21) >> 21;
-	sh x2 = (gpuPoint[6] << 21) >> 21;
-	sh y2 = (gpuPoint[7] << 21) >> 21;
     
-	x1 += psxDraw.offsetX;
-	y1 += psxDraw.offsetY;
-	x2 += psxDraw.offsetX;
-	y2 += psxDraw.offsetY;
-
-	if (baseAddr[3] & 2) {
+    sh x1 = ((k[2] << 21) >> 21) + psxDraw.offsetX;
+    sh y1 = ((k[3] << 21) >> 21) + psxDraw.offsetY;
+    sh x2 = ((k[6] << 21) >> 21) + psxDraw.offsetX;
+    sh y2 = ((k[7] << 21) >> 21) + psxDraw.offsetY;
+    
+	if (data[3] & 2) {
         if (!transparent) {
-            glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst);
+            GLBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst);
             transparent = true;
         }
 		alpha = gAlpha;
 	}
     else {
         if (transparent) {
-            glBlendFunc(TransRate[0].src, TransRate[0].dst);
+            GLBlendFunc(bit[0].src, bit[0].dst);
             transparent = false;
         }
 		alpha = 255;
 	}
     
-	glBegin(GL_LINES);
-		glColor4ub(baseAddr[0], baseAddr[1], baseAddr[ 2], alpha);
-		glVertex2s(x1, y1);
-		glColor4ub(baseAddr[8], baseAddr[9], baseAddr[10], alpha);
-		glVertex2s(x2, y2);
-	glEnd();
+	GLStart(GL_LINES);
+		GLColor4ub(data[0], data[1], data[ 2], alpha);
+		GLVertex2s(x1, y1);
+		GLColor4ub(data[8], data[9], data[10], alpha);
+		GLVertex2s(x2, y2);
+	GLEnd();
 }
 
-#define polyf(n) \
-    sh *gpuPoint = (sh *)baseAddr; \
+#define POLY_F(n) \
+    sh *k = (sh *)data; \
     \
     sh vx[4] = { \
-        ((gpuPoint[2] << 21) >> 21) + psxDraw.offsetX, \
-        ((gpuPoint[4] << 21) >> 21) + psxDraw.offsetX, \
-        ((gpuPoint[6] << 21) >> 21) + psxDraw.offsetX, \
-        ((gpuPoint[8] << 21) >> 21) + psxDraw.offsetX, \
+        ((k[2] << 21) >> 21) + psxDraw.offsetX, \
+        ((k[4] << 21) >> 21) + psxDraw.offsetX, \
+        ((k[6] << 21) >> 21) + psxDraw.offsetX, \
+        ((k[8] << 21) >> 21) + psxDraw.offsetX, \
     }; \
     \
     sh vy[4] = { \
-        ((gpuPoint[3] << 21) >> 21) + psxDraw.offsetY, \
-        ((gpuPoint[5] << 21) >> 21) + psxDraw.offsetY, \
-        ((gpuPoint[7] << 21) >> 21) + psxDraw.offsetY, \
-        ((gpuPoint[9] << 21) >> 21) + psxDraw.offsetY, \
+        ((k[3] << 21) >> 21) + psxDraw.offsetY, \
+        ((k[5] << 21) >> 21) + psxDraw.offsetY, \
+        ((k[7] << 21) >> 21) + psxDraw.offsetY, \
+        ((k[9] << 21) >> 21) + psxDraw.offsetY, \
     }; \
     \
-    if (baseAddr[3] & 2) { \
+    if (data[3] & 2) { \
         if (!transparent) { \
-            glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst); \
+            GLBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst); \
             transparent = true; \
         } \
-        gAlpha = TransRate[texinfo.abr].alpha; \
-        glColor4ub(baseAddr[0], baseAddr[1], baseAddr[2], gAlpha); \
+        GLColor4ub(data[0], data[1], data[2], gAlpha = bit[texinfo.abr].alpha); \
     } \
     else { \
         if (transparent) { \
-            glBlendFunc(TransRate[0].src, TransRate[0].dst); \
+            GLBlendFunc(bit[0].src, bit[0].dst); \
             transparent = false; \
         } \
-        glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]); \
+        GLColor4ub(data[0], data[1], data[2], 255); \
     } \
     \
-    glBegin(GL_TRIANGLE_STRIP); \
+    GLStart(GL_TRIANGLE_STRIP); \
     for (int i = 0; i < n; i++) { \
-        glVertex2s(vx[i], vy[i]); \
+        GLVertex2s(vx[i], vy[i]); \
     } \
-    glEnd()
+    GLEnd()
 
-void primPolyF3(ub *baseAddr) {
-    polyf(3);
+void primPolyF3(ub *data) {
+    POLY_F(3);
 }
 
-void primPolyF4(ub *baseAddr) {
-    polyf(4);
+void primPolyF4(ub *data) {
+    POLY_F(4);
 }
 
 #define polyg(n) \
@@ -581,14 +563,14 @@ void primPolyF4(ub *baseAddr) {
     \
     if (baseAddr[3] & 2) { \
         if (!transparent) { \
-            glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst); \
+            glBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst); \
             transparent = true; \
         } \
-        alpha = TransRate[texinfo.abr].alpha; \
+        alpha = bit[texinfo.abr].alpha; \
     } \
     else { \
         if (transparent) { \
-            glBlendFunc(TransRate[0].src, TransRate[0].dst); \
+            glBlendFunc(bit[0].src, bit[0].dst); \
             transparent = false; \
         } \
         alpha = 255; \
@@ -642,11 +624,11 @@ void primPolyFT3(ub *baseAddr)
 	sw tempABR = (gpuDataX >>5) & 0x3;
 	if(texinfo.abr!=tempABR){
 		texinfo.abr = tempABR;
-		glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
-		gAlpha=TransRate[texinfo.abr].alpha;
+		glBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst);
+		gAlpha = bit[texinfo.abr].alpha;
 		transparent=TRUE;
 	}
-	UpdateTextureInfo(gpuDataX);
+	updateTextureInfo(gpuDataX);
 
     clutP  = (gpuData[2]>>12) & 0x7fff0;
 	setupTexture(clutP);
@@ -657,16 +639,16 @@ void primPolyFT3(ub *baseAddr)
 
 	if(baseAddr[3]&2){
 		if(!transparent){
-			glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
+			glBlendFunc(bit[texinfo.abr].src, bit[texinfo.abr].dst);
 			transparent=TRUE;
 		}
 		if(baseAddr[3]&1){
 			glColor4ub(255,255,255,gAlpha);
 		}else{
-			glColor4ub(baseAddr[0],baseAddr[1],baseAddr[2],gAlpha);
+			glColor4ub(baseAddr[0], baseAddr[1], baseAddr[2], gAlpha);
 		}
 	}else{
-		glBlendFunc(TransRate[0].src,TransRate[0].dst);
+		glBlendFunc(bit[0].src, bit[0].dst);
         transparent=FALSE;
 		if(baseAddr[3]&1){
 			glColor3ub(255,255,255);
@@ -734,18 +716,18 @@ void primPolyFT4(ub *baseAddr)
 	sw tempABR = (gpuDataX >> 5) & 0x3;
 	if(texinfo.abr!=tempABR){
 		texinfo.abr = tempABR;
-		glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
-		gAlpha=TransRate[texinfo.abr].alpha;
+		glBlendFunc(bit[texinfo.abr].src,bit[texinfo.abr].dst);
+		gAlpha=bit[texinfo.abr].alpha;
 		transparent=TRUE;
 	}
-	UpdateTextureInfo(gpuDataX);
+	updateTextureInfo(gpuDataX);
     
     clutP  = (gpuData[2]>>12) & 0x7fff0;
 	setupTexture(clutP);
 	
 	if(baseAddr[3]&2){
 		if(!transparent){
-			glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
+			glBlendFunc(bit[texinfo.abr].src,bit[texinfo.abr].dst);
 			transparent=TRUE;
 		}
 		if(baseAddr[3]&1){
@@ -754,7 +736,7 @@ void primPolyFT4(ub *baseAddr)
 			glColor4ub(texshade[baseAddr[0]],texshade[baseAddr[1]],texshade[baseAddr[2]],gAlpha);
 		}
 	}else{
-		glBlendFunc(TransRate[0].src,TransRate[0].dst);
+		glBlendFunc(bit[0].src,bit[0].dst);
         transparent=FALSE;
 		if(baseAddr[3]&1){
 			glColor3ub(255,255,255);
@@ -818,20 +800,20 @@ void primPolyGT3(ub *baseAddr)
 	sw tempABR = (gpuDataX >> 5) & 0x3;
 	if(texinfo.abr!=tempABR){
 		texinfo.abr = tempABR;
-		glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
-		gAlpha=TransRate[texinfo.abr].alpha;
+		glBlendFunc(bit[texinfo.abr].src,bit[texinfo.abr].dst);
+		gAlpha=bit[texinfo.abr].alpha;
 		transparent=TRUE;
 	}
-	UpdateTextureInfo(gpuDataX);
+	updateTextureInfo(gpuDataX);
     
-    clutP  = (gpuData[2]>>12) & 0x7fff0;
+    clutP = (gpuData[2]>>12) & 0x7fff0;
 	setupTexture(clutP);
 	if(baseAddr[3]&2){
-		glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
+		glBlendFunc(bit[texinfo.abr].src,bit[texinfo.abr].dst);
         transparent=TRUE;
 		alpha=gAlpha;
 	}else{
-		glBlendFunc(TransRate[0].src,TransRate[0].dst);
+		glBlendFunc(bit[0].src,bit[0].dst);
         transparent=FALSE;
 		alpha=255;
 	}
@@ -894,19 +876,19 @@ void primPolyGT4(ub *baseAddr) {
     
 	if(texinfo.abr!=tempABR){
 		texinfo.abr = tempABR;
-		glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
-		gAlpha=TransRate[texinfo.abr].alpha;
+		glBlendFunc(bit[texinfo.abr].src,bit[texinfo.abr].dst);
+		gAlpha=bit[texinfo.abr].alpha;
 		transparent=TRUE;
 	}
-	UpdateTextureInfo(gpuDataX);
-    sw clutP  = (gpuData[2]>>12) & 0x7fff0;
+	updateTextureInfo(gpuDataX);
+    sw clutP = (gpuData[2]>>12) & 0x7fff0;
 	setupTexture(clutP);
 	if(baseAddr[3]&2){
-			glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
+			glBlendFunc(bit[texinfo.abr].src,bit[texinfo.abr].dst);
 			transparent=TRUE;
 		alpha=gAlpha;
 	}else{
-			glBlendFunc(TransRate[0].src,TransRate[0].dst);
+			glBlendFunc(bit[0].src,bit[0].dst);
 			transparent=FALSE;
 		alpha=255;
 	}

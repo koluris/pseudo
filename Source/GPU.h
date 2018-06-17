@@ -5,11 +5,6 @@ extern uh textBuf[];
 
 extern sw GPUstatusRet;
 
-#define INFO_TW        0
-#define INFO_DRAWSTART 1
-#define INFO_DRAWEND   2
-#define INFO_DRAWOFF   3
-
 #define GPUSTATUS_ODDLINES            0x80000000
 #define GPUSTATUS_DMABITS             0x60000000 // Two bits
 #define GPUSTATUS_READYFORCOMMANDS    0x10000000
@@ -75,6 +70,7 @@ union uPointers {
 	sh *s;
 	sw *l;
 };
+
 extern ub psxVub[];
 extern uh *psxVuw;
 extern uw *psxVul;
@@ -84,7 +80,6 @@ extern sh windowX, windowY;
 extern ub texshade[256];
 extern uw image[65536];
 extern uw torgba[65536];
-
 
 struct texturecache {
 	sw textAddrX, textAddrY, textTP, clutP;
@@ -96,6 +91,7 @@ extern struct texturecache texture[64];
 extern GLuint xferTexture16;
 extern GLuint xferTexture24;
 extern GLuint nullid;
+
 #define nullclutP (1024 * 512 + 1)
 
 void GPUinit();
