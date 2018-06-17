@@ -68,13 +68,17 @@ void CstrGraphics::write(uw addr, uw data) {
                         
                         if ((data >> 5) & 1) { // No distinction for interlaced
                             draw.resize(w, h);
+                            //printf("resize 1 (%d, %d)\n", w, h);
                         }
                         else { // Normal modes
                             if (h == vdiff) {
                                 draw.resize(w, h);
+                                //printf("resize 2 (%d, %d)\n", w, h);
                             }
                             else {
+                                vdiff = vdiff == 226 ? 240 : vdiff; // pdx-59.psx
                                 draw.resize(w, vpos ? vpos : vdiff);
+                                //printf("resize 3 (%d, %d)\n", w, (vpos ? vpos : vdiff));
                             }
                         }
                     }
