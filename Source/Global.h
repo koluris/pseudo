@@ -61,14 +61,8 @@ typedef int8_t  sb; // bite
 // OpenAL
 #define alSourceStream  alSourcePlay
 
-//#define MYGPU
-
 // User imports
 #import "Bus.h"
-
-#import "GPU.h"
-#import "Primitive.h"
-
 #import "Cache.h"
 #import "Counters.h"
 #import "Draw.h"

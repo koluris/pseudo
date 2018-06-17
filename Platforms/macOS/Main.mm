@@ -202,10 +202,7 @@
         [self.window center];
         
         // Set emulator dimensions
-#ifdef MYGPU
         draw.setWindowResolution(w, h);
-#else
-#endif
     }
 }
 

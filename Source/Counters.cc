@@ -63,11 +63,7 @@ void CstrCounters::update() {
     
     // VBlank
     if ((vbk += PSX_BIAS) >= PSX_VSYNC_NTSC) { vbk = 0;
-#ifdef MYGPU
         draw.refresh();
-#else
-        GPUupdateLace();
-#endif
         bus.interruptSet(CstrBus::INT_VSYNC);
     }
 }

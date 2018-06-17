@@ -41,19 +41,12 @@ void CstrPSeudo::reset() {
     
     audio.reset();
       bus.reset();
-#ifdef MYGPU
     cache.reset();
-#endif
       cpu.reset();
       mem.reset();
     rootc.reset();
       sio.reset();
-#ifdef MYGPU
        vs.reset();
-#else
-    GPUinit();
-    GPUopen();
-#endif
     
     // BIOS version, ex: "ROM Version 4.1 12/16/97 E"
     ub version[0x1b];
