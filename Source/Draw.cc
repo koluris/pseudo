@@ -11,17 +11,15 @@
 CstrDraw draw;
 
 void CstrDraw::reset() {
-    memset(&offset, 0, sizeof(offset));
+    memset(&  offset, 0, sizeof(offset));
+    memset(&drawArea, 0, sizeof(drawArea));
     blend    = 0;
     spriteTP = 0;
     
     // OpenGL
     GLViewport(0, 0, res.h, res.v);
     GLEnable(GL_BLEND);
-    GLEnable(GL_CLIP_PLANE0);
-    GLEnable(GL_CLIP_PLANE1);
-    GLEnable(GL_CLIP_PLANE2);
-    GLEnable(GL_CLIP_PLANE3);
+    GLEnable(GL_SCISSOR_TEST);
     
     // Textures
     GLMatrixMode(GL_TEXTURE);
@@ -46,11 +44,11 @@ void CstrDraw::setWindowResolution(uh w, uh h) {
 
 void CstrDraw::resize(uh w, uh h) {
     if (w && h) {
-        GLViewport(0, 0, w, h);
-
-#ifdef MAC_OS_X
-        [app windowX:w andY:h];
-#endif
+//        GLViewport(0, 0, w, h);
+        
+//#ifdef MAC_OS_X
+//        [app windowX:w andY:h];
+//#endif
         GLMatrixMode(GL_PROJECTION);
         GLID();
         GLOrtho(0, w - 1.0, h - 1.0, 0, 1.0, -1.0);
@@ -61,7 +59,7 @@ void CstrDraw::resize(uh w, uh h) {
     (CLOCKS_PER_SEC / 159.94)
 
 #define PAL \
-    (CLOCKS_PER_SEC / 50.00)
+    (CLOCKS_PER_SEC / 150.00)
 
 // Function "mach_absolute_time()" returns Nanoseconds
 
@@ -93,10 +91,7 @@ void CstrDraw::refresh() {
 void CstrDraw::drawRect(uw *data) {
     TILEx *k = (TILEx *)data;
     
-    GLDisable(GL_CLIP_PLANE0);
-    GLDisable(GL_CLIP_PLANE1);
-    GLDisable(GL_CLIP_PLANE2);
-    GLDisable(GL_CLIP_PLANE3);
+    GLDisable(GL_SCISSOR_TEST);
     
     GLColor4ub(k->c.a, k->c.b, k->c.c, COLOR_MAX);
     
@@ -107,10 +102,7 @@ void CstrDraw::drawRect(uw *data) {
         GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
     GLEnd();
     
-    GLEnable(GL_CLIP_PLANE0);
-    GLEnable(GL_CLIP_PLANE1);
-    GLEnable(GL_CLIP_PLANE2);
-    GLEnable(GL_CLIP_PLANE3);
+    GLEnable(GL_SCISSOR_TEST);
 }
 
 void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
@@ -400,25 +392,21 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0xe3: // Draw Area Start
-        {
-            sh p[] = {
-                data[0] & 0x3ff, (data[0] >> 10) & 0x1ff
-            };
-            
-            GLdouble e1[] = { 1.0, 0.0, 0.0, -p[0] }; GLClipPlane(GL_CLIP_PLANE0, e1);
-            GLdouble e2[] = { 0.0, 1.0, 0.0, -p[1] }; GLClipPlane(GL_CLIP_PLANE1, e2);
-        }
+            {
+                drawArea.start.X = ((data[0] >> 0x0) & 0x3ff);
+                drawArea.start.Y = ((data[0] >> 0xa) & 0x1ff);
+                GLScissor(drawArea.start.X, drawArea.start.Y, drawArea.end.X, drawArea.end.Y);
+                //printf("start: %d %d %d %d\n", drawArea.start.X, drawArea.start.Y, drawArea.end.X, drawArea.end.Y);
+            }
             return;
             
         case 0xe4: // Draw Area End
-        {
-            sh p[] = {
-                data[0] & 0x3ff, (data[0] >> 10) & 0x1ff
-            };
-            
-            GLdouble e1[] = {-1.0, 0.0, 0.0, p[0] }; GLClipPlane(GL_CLIP_PLANE2, e1);
-            GLdouble e2[] = { 0.0,-1.0, 0.0, p[1] }; GLClipPlane(GL_CLIP_PLANE3, e2);
-        }
+            {
+                drawArea.end.X = MAX((data[0] >> 0x0) & 0x3ff, res.h);
+                drawArea.end.Y = MAX((data[0] >> 0xa) & 0x1ff, res.v);
+                GLScissor(drawArea.start.X, drawArea.start.Y, drawArea.end.X, drawArea.end.Y);
+                //printf("  end: %d %d %d %d\n", drawArea.start.X, drawArea.start.Y, drawArea.end.X, drawArea.end.Y);
+            }
             return;
             
         case 0xe5: // Draw Offset
@@ -426,7 +414,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             offset.v = ((sw)data[0] << 10) >> 21;
             return;
             
-        case 0xe6: // STP
+        case 0xe6: // TODO: STP
             return;
     }
     

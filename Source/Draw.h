@@ -23,6 +23,13 @@ class CstrDraw {
         sh h, v;
     } res, offset;
     
+    // drawArea
+    struct {
+        struct {
+            sh X, Y;
+        } start, end;
+    } drawArea;
+    
     // Setup blend values
     const struct {
         sw src, dst; ub opaque;
