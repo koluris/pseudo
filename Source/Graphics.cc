@@ -194,7 +194,7 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
             pipe.data[pipe.row] = ret.data;
             
             if (pipe.size > 128) { // Crap
-                if ((pipe.size == 254 && pipe.row >= 3) || (pipe.size == 255 && pipe.row >= 4 && !(pipe.row&1))) {
+                if ((pipe.size == 254 && pipe.row >= 3) || (pipe.size == 255 && pipe.row >= 4 && !(pipe.row & 1))) {
                     if ((pipe.data[pipe.row] & 0xf000f000) == 0x50005000) {
                         pipe.row = pipe.size - 1;
                     }
