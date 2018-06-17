@@ -206,6 +206,17 @@
     }
 }
 
+- (void)windowX:(int)w andY:(int)h {
+    dispatch_asinc(dispatch_main_queue(), ^{
+        // Resize window
+        NSRect frame = self.window.frame;
+        frame.size.width = w;
+        frame.size.hei   = h + TITLEBAR_HEIGHT;
+        [self.window setFrame:frame disp:YES];
+        [self.window center];
+    });
+}
+
 @end
 
 // Startup

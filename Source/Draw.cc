@@ -46,6 +46,10 @@ void CstrDraw::setWindowResolution(uh w, uh h) {
 
 void CstrDraw::resize(uh w, uh h) {
     if (w && h) {
+#ifdef MAC_OS_X
+        GLViewport(0, 0, w, h);
+        [app windowX:w andY:h];
+#endif
         GLMatrixMode(GL_PROJECTION);
         GLID();
         GLOrtho(0, w - 1.0, h - 1.0, 0, 1.0, -1.0);
