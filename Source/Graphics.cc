@@ -20,9 +20,6 @@ void CstrGraphics::reset() {
     vpos         = 0;
     vdiff        = 0;
     isVideoPAL   = false;
-    
-    // Reset canvas
-    //draw.reset();
 }
 
 void CstrGraphics::write(uw addr, uw data) {
@@ -68,17 +65,14 @@ void CstrGraphics::write(uw addr, uw data) {
                         
                         if ((data >> 5) & 1) { // No distinction for interlaced
                             draw.resize(w, h);
-                            //printf("resize 1 (%d, %d)\n", w, h);
                         }
                         else { // Normal modes
                             if (h == vdiff) {
                                 draw.resize(w, h);
-                                //printf("resize 2 (%d, %d)\n", w, h);
                             }
                             else {
                                 vdiff = vdiff == 226 ? 240 : vdiff; // pdx-59.psx
                                 draw.resize(w, vpos ? vpos : vdiff);
-                                //printf("resize 3 (%d, %d)\n", w, (vpos ? vpos : vdiff));
                             }
                         }
                     }
@@ -90,7 +84,6 @@ void CstrGraphics::write(uw addr, uw data) {
                             ret.data = 2;
                             return;
                     }
-                    //printx("/// PSeudo GPU Write Status Information: $%x", (data & 0xffffff));
                     return;
                     
                 /* unused */
@@ -110,7 +103,6 @@ uw CstrGraphics::read(uw addr) {
             return ret.data;
             
         case GPU_REG_STATUS:
-            //return (ret.status | (GPU_READYFORCOMMANDS | GPU_READYFORVRAM | GPU_IDLE)) & ~(GPU_INTERLACED | GPU_DOUBLEHEIGHT);
             return ret.status | GPU_READYFORVRAM;
     }
     printx("/// PSeudo GPU Read: $%x", (addr & 0xf));
@@ -212,38 +204,6 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
         }
     }
 }
-
-//void CstrGraphics::dataRead(uw *ptr, sw size) {
-//    if (modeDMA == GPU_DMA_VRAM2MEM) {
-//        ret.status &= ~0x14000000;
-//
-//        do {
-//            uw data = (uw)vrop.pvram[vrop.h.p];
-//
-//            if (++vrop.h.p >= vrop.h.end) {
-//                vrop.h.p = vrop.h.start;
-//                vrop.pvram += FRAME_W;
-//            }
-//
-//            data |= (uw)vrop.pvram[vrop.h.p] << 16;
-//            *ptr++ = data;
-//
-//            if (++vrop.h.p >= vrop.h.end) {
-//                vrop.h.p = vrop.h.start;
-//                vrop.pvram += FRAME_W;
-//
-//                if (++vrop.v.p >= vrop.v.end) {
-//                    modeDMA = GPU_DMA_NONE;
-//                    ret.status &= ~GPU_READYFORVRAM;
-//                    break;
-//                }
-//            }
-//        }
-//        while(--size);
-//
-//        ret.status = (ret.status | 0x14000000) & (~GPU_DMABITS);
-//    }
-//}
 
 void CstrGraphics::photoRead(uw *data) {
     uh *k = (uh *)data;

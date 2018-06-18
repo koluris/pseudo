@@ -375,6 +375,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0x80: // TODO: Move photo
+            //printf("hi\n");
             return;
             
         case 0xa0: // Load photo
