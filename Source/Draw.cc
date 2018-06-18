@@ -1,25 +1,27 @@
 #import "Global.h"
 
 
-#define COLOR_MAX \
-    255
-
-#define COLOR_HALF \
-    COLOR_MAX >> 1
+//#define COLOR_MAX \
+//    255
+//
+//#define COLOR_HALF \
+//    COLOR_MAX >> 1
 
 
 CstrDraw draw;
 
 void CstrDraw::reset() {
-    memset(&  offset, 0, sizeof(offset));
-    memset(&drawArea, 0, sizeof(drawArea));
+    memset(&offset, 0, sizeof(offset));
     blend    = 0;
     spriteTP = 0;
     
     // OpenGL
     GLViewport(0, 0, res.h, res.v);
     GLEnable(GL_BLEND);
-    GLEnable(GL_SCISSOR_TEST);
+    GLEnable(GL_CLIP_PLANE0);
+    GLEnable(GL_CLIP_PLANE1);
+    GLEnable(GL_CLIP_PLANE2);
+    GLEnable(GL_CLIP_PLANE3);
     
     // Textures
     GLMatrixMode(GL_TEXTURE);
@@ -91,7 +93,10 @@ void CstrDraw::refresh() {
 void CstrDraw::drawRect(uw *data) {
     TILEx *k = (TILEx *)data;
     
-    GLDisable(GL_SCISSOR_TEST);
+    GLDisable(GL_CLIP_PLANE0);
+    GLDisable(GL_CLIP_PLANE1);
+    GLDisable(GL_CLIP_PLANE2);
+    GLDisable(GL_CLIP_PLANE3);
     
     GLColor4ub(k->c.a, k->c.b, k->c.c, COLOR_MAX);
     
@@ -102,19 +107,16 @@ void CstrDraw::drawRect(uw *data) {
         GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
     GLEnd();
     
-    GLEnable(GL_SCISSOR_TEST);
+    GLEnable(GL_CLIP_PLANE0);
+    GLEnable(GL_CLIP_PLANE1);
+    GLEnable(GL_CLIP_PLANE2);
+    GLEnable(GL_CLIP_PLANE3);
 }
 
 void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
     PFx *k = (PFx *)data;
     
-    ub b[] = {
-        k->c.n & 2 ? blend : 0,
-        k->c.n & 2 ? bit[blend].opaque : COLOR_MAX
-    };
-    
-    GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
-    
+    const ub *b = opaqueFunc(k->c.n);
     GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
     
     GLStart(mode);
@@ -127,12 +129,7 @@ void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
 void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
     PGx *k = (PGx *)data;
     
-    ub b[] = {
-        k->vx[0].c.n & 2 ? blend : 0,
-        k->vx[0].c.n & 2 ? bit[blend].opaque : COLOR_MAX
-    };
-    
-    GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
+    const ub *b = opaqueFunc(k->vx[0].c.n);
     
     GLStart(mode);
     for (int i = 0; i < size; i++) {
@@ -147,12 +144,7 @@ void CstrDraw::drawFT(uw *data, ub size) {
     
     blend = (k->vx[1].clut >> 5) & 3;
     
-    ub b[] = {
-        k->c.n & 2 ? blend : 0,
-        k->c.n & 2 ? bit[blend].opaque : COLOR_MAX
-    };
-    
-    GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
+    const ub *b = opaqueFunc(k->c.n);
     
     if (k->c.n & 1) {
         GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
@@ -179,12 +171,7 @@ void CstrDraw::drawGT(uw *data, ub size) {
     
     blend = (k->vx[1].clut >> 5) & 3;
     
-    ub b[] = {
-        k->vx[0].c.n & 2 ? blend : 0,
-        k->vx[0].c.n & 2 ? bit[blend].opaque : COLOR_MAX
-    };
-    
-    GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
+    const ub *b = opaqueFunc(k->vx[0].c.n);
     
     GLEnable(GL_TEXTURE_2D);
     cache.fetchTexture(k->vx[1].clut, k->vx[0].clut);
@@ -208,13 +195,7 @@ void CstrDraw::drawTile(uw *data, sh size) {
         k->h = size;
     }
     
-    ub b[] = {
-        k->c.n & 2 ? blend : 0,
-        k->c.n & 2 ? bit[blend].opaque : COLOR_MAX
-    };
-    
-    GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
-    
+    const ub *b = opaqueFunc(k->c.n);
     GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
     
     GLStart(GL_TRIANGLE_STRIP);
@@ -233,12 +214,7 @@ void CstrDraw::drawSprite(uw *data, sh size) {
         k->h = size;
     }
     
-    ub b[] = {
-        k->c.n & 2 ? blend : 0,
-        k->c.n & 2 ? bit[blend].opaque : COLOR_MAX
-    };
-    
-    GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
+    const ub *b = opaqueFunc(k->c.n);
     
     if (k->c.n & 1) {
         GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
@@ -273,6 +249,33 @@ void CstrDraw::drawSprite(uw *data, sh size) {
 //    }
     
     GLDisable(GL_TEXTURE_2D);
+}
+
+ub *CstrDraw::opaqueFunc(ub n) {
+    ub *b = new ub[2];
+    b[0] = n & 2 ? blend : 0;
+    b[1] = n & 2 ? bit[blend].opaque : COLOR_MAX;
+    
+    GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
+    
+    return b;
+}
+
+void CstrDraw::setDrawArea(int plane, uw data) {
+    double e1[] = { 1, 0, 0, (data) & 0x3ff };
+    double e2[] = { 0, 1, 0, (data >> 10) & 0x1ff };
+    
+    if (plane) {
+        e1[0] = -e1[0];
+        e2[1] = -e2[1];
+    }
+    else {
+        e1[3] = -e1[3];
+        e2[3] = -e2[3];
+    }
+    
+    GLClipPlane(GL_CLIP_PLANE0 + (plane + 0), e1);
+    GLClipPlane(GL_CLIP_PLANE0 + (plane + 1), e2);
 }
 
 void CstrDraw::primitive(uw addr, uw *data) {
@@ -392,21 +395,11 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0xe3: // Draw Area Start
-            {
-                drawArea.start.X = ((data[0] >> 0x0) & 0x3ff);
-                drawArea.start.Y = ((data[0] >> 0xa) & 0x1ff);
-                GLScissor(drawArea.start.X, drawArea.start.Y, drawArea.end.X, drawArea.end.Y);
-                //printf("start: %d %d %d %d\n", drawArea.start.X, drawArea.start.Y, drawArea.end.X, drawArea.end.Y);
-            }
+            setDrawArea(0, data[0]);
             return;
             
         case 0xe4: // Draw Area End
-            {
-                drawArea.end.X = MAX((data[0] >> 0x0) & 0x3ff, res.h);
-                drawArea.end.Y = MAX((data[0] >> 0xa) & 0x1ff, res.v);
-                GLScissor(drawArea.start.X, drawArea.start.Y, drawArea.end.X, drawArea.end.Y);
-                //printf("  end: %d %d %d %d\n", drawArea.start.X, drawArea.start.Y, drawArea.end.X, drawArea.end.Y);
-            }
+            setDrawArea(2, data[0]);
             return;
             
         case 0xe5: // Draw Offset

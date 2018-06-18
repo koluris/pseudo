@@ -1,4 +1,8 @@
 class CstrDraw {
+    enum {
+        COLOR_MAX  = 255,
+        COLOR_HALF = COLOR_MAX >> 1
+    };
     // Basic
     struct RGBC  { ub a, b, c, n; };
     struct PF    { sh w, h; };
@@ -23,13 +27,6 @@ class CstrDraw {
         sh h, v;
     } res, offset;
     
-    // drawArea
-    struct {
-        struct {
-            sh X, Y;
-        } start, end;
-    } drawArea;
-    
     // Setup blend values
     const struct {
         sw src, dst; ub opaque;
@@ -51,6 +48,9 @@ class CstrDraw {
     void drawGT    (uw *, ub);
     void drawTile  (uw *, sh);
     void drawSprite(uw *, sh);
+    
+    ub *opaqueFunc(ub);
+    void setDrawArea(int, uw);
     
 public:
     void reset();
