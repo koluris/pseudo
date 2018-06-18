@@ -29,7 +29,7 @@ void CstrDraw::reset() {
     GLID();
     GLScalef(1.0f / 256.0f, 1.0f / 256.0f, 1.0f);
     GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE); //GL_REPLACE GL_COMBINE
-    GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP); // GL_ALPHA_SCALE
+    GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2); // GL_ALPHA_SCALE
     
     // Redraw
     resize(window.h, window.v);
@@ -46,7 +46,7 @@ void CstrDraw::resize(uh w, uh h) {
 #endif
         GLMatrixMode(GL_PROJECTION);
         GLID();
-        GLOrtho(0, w - 1.0, h - 1.0, 0, 1.0, -1.0);
+        GLOrtho(0, w, h, 0, 1.0, -1.0);
         
         // Make current
         res.h = w;
@@ -267,11 +267,16 @@ void CstrDraw::setDrawArea(int plane, uw data) {
     if (plane) {
         e1[0] = -e1[0];
         e2[1] = -e2[1];
+        
+//        e1[3] -= 1;
+//        e2[3] -= 1;
     }
     else {
         e1[3] = -e1[3];
         e2[3] = -e2[3];
     }
+    
+    //printf("%d %f %f\n", plane, e1[3], e2[3]);
     
     GLClipPlane(GL_CLIP_PLANE0 + (plane + 0), e1);
     GLClipPlane(GL_CLIP_PLANE0 + (plane + 1), e2);
