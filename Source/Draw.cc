@@ -1,22 +1,23 @@
 #import "Global.h"
 
 
-//#define COLOR_MAX \
-//    255
-//
-//#define COLOR_HALF \
-//    COLOR_MAX >> 1
-
-
 CstrDraw draw;
 
+void CstrDraw::init(uh w, uh h) {
+    window.h = w;
+    window.v = h;
+    
+    draw.reset();
+}
+
 void CstrDraw::reset() {
+    memset(&   res, 0, sizeof(res));
     memset(&offset, 0, sizeof(offset));
-    blend    = 0;
+    opaque   = 0;
     spriteTP = 0;
     
     // OpenGL
-    GLViewport(0, 0, res.h, res.v);
+    GLViewport(0, 0, window.h, window.v);
     GLEnable(GL_BLEND);
     GLEnable(GL_CLIP_PLANE0);
     GLEnable(GL_CLIP_PLANE1);
@@ -31,29 +32,25 @@ void CstrDraw::reset() {
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, GL_LINE_LOOP); // GL_ALPHA_SCALE
     
     // Redraw
-    resize(res.h, res.v);
-    GLClearColor(0, 0, 0, 0);
+    resize(window.h, window.v);
+    GLClearColor(0.1, 0.1, 0.1, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
     GLFlush();
 }
 
-void CstrDraw::setWindowResolution(uh w, uh h) {
-    res.h = w;
-    res.v = h;
-    
-    draw.reset();
-}
-
 void CstrDraw::resize(uh w, uh h) {
-    if (w && h) {
-//        GLViewport(0, 0, w, h);
-        
-//#ifdef MAC_OS_X
-//        [app windowX:w andY:h];
-//#endif
+    // Not current
+    if (w != res.h || h != res.v) {
+#if 1
+        GLViewport((window.h - w) / 2, (window.v - h) / 2, w, h); // Keep PSX aspect ratio
+#endif
         GLMatrixMode(GL_PROJECTION);
         GLID();
         GLOrtho(0, w - 1.0, h - 1.0, 0, 1.0, -1.0);
+        
+        // Make current
+        res.h = w;
+        res.v = h;
     }
 }
 
@@ -93,24 +90,26 @@ void CstrDraw::refresh() {
 void CstrDraw::drawRect(uw *data) {
     TILEx *k = (TILEx *)data;
     
-    GLDisable(GL_CLIP_PLANE0);
-    GLDisable(GL_CLIP_PLANE1);
-    GLDisable(GL_CLIP_PLANE2);
-    GLDisable(GL_CLIP_PLANE3);
+//    GLDisable(GL_CLIP_PLANE0);
+//    GLDisable(GL_CLIP_PLANE1);
+//    GLDisable(GL_CLIP_PLANE2);
+//    GLDisable(GL_CLIP_PLANE3);
     
     GLColor4ub(k->c.a, k->c.b, k->c.c, COLOR_MAX);
     
-    GLStart(GL_TRIANGLE_STRIP);
-        GLVertex2s(k->vx.w,        k->vx.h);
-        GLVertex2s(k->vx.w + k->w, k->vx.h);
-        GLVertex2s(k->vx.w,        k->vx.h + k->h);
-        GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
-    GLEnd();
+//    GLStart(GL_TRIANGLE_STRIP);
+//        GLVertex2s(k->vx.w,        k->vx.h);
+//        GLVertex2s(k->vx.w + k->w, k->vx.h);
+//        GLVertex2s(k->vx.w,        k->vx.h + k->h);
+//        GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
+//    GLEnd();
     
-    GLEnable(GL_CLIP_PLANE0);
-    GLEnable(GL_CLIP_PLANE1);
-    GLEnable(GL_CLIP_PLANE2);
-    GLEnable(GL_CLIP_PLANE3);
+    GLRecti(k->vx.w, k->vx.h, k->vx.w + k->w, k->vx.h + k->h);
+    
+//    GLEnable(GL_CLIP_PLANE0);
+//    GLEnable(GL_CLIP_PLANE1);
+//    GLEnable(GL_CLIP_PLANE2);
+//    GLEnable(GL_CLIP_PLANE3);
 }
 
 void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
@@ -142,7 +141,7 @@ void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
 void CstrDraw::drawFT(uw *data, ub size) {
     PFTx *k = (PFTx *)data;
     
-    blend = (k->vx[1].clut >> 5) & 3;
+    opaque = (k->vx[1].clut >> 5) & 3;
     
     const ub *b = opaqueFunc(k->c.n);
     
@@ -169,7 +168,7 @@ void CstrDraw::drawFT(uw *data, ub size) {
 void CstrDraw::drawGT(uw *data, ub size) {
     PGTx *k = (PGTx *)data;
     
-    blend = (k->vx[1].clut >> 5) & 3;
+    opaque = (k->vx[1].clut >> 5) & 3;
     
     const ub *b = opaqueFunc(k->vx[0].c.n);
     
@@ -253,8 +252,8 @@ void CstrDraw::drawSprite(uw *data, sh size) {
 
 ub *CstrDraw::opaqueFunc(ub n) {
     ub *b = new ub[2];
-    b[0] = n & 2 ? blend : 0;
-    b[1] = n & 2 ? bit[blend].opaque : COLOR_MAX;
+    b[0] = n & 2 ? opaque : 0;
+    b[1] = n & 2 ? bit[opaque].trans : COLOR_MAX;
     
     GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
     
@@ -387,8 +386,8 @@ void CstrDraw::primitive(uw addr, uw *data) {
             
         case 0xe1: // Texture P.
             spriteTP = data[0] & 0x7ff;
-            blend = (data[0] >> 5) & 3;
-            GLBlendFunc(bit[blend].src, bit[blend].dst);
+            opaque = (data[0] >> 5) & 3;
+            GLBlendFunc(bit[opaque].src, bit[opaque].dst);
             return;
             
         case 0xe2: // TODO: Texture Window

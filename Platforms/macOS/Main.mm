@@ -195,16 +195,8 @@
         [self.window center];
         
         // Set emulator dimensions
-        draw.setWindowResolution(w, h);
+        draw.init(w, h);
     }
-}
-
-- (void)windowX:(int)w andY:(int)h {
-    dispatch_asinc(dispatch_main_queue(), ^{
-        // Resize window
-        [self.window setContentSize:NSMakeSize(w, h)];
-        [self.window center];
-    });
 }
 
 @end

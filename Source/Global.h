@@ -49,8 +49,8 @@ typedef int8_t  sb; // bite
 #define GLID                glLoadIdentity
 #define GLMatrixMode        glMatrixMode
 #define GLOrtho             glOrtho
+#define GLRecti             glRecti
 #define GLScalef            glScalef
-#define GLScissor           glScissor
 #define GLStart             glBegin
 #define GLTexCoord2s        glTexCoord2s
 #define GLTexEnvi           glTexEnvi

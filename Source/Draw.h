@@ -3,6 +3,7 @@ class CstrDraw {
         COLOR_MAX  = 255,
         COLOR_HALF = COLOR_MAX >> 1
     };
+    
     // Basic
     struct RGBC  { ub a, b, c, n; };
     struct PF    { sh w, h; };
@@ -25,11 +26,11 @@ class CstrDraw {
     // Offset
     struct {
         sh h, v;
-    } res, offset;
+    } res, window, offset;
     
-    // Setup blend values
+    // Setup opaque values
     const struct {
-        sw src, dst; ub opaque;
+        sw src, dst; ub trans;
     } bit[4] = {
         { GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 128 },
         { GL_ONE,       GL_ONE_MINUS_SRC_ALPHA,   0 },
@@ -37,7 +38,7 @@ class CstrDraw {
         { GL_SRC_ALPHA, GL_ONE,                  64 },
     };
     
-    ub blend;
+    ub opaque;
     uw spriteTP;
     
     // Primitives
@@ -53,8 +54,8 @@ class CstrDraw {
     void setDrawArea(int, uw);
     
 public:
+    void init(uh, uh);
     void reset();
-    void setWindowResolution(uh, uh);
     void resize(uh, uh);
     void refresh();
     void primitive(uw, uw *);

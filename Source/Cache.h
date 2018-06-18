@@ -1,5 +1,4 @@
 class CstrCache {
-    // Constant enumerations
     enum {
         // Texture modes
         TEX_04BIT,
@@ -7,7 +6,7 @@ class CstrCache {
         TEX_15BIT,
         
         // Maximum texture cache
-        TCACHE_MAX = 2048
+        TCACHE_MAX = 64
     };
     
     struct {

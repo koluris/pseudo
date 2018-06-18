@@ -22,7 +22,7 @@ void CstrGraphics::reset() {
     isVideoPAL   = false;
     
     // Reset canvas
-    draw.reset();
+    //draw.reset();
 }
 
 void CstrGraphics::write(uw addr, uw data) {

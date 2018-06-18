@@ -17,7 +17,6 @@
 - (void)openPSXfile:(NSURL *)path;
 - (void)consoleClear;
 - (void)consolePrint:(NSChars *)text;
-- (void)windowX:(int)w andY:(int)h;
 
 @end
 
