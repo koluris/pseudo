@@ -9,9 +9,9 @@ CstrGraphics vs;
 
 void CstrGraphics::reset() {
     memset(vram.ptr, 0, vram.size);
-    memset(&   vrop, 0, sizeof(vrop));
-    memset(&    ret, 0, sizeof(ret));
-    memset(&   pipe, 0, sizeof(pipe));
+    vrop = { 0 };
+    ret  = { 0 };
+    pipe = { 0 };
     
     ret.disabled = true;
     ret.data     = 0; //0x400;
