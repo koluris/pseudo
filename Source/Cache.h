@@ -14,26 +14,27 @@ class CstrCache {
             uw w, h, cc;
         } pos;
         
+        GLuint uid, tex;
+    } cache[TCACHE_MAX];
+    
+    struct {
         // Texture and color lookup table buffer
         uw bfr[256][256], cc[256];
     } tex;
-    
-    struct {
-        GLuint uid, tex;
-    } cache[TCACHE_MAX];
     
     uh index;
     uw pixel2texel(uh);
     
 public:
     ~CstrCache() {
-        for (int i = 0; i < TCACHE_MAX; i++) {
-            GLDeleteTextures(1, &cache[i].tex);
+        for (auto &tc : cache) {
+            GLDeleteTextures(1, &tc.tex);
         }
     }
     
     void reset();
     void fetchTexture(uw, uw);
+    void invalidate(sh, sh, sh, sh);
 };
 
 extern CstrCache cache;

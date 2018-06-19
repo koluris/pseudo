@@ -8,13 +8,12 @@
 CstrCache cache;
 
 void CstrCache::reset() {
-    for (int i = 0; i < TCACHE_MAX; i++) {
-        GLDeleteTextures(1, &cache[i].tex);
-        cache[i].uid = 0;
-        cache[i].tex = 0;
+    for (auto &tc : cache) {
+        GLDeleteTextures(1, &tc.tex);
+        tc = { 0 };
         
-        GLGenTextures(1, &cache[i].tex);
-        GLBindTexture  (GL_TEXTURE_2D, cache[i].tex);
+        GLGenTextures(1, &tc.tex);
+        GLBindTexture  (GL_TEXTURE_2D, tc.tex);
         GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
@@ -27,33 +26,34 @@ uw CstrCache::pixel2texel(uh p) {
 }
 
 void CstrCache::fetchTexture(uw tp, uw clut) {
-    GLuint uid = (clut << 16) | tp; // Generate a unique texture ID
+    uw uid = (clut << 16) | tp;
     
-    for (int i = 0; i < TCACHE_MAX; i++) {
-        if (cache[i].uid == uid) { // Found cached texture
-            GLBindTexture(GL_TEXTURE_2D, cache[i].tex);
+    for (auto &tc : cache) {
+        if (tc.uid == uid) { // Found cached texture
+            GLBindTexture(GL_TEXTURE_2D, tc.tex);
             return;
         }
     }
     
+    // Basic info
+    auto &tc  = cache[index];
+    tc.pos.w  = (tp & 15) * 64;
+    tc.pos.h  = ((tp >> 4) & 1) * 256;
+    tc.pos.cc = (clut & 0x7fff) * 16;
+    
     // Reset
     memset(&tex, 0, sizeof(tex));
-    
-    // Basic info
-    tex.pos.w  = (tp & 15) * 64;
-    tex.pos.h  = ((tp >> 4) & 1) * 256;
-    tex.pos.cc = (clut & 0x7fff) * 16;
     
     switch((tp >> 7) & 3) {
         case TEX_04BIT: // 16 color palette
             for (int i = 0; i < 16; i++) {
-                tex.cc[i] = pixel2texel(vs.vram.ptr[tex.pos.cc]);
-                tex.pos.cc++;
+                tex.cc[i] = pixel2texel(vs.vram.ptr[tc.pos.cc]);
+                tc.pos.cc++;
             }
             
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < (256 / 4); w++) {
-                    const uh p = vs.vram.ptr[(tex.pos.h + h) * FRAME_W + tex.pos.w + w];
+                    const uh p = vs.vram.ptr[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
                     tex.bfr[h][w*4 + 0] = tex.cc[(p >> 0x0) & 15];
                     tex.bfr[h][w*4 + 1] = tex.cc[(p >> 0x4) & 15];
                     tex.bfr[h][w*4 + 2] = tex.cc[(p >> 0x8) & 15];
@@ -64,13 +64,13 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             
         case TEX_08BIT: // 256 color palette
             for (int i = 0; i < 256; i++) {
-                tex.cc[i] = pixel2texel(vs.vram.ptr[tex.pos.cc]);
-                tex.pos.cc++;
+                tex.cc[i] = pixel2texel(vs.vram.ptr[tc.pos.cc]);
+                tc.pos.cc++;
             }
             
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < (256 / 2); w++) {
-                    const uh p = vs.vram.ptr[(tex.pos.h + h) * FRAME_W + tex.pos.w + w];
+                    const uh p = vs.vram.ptr[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
                     tex.bfr[h][w*2 + 0] = tex.cc[(p >> 0) & 255];
                     tex.bfr[h][w*2 + 1] = tex.cc[(p >> 8) & 255];
                 }
@@ -80,7 +80,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
         case TEX_15BIT: // No color palette
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < 256; w++) {
-                    const uh p = vs.vram.ptr[(tex.pos.h + h) * FRAME_W + tex.pos.w + w];
+                    const uh p = vs.vram.ptr[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
                     tex.bfr[h][w] = pixel2texel(p);
                 }
             }
@@ -88,10 +88,23 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     }
     
     // Attach texture
-    GLBindTexture(GL_TEXTURE_2D, cache[index].tex);
+    GLBindTexture(GL_TEXTURE_2D, tc.tex);
     GLTexPhoto2D (GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.bfr);
     
     // Advance cache counter
-    cache[index].uid = uid;
-    index = (index + 1) & (TCACHE_MAX - 1);
+    tc.uid = uid;
+    index  = (index + 1) & (TCACHE_MAX - 1);
+}
+
+void CstrCache::invalidate(sh X, sh Y, sh W, sh H) {
+    for (auto &tc : cache) {
+        if (((tc.pos.w + 255) >= X) && ((tc.pos.h + 255) >= Y) && ((tc.pos.w) <= W) && ((tc.pos.h) <= H)) {
+            printf("VRAM: %4d %4d %4d %4d\n", X, Y, W, H);
+            printf("TEXT: %4d %4d %4d %4d\n", tc.pos.w, tc.pos.h, (tc.pos.w + 255), (tc.pos.h + 255));
+            printf("-\n");
+            
+            reset();
+            return;
+        }
+    }
 }

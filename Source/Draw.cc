@@ -41,7 +41,7 @@ void CstrDraw::reset() {
 void CstrDraw::resize(uh w, uh h) {
     // Not current
     if (w != res.h || h != res.v) {
-#if 1
+#if 0
         GLViewport((window.h - w) / 2, (window.v - h) / 2, w, h); // Keep PSX aspect ratio
 #endif
         GLMatrixMode(GL_PROJECTION);
@@ -268,15 +268,13 @@ void CstrDraw::setDrawArea(int plane, uw data) {
         e1[0] = -e1[0];
         e2[1] = -e2[1];
         
-//        e1[3] -= 1;
-//        e2[3] -= 1;
+//        e1[3] += 1;
+//        e2[3] += 1;
     }
     else {
         e1[3] = -e1[3];
         e2[3] = -e2[3];
     }
-    
-    //printf("%d %f %f\n", plane, e1[3], e2[3]);
     
     GLClipPlane(GL_CLIP_PLANE0 + (plane + 0), e1);
     GLClipPlane(GL_CLIP_PLANE0 + (plane + 1), e2);
@@ -380,7 +378,6 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0x80: // TODO: Move photo
-            //printf("hi\n");
             return;
             
         case 0xa0: // Load photo
