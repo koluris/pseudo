@@ -208,16 +208,16 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
 void CstrGraphics::photoRead(uw *data) {
     uh *k = (uh *)data;
     
+    vrop.h.start = vrop.h.p = k[2];
+    vrop.v.start = vrop.v.p = k[3];
+    vrop.h.end   = vrop.h.p + k[4];
+    vrop.v.end   = vrop.v.p + k[5];
     vrop.enabled = true;
-    vrop.h.p     = vrop.h.start = k[2];
-    vrop.v.p     = vrop.v.start = k[3];
-    vrop.h.end   = vrop.h.start + k[4];
-    vrop.v.end   = vrop.v.start + k[5];
-    
+
     modeDMA = GPU_DMA_MEM2VRAM;
     
     // Cache invalidation
-    cache.invalidate(k[2], k[3], k[4] + k[2], k[5] + k[3]);
+    cache.invalidate(vrop.h.start, vrop.v.start, vrop.h.end, vrop.v.end);
 }
 
 void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
