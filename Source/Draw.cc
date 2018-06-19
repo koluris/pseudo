@@ -23,17 +23,19 @@ void CstrDraw::reset() {
     GLEnable(GL_CLIP_PLANE1);
     GLEnable(GL_CLIP_PLANE2);
     GLEnable(GL_CLIP_PLANE3);
+    glLineWidth(2.0);
     
     // Textures
     GLMatrixMode(GL_TEXTURE);
     GLID();
-    GLScalef(1.0f / 256.0f, 1.0f / 256.0f, 1.0f);
-    GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE); //GL_REPLACE GL_COMBINE
-    GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2); // GL_ALPHA_SCALE
+    GLScalef(1.0 / 256.0, 1.0 / 256.0, 1.0);
+    GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+    GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
+    //GLTexEnvi(GL_TEXTURE_ENV, GL_ALPHA_SCALE, 2);
     
     // Redraw
     resize(window.h, window.v);
-    GLClearColor(0.1, 0.1, 0.1, 0);
+    GLClearColor(0.0, 0.0, 0.0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
     GLFlush();
 }
@@ -90,26 +92,26 @@ void CstrDraw::refresh() {
 void CstrDraw::drawRect(uw *data) {
     TILEx *k = (TILEx *)data;
     
-//    GLDisable(GL_CLIP_PLANE0);
-//    GLDisable(GL_CLIP_PLANE1);
-//    GLDisable(GL_CLIP_PLANE2);
-//    GLDisable(GL_CLIP_PLANE3);
+    GLDisable(GL_CLIP_PLANE0);
+    GLDisable(GL_CLIP_PLANE1);
+    GLDisable(GL_CLIP_PLANE2);
+    GLDisable(GL_CLIP_PLANE3);
     
     GLColor4ub(k->c.a, k->c.b, k->c.c, COLOR_MAX);
     
-//    GLStart(GL_TRIANGLE_STRIP);
-//        GLVertex2s(k->vx.w,        k->vx.h);
-//        GLVertex2s(k->vx.w + k->w, k->vx.h);
-//        GLVertex2s(k->vx.w,        k->vx.h + k->h);
-//        GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
-//    GLEnd();
+    GLStart(GL_TRIANGLE_STRIP);
+        GLVertex2s(k->vx.w,        k->vx.h);
+        GLVertex2s(k->vx.w + k->w, k->vx.h);
+        GLVertex2s(k->vx.w,        k->vx.h + k->h);
+        GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
+    GLEnd();
     
-    GLRecti(k->vx.w, k->vx.h, k->vx.w + k->w, k->vx.h + k->h);
+    //GLRecti(k->vx.w, k->vx.h, k->vx.w + k->w, k->vx.h + k->h);
     
-//    GLEnable(GL_CLIP_PLANE0);
-//    GLEnable(GL_CLIP_PLANE1);
-//    GLEnable(GL_CLIP_PLANE2);
-//    GLEnable(GL_CLIP_PLANE3);
+    GLEnable(GL_CLIP_PLANE0);
+    GLEnable(GL_CLIP_PLANE1);
+    GLEnable(GL_CLIP_PLANE2);
+    GLEnable(GL_CLIP_PLANE3);
 }
 
 void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
@@ -268,8 +270,8 @@ void CstrDraw::setDrawArea(int plane, uw data) {
         e1[0] = -e1[0];
         e2[1] = -e2[1];
         
-//        e1[3] += 1;
-//        e2[3] += 1;
+        e1[3] += 1;
+        e2[3] += 1;
     }
     else {
         e1[3] = -e1[3];
