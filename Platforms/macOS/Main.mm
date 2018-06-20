@@ -195,7 +195,7 @@
         [self.window center];
         
         // Set emulator dimensions
-        draw.init(w, h);
+        draw.init(w, h, multiplier);
     }
 }
 

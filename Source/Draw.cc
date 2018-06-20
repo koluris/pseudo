@@ -3,52 +3,61 @@
 
 CstrDraw draw;
 
-void CstrDraw::init(uh w, uh h) {
+void CstrDraw::init(sh w, sh h, int multiplier) {
+    window = { 0 };
+    
     window.h = w;
     window.v = h;
+    window.multiplier = multiplier;
     
     draw.reset();
 }
 
 void CstrDraw::reset() {
-    memset(&   res, 0, sizeof(res));
-    memset(&offset, 0, sizeof(offset));
+    res    = { 0 };
+    offset = { 0 };
+    
     opaque   = 0;
     spriteTP = 0;
     
     // OpenGL
     GLViewport(0, 0, window.h, window.v);
+    
+    if (window.multiplier > 1) {
+        // Crap
+        GLLineWidth(window.multiplier);
+    }
+    
     GLEnable(GL_BLEND);
     GLEnable(GL_CLIP_PLANE0);
     GLEnable(GL_CLIP_PLANE1);
     GLEnable(GL_CLIP_PLANE2);
     GLEnable(GL_CLIP_PLANE3);
-    glLineWidth(2.0);
     
     // Textures
     GLMatrixMode(GL_TEXTURE);
     GLID();
-    GLScalef(1.0 / 256.0, 1.0 / 256.0, 1.0);
+    GLScalef(1 / 256.0, 1 / 256.0, 1);
     GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
     //GLTexEnvi(GL_TEXTURE_ENV, GL_ALPHA_SCALE, 2);
     
     // Redraw
     resize(window.h, window.v);
-    GLClearColor(0.0, 0.0, 0.0, 0);
+    GLClearColor(0, 0, 0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
     GLFlush();
 }
 
-void CstrDraw::resize(uh w, uh h) {
+void CstrDraw::resize(sh w, sh h) {
     // Not current
-    if (w != res.h || h != res.v) {
+    if (res.h != w || res.v != h) {
 #if 0
         GLViewport((window.h - w) / 2, (window.v - h) / 2, w, h); // Keep PSX aspect ratio
 #endif
         GLMatrixMode(GL_PROJECTION);
         GLID();
-        GLOrtho(0, w, h, 0, 1.0, -1.0);
+        GLOrtho(0, w, h, 0, 1, -1);
         
         // Make current
         res.h = w;
@@ -81,33 +90,57 @@ void CstrDraw::drawRect(uw *data) {
     GLEnable(GL_CLIP_PLANE3);
 }
 
-void CstrDraw::drawF(uw *data, ub size, GLenum mode) {
+void CstrDraw::drawF(uw *data, int size, GLenum mode) {
     PFx *k = (PFx *)data;
+    
+    // Special case
+    if (mode == GL_LINE_STRIP) {
+        if (size > 2) {
+            size = 256;
+        }
+    }
     
     const ub *b = opaqueFunc(k->c.n);
     GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
     
     GLStart(mode);
     for (int i = 0; i < size; i++) {
+        if (size == 256) { // Special case
+            if (*(uw *)&k->vx[i] == LINE_TERM_CODE) {
+                break;
+            }
+        }
         GLVertex2s(k->vx[i].w + offset.h, k->vx[i].h + offset.v);
     }
     GLEnd();
 }
 
-void CstrDraw::drawG(uw *data, ub size, GLenum mode) {
+void CstrDraw::drawG(uw *data, int size, GLenum mode) {
     PGx *k = (PGx *)data;
+    
+    // Special case
+    if (mode == GL_LINE_STRIP) {
+        if (size > 2) {
+            size = 256;
+        }
+    }
     
     const ub *b = opaqueFunc(k->vx[0].c.n);
     
     GLStart(mode);
     for (int i = 0; i < size; i++) {
+        if (size == 256) { // Special case
+            if (*(uw *)&k->vx[i] == LINE_TERM_CODE) {
+                break;
+            }
+        }
         GLColor4ub(k->vx[i].c.a, k->vx[i].c.b, k->vx[i].c.c, b[1]);
         GLVertex2s(k->vx[i].w + offset.h, k->vx[i].h + offset.v);
     }
     GLEnd();
 }
 
-void CstrDraw::drawFT(uw *data, ub size) {
+void CstrDraw::drawFT(uw *data, int size) {
     PFTx *k = (PFTx *)data;
     
     opaque = (k->vx[1].clut >> 5) & 3;
@@ -134,7 +167,7 @@ void CstrDraw::drawFT(uw *data, ub size) {
     GLDisable(GL_TEXTURE_2D);
 }
 
-void CstrDraw::drawGT(uw *data, ub size) {
+void CstrDraw::drawGT(uw *data, int size) {
     PGTx *k = (PGTx *)data;
     
     opaque = (k->vx[1].clut >> 5) & 3;
@@ -155,7 +188,7 @@ void CstrDraw::drawGT(uw *data, ub size) {
     GLDisable(GL_TEXTURE_2D);
 }
 
-void CstrDraw::drawTile(uw *data, sh size) {
+void CstrDraw::drawTile(uw *data, int size) {
     TILEx *k = (TILEx *)data;
     
     if (size) {
@@ -174,7 +207,7 @@ void CstrDraw::drawTile(uw *data, sh size) {
     GLEnd();
 }
 
-void CstrDraw::drawSprite(uw *data, sh size) {
+void CstrDraw::drawSprite(uw *data, int size) {
     SPRTx *k = (SPRTx *)data;
     
     if (size) {
@@ -357,8 +390,8 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0xe1: // Texture P.
-            spriteTP = data[0] & 0x7ff;
-            opaque = (data[0] >> 5) & 3;
+            spriteTP = (data[0]) & 0x7ff;
+            opaque   = (data[0] >> 5) & 3;
             GLBlendFunc(bit[opaque].src, bit[opaque].dst);
             return;
             

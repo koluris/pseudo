@@ -62,7 +62,7 @@ class CstrGraphics {
     
     // Command buffer
     struct {
-        uw data[16], prim, size, row;
+        uw data[256], prim, size, row;
     } pipe;
     
     uw modeDMA;

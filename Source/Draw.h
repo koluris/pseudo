@@ -1,7 +1,9 @@
 class CstrDraw {
     enum {
         COLOR_MAX  = 255,
-        COLOR_HALF = COLOR_MAX >> 1
+        COLOR_HALF = COLOR_MAX >> 1,
+        
+        LINE_TERM_CODE = 0x55555555
     };
     
     // Basic
@@ -12,21 +14,26 @@ class CstrDraw {
     struct PGT   { RGBC c; sh w, h; ub u, v; uh clut; };
     
     // Vertex & Line (F, FT)
-    struct PFx   { RGBC c; PF  vx[4]; };
+    struct PFx   { RGBC c; PF  vx[256]; };
     struct PFTx  { RGBC c; PFT vx[4]; };
     
     // Vertex & Line (G, GT)
-    struct PGx   { PG  vx[4]; };
+    struct PGx   { PG  vx[256]; };
     struct PGTx  { PGT vx[4]; };
     
     // Tile & Sprite
     struct TILEx { RGBC c; PF  vx; sh w, h; };
     struct SPRTx { RGBC c; PFT vx; sh w, h; };
     
+    // Window
+    struct {
+        sh h, v; int multiplier;
+    } window;
+    
     // Offset
     struct {
         sh h, v;
-    } res, window, offset;
+    } res, offset;
     
     // Setup opaque values
     const struct {
@@ -43,20 +50,20 @@ class CstrDraw {
     
     // Primitives
     void drawRect  (uw *);
-    void drawF     (uw *, ub, GLenum);
-    void drawG     (uw *, ub, GLenum);
-    void drawFT    (uw *, ub);
-    void drawGT    (uw *, ub);
-    void drawTile  (uw *, sh);
-    void drawSprite(uw *, sh);
+    void drawF     (uw *, int, GLenum);
+    void drawG     (uw *, int, GLenum);
+    void drawFT    (uw *, int);
+    void drawGT    (uw *, int);
+    void drawTile  (uw *, int);
+    void drawSprite(uw *, int);
     
     ub *opaqueFunc(ub);
     void setDrawArea(int, uw);
     
 public:
-    void init(uh, uh);
+    void init(sh, sh, int);
     void reset();
-    void resize(uh, uh);
+    void resize(sh, sh);
     void primitive(uw, uw *);
 };
 
