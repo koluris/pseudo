@@ -69,7 +69,6 @@ public:
 
 extern CstrDraw draw;
 
-
 //if (k->c.n & 2) {
 //    GLEnable(GL_ALPHA_TEST);
 //    GLAlphaFunc(GL_GEQUAL, 1);
