@@ -94,7 +94,7 @@ void CstrDraw::drawF(uw *data, int size, GLenum mode) {
     PFx *k = (PFx *)data;
     
     // Special case
-    if (mode == GL_LINE_STRIP) {
+    if (mode == GL_LINE_STRIP) { // eur-001.psx, fuzzion.psx
         if (size > 2) {
             size = 256;
         }
@@ -119,7 +119,7 @@ void CstrDraw::drawG(uw *data, int size, GLenum mode) {
     PGx *k = (PGx *)data;
     
     // Special case
-    if (mode == GL_LINE_STRIP) {
+    if (mode == GL_LINE_STRIP) { // mups-016.psx, pdx-030.psx, pdx-074.psx, pop-n-pop.psx
         if (size > 3) {
             size = 256;
         }
@@ -234,21 +234,6 @@ void CstrDraw::drawSprite(uw *data, int size) {
         GLTexCoord2s(k->vx.u+k->w, k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v+k->h);
     GLEnd();
     
-//    if (k->c.n & 2) {
-//        GLEnable(GL_ALPHA_TEST);
-//        glAlphaFunc(GL_GEQUAL, 1);
-//        GLColor4ub(255, 255, 255, 255);
-//        GLDisable(GL_BLEND);
-//        GLStart(GL_TRIANGLE_STRIP);
-//        GLTexCoord2s(k->vx.u,      k->vx.v);      GLVertex2s(k->vx.w+offset.h,      k->vx.h+offset.v);
-//        GLTexCoord2s(k->vx.u+k->w, k->vx.v);      GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v);
-//        GLTexCoord2s(k->vx.u,      k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h,      k->vx.h+offset.v+k->h);
-//        GLTexCoord2s(k->vx.u+k->w, k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v+k->h);
-//        GLEnd();
-//        GLEnable(GL_BLEND);
-//        GLDisable(GL_ALPHA_TEST);
-//    }
-    
     GLDisable(GL_TEXTURE_2D);
 }
 
@@ -267,11 +252,8 @@ void CstrDraw::setDrawArea(int plane, uw data) {
     double e2[] = { 0, 1, 0, (data >> 10) & 0x1ff };
     
     if (plane) {
-        e1[0] = -e1[0];
-        e2[1] = -e2[1];
-        
-        e1[3] += 1;
-        e2[3] += 1;
+        e1[0] = -e1[0]; e1[3]++; // ?
+        e2[1] = -e2[1]; e2[3]++; // ?
     }
     else {
         e1[3] = -e1[3];

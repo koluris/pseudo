@@ -68,3 +68,19 @@ public:
 };
 
 extern CstrDraw draw;
+
+
+//if (k->c.n & 2) {
+//    GLEnable(GL_ALPHA_TEST);
+//    GLAlphaFunc(GL_GEQUAL, 1);
+//    GLColor4ub(255, 255, 255, 255);
+//    GLDisable(GL_BLEND);
+//    GLStart(GL_TRIANGLE_STRIP);
+//    GLTexCoord2s(k->vx.u,      k->vx.v);      GLVertex2s(k->vx.w+offset.h,      k->vx.h+offset.v);
+//    GLTexCoord2s(k->vx.u+k->w, k->vx.v);      GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v);
+//    GLTexCoord2s(k->vx.u,      k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h,      k->vx.h+offset.v+k->h);
+//    GLTexCoord2s(k->vx.u+k->w, k->vx.v+k->h); GLVertex2s(k->vx.w+offset.h+k->w, k->vx.h+offset.v+k->h);
+//    GLEnd();
+//    GLEnable(GL_BLEND);
+//    GLDisable(GL_ALPHA_TEST);
+//}
