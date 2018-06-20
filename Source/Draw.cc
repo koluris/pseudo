@@ -354,7 +354,8 @@ void CstrDraw::primitive(uw addr, uw *data) {
     
     // Operations
     switch(addr) {
-        case 0x01: // TODO: Flush
+        case 0x01: // Flush
+            vs.write(0x1f801814, 0x01000000);
             return;
             
         case 0x02: // Block Fill
@@ -362,6 +363,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0x80: // TODO: Move photo
+            vs.photoMove(data);
             return;
             
         case 0xa0: // Load photo
@@ -369,6 +371,7 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0xc0: // TODO: Store photo
+            printf("Store photo\n");
             return;
             
         case 0xe1: // Texture P.

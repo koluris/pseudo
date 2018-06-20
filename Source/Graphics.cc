@@ -23,10 +23,10 @@ void CstrGraphics::reset() {
 }
 
 #define NTSC \
-(CLOCKS_PER_SEC / 159.94)
+    (CLOCKS_PER_SEC / 159.94)
 
 #define PAL \
-(CLOCKS_PER_SEC / 150.00)
+    (CLOCKS_PER_SEC / 150.00)
 
 // Function "mach_absolute_time()" returns Nanoseconds
 
@@ -236,6 +236,10 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
             draw.primitive(pipe.prim, pipe.data);
         }
     }
+}
+
+void CstrGraphics::photoMove(uw *data) {
+    uh *k = (uh *)data;
 }
 
 void CstrGraphics::photoRead(uw *data) {

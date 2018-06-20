@@ -99,9 +99,9 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
 void CstrCache::invalidate(sh X, sh Y, sh W, sh H) {
     for (auto &tc : cache) {
         if (((tc.pos.w + 255) >= X) && ((tc.pos.h + 255) >= Y) && ((tc.pos.w) <= W) && ((tc.pos.h) <= H)) {
-            printf("VRAM: %4d %4d %4d %4d\n", X, Y, W, H);
-            printf("TEXT: %4d %4d %4d %4d\n", tc.pos.w, tc.pos.h, (tc.pos.w + 255), (tc.pos.h + 255));
-            printf("-\n");
+//            printf("VRAM: %4d %4d %4d %4d\n", X, Y, W, H);
+//            printf("TEXT: %4d %4d %4d %4d\n", tc.pos.w, tc.pos.h, (tc.pos.w + 255), (tc.pos.h + 255));
+//            printf("-\n");
             
             reset();
             return;

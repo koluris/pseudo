@@ -77,7 +77,7 @@ void CstrAudio::depackVAG(voice *chn) {
             
             // Overflow
             if (chn->size == USHRT_MAX) {
-                printf("/// PSeudo SPU Channel size overflow\n");
+                //printf("/// PSeudo SPU Channel size overflow\n");
                 return;
             }
         }
