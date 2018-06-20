@@ -14,7 +14,7 @@ void CstrGraphics::reset() {
     pipe = { 0 };
     
     ret.disabled = true;
-    ret.data     = 0; //0x400;
+    ret.data     = 0x400;
     ret.status   = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA      = GPU_DMA_NONE;
     vpos         = 0;
@@ -69,7 +69,7 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x01:
-                    memset(&pipe, 0, sizeof(pipe));
+                    pipe = { 0 };
                     return;
                     
                 case 0x03:
@@ -121,7 +121,6 @@ void CstrGraphics::write(uw addr, uw data) {
                     
                 /* unused */
                 case 0x02:
-                case 0x03:
                 case 0x06:
                     return;
             }
