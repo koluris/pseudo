@@ -120,7 +120,7 @@ void CstrDraw::drawG(uw *data, int size, GLenum mode) {
     
     // Special case
     if (mode == GL_LINE_STRIP) {
-        if (size > 2) {
+        if (size > 3) {
             size = 256;
         }
     }
