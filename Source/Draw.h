@@ -57,7 +57,6 @@ public:
     void init(uh, uh);
     void reset();
     void resize(uh, uh);
-    void refresh();
     void primitive(uw, uw *);
 };
 

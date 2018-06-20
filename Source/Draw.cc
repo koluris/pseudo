@@ -54,39 +54,6 @@ void CstrDraw::resize(uh w, uh h) {
     }
 }
 
-#define NTSC \
-    (CLOCKS_PER_SEC / 159.94)
-
-#define PAL \
-    (CLOCKS_PER_SEC / 150.00)
-
-// Function "mach_absolute_time()" returns Nanoseconds
-
-// 1,000,000,000 Nano
-// 1,000,000     Micro
-// 1,000         Milli
-// 1             Base unit, 1 second
-
-double then = 1.0;
-
-void CstrDraw::refresh() {
-    vs.ret.status ^= GPU_ODDLINES;
-    
-    // FPS throttle
-    double now = mach_absolute_time() / 1000.0;
-    then = now > (then + CLOCKS_PER_SEC) ? now : then + (vs.isVideoPAL ? PAL : NTSC);
-    
-    if (then > now) {
-        usleep(then - now);
-    }
-    
-    // Draw
-    if (vs.ret.disabled) {
-        GLClear(GL_COLOR_BUFFER_BIT);
-    }
-    GLFlush();
-}
-
 void CstrDraw::drawRect(uw *data) {
     TILEx *k = (TILEx *)data;
     

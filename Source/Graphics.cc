@@ -15,11 +15,44 @@ void CstrGraphics::reset() {
     
     ret.disabled = true;
     ret.data     = 0; //0x400;
-    ret.status   = GPU_READYFORCOMMANDS | GPU_IDLE | GPU_DISPLAYDISABLED | 0x2000; // 0x14802000;
+    ret.status   = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA      = GPU_DMA_NONE;
     vpos         = 0;
     vdiff        = 0;
     isVideoPAL   = false;
+}
+
+#define NTSC \
+(CLOCKS_PER_SEC / 159.94)
+
+#define PAL \
+(CLOCKS_PER_SEC / 150.00)
+
+// Function "mach_absolute_time()" returns Nanoseconds
+
+// 1,000,000,000 Nano
+// 1,000,000     Micro
+// 1,000         Milli
+// 1             Base unit, 1 second
+
+double then = 1.0;
+
+void CstrGraphics::refresh() {
+    ret.status ^= GPU_STAT_ODDLINES;
+    
+    // FPS throttle
+    double now = mach_absolute_time() / 1000.0;
+    then = now > (then + CLOCKS_PER_SEC) ? now : then + (vs.isVideoPAL ? PAL : NTSC);
+    
+    if (then > now) {
+        usleep(then - now);
+    }
+    
+    // Draw
+    if (ret.disabled) {
+        GLClear(GL_COLOR_BUFFER_BIT);
+    }
+    GLFlush();
 }
 
 void CstrGraphics::write(uw addr, uw data) {
@@ -103,7 +136,7 @@ uw CstrGraphics::read(uw addr) {
             return ret.data;
             
         case GPU_REG_STATUS:
-            return ret.status | GPU_READYFORVRAM;
+            return ret.status | GPU_STAT_READYFORVRAM;
     }
     printx("/// PSeudo GPU Read: $%x", (addr & 0xf));
     
