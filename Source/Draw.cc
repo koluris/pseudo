@@ -84,8 +84,6 @@ void CstrDraw::drawRect(uw *data) {
         GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
     GLEnd();
     
-    //GLRecti(k->vx.w, k->vx.h, k->vx.w + k->w, k->vx.h + k->h);
-    
     GLEnable(GL_CLIP_PLANE0);
     GLEnable(GL_CLIP_PLANE1);
     GLEnable(GL_CLIP_PLANE2);
@@ -146,7 +144,6 @@ void CstrDraw::drawFT(uw *data, int size) {
     PFTx *k = (PFTx *)data;
     
     opaque = (k->vx[1].clut >> 5) & 3;
-    
     const ub *b = opaqueFunc(k->c.n);
     
     if (k->c.n & 1) {
@@ -173,7 +170,6 @@ void CstrDraw::drawGT(uw *data, int size) {
     PGTx *k = (PGTx *)data;
     
     opaque = (k->vx[1].clut >> 5) & 3;
-    
     const ub *b = opaqueFunc(k->vx[0].c.n);
     
     GLEnable(GL_TEXTURE_2D);
