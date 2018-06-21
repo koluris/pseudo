@@ -171,7 +171,7 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
         while (vrop.h.p < vrop.h.end) {
             *t++ = cache.pixel2texel(*ptr);
             
-            vs.vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
+            vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
             
             vrop.h.p++;
             ptr++;

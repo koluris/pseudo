@@ -4,13 +4,11 @@
 CstrDraw draw;
 
 void CstrDraw::init(sh w, sh h, int multiplier) {
-    window = { 0 };
-    
     window.h = w;
     window.v = h;
     window.multiplier = multiplier;
     
-    draw.reset();
+    reset();
 }
 
 void CstrDraw::reset() {
@@ -37,10 +35,9 @@ void CstrDraw::reset() {
     // Textures
     GLMatrixMode(GL_TEXTURE);
     GLID();
-    GLScalef(1 / 256.0, 1 / 256.0, 1);
+    GLScalef(1.0 / 256, 1.0 / 256, 1.0);
     GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
-    //GLTexEnvi(GL_TEXTURE_ENV, GL_ALPHA_SCALE, 2);
     
     // Redraw
     resize(window.h, window.v);
