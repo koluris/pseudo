@@ -6,7 +6,7 @@ class CstrDraw {
         LINE_TERM_CODE = 0x55555555
     };
     
-    // Basic
+    // Basic packet components
     struct Chromatic {
         ub r, c, b, a;
     };
@@ -19,82 +19,23 @@ class CstrDraw {
         ub u, v; uh clut;
     };
     
-    struct Size {
-        sh w, h;
-    };
-    
-    // Packets
-    struct PF2 {
-        Coords coords;
-    };
-    
-    struct PFT2 {
-        Coords coords;
-           Tex tex;
-    };
-    
-    struct PG2 {
-        Chromatic chromatic;
-           Coords coords;
-    };
-    
-    struct PGT2 {
-        Chromatic chromatic;
-           Coords coords;
-              Tex tex;
-    };
+    // Primitive Packets
+    struct PF    {                Coords coords; };
+    struct PFT   {                Coords coords; Tex tex; };
+    struct PG    { Chromatic hue; Coords coords; };
+    struct PGT   { Chromatic hue; Coords coords; Tex tex; };
     
     // Vertex & Line (F, FT)
-    struct PF2x {
-        Chromatic chromatic;
-              PF2 vx[256];
-    };
-    
-    struct PFT2x {
-        Chromatic chromatic;
-             PFT2 vx[4];
-    };
+    struct PFx   { Chromatic hue; PF  v[256]; }; // Line with termination code
+    struct PFTx  { Chromatic hue; PFT v[  4]; };
     
     // Vertex & Line (G, GT)
-    struct PG2x {
-              PG2 vx[256];
-    };
-    
-    struct PGT2x {
-             PGT2 vx[4];
-    };
+    struct PGx   { PG  v[256]; }; // Line with termination code
+    struct PGTx  { PGT v[  4]; };
     
     // Tile & Sprite
-    struct TILE2x {
-        Chromatic chromatic;
-              PF2 vx;
-             Size size;
-    };
-    
-    struct SPRT2x {
-        Chromatic chromatic;
-             PFT2 vx;
-             Size size;
-    };
-    
-    // Basic
-    struct RGBC  { ub a, b, c, n; };
-    struct PF    { sh w, h; };
-    struct PFT   { sh w, h; ub u, v; uh clut; };
-    struct PG    { RGBC c; sh w, h; };
-    struct PGT   { RGBC c; sh w, h; ub u, v; uh clut; };
-    
-    // Vertex & Line (F, FT)
-    struct PFx   { RGBC c; PF  vx[256]; };
-    struct PFTx  { RGBC c; PFT vx[4]; };
-    
-    // Vertex & Line (G, GT)
-    struct PGx   { PG  vx[256]; };
-    struct PGTx  { PGT vx[4]; };
-    
-    // Tile & Sprite
-    struct TILEx { RGBC c; PF  vx; sh w, h; };
-    struct SPRTx { RGBC c; PFT vx; sh w, h; };
+    struct TILEx { Chromatic hue; PF  v; Coords size; };
+    struct SPRTx { Chromatic hue; PFT v; Coords size; };
     
     // Window
     struct {
