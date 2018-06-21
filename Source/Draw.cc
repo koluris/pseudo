@@ -50,9 +50,8 @@ void CstrDraw::reset() {
 
 void CstrDraw::resize(sh w, sh h) {
 #if SHOW_VRAM
-        w = FRAME_W;
-        h = FRAME_H;
-    }
+    w = FRAME_W;
+    h = FRAME_H;
 #endif
     
     // Not current
