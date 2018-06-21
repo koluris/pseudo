@@ -38,10 +38,10 @@ CstrMips cpu;
 //  0 |  0 |  0 |  1 |  0 |  0 |
 
 void CstrMips::reset() {
-    memset(& base, 0, sizeof(base));
-    memset(& copr, 0, sizeof(copr));
-    memset(&cop2c, 0, sizeof(pair));
-    memset(&cop2d, 0, sizeof(pair));
+    memset(&base, 0, sizeof(base));
+    memset(&copr, 0, sizeof(copr));
+    cop2c = { 0 };
+    cop2d = { 0 };
     
     copr[12] = 0x10900000;
     copr[15] = 0x2; // Co-processor Revision

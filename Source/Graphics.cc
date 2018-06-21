@@ -63,9 +63,6 @@ void CstrGraphics::refresh() {
     if (modeDMA == GPU_DMA_NONE) {
         GLFlush();
     }
-    else {
-        printf("modeDMA != GPU_DMA_NONE\n");
-    }
 }
 
 void CstrGraphics::write(uw addr, uw data) {

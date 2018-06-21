@@ -42,7 +42,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     tc.pos.cc = (clut & 0x7fff) * 16;
     
     // Reset
-    memset(&tex, 0, sizeof(tex));
+    tex = { 0 };
     
     switch((tp >> 7) & 3) {
         case TEX_04BIT: // 16 color palette

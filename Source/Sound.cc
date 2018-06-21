@@ -12,12 +12,12 @@ CstrAudio audio;
 
 void CstrAudio::reset() {
     // Mem
-    memset(&spuMem, 0, sizeof(spuMem));
-    memset(&  sbuf, 0, sizeof(sbuf));
+    spuMem = { 0 };
+    sbuf   = { 0 };
     
     // Channels reset
-    for (auto  &item : spuVoices) {
-        memset(&item, 0, sizeof(item));
+    for (auto &item : spuVoices) {
+        item = { 0 };
     }
     
     // Variables
@@ -52,8 +52,7 @@ void CstrAudio::depackVAG(voice *chn) {
     uw p = chn->saddr;
     sh s_1 = 0;
     sh s_2 = 0;
-    sh temp[28];
-    memset(&temp, 0, 28);
+    sh temp[28] = { 0 };
     
     while(1) {
         ub shift  = spuMem.iub[p] & 15;
@@ -175,7 +174,7 @@ void CstrAudio::decodeStream() {
         stream();
         
         // Clear
-        memset(&sbuf.temp, 0, sizeof(sbuf.temp));
+        sbuf = { 0 };
     }
 }
 

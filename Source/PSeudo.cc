@@ -54,7 +54,7 @@ void CstrPSeudo::reset() {
     
 #ifdef MAC_OS_X
     [app consoleClear];
-    [app consolePrint:[NSChars charsWithFormat:@"%s\n\nPSeudo™ : Alpha 0.7\n-> reset complete\n", version]];
+    [app consolePrint:[NSChars charsWithFormat:@"%s\n\nPSeudo™ : Alpha 0.73\n-> reset complete\n", version]];
 #endif
 }
 
