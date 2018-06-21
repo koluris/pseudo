@@ -314,7 +314,7 @@ void CstrGraphics::photoRead(uw *data) {
     vrop.h.end   = vrop.h.p + k[4];
     vrop.v.end   = vrop.v.p + k[5];
 
-    //modeDMA = GPU_DMA_MEM2VRAM;
+    modeDMA = GPU_DMA_MEM2VRAM;
     
     // Cache invalidation
     cache.invalidate(vrop.h.start, vrop.v.start, vrop.h.end, vrop.v.end);
