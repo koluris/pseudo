@@ -64,6 +64,7 @@ public:
     void init(sh, sh, int);
     void reset();
     void resize(sh, sh);
+    void opaqueClipState(bool);
     void primitive(uw, uw *);
 };
 

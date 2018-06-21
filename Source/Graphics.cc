@@ -157,8 +157,6 @@ uw CstrGraphics::read(uw addr) {
 }
 
 int CstrGraphics::fetchMem(uh *ptr, sw size) {
-    uw *t = vrop.raw;
-    
     if (!vrop.enabled) {
         modeDMA = GPU_DMA_NONE;
         return 0;
@@ -169,10 +167,9 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
     
     while (vrop.v.p < vrop.v.end) {
         while (vrop.h.p < vrop.h.end) {
-            *t++ = cache.pixel2texel(*ptr);
+            vrop.raw[count] = cache.pixel2texel(*ptr);
             
             vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
-            
             vrop.h.p++;
             ptr++;
             
@@ -199,22 +196,18 @@ VRAM_END:
         sh H = vrop.v.end - Y;
         
         // Disable state
-        GLDisable(GL_BLEND);
-        GLDisable(GL_CLIP_PLANE0);
-        GLDisable(GL_CLIP_PLANE1);
-        GLDisable(GL_CLIP_PLANE2);
-        GLDisable(GL_CLIP_PLANE3);
+        draw.opaqueClipState(false);
         
         GLMatrixMode(GL_TEXTURE);
         GLPushMatrix();
         GLID();
         GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
         
-        GLEnable(GL_TEXTURE_2D);
-        GLBindTexture(GL_TEXTURE_2D, fb16tex);
-        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, vrop.raw);
-        
         GLColor4ub(127, 127, 127, 255);
+        
+        GLEnable(GL_TEXTURE_2D);
+        GLBindTexture  (GL_TEXTURE_2D, fb16tex);
+        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, vrop.raw);
         
         GLStart(GL_TRIANGLE_STRIP);
             GLTexCoord2s(0, 0); GLVertex2s(X,   Y);
@@ -224,15 +217,10 @@ VRAM_END:
         GLEnd();
         
         GLDisable(GL_TEXTURE_2D);
-        
         GLPopMatrix();
         
         // Enable state
-        GLEnable(GL_BLEND);
-        GLEnable(GL_CLIP_PLANE0);
-        GLEnable(GL_CLIP_PLANE1);
-        GLEnable(GL_CLIP_PLANE2);
-        GLEnable(GL_CLIP_PLANE3);
+        draw.opaqueClipState(true);
         
         delete[] vrop.raw;
 #endif

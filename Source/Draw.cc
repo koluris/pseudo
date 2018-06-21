@@ -26,11 +26,7 @@ void CstrDraw::reset() {
         GLLineWidth(window.multiplier);
     }
     
-    GLEnable(GL_BLEND);
-    GLEnable(GL_CLIP_PLANE0);
-    GLEnable(GL_CLIP_PLANE1);
-    GLEnable(GL_CLIP_PLANE2);
-    GLEnable(GL_CLIP_PLANE3);
+    opaqueClipState(true);
     
     // Textures
     GLMatrixMode(GL_TEXTURE);
@@ -46,15 +42,22 @@ void CstrDraw::reset() {
     GLFlush();
 }
 
+#define SHOW_VRAM \
+    0
+
+#define KEEP_ASPECT_RATIO \
+    0
+
 void CstrDraw::resize(sh w, sh h) {
-//    if (1) {
-//        w = FRAME_W;
-//        h = FRAME_H;
-//    }
+#if SHOW_VRAM
+        w = FRAME_W;
+        h = FRAME_H;
+    }
+#endif
     
     // Not current
     if (res.h != w || res.v != h) {
-#if 0
+#if KEEP_ASPECT_RATIO
         GLViewport((window.h - w) / 2, (window.v - h) / 2, w, h); // Keep PSX aspect ratio
 #endif
         GLMatrixMode(GL_PROJECTION);
@@ -67,13 +70,27 @@ void CstrDraw::resize(sh w, sh h) {
     }
 }
 
+void CstrDraw::opaqueClipState(bool enable) {
+    if (enable) {
+        GLEnable(GL_BLEND);
+        GLEnable(GL_CLIP_PLANE0);
+        GLEnable(GL_CLIP_PLANE1);
+        GLEnable(GL_CLIP_PLANE2);
+        GLEnable(GL_CLIP_PLANE3);
+    }
+    else {
+        GLDisable(GL_BLEND);
+        GLDisable(GL_CLIP_PLANE0);
+        GLDisable(GL_CLIP_PLANE1);
+        GLDisable(GL_CLIP_PLANE2);
+        GLDisable(GL_CLIP_PLANE3);
+    }
+}
+
 void CstrDraw::drawRect(uw *data) {
     TILEx *k = (TILEx *)data;
     
-    GLDisable(GL_CLIP_PLANE0);
-    GLDisable(GL_CLIP_PLANE1);
-    GLDisable(GL_CLIP_PLANE2);
-    GLDisable(GL_CLIP_PLANE3);
+    opaqueClipState(false);
     
     GLColor4ub(k->c.a, k->c.b, k->c.c, COLOR_MAX);
     
@@ -84,10 +101,7 @@ void CstrDraw::drawRect(uw *data) {
         GLVertex2s(k->vx.w + k->w, k->vx.h + k->h);
     GLEnd();
     
-    GLEnable(GL_CLIP_PLANE0);
-    GLEnable(GL_CLIP_PLANE1);
-    GLEnable(GL_CLIP_PLANE2);
-    GLEnable(GL_CLIP_PLANE3);
+    opaqueClipState(true);
 }
 
 void CstrDraw::drawF(uw *data, int size, GLenum mode) {
