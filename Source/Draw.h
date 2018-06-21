@@ -7,6 +7,77 @@ class CstrDraw {
     };
     
     // Basic
+    struct Chromatic {
+        ub r, c, b, a;
+    };
+    
+    struct Coords {
+        sh w, h;
+    };
+    
+    struct Tex {
+        ub u, v; uh clut;
+    };
+    
+    struct Size {
+        sh w, h;
+    };
+    
+    // Packets
+    struct PF2 {
+        Coords coords;
+    };
+    
+    struct PFT2 {
+        Coords coords;
+           Tex tex;
+    };
+    
+    struct PG2 {
+        Chromatic chromatic;
+           Coords coords;
+    };
+    
+    struct PGT2 {
+        Chromatic chromatic;
+           Coords coords;
+              Tex tex;
+    };
+    
+    // Vertex & Line (F, FT)
+    struct PF2x {
+        Chromatic chromatic;
+              PF2 vx[256];
+    };
+    
+    struct PFT2x {
+        Chromatic chromatic;
+             PFT2 vx[4];
+    };
+    
+    // Vertex & Line (G, GT)
+    struct PG2x {
+              PG2 vx[256];
+    };
+    
+    struct PGT2x {
+             PGT2 vx[4];
+    };
+    
+    // Tile & Sprite
+    struct TILE2x {
+        Chromatic chromatic;
+              PF2 vx;
+             Size size;
+    };
+    
+    struct SPRT2x {
+        Chromatic chromatic;
+             PFT2 vx;
+             Size size;
+    };
+    
+    // Basic
     struct RGBC  { ub a, b, c, n; };
     struct PF    { sh w, h; };
     struct PFT   { sh w, h; ub u, v; uh clut; };

@@ -180,43 +180,82 @@ void CstrDraw::drawFT(uw *data, int size) {
 }
 
 void CstrDraw::drawGT(uw *data, int size) {
-    PGTx *k = (PGTx *)data;
+    PGT2x *f = (PGT2x *)data;
     
-    opaque = (k->vx[1].clut >> 5) & 3;
-    const ub *b = opaqueFunc(k->vx[0].c.n);
+    opaque = (f->vx[1].tex.clut >> 5) & 3;
+    const ub *b = opaqueFunc(f->vx[0].chromatic.a);
     
     GLEnable(GL_TEXTURE_2D);
-    cache.fetchTexture(k->vx[1].clut, k->vx[0].clut);
+    cache.fetchTexture(f->vx[1].tex.clut, f->vx[0].tex.clut);
     
     GLStart(GL_TRIANGLE_STRIP);
     for (int i = 0; i < size; i++) {
-        GLColor4ub  (k->vx[i].c.a, k->vx[i].c.b, k->vx[i].c.c, b[1]);
-        GLTexCoord2s(k->vx[i].u, k->vx[i].v);
-        GLVertex2s  (k->vx[i].w + offset.h, k->vx[i].h + offset.v);
+        GLColor4ub  (f->vx[i].chromatic.r, f->vx[i].chromatic.c, f->vx[i].chromatic.b, b[1]);
+        GLTexCoord2s(f->vx[i].tex.u, f->vx[i].tex.v);
+        GLVertex2s  (f->vx[i].coords.w + offset.h, f->vx[i].coords.h + offset.v);
     }
     GLEnd();
     
     GLDisable(GL_TEXTURE_2D);
 }
 
+//void CstrDraw::drawGT(uw *data, int size) {
+//    PGTx *k = (PGTx *)data;
+//
+//    opaque = (k->vx[1].clut >> 5) & 3;
+//    const ub *b = opaqueFunc(k->vx[0].c.n);
+//
+//    GLEnable(GL_TEXTURE_2D);
+//    cache.fetchTexture(k->vx[1].clut, k->vx[0].clut);
+//
+//    GLStart(GL_TRIANGLE_STRIP);
+//    for (int i = 0; i < size; i++) {
+//        GLColor4ub  (k->vx[i].c.a, k->vx[i].c.b, k->vx[i].c.c, b[1]);
+//        GLTexCoord2s(k->vx[i].u, k->vx[i].v);
+//        GLVertex2s  (k->vx[i].w + offset.h, k->vx[i].h + offset.v);
+//    }
+//    GLEnd();
+//
+//    GLDisable(GL_TEXTURE_2D);
+//}
+
 void CstrDraw::drawTile(uw *data, int size) {
-    TILEx *k = (TILEx *)data;
+    TILE2x *f = (TILE2x *)data;
     
     if (size) {
-        k->w = size;
-        k->h = size;
+        f->size.w = size;
+        f->size.h = size;
     }
     
-    const ub *b = opaqueFunc(k->c.n);
-    GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
+    const ub *b = opaqueFunc(f->chromatic.a);
+    GLColor4ub(f->chromatic.r, f->chromatic.c, f->chromatic.b, b[1]);
     
     GLStart(GL_TRIANGLE_STRIP);
-        GLVertex2s(k->vx.w + offset.h,        k->vx.h + offset.v);
-        GLVertex2s(k->vx.w + offset.h + k->w, k->vx.h + offset.v);
-        GLVertex2s(k->vx.w + offset.h,        k->vx.h + offset.v + k->h);
-        GLVertex2s(k->vx.w + offset.h + k->w, k->vx.h + offset.v + k->h);
+        GLVertex2s(f->vx.coords.w + offset.h,             f->vx.coords.h + offset.v);
+        GLVertex2s(f->vx.coords.w + offset.h + f->size.w, f->vx.coords.h + offset.v);
+        GLVertex2s(f->vx.coords.w + offset.h,             f->vx.coords.h + offset.v + f->size.h);
+        GLVertex2s(f->vx.coords.w + offset.h + f->size.w, f->vx.coords.h + offset.v + f->size.h);
     GLEnd();
 }
+
+//void CstrDraw::drawTile(uw *data, int size) {
+//    TILEx *k = (TILEx *)data;
+//
+//    if (size) {
+//        k->w = size;
+//        k->h = size;
+//    }
+//
+//    const ub *b = opaqueFunc(k->c.n);
+//    GLColor4ub(k->c.a, k->c.b, k->c.c, b[1]);
+//
+//    GLStart(GL_TRIANGLE_STRIP);
+//        GLVertex2s(k->vx.w + offset.h,        k->vx.h + offset.v);
+//        GLVertex2s(k->vx.w + offset.h + k->w, k->vx.h + offset.v);
+//        GLVertex2s(k->vx.w + offset.h,        k->vx.h + offset.v + k->h);
+//        GLVertex2s(k->vx.w + offset.h + k->w, k->vx.h + offset.v + k->h);
+//    GLEnd();
+//}
 
 void CstrDraw::drawSprite(uw *data, int size) {
     SPRTx *k = (SPRTx *)data;
