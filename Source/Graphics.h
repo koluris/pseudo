@@ -5,6 +5,8 @@
     512
 
 class CstrGraphics {
+    GLuint fb16tex = 0;
+    
     // Constant enumerations
     enum {
         GPU_REG_DATA,
@@ -105,6 +107,7 @@ public:
     // VRAM operations
     struct {
         bool enabled;
+        uw *raw;
         
         struct {
             sw start, end, p;

@@ -20,6 +20,13 @@ void CstrGraphics::reset() {
     vpos         = 0;
     vdiff        = 0;
     isVideoPAL   = false;
+    
+    // Must move this
+    GLGenTextures(1, &fb16tex);
+    GLBindTexture  (GL_TEXTURE_2D, fb16tex);
+    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, FRAME_W, FRAME_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 }
 
 #define NTSC \
@@ -42,7 +49,7 @@ void CstrGraphics::refresh() {
     
     // FPS throttle
     double now = mach_absolute_time() / 1000.0;
-    then = now > (then + CLOCKS_PER_SEC) ? now : then + (vs.isVideoPAL ? PAL : NTSC);
+    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
     
     if (then > now) {
         usleep(then - now);
@@ -52,7 +59,13 @@ void CstrGraphics::refresh() {
     if (ret.disabled) {
         GLClear(GL_COLOR_BUFFER_BIT);
     }
-    GLFlush();
+    
+    if (modeDMA == GPU_DMA_NONE) {
+        GLFlush();
+    }
+    else {
+        printf("modeDMA != GPU_DMA_NONE\n");
+    }
 }
 
 void CstrGraphics::write(uw addr, uw data) {
@@ -144,6 +157,8 @@ uw CstrGraphics::read(uw addr) {
 }
 
 int CstrGraphics::fetchMem(uh *ptr, sw size) {
+    uw *t = vrop.raw;
+    
     if (!vrop.enabled) {
         modeDMA = GPU_DMA_NONE;
         return 0;
@@ -154,6 +169,8 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
     
     while (vrop.v.p < vrop.v.end) {
         while (vrop.h.p < vrop.h.end) {
+            *t++ = cache.pixel2texel(*ptr);
+            
             vs.vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
             
             vrop.h.p++;
@@ -175,6 +192,50 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
     
 VRAM_END:
     if (vrop.v.p >= vrop.v.end) {
+#if 1
+        sh X = vrop.h.start;
+        sh Y = vrop.v.start;
+        sh W = vrop.h.end - X;
+        sh H = vrop.v.end - Y;
+        
+        // Disable state
+        GLDisable(GL_BLEND);
+        GLDisable(GL_CLIP_PLANE0);
+        GLDisable(GL_CLIP_PLANE1);
+        GLDisable(GL_CLIP_PLANE2);
+        GLDisable(GL_CLIP_PLANE3);
+        
+        GLMatrixMode(GL_TEXTURE);
+        GLPushMatrix();
+        GLID();
+        GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
+        
+        GLEnable(GL_TEXTURE_2D);
+        GLBindTexture(GL_TEXTURE_2D, fb16tex);
+        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, vrop.raw);
+        
+        GLColor4ub(127, 127, 127, 255);
+        
+        GLStart(GL_TRIANGLE_STRIP);
+            GLTexCoord2s(0, 0); GLVertex2s(X,   Y);
+            GLTexCoord2s(W, 0); GLVertex2s(X+W, Y);
+            GLTexCoord2s(0, H); GLVertex2s(X,   Y+H);
+            GLTexCoord2s(W, H); GLVertex2s(X+W, Y+H);
+        GLEnd();
+        
+        GLDisable(GL_TEXTURE_2D);
+        
+        GLPopMatrix();
+        
+        // Enable state
+        GLEnable(GL_BLEND);
+        GLEnable(GL_CLIP_PLANE0);
+        GLEnable(GL_CLIP_PLANE1);
+        GLEnable(GL_CLIP_PLANE2);
+        GLEnable(GL_CLIP_PLANE3);
+        
+        delete[] vrop.raw;
+#endif
         vrop.enabled = false;
         
         if (count%2 == 1) {
@@ -239,19 +300,21 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
 }
 
 void CstrGraphics::photoMove(uw *data) {
-    uh *k = (uh *)data;
+    //uh *k = (uh *)data;
 }
 
 void CstrGraphics::photoRead(uw *data) {
     uh *k = (uh *)data;
     
+    vrop.enabled = true;
+    vrop.raw     = new uw[k[4] * k[5]];
+    
     vrop.h.start = vrop.h.p = k[2];
     vrop.v.start = vrop.v.p = k[3];
     vrop.h.end   = vrop.h.p + k[4];
     vrop.v.end   = vrop.v.p + k[5];
-    vrop.enabled = true;
 
-    modeDMA = GPU_DMA_MEM2VRAM;
+    //modeDMA = GPU_DMA_MEM2VRAM;
     
     // Cache invalidation
     cache.invalidate(vrop.h.start, vrop.v.start, vrop.h.end, vrop.v.end);

@@ -23,7 +23,6 @@ class CstrCache {
     } tex;
     
     uh index;
-    uw pixel2texel(uh);
     
 public:
     ~CstrCache() {
@@ -33,6 +32,7 @@ public:
     }
     
     void reset();
+    uw pixel2texel(uh);
     void fetchTexture(uw, uw);
     void invalidate(sh, sh, sh, sh);
 };

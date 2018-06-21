@@ -50,6 +50,11 @@ void CstrDraw::reset() {
 }
 
 void CstrDraw::resize(sh w, sh h) {
+//    if (1) {
+//        w = FRAME_W;
+//        h = FRAME_H;
+//    }
+    
     // Not current
     if (res.h != w || res.v != h) {
 #if 0
@@ -371,7 +376,6 @@ void CstrDraw::primitive(uw addr, uw *data) {
             return;
             
         case 0xc0: // TODO: Store photo
-            printf("Store photo\n");
             return;
             
         case 0xe1: // Texture P.

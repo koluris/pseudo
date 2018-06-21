@@ -50,6 +50,8 @@ typedef int8_t  sb; // bite
 #define GLLineWidth         glLineWidth
 #define GLMatrixMode        glMatrixMode
 #define GLOrtho             glOrtho
+#define GLPopMatrix         glPopMatrix
+#define GLPushMatrix        glPushMatrix
 #define GLRecti             glRecti
 #define GLScalef            glScalef
 #define GLStart             glBegin
@@ -57,6 +59,7 @@ typedef int8_t  sb; // bite
 #define GLTexEnvi           glTexEnvi
 #define GLTexParameteri     glTexParameteri
 #define GLTexPhoto2D        glTexImage2D
+#define GLTexSubPhoto2D     glTexSubImage2D
 #define GLVertex2s          glVertex2s
 #define GLViewport          glViewport
 
