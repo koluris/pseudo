@@ -91,7 +91,7 @@ void CstrDraw::opaqueClipState(bool enable) {
 
 void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     // Disable state
-    draw.opaqueClipState(false);
+    opaqueClipState(false);
     
     GLMatrixMode(GL_TEXTURE);
     GLPushMatrix();
@@ -115,7 +115,7 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     GLPopMatrix();
     
     // Enable state
-    draw.opaqueClipState(true);
+    opaqueClipState(true);
 }
 
 void CstrDraw::drawRect(uw *packet) {

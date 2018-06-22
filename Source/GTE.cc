@@ -480,45 +480,45 @@ void CstrMips::executeCop2(uw code) {
                         MAC2 = ((sh)IR1*R21 + (sh)IR2*R22 + (sh)IR3*R23);
                         MAC3 = ((sh)IR1*R31 + (sh)IR2*R32 + (sh)IR3*R33);
                         break;
-
+                        
                     case 0x80000:
                         MAC1 = FPN_12(VX0*R11 + VY0*R12 + VZ0*R13);
                         MAC2 = FPN_12(VX0*R21 + VY0*R22 + VZ0*R23);
                         MAC3 = FPN_12(VX0*R31 + VY0*R32 + VZ0*R33);
                         break;
-
+                        
                     case 0x98000:
                         MAC1 = FPN_12((sh)IR1*R11 + (sh)IR2*R12 + (sh)IR3*R13);
                         MAC2 = FPN_12((sh)IR1*R21 + (sh)IR2*R22 + (sh)IR3*R23);
                         MAC3 = FPN_12((sh)IR1*R31 + (sh)IR2*R32 + (sh)IR3*R33);
                         break;
-
+                        
                     case 0xa0000:
                         MAC1 = FPN_12(VX0*L11 + VY0*L12 + VZ0*L13);
                         MAC2 = FPN_12(VX0*L21 + VY0*L22 + VZ0*L23);
                         MAC3 = FPN_12(VX0*L31 + VY0*L32 + VZ0*L33);
                         break;
-
+                        
                     default:
                         printx("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) $%08x\n", (code & 0xf8000));
                         break;
                 }
-
+                
                 switch(code & 0x6000) {
                     case 0x0000:
                         MAC1 += TRX;
                         MAC2 += TRY;
                         MAC3 += TRZ;
                         break;
-
+                        
                     case 0x6000:
                         break;
-
+                        
                     default:
                         printx("/// PSeudo Unknown cop2 mvmva (code & 0x6000) $%08x\n", (code & 0x6000));
                         break;
                 }
-
+                
                 if (code & 0x400) {
                     MAC2IR1();
                 }
