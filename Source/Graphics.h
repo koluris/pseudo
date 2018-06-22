@@ -81,6 +81,16 @@ class CstrGraphics {
         uw data[256], prim, size, row;
     } pipe;
     
+    // VRAM operations
+    struct {
+        bool enabled;
+        uw *raw;
+        
+        struct {
+            sw start, end, p;
+        } h, v;
+    } vrop;
+    
     uw modeDMA;
     uh vpos, vdiff;
     
@@ -101,16 +111,6 @@ public:
     struct {
         uh *ptr; uw size;
     } vram;
-    
-    // VRAM operations
-    struct {
-        bool enabled;
-        uw *raw;
-        
-        struct {
-            sw start, end, p;
-        } h, v;
-    } vrop;
     
     // Data, Status
     struct {
