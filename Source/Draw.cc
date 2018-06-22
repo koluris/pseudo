@@ -40,6 +40,13 @@ void CstrDraw::reset() {
     GLClearColor(0, 0, 0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
     GLFlush();
+    
+    // 16-bit texture
+    GLGenTextures(1, &fb16tex);
+    GLBindTexture  (GL_TEXTURE_2D, fb16tex);
+    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, FRAME_W, FRAME_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 }
 
 #define SHOW_VRAM \
@@ -86,11 +93,39 @@ void CstrDraw::opaqueClipState(bool enable) {
     }
 }
 
+void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
+    // Disable state
+    draw.opaqueClipState(false);
+    
+    GLMatrixMode(GL_TEXTURE);
+    GLPushMatrix();
+    GLID();
+    GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
+    
+    GLColor4ub(127, 127, 127, 255);
+    
+    GLEnable(GL_TEXTURE_2D);
+    GLBindTexture  (GL_TEXTURE_2D, fb16tex);
+    GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
+    
+    GLStart(GL_TRIANGLE_STRIP);
+        GLTexCoord2s(0, 0); GLVertex2s(X,   Y);
+        GLTexCoord2s(W, 0); GLVertex2s(X+W, Y);
+        GLTexCoord2s(0, H); GLVertex2s(X,   Y+H);
+        GLTexCoord2s(W, H); GLVertex2s(X+W, Y+H);
+    GLEnd();
+    
+    GLDisable(GL_TEXTURE_2D);
+    GLPopMatrix();
+    
+    // Enable state
+    draw.opaqueClipState(true);
+}
+
 void CstrDraw::drawRect(uw *packet) {
     TILEx *p = (TILEx *)packet;
     
     opaqueClipState(false);
-    
     GLColor4ub(p->hue.r, p->hue.c, p->hue.b, COLOR_MAX);
     
     GLStart(GL_TRIANGLE_STRIP);

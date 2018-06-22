@@ -57,6 +57,7 @@ class CstrDraw {
         { GL_SRC_ALPHA, GL_ONE,                  64 },
     };
     
+    GLuint fb16tex = 0;
     ub opaque;
     uw spriteTP;
     
@@ -77,6 +78,7 @@ public:
     void reset();
     void resize(sh, sh);
     void opaqueClipState(bool);
+    void outputVRAM(uw *, sh, sh, sh, sh);
     void primitive(uw, uw *);
 };
 

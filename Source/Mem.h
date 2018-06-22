@@ -13,11 +13,11 @@ class CstrMem {
         MEM_BOUNDS_ROM = 0xbfc80000 & MEM_MASK,
     };
     
-public:
     struct heap {
         ub *ptr; uw size;
     };
     
+public:
     heap ram, rom, hwr;
     
     CstrMem() {

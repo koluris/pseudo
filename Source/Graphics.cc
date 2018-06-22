@@ -20,13 +20,7 @@ void CstrGraphics::reset() {
     vpos         = 0;
     vdiff        = 0;
     isVideoPAL   = false;
-    
-    // Must move this
-    GLGenTextures(1, &fb16tex);
-    GLBindTexture  (GL_TEXTURE_2D, fb16tex);
-    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, FRAME_W, FRAME_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    is24Bit      = false;
 }
 
 #define NTSC \
@@ -76,6 +70,8 @@ void CstrGraphics::write(uw addr, uw data) {
                 case 0x00:
                     ret.status   = 0x14802000;
                     ret.disabled = true;
+                    isVideoPAL   = false;
+                    is24Bit      = false;
                     return;
                     
                 case 0x01:
@@ -99,7 +95,8 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x08:
-                    isVideoPAL = data & 8;
+                    isVideoPAL = (data) & 8;
+                    is24Bit    = (data >> 4) & 1;
                     
                     {
                         // Basic info
@@ -167,7 +164,11 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
     
     while (vrop.v.p < vrop.v.end) {
         while (vrop.h.p < vrop.h.end) {
-            vrop.raw[count] = cache.pixel2texel(*ptr);
+            if (is24Bit) {
+            }
+            else {
+                vrop.raw[count] = cache.pixel2texel(*ptr);
+            }
             
             vram.ptr[(vrop.v.p << 10) + vrop.h.p] = *ptr;
             vrop.h.p++;
@@ -189,46 +190,10 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
     
 VRAM_END:
     if (vrop.v.p >= vrop.v.end) {
-#if 1
-        sh X = vrop.h.start;
-        sh Y = vrop.v.start;
-        sh W = vrop.h.end - X;
-        sh H = vrop.v.end - Y;
-        
-        // Disable state
-        draw.opaqueClipState(false);
-        
-        GLMatrixMode(GL_TEXTURE);
-        GLPushMatrix();
-        GLID();
-        GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
-        
-        GLColor4ub(127, 127, 127, 255);
-        
-        GLEnable(GL_TEXTURE_2D);
-        GLBindTexture  (GL_TEXTURE_2D, fb16tex);
-        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, vrop.raw);
-        
-        GLStart(GL_TRIANGLE_STRIP);
-            GLTexCoord2s(0, 0); GLVertex2s(X,   Y);
-            GLTexCoord2s(W, 0); GLVertex2s(X+W, Y);
-            GLTexCoord2s(0, H); GLVertex2s(X,   Y+H);
-            GLTexCoord2s(W, H); GLVertex2s(X+W, Y+H);
-        GLEnd();
-        
-        GLDisable(GL_TEXTURE_2D);
-        GLPopMatrix();
-        
-        // Enable state
-        draw.opaqueClipState(true);
+        draw.outputVRAM(vrop.raw, vrop.h.start, vrop.v.start, vrop.h.end - vrop.h.start, vrop.v.end - vrop.v.start);
         
         delete[] vrop.raw;
-#endif
         vrop.enabled = false;
-        
-        if (count%2 == 1) {
-            count++;
-        }
         
         modeDMA = GPU_DMA_NONE;
     }

@@ -5,8 +5,6 @@
     512
 
 class CstrGraphics {
-    GLuint fb16tex = 0;
-    
     // Constant enumerations
     enum {
         GPU_REG_DATA,
@@ -100,7 +98,7 @@ public:
     }
     
     // VRAM
-    struct heap {
+    struct {
         uh *ptr; uw size;
     } vram;
     
@@ -120,6 +118,7 @@ public:
     } ret;
     
     bool isVideoPAL;
+    bool is24Bit;
     
     void reset();
     void refresh();
