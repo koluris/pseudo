@@ -42,11 +42,7 @@ void CstrDraw::reset() {
     GLFlush();
     
     // 16-bit texture
-    GLGenTextures(1, &fb16tex);
-    GLBindTexture  (GL_TEXTURE_2D, fb16tex);
-    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, FRAME_W, FRAME_H, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    cache.createTexture(&fb16tex, FRAME_W, FRAME_H);
 }
 
 #define SHOW_VRAM \

@@ -33,6 +33,7 @@ public:
     
     void reset();
     uw pixel2texel(uh);
+    void createTexture(GLuint *, int, int);
     void fetchTexture(uw, uw);
     void invalidate(sh, sh, sh, sh);
 };

@@ -12,10 +12,7 @@ void CstrCache::reset() {
         GLDeleteTextures(1, &tc.tex);
         tc = { 0 };
         
-        GLGenTextures(1, &tc.tex);
-        GLBindTexture  (GL_TEXTURE_2D, tc.tex);
-        GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        createTexture(&tc.tex, 256, 256);
     }
     
     index = 0;
@@ -23,6 +20,14 @@ void CstrCache::reset() {
 
 uw CstrCache::pixel2texel(uh p) {
     return COLOR_32BIT(p ? 255 : 0, (p >> 10) << 3, (p >> 5) << 3, p << 3);
+}
+
+void CstrCache::createTexture(GLuint *tex, int w, int h) {
+    GLGenTextures(1, tex);
+    GLBindTexture  (GL_TEXTURE_2D, *tex);
+    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 }
 
 void CstrCache::fetchTexture(uw tp, uw clut) {
@@ -88,8 +93,8 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     }
     
     // Attach texture
-    GLBindTexture(GL_TEXTURE_2D, tc.tex);
-    GLTexPhoto2D (GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex.bfr);
+    GLBindTexture  (GL_TEXTURE_2D, tc.tex);
+    GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, tex.bfr);
     
     // Advance cache counter
     tc.uid = uid;
@@ -99,10 +104,11 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
 void CstrCache::invalidate(sh X, sh Y, sh W, sh H) {
     for (auto &tc : cache) {
         if (((tc.pos.w + 255) >= X) && ((tc.pos.h + 255) >= Y) && ((tc.pos.w) <= W) && ((tc.pos.h) <= H)) {
-//            printf("VRAM: %4d %4d %4d %4d\n", X, Y, W, H);
-//            printf("TEXT: %4d %4d %4d %4d\n", tc.pos.w, tc.pos.h, (tc.pos.w + 255), (tc.pos.h + 255));
-//            printf("-\n");
-            
+#if 0
+            printf("VRAM: %4d %4d %4d %4d\n", X, Y, W, H);
+            printf("TEXT: %4d %4d %4d %4d\n", tc.pos.w, tc.pos.h, (tc.pos.w + 255), (tc.pos.h + 255));
+            printf("-\n");
+#endif
             reset();
             return;
         }
