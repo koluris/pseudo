@@ -118,7 +118,7 @@ public:
     } ret;
     
     bool isVideoPAL;
-    bool is24Bit;
+    bool isVideo24Bit;
     
     void reset();
     void refresh();

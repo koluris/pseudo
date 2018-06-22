@@ -20,7 +20,7 @@ void CstrGraphics::reset() {
     vpos         = 0;
     vdiff        = 0;
     isVideoPAL   = false;
-    is24Bit      = false;
+    isVideo24Bit = false;
 }
 
 #define NTSC \
@@ -71,7 +71,7 @@ void CstrGraphics::write(uw addr, uw data) {
                     ret.status   = 0x14802000;
                     ret.disabled = true;
                     isVideoPAL   = false;
-                    is24Bit      = false;
+                    isVideo24Bit = false;
                     return;
                     
                 case 0x01:
@@ -95,8 +95,8 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x08:
-                    isVideoPAL = (data) & 8;
-                    is24Bit    = (data >> 4) & 1;
+                    isVideoPAL   = (data) & 8;
+                    isVideo24Bit = (data >> 4) & 1;
                     
                     {
                         // Basic info
@@ -164,7 +164,8 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
     
     while (vrop.v.p < vrop.v.end) {
         while (vrop.h.p < vrop.h.end) {
-            if (is24Bit) {
+            if (isVideo24Bit) {
+                printf("Video is 24 bits\n");
             }
             else {
                 vrop.raw[count] = cache.pixel2texel(*ptr);
@@ -206,7 +207,7 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
     
     while (i < size) {
         if (modeDMA == GPU_DMA_MEM2VRAM) {
-            if ((i += fetchMem((uh *)ptr, size-i)) >= size) {
+            if ((i += fetchMem((uh *)ptr, size - i)) >= size) {
                 continue;
             }
             ptr += i;
