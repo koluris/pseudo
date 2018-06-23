@@ -310,7 +310,163 @@ void CstrDraw::setDrawArea(int plane, uw data) {
     GLClipPlane(GL_CLIP_PLANE0 + (plane + 1), e2);
 }
 
-void CstrDraw::primitive(uw addr, uw *data) {
+enum {
+    GPU_TYPE_CMD,
+    GPU_TYPE_POLYGON,
+    GPU_TYPE_LINE,
+    GPU_TYPE_SPRITE,
+    GPU_TYPE_IMG_MOVE,
+    GPU_TYPE_IMG_SEND,
+    GPU_TYPE_IMG_COPY,
+    GPU_TYPE_ENV
+};
+
+struct POLY {
+    ub exposure    : 1;
+    ub transparent : 1;
+    ub texture     : 1;
+    ub vertices    : 1;
+    ub shade       : 1;
+    ub             : 3;
+};
+
+struct RGBC {
+    ub r, c, b, a;
+};
+
+struct TEX {
+    ub u, v; uh tp;
+};
+
+struct POINT {
+    sh w, h;
+};
+
+template <class T>
+void parse(T *components, uw *packets, int start, int step) {
+    for (uw i = 0, *p = &packets[start]; i < 4; i++, p += step) {
+        components[i] = *(T  *)&p;
+    }
+}
+
+void CstrDraw::primitive(uw addr, uw *packets) {
+    switch((addr >> 5) & 7) {
+        case GPU_TYPE_CMD:
+            switch(addr) {
+                case 0x01: // Flush
+                    vs.write(0x1f801814, 0x01000000);
+                    return;
+                    
+                default:
+                    printx("/// PSeudo GPU_TYPE_CMD unknown: 0x%x", addr);
+                    return;
+            }
+            return;
+            
+        case GPU_TYPE_POLYGON:
+            {
+                POLY *b = (POLY *)&addr;
+                
+                // Basic components
+                RGBC  *hue[4];
+                POINT * vx[4];
+                TEX   *tex[4];
+                
+                if (b->shade) {
+                    // Gouraud
+                    if (b->texture) {
+                        parse(hue, packets, 0, 3);
+                        parse( vx, packets, 1, 3);
+                        parse(tex, packets, 2, 3);
+                    }
+                    else {
+                        parse(hue, packets, 0, 2);
+                        parse( vx, packets, 1, 2);
+                    }
+                }
+                else {
+                    // Flat
+                    hue[0] = (RGBC *)&packets[0];
+                    GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, 255);
+                    
+                    if (b->texture) {
+                        parse( vx, packets, 1, 2);
+                        parse(tex, packets, 2, 2);
+                    }
+                    else {
+                        parse( vx, packets, 1, 1);
+                    }
+                }
+                
+                if (b->texture) {
+                    GLEnable(GL_TEXTURE_2D);
+                    cache.fetchTexture(tex[1]->tp, tex[0]->tp);
+                }
+                
+                GLStart(GL_TRIANGLE_STRIP);
+                for (int i = 0; i < (b->vertices ? 4 : 3); i++) {
+                    if (b->shade  ) GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, 255);
+                    if (b->texture) GLTexCoord2s(tex[i]->u, tex[i]->v);
+                    GLVertex2s(vx[i]->w, vx[i]->h);
+                }
+                GLEnd();
+                GLDisable(GL_TEXTURE_2D);
+            }
+            return;
+            
+        case GPU_TYPE_LINE:
+            return;
+            
+        case GPU_TYPE_SPRITE:
+            return;
+            
+        case GPU_TYPE_IMG_MOVE:
+            vs.photoMove(data);
+            return;
+            
+        case GPU_TYPE_IMG_SEND:
+            vs.photoRead(data);
+            return;
+            
+        case GPU_TYPE_IMG_COPY:
+            return;
+            
+        case GPU_TYPE_ENV:
+            switch(addr) {
+                case 0xe1: // Texture P.
+                    spriteTP = (data[0]) & 0x7ff;
+                    opaque   = (data[0] >> 5) & 3;
+                    GLBlendFunc(bit[opaque].src, bit[opaque].dst);
+                    return;
+                    
+                case 0xe2: // TODO: Texture Window
+                    return;
+                    
+                case 0xe3: // Draw Area Start
+                    setDrawArea(0, data[0]);
+                    return;
+                    
+                case 0xe4: // Draw Area End
+                    setDrawArea(2, data[0]);
+                    return;
+                    
+                case 0xe5: // Draw Offset
+                    offset.h = ((sw)data[0] << 21) >> 21;
+                    offset.v = ((sw)data[0] << 10) >> 21;
+                    return;
+                    
+                case 0xe6: // TODO: STP
+                    return;
+                    
+                default:
+                    printx("/// PSeudo GPU_TYPE_ENV unknown: 0x%x", addr);
+                    return;
+            }
+            return;
+    }
+    
+    printx("/// PSeudo GPU command unknown: 0x%08x / %d", data[0], ((addr >> 5) & 7));
+    
     // Primitives
     switch(addr & 0xfc) {
         case 0x20: // Vertex F3
