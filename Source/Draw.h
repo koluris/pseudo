@@ -7,35 +7,35 @@ class CstrDraw {
     };
     
     // Basic packet components
-    struct Chromatic {
-        ub r, c, b, a;
-    };
-    
-    struct Coords {
-        sh w, h;
-    };
-    
-    struct Tex {
-        ub u, v; uh clut;
-    };
+//    struct Chromatic {
+//        ub r, c, b, a;
+//    };
+//
+//    struct Coords {
+//        sh w, h;
+//    };
+//
+//    struct Tex {
+//        ub u, v; uh clut;
+//    };
     
     // Primitive Packets
-    struct PF    {                Coords coords; };
-    struct PFT   {                Coords coords; Tex tex; };
-    struct PG    { Chromatic hue; Coords coords; };
-    struct PGT   { Chromatic hue; Coords coords; Tex tex; };
-    
-    // Vertex & Line (F, FT)
-    struct PFx   { Chromatic hue; PF  v[256]; }; // Line with termination code
-    struct PFTx  { Chromatic hue; PFT v[  4]; };
-    
-    // Vertex & Line (G, GT)
-    struct PGx   { PG  v[256]; }; // Line with termination code
-    struct PGTx  { PGT v[  4]; };
-    
-    // Tile & Sprite
-    struct TILEx { Chromatic hue; PF  v; Coords size; };
-    struct SPRTx { Chromatic hue; PFT v; Coords size; };
+//    struct PF    {                Coords coords; };
+//    struct PFT   {                Coords coords; Tex tex; };
+//    struct PG    { Chromatic hue; Coords coords; };
+//    struct PGT   { Chromatic hue; Coords coords; Tex tex; };
+//    
+//    // Vertex & Line (F, FT)
+//    struct PFx   { Chromatic hue; PF  v[256]; }; // Line with termination code
+//    struct PFTx  { Chromatic hue; PFT v[  4]; };
+//    
+//    // Vertex & Line (G, GT)
+//    struct PGx   { PG  v[256]; }; // Line with termination code
+//    struct PGTx  { PGT v[  4]; };
+//    
+//    // Tile & Sprite
+//    struct TILEx { Chromatic hue; PF  v; Coords size; };
+//    struct SPRTx { Chromatic hue; PFT v; Coords size; };
     
     // Window
     struct {

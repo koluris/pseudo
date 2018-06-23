@@ -118,170 +118,170 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     opaqueClipState(true);
 }
 
-void CstrDraw::drawRect(uw *packet) {
-    TILEx *p = (TILEx *)packet;
-    
-    opaqueClipState(false);
-    GLColor4ub(p->hue.r, p->hue.c, p->hue.b, COLOR_MAX);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-        GLVertex2s(p->v.coords.w,             p->v.coords.h);
-        GLVertex2s(p->v.coords.w + p->size.w, p->v.coords.h);
-        GLVertex2s(p->v.coords.w,             p->v.coords.h + p->size.h);
-        GLVertex2s(p->v.coords.w + p->size.w, p->v.coords.h + p->size.h);
-    GLEnd();
-    
-    opaqueClipState(true);
-}
+//void CstrDraw::drawRect(uw *packet) {
+//    TILEx *p = (TILEx *)packet;
+//
+//    opaqueClipState(false);
+//    GLColor4ub(p->hue.r, p->hue.c, p->hue.b, COLOR_MAX);
+//
+//    GLStart(GL_TRIANGLE_STRIP);
+//        GLVertex2s(p->v.coords.w,             p->v.coords.h);
+//        GLVertex2s(p->v.coords.w + p->size.w, p->v.coords.h);
+//        GLVertex2s(p->v.coords.w,             p->v.coords.h + p->size.h);
+//        GLVertex2s(p->v.coords.w + p->size.w, p->v.coords.h + p->size.h);
+//    GLEnd();
+//
+//    opaqueClipState(true);
+//}
 
-void CstrDraw::drawF(uw *packet, int size, GLenum mode) {
-    PFx *p = (PFx *)packet;
-    
-    // Special case
-    if (mode == GL_LINE_STRIP) { // eur-001.psx, fuzzion.psx
-        if (size > 2) {
-            size = 256;
-        }
-    }
-    
-    ub *b = opaqueFunc(p->hue.a);
-    GLColor4ub(p->hue.r, p->hue.c, p->hue.b, b[1]);
-    
-    GLStart(mode);
-    for (int i = 0; i < size; i++) {
-        if (size == 256) { // Special case
-            if (*(uw *)&p->v[i] == LINE_TERM_CODE) {
-                break;
-            }
-        }
-        GLVertex2s(p->v[i].coords.w, p->v[i].coords.h);
-    }
-    GLEnd();
-}
+//void CstrDraw::drawF(uw *packet, int size, GLenum mode) {
+//    PFx *p = (PFx *)packet;
+//
+//    // Special case
+//    if (mode == GL_LINE_STRIP) { // eur-001.psx, fuzzion.psx
+//        if (size > 2) {
+//            size = 256;
+//        }
+//    }
+//
+//    ub *b = opaqueFunc(p->hue.a);
+//    GLColor4ub(p->hue.r, p->hue.c, p->hue.b, b[1]);
+//
+//    GLStart(mode);
+//    for (int i = 0; i < size; i++) {
+//        if (size == 256) { // Special case
+//            if (*(uw *)&p->v[i] == LINE_TERM_CODE) {
+//                break;
+//            }
+//        }
+//        GLVertex2s(p->v[i].coords.w, p->v[i].coords.h);
+//    }
+//    GLEnd();
+//}
 
-void CstrDraw::drawG(uw *packet, int size, GLenum mode) {
-    PGx *p = (PGx *)packet;
-    
-    // Special case
-    if (mode == GL_LINE_STRIP) { // mups-016.psx, pdx-030.psx, pdx-074.psx, pop-n-pop.psx
-        if (size > 3) {
-            size = 256;
-        }
-    }
-    
-    ub *b = opaqueFunc(p->v[0].hue.a);
-    
-    GLStart(mode);
-    for (int i = 0; i < size; i++) {
-        if (size == 256) { // Special case
-            if (*(uw *)&p->v[i] == LINE_TERM_CODE) {
-                break;
-            }
-        }
-        GLColor4ub(p->v[i].   hue.r, p->v[i].   hue.c, p->v[i].hue.b, b[1]);
-        GLVertex2s(p->v[i].coords.w, p->v[i].coords.h);
-    }
-    GLEnd();
-}
+//void CstrDraw::drawG(uw *packet, int size, GLenum mode) {
+//    PGx *p = (PGx *)packet;
+//
+//    // Special case
+//    if (mode == GL_LINE_STRIP) { // mups-016.psx, pdx-030.psx, pdx-074.psx, pop-n-pop.psx
+//        if (size > 3) {
+//            size = 256;
+//        }
+//    }
+//
+//    ub *b = opaqueFunc(p->v[0].hue.a);
+//
+//    GLStart(mode);
+//    for (int i = 0; i < size; i++) {
+//        if (size == 256) { // Special case
+//            if (*(uw *)&p->v[i] == LINE_TERM_CODE) {
+//                break;
+//            }
+//        }
+//        GLColor4ub(p->v[i].   hue.r, p->v[i].   hue.c, p->v[i].hue.b, b[1]);
+//        GLVertex2s(p->v[i].coords.w, p->v[i].coords.h);
+//    }
+//    GLEnd();
+//}
 
-void CstrDraw::drawFT(uw *packet, int size) {
-    PFTx *p = (PFTx *)packet;
-    
-    opaque = (p->v[1].tex.clut >> 5) & 3;
-    ub *b = opaqueFunc(p->hue.a);
-    
-    if (p->hue.a & 1) {
-        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
-    }
-    else {
-        GLColor4ub(p->hue.r, p->hue.c, p->hue.b, b[1]);
-    }
-    
-    GLEnable(GL_TEXTURE_2D);
-    cache.fetchTexture(p->v[1].tex.clut, p->v[0].tex.clut);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-    for (int i = 0; i < size; i++) {
-        GLTexCoord2s(p->v[i].   tex.u, p->v[i].   tex.v);
-        GLVertex2s  (p->v[i].coords.w, p->v[i].coords.h);
-    }
-    GLEnd();
-    
-    GLDisable(GL_TEXTURE_2D);
-}
+//void CstrDraw::drawFT(uw *packet, int size) {
+//    PFTx *p = (PFTx *)packet;
+//
+//    opaque = (p->v[1].tex.clut >> 5) & 3;
+//    ub *b = opaqueFunc(p->hue.a);
+//
+//    if (p->hue.a & 1) {
+//        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
+//    }
+//    else {
+//        GLColor4ub(p->hue.r, p->hue.c, p->hue.b, b[1]);
+//    }
+//
+//    GLEnable(GL_TEXTURE_2D);
+//    cache.fetchTexture(p->v[1].tex.clut, p->v[0].tex.clut);
+//
+//    GLStart(GL_TRIANGLE_STRIP);
+//    for (int i = 0; i < size; i++) {
+//        GLTexCoord2s(p->v[i].   tex.u, p->v[i].   tex.v);
+//        GLVertex2s  (p->v[i].coords.w, p->v[i].coords.h);
+//    }
+//    GLEnd();
+//
+//    GLDisable(GL_TEXTURE_2D);
+//}
 
-void CstrDraw::drawGT(uw *packet, int size) {
-    PGTx *p = (PGTx *)packet;
-    
-    opaque = (p->v[1].tex.clut >> 5) & 3;
-    ub *b = opaqueFunc(p->v[0].hue.a);
-    
-    GLEnable(GL_TEXTURE_2D);
-    cache.fetchTexture(p->v[1].tex.clut, p->v[0].tex.clut);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-    for (int i = 0; i < size; i++) {
-        GLColor4ub  (p->v[i].   hue.r, p->v[i].   hue.c, p->v[i].hue.b, b[1]);
-        GLTexCoord2s(p->v[i].   tex.u, p->v[i].   tex.v);
-        GLVertex2s  (p->v[i].coords.w, p->v[i].coords.h);
-    }
-    GLEnd();
-    
-    GLDisable(GL_TEXTURE_2D);
-}
+//void CstrDraw::drawGT(uw *packet, int size) {
+//    PGTx *p = (PGTx *)packet;
+//
+//    opaque = (p->v[1].tex.clut >> 5) & 3;
+//    ub *b = opaqueFunc(p->v[0].hue.a);
+//
+//    GLEnable(GL_TEXTURE_2D);
+//    cache.fetchTexture(p->v[1].tex.clut, p->v[0].tex.clut);
+//
+//    GLStart(GL_TRIANGLE_STRIP);
+//    for (int i = 0; i < size; i++) {
+//        GLColor4ub  (p->v[i].   hue.r, p->v[i].   hue.c, p->v[i].hue.b, b[1]);
+//        GLTexCoord2s(p->v[i].   tex.u, p->v[i].   tex.v);
+//        GLVertex2s  (p->v[i].coords.w, p->v[i].coords.h);
+//    }
+//    GLEnd();
+//
+//    GLDisable(GL_TEXTURE_2D);
+//}
 
-void CstrDraw::drawTile(uw *packet, int size) {
-    TILEx *p = (TILEx *)packet;
-    
-    if (size) {
-        p->size.w = size;
-        p->size.h = size;
-    }
-    
-    ub *b = opaqueFunc(p->hue.a);
-    GLColor4ub(p->hue.r, p->hue.c, p->hue.b, b[1]);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-        GLVertex2s(p->v.coords.w,             p->v.coords.h);
-        GLVertex2s(p->v.coords.w + p->size.w, p->v.coords.h);
-        GLVertex2s(p->v.coords.w,             p->v.coords.h + p->size.h);
-        GLVertex2s(p->v.coords.w + p->size.w, p->v.coords.h + p->size.h);
-    GLEnd();
-}
+//void CstrDraw::drawTile(uw *packet, int size) {
+//    TILEx *p = (TILEx *)packet;
+//
+//    if (size) {
+//        p->size.w = size;
+//        p->size.h = size;
+//    }
+//
+//    ub *b = opaqueFunc(p->hue.a);
+//    GLColor4ub(p->hue.r, p->hue.c, p->hue.b, b[1]);
+//
+//    GLStart(GL_TRIANGLE_STRIP);
+//        GLVertex2s(p->v.coords.w,             p->v.coords.h);
+//        GLVertex2s(p->v.coords.w + p->size.w, p->v.coords.h);
+//        GLVertex2s(p->v.coords.w,             p->v.coords.h + p->size.h);
+//        GLVertex2s(p->v.coords.w + p->size.w, p->v.coords.h + p->size.h);
+//    GLEnd();
+//}
 
-void CstrDraw::drawSprite(uw *packet, int size) {
-    SPRTx *p = (SPRTx *)packet;
-    
-    if (size) {
-        p->size.w = size;
-        p->size.h = size;
-    }
-    
-    ub *b = opaqueFunc(p->hue.a);
-    
-    if (p->hue.a & 1) {
-        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
-    }
-    else {
-        GLColor4ub(p->hue.r, p->hue.c, p->hue.b, b[1]);
-    }
-    
-    GLEnable(GL_TEXTURE_2D);
-    cache.fetchTexture(spriteTP, p->v.tex.clut);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(p->v.   tex.u,             p->v.   tex.v);
-        GLVertex2s  (p->v.coords.w,             p->v.coords.h);
-        GLTexCoord2s(p->v.   tex.u + p->size.w, p->v.   tex.v);
-        GLVertex2s  (p->v.coords.w + p->size.w, p->v.coords.h);
-        GLTexCoord2s(p->v.   tex.u,             p->v.   tex.v + p->size.h);
-        GLVertex2s  (p->v.coords.w,             p->v.coords.h + p->size.h);
-        GLTexCoord2s(p->v.   tex.u + p->size.w, p->v.   tex.v + p->size.h);
-        GLVertex2s  (p->v.coords.w + p->size.w, p->v.coords.h + p->size.h);
-    GLEnd();
-    
-    GLDisable(GL_TEXTURE_2D);
-}
+//void CstrDraw::drawSprite(uw *packet, int size) {
+//    SPRTx *p = (SPRTx *)packet;
+//
+//    if (size) {
+//        p->size.w = size;
+//        p->size.h = size;
+//    }
+//
+//    ub *b = opaqueFunc(p->hue.a);
+//
+//    if (p->hue.a & 1) {
+//        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, b[1]);
+//    }
+//    else {
+//        GLColor4ub(p->hue.r, p->hue.c, p->hue.b, b[1]);
+//    }
+//
+//    GLEnable(GL_TEXTURE_2D);
+//    cache.fetchTexture(spriteTP, p->v.tex.clut);
+//
+//    GLStart(GL_TRIANGLE_STRIP);
+//        GLTexCoord2s(p->v.   tex.u,             p->v.   tex.v);
+//        GLVertex2s  (p->v.coords.w,             p->v.coords.h);
+//        GLTexCoord2s(p->v.   tex.u + p->size.w, p->v.   tex.v);
+//        GLVertex2s  (p->v.coords.w + p->size.w, p->v.coords.h);
+//        GLTexCoord2s(p->v.   tex.u,             p->v.   tex.v + p->size.h);
+//        GLVertex2s  (p->v.coords.w,             p->v.coords.h + p->size.h);
+//        GLTexCoord2s(p->v.   tex.u + p->size.w, p->v.   tex.v + p->size.h);
+//        GLVertex2s  (p->v.coords.w + p->size.w, p->v.coords.h + p->size.h);
+//    GLEnd();
+//
+//    GLDisable(GL_TEXTURE_2D);
+//}
 
 ub *CstrDraw::opaqueFunc(ub a) {
     ub *b = new ub[2];
@@ -330,22 +330,22 @@ struct POLY {
     ub             : 3;
 };
 
-struct RGBC {
+struct Chromatic {
     ub r, c, b, a;
 };
 
-struct TEX {
-    ub u, v; uh tp;
-};
-
-struct POINT {
+struct Coords {
     sh w, h;
 };
 
+struct Tex {
+    ub u, v; uh tp;
+};
+
 template <class T>
-void parse(T *components, uw *packets, int start, int step) {
-    for (uw i = 0, *p = &packets[start]; i < 4; i++, p += step) {
-        components[i] = *(T  *)&p;
+void parse(T *components, uw *packets, int step) {
+    for (uw i = 0, *p = packets; i < 4; i++, p += step) {
+        components[i] = *(T *)&p;
     }
 }
 
@@ -365,48 +365,48 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             
         case GPU_TYPE_POLYGON:
             {
-                POLY *b = (POLY *)&addr;
+                POLY *setup = (POLY *)&addr;
                 
-                // Basic components
-                RGBC  *hue[4];
-                POINT * vx[4];
-                TEX   *tex[4];
+                // Basic packet components
+                Chromatic *hue[4];
+                Coords    *vx [4];
+                Tex       *tex[4];
                 
-                if (b->shade) {
+                if (setup->shade) {
                     // Gouraud
-                    if (b->texture) {
-                        parse(hue, packets, 0, 3);
-                        parse( vx, packets, 1, 3);
-                        parse(tex, packets, 2, 3);
+                    if (setup->texture) {
+                        parse(hue, &packets[0], 3);
+                        parse( vx, &packets[1], 3);
+                        parse(tex, &packets[2], 3);
                     }
                     else {
-                        parse(hue, packets, 0, 2);
-                        parse( vx, packets, 1, 2);
+                        parse(hue, &packets[0], 2);
+                        parse( vx, &packets[1], 2);
                     }
                 }
                 else {
                     // Flat
-                    hue[0] = (RGBC *)&packets[0];
+                    hue[0] = (Chromatic *)&packets[0];
                     GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, 255);
                     
-                    if (b->texture) {
-                        parse( vx, packets, 1, 2);
-                        parse(tex, packets, 2, 2);
+                    if (setup->texture) {
+                        parse( vx, &packets[1], 2);
+                        parse(tex, &packets[2], 2);
                     }
                     else {
-                        parse( vx, packets, 1, 1);
+                        parse( vx, &packets[1], 1);
                     }
                 }
                 
-                if (b->texture) {
+                if (setup->texture) {
                     GLEnable(GL_TEXTURE_2D);
                     cache.fetchTexture(tex[1]->tp, tex[0]->tp);
                 }
                 
                 GLStart(GL_TRIANGLE_STRIP);
-                for (int i = 0; i < (b->vertices ? 4 : 3); i++) {
-                    if (b->shade  ) GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, 255);
-                    if (b->texture) GLTexCoord2s(tex[i]->u, tex[i]->v);
+                for (int i = 0; i < (setup->vertices ? 4 : 3); i++) {
+                    if (setup->shade  ) GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, 255);
+                    if (setup->texture) GLTexCoord2s(tex[i]->u, tex[i]->v);
                     GLVertex2s(vx[i]->w, vx[i]->h);
                 }
                 GLEnd();
@@ -421,11 +421,11 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             return;
             
         case GPU_TYPE_IMG_MOVE:
-            vs.photoMove(data);
+            vs.photoMove(packets);
             return;
             
         case GPU_TYPE_IMG_SEND:
-            vs.photoRead(data);
+            vs.photoRead(packets);
             return;
             
         case GPU_TYPE_IMG_COPY:
@@ -434,8 +434,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
         case GPU_TYPE_ENV:
             switch(addr) {
                 case 0xe1: // Texture P.
-                    spriteTP = (data[0]) & 0x7ff;
-                    opaque   = (data[0] >> 5) & 3;
+                    spriteTP = (packets[0]) & 0x7ff;
+                    opaque   = (packets[0] >> 5) & 3;
                     GLBlendFunc(bit[opaque].src, bit[opaque].dst);
                     return;
                     
@@ -443,16 +443,16 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     return;
                     
                 case 0xe3: // Draw Area Start
-                    setDrawArea(0, data[0]);
+                    setDrawArea(0, packets[0]);
                     return;
                     
                 case 0xe4: // Draw Area End
-                    setDrawArea(2, data[0]);
+                    setDrawArea(2, packets[0]);
                     return;
                     
                 case 0xe5: // Draw Offset
-                    offset.h = ((sw)data[0] << 21) >> 21;
-                    offset.v = ((sw)data[0] << 10) >> 21;
+                    offset.h = ((sw)packets[0] << 21) >> 21;
+                    offset.v = ((sw)packets[0] << 10) >> 21;
                     return;
                     
                 case 0xe6: // TODO: STP
@@ -465,141 +465,141 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             return;
     }
     
-    printx("/// PSeudo GPU command unknown: 0x%08x / %d", data[0], ((addr >> 5) & 7));
+    printx("/// PSeudo GPU command unknown: 0x%08x / %d", packets[0], ((addr >> 5) & 7));
     
     // Primitives
-    switch(addr & 0xfc) {
-        case 0x20: // Vertex F3
-            drawF(data, 3, GL_TRIANGLE_STRIP);
-            return;
-            
-        case 0x24: // Vertex FT3
-            drawFT(data, 3);
-            return;
-            
-        case 0x28: // Vertex F4
-            drawF(data, 4, GL_TRIANGLE_STRIP);
-            return;
-            
-        case 0x2c: // Vertex FT4
-            drawFT(data, 4);
-            return;
-            
-        case 0x30: // Vertex G3
-            drawG(data, 3, GL_TRIANGLE_STRIP);
-            return;
-            
-        case 0x34: // Vertex GT3
-            drawGT(data, 3);
-            return;
-            
-        case 0x38: // Vertex G4
-            drawG(data, 4, GL_TRIANGLE_STRIP);
-            return;
-            
-        case 0x3c: // Vertex GT4
-            drawGT(data, 4);
-            return;
-            
-        case 0x40: // Line F2
-            drawF(data, 2, GL_LINE_STRIP);
-            return;
-            
-        case 0x48: // Line F3
-            drawF(data, 3, GL_LINE_STRIP);
-            return;
-            
-        case 0x4c: // Line F4
-            drawF(data, 4, GL_LINE_STRIP);
-            return;
-            
-        case 0x50: // Line G2
-            drawG(data, 2, GL_LINE_STRIP);
-            return;
-            
-        case 0x58: // Line G3
-            drawG(data, 3, GL_LINE_STRIP);
-            return;
-            
-        case 0x5c: // Line G4
-            drawG(data, 4, GL_LINE_STRIP);
-            return;
-            
-        case 0x60: // Tile
-            drawTile(data, NULL);
-            return;
-            
-        case 0x64: // Sprite
-            drawSprite(data, NULL);
-            return;
-            
-        case 0x68: // Tile 1
-            drawTile(data, 1);
-            return;
-            
-        case 0x70: // Tile 8
-            drawTile(data, 8);
-            return;
-            
-        case 0x74: // Sprite 8
-            drawSprite(data, 8);
-            return;
-            
-        case 0x78: // Tile 16
-            drawTile(data, 16);
-            return;
-            
-        case 0x7c: // Sprite 16
-            drawSprite(data, 16);
-            return;
-    }
-    
-    // Operations
-    switch(addr) {
-        case 0x01: // Flush
-            vs.write(0x1f801814, 0x01000000);
-            return;
-            
-        case 0x02: // Block Fill
-            drawRect(data);
-            return;
-            
-        case 0x80: // TODO: Move photo
-            vs.photoMove(data);
-            return;
-            
-        case 0xa0: // Load photo
-            vs.photoRead(data);
-            return;
-            
-        case 0xc0: // TODO: Store photo
-            return;
-            
-        case 0xe1: // Texture P.
-            spriteTP = (data[0]) & 0x7ff;
-            opaque   = (data[0] >> 5) & 3;
-            GLBlendFunc(bit[opaque].src, bit[opaque].dst);
-            return;
-            
-        case 0xe2: // TODO: Texture Window
-            return;
-            
-        case 0xe3: // Draw Area Start
-            setDrawArea(0, data[0]);
-            return;
-            
-        case 0xe4: // Draw Area End
-            setDrawArea(2, data[0]);
-            return;
-            
-        case 0xe5: // Draw Offset
-            offset.h = ((sw)data[0] << 21) >> 21;
-            offset.v = ((sw)data[0] << 10) >> 21;
-            return;
-            
-        case 0xe6: // TODO: STP
-            return;
-    }
-    
-    printx("/// PSeudo primitive: $%x", addr);
+//    switch(addr & 0xfc) {
+//        case 0x20: // Vertex F3
+//            drawF(data, 3, GL_TRIANGLE_STRIP);
+//            return;
+//
+//        case 0x24: // Vertex FT3
+//            drawFT(data, 3);
+//            return;
+//
+//        case 0x28: // Vertex F4
+//            drawF(data, 4, GL_TRIANGLE_STRIP);
+//            return;
+//
+//        case 0x2c: // Vertex FT4
+//            drawFT(data, 4);
+//            return;
+//
+//        case 0x30: // Vertex G3
+//            drawG(data, 3, GL_TRIANGLE_STRIP);
+//            return;
+//
+//        case 0x34: // Vertex GT3
+//            drawGT(data, 3);
+//            return;
+//
+//        case 0x38: // Vertex G4
+//            drawG(data, 4, GL_TRIANGLE_STRIP);
+//            return;
+//
+//        case 0x3c: // Vertex GT4
+//            drawGT(data, 4);
+//            return;
+//
+//        case 0x40: // Line F2
+//            drawF(data, 2, GL_LINE_STRIP);
+//            return;
+//
+//        case 0x48: // Line F3
+//            drawF(data, 3, GL_LINE_STRIP);
+//            return;
+//
+//        case 0x4c: // Line F4
+//            drawF(data, 4, GL_LINE_STRIP);
+//            return;
+//
+//        case 0x50: // Line G2
+//            drawG(data, 2, GL_LINE_STRIP);
+//            return;
+//
+//        case 0x58: // Line G3
+//            drawG(data, 3, GL_LINE_STRIP);
+//            return;
+//
+//        case 0x5c: // Line G4
+//            drawG(data, 4, GL_LINE_STRIP);
+//            return;
+//
+//        case 0x60: // Tile
+//            drawTile(data, NULL);
+//            return;
+//
+//        case 0x64: // Sprite
+//            drawSprite(data, NULL);
+//            return;
+//
+//        case 0x68: // Tile 1
+//            drawTile(data, 1);
+//            return;
+//
+//        case 0x70: // Tile 8
+//            drawTile(data, 8);
+//            return;
+//
+//        case 0x74: // Sprite 8
+//            drawSprite(data, 8);
+//            return;
+//
+//        case 0x78: // Tile 16
+//            drawTile(data, 16);
+//            return;
+//
+//        case 0x7c: // Sprite 16
+//            drawSprite(data, 16);
+//            return;
+//    }
+//
+//    // Operations
+//    switch(addr) {
+//        case 0x01: // Flush
+//            vs.write(0x1f801814, 0x01000000);
+//            return;
+//
+//        case 0x02: // Block Fill
+//            drawRect(data);
+//            return;
+//
+//        case 0x80: // TODO: Move photo
+//            vs.photoMove(data);
+//            return;
+//
+//        case 0xa0: // Load photo
+//            vs.photoRead(data);
+//            return;
+//
+//        case 0xc0: // TODO: Store photo
+//            return;
+//
+//        case 0xe1: // Texture P.
+//            spriteTP = (data[0]) & 0x7ff;
+//            opaque   = (data[0] >> 5) & 3;
+//            GLBlendFunc(bit[opaque].src, bit[opaque].dst);
+//            return;
+//
+//        case 0xe2: // TODO: Texture Window
+//            return;
+//
+//        case 0xe3: // Draw Area Start
+//            setDrawArea(0, data[0]);
+//            return;
+//
+//        case 0xe4: // Draw Area End
+//            setDrawArea(2, data[0]);
+//            return;
+//
+//        case 0xe5: // Draw Offset
+//            offset.h = ((sw)data[0] << 21) >> 21;
+//            offset.v = ((sw)data[0] << 10) >> 21;
+//            return;
+//
+//        case 0xe6: // TODO: STP
+//            return;
+//    }
+//
+//    printx("/// PSeudo primitive: $%x", addr);
 }
