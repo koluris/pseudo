@@ -346,17 +346,17 @@ struct Coords {
     sh w, h;
 };
 
-struct Tex {
+struct Texture {
     ub u, v; uh tp;
 };
 
-ub spriteSize[4] = {
+const ub spriteSize[4] = {
     0, 1, 8, 16
 };
 
 template <class T>
-void parse(T *components, uw *packets, int step) {
-    for (uw i = 0, *p = packets; i < 4; i++, p += step) {
+void parse(T *components, uw *packets, int points, int step) {
+    for (uw i = 0, *p = packets; i < points; i++, p += step) {
         components[i] = *(T *)&p;
     }
 }
@@ -382,26 +382,26 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             {
                 POLY *setup = (POLY *)&addr;
                 
-                // Basic packet components
-                Chromatic *hue[4];
-                Coords    *vx [4];
-                Tex       *tex[4];
-                
                 // Options
                 int step   = setup->texture  ? 2 : 1; // The offset to fetch specific data from packets
                 int points = setup->vertices ? 4 : 3;
                 
+                // Basic packet components
+                Chromatic *hue[points];
+                Coords    *vx [points];
+                Texture   *tex[points];
+                
                 if (setup->shade) {
                     // Gouraud
-                    parse(hue, &packets[0], step + 1);
-                    parse( vx, &packets[1], step + 1);
-                    parse(tex, &packets[2], 3);
+                    parse(hue, &packets[0], points, step + 1);
+                    parse( vx, &packets[1], points, step + 1);
+                    parse(tex, &packets[2], points, 3);
                 }
                 else {
                     // Flat
-                    parse(hue, &packets[0], 0);
-                    parse( vx, &packets[1], step);
-                    parse(tex, &packets[2], step);
+                    parse(hue, &packets[0], points, 0);
+                    parse( vx, &packets[1], points, step);
+                    parse(tex, &packets[2], points, step);
                 }
                 
                 if (setup->texture) {
@@ -413,7 +413,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 for (int i = 0; i < points; i++) {
                     GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, 255);
                     GLTexCoord2s(tex[i]->u, tex[i]->v);
-                    GLVertex2s  ( vx[i]->w,  vx[i]->h);
+                    GLVertex2s  (vx [i]->w, vx [i]->h);
                 }
                 GLEnd();
                 GLDisable(GL_TEXTURE_2D);
@@ -427,12 +427,15 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             {
                 SPRT *setup = (SPRT *)&addr;
                 
+                // Options
+                int size = spriteSize[setup->size];
+                
                 // Basic packet components
                 Chromatic *hue[4];
                 Coords    *vx [4];
-                Tex       *tex[4];
+                Texture   *tex[4];
                 
-                printf("Sprite: %d\n", setup->size);
+                printf("Sprite: %d\n", size);
             }
             return;
             
