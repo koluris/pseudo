@@ -330,6 +330,14 @@ struct POLY {
     ub             : 3;
 };
 
+struct SPRT {
+    ub             : 1;
+    ub transparent : 1;
+    ub texture     : 1;
+    ub size        : 2;
+    ub             : 3;
+};
+
 struct Chromatic {
     ub r, c, b, a;
 };
@@ -340,6 +348,10 @@ struct Coords {
 
 struct Tex {
     ub u, v; uh tp;
+};
+
+ub spriteSize[4] = {
+    0, 1, 8, 16
 };
 
 template <class T>
@@ -357,6 +369,9 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     vs.write(0x1f801814, 0x01000000);
                     return;
                     
+                case 0x02:
+                    return;
+                    
                 default:
                     printx("/// PSeudo GPU_TYPE_CMD unknown: 0x%x", addr);
                     return;
@@ -372,30 +387,21 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 Coords    *vx [4];
                 Tex       *tex[4];
                 
+                // Options
+                int step   = setup->texture  ? 2 : 1; // The offset to fetch specific data from packets
+                int points = setup->vertices ? 4 : 3;
+                
                 if (setup->shade) {
                     // Gouraud
-                    if (setup->texture) {
-                        parse(hue, &packets[0], 3);
-                        parse( vx, &packets[1], 3);
-                        parse(tex, &packets[2], 3);
-                    }
-                    else {
-                        parse(hue, &packets[0], 2);
-                        parse( vx, &packets[1], 2);
-                    }
+                    parse(hue, &packets[0], step + 1);
+                    parse( vx, &packets[1], step + 1);
+                    parse(tex, &packets[2], 3);
                 }
                 else {
                     // Flat
-                    hue[0] = (Chromatic *)&packets[0];
-                    GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, 255);
-                    
-                    if (setup->texture) {
-                        parse( vx, &packets[1], 2);
-                        parse(tex, &packets[2], 2);
-                    }
-                    else {
-                        parse( vx, &packets[1], 1);
-                    }
+                    parse(hue, &packets[0], 0);
+                    parse( vx, &packets[1], step);
+                    parse(tex, &packets[2], step);
                 }
                 
                 if (setup->texture) {
@@ -404,10 +410,10 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 }
                 
                 GLStart(GL_TRIANGLE_STRIP);
-                for (int i = 0; i < (setup->vertices ? 4 : 3); i++) {
-                    if (setup->shade  ) GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, 255);
-                    if (setup->texture) GLTexCoord2s(tex[i]->u, tex[i]->v);
-                    GLVertex2s(vx[i]->w, vx[i]->h);
+                for (int i = 0; i < points; i++) {
+                    GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, 255);
+                    GLTexCoord2s(tex[i]->u, tex[i]->v);
+                    GLVertex2s  ( vx[i]->w,  vx[i]->h);
                 }
                 GLEnd();
                 GLDisable(GL_TEXTURE_2D);
@@ -418,6 +424,16 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             return;
             
         case GPU_TYPE_SPRITE:
+            {
+                SPRT *setup = (SPRT *)&addr;
+                
+                // Basic packet components
+                Chromatic *hue[4];
+                Coords    *vx [4];
+                Tex       *tex[4];
+                
+                printf("Sprite: %d\n", setup->size);
+            }
             return;
             
         case GPU_TYPE_IMG_MOVE:
