@@ -239,7 +239,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 LINE *setup = (LINE *)&addr;
                 
                 // Options
-                int points = setup->multiline ? 256 : 2;
+                int points = setup->multiline ? 256 : 2; // eur-001, fuzzion, mups-016, pdx-030, pdx-074, pop-n-pop
                 
                 // Basic packet components
                 Chromatic *hue[points];
