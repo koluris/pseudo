@@ -84,23 +84,14 @@ class CstrDraw {
     ub opaque;
     uw spriteTP;
     
-    // Primitives
-    void drawRect  (uw *);
-    void drawF     (uw *, int, GLenum);
-    void drawG     (uw *, int, GLenum);
-    void drawFT    (uw *, int);
-    void drawGT    (uw *, int);
-    void drawTile  (uw *, int);
-    void drawSprite(uw *, int);
-    
+    void reset();
+    void opaqueClipState(bool);
     ub *opaqueFunc(ub);
     void setDrawArea(int, uw);
     
 public:
     void init(sh, sh, int);
-    void reset();
     void resize(sh, sh);
-    void opaqueClipState(bool);
     void outputVRAM(uw *, sh, sh, sh, sh);
     void primitive(uw, uw *);
 };
