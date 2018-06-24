@@ -253,20 +253,20 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
     }
 }
 
-void CstrGraphics::photoMove(uw *data) {
-    //uh *k = (uh *)data;
+void CstrGraphics::photoMove(uw *packets) {
+    //uh *p = (uh *)packets;
 }
 
-void CstrGraphics::photoRead(uw *data) {
-    uh *k = (uh *)data;
+void CstrGraphics::photoRead(uw *packets) {
+    uh *p = (uh *)packets;
     
     vrop.enabled = true;
-    vrop.raw     = new uw[k[4] * k[5]];
+    vrop.raw     = new uw[p[4] * p[5]];
     
-    vrop.h.start = vrop.h.p = k[2];
-    vrop.v.start = vrop.v.p = k[3];
-    vrop.h.end   = vrop.h.p + k[4];
-    vrop.v.end   = vrop.v.p + k[5];
+    vrop.h.start = vrop.h.p = p[2];
+    vrop.v.start = vrop.v.p = p[3];
+    vrop.h.end   = vrop.h.p + p[4];
+    vrop.v.end   = vrop.v.p + p[5];
 
     modeDMA = GPU_DMA_MEM2VRAM;
     
