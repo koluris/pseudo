@@ -431,11 +431,30 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 int size = spriteSize[setup->size];
                 
                 // Basic packet components
-                Chromatic *hue[4];
-                Coords    *vx [4];
-                Texture   *tex[4];
+                Chromatic *hue[1];
+                Coords    *vx [1];
+                Texture   *tex[1];
+                Coords    *sz [1];
                 
                 printf("Sprite: %d\n", size);
+                
+                if (setup->texture) {
+                    GLEnable(GL_TEXTURE_2D);
+                    cache.fetchTexture(spriteTP, tex[0]->tp);
+                }
+                
+                GLStart(GL_TRIANGLE_STRIP);
+                    GLTexCoord2s(tex[0]->u,            tex[0]->v);
+                    GLVertex2s  (vx [0]->w,            vx [0]->h);
+                    GLTexCoord2s(tex[0]->u + sz[0]->w, tex[0]->v);
+                    GLVertex2s  (vx [0]->w + sz[0]->w, vx [0]->h);
+                    GLTexCoord2s(tex[0]->u,            tex[0]->v + sz[0]->h);
+                    GLVertex2s  (vx [0]->w,            vx [0]->h + sz[0]->h);
+                    GLTexCoord2s(tex[0]->u + sz[0]->w, tex[0]->v + sz[0]->h);
+                    GLVertex2s  (vx [0]->w + sz[0]->w, vx [0]->h + sz[0]->h);
+                GLEnd();
+                
+                GLDisable(GL_TEXTURE_2D);
             }
             return;
             
