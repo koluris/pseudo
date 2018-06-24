@@ -7,35 +7,58 @@ class CstrDraw {
     };
     
     // Basic packet components
-//    struct Chromatic {
-//        ub r, c, b, a;
-//    };
-//
-//    struct Coords {
-//        sh w, h;
-//    };
-//
-//    struct Tex {
-//        ub u, v; uh clut;
-//    };
+    enum {
+        GPU_TYPE_CMD,
+        GPU_TYPE_POLYGON,
+        GPU_TYPE_LINE,
+        GPU_TYPE_SPRITE,
+        GPU_TYPE_IMG_MOVE,
+        GPU_TYPE_IMG_SEND,
+        GPU_TYPE_IMG_COPY,
+        GPU_TYPE_ENV
+    };
     
-    // Primitive Packets
-//    struct PF    {                Coords coords; };
-//    struct PFT   {                Coords coords; Tex tex; };
-//    struct PG    { Chromatic hue; Coords coords; };
-//    struct PGT   { Chromatic hue; Coords coords; Tex tex; };
-//    
-//    // Vertex & Line (F, FT)
-//    struct PFx   { Chromatic hue; PF  v[256]; }; // Line with termination code
-//    struct PFTx  { Chromatic hue; PFT v[  4]; };
-//    
-//    // Vertex & Line (G, GT)
-//    struct PGx   { PG  v[256]; }; // Line with termination code
-//    struct PGTx  { PGT v[  4]; };
-//    
-//    // Tile & Sprite
-//    struct TILEx { Chromatic hue; PF  v; Coords size; };
-//    struct SPRTx { Chromatic hue; PFT v; Coords size; };
+    struct POLY {
+        ub exposure    : 1;
+        ub transparent : 1;
+        ub texture     : 1;
+        ub vertices    : 1;
+        ub shade       : 1;
+        ub             : 3;
+    };
+    
+    struct LINE {
+        ub             : 1;
+        ub transparent : 1;
+        ub             : 1;
+        ub multiline   : 1;
+        ub shade       : 1;
+        ub             : 3;
+    };
+    
+    struct SPRT {
+        ub             : 1;
+        ub transparent : 1;
+        ub texture     : 1;
+        ub size        : 2;
+        ub             : 3;
+    };
+    
+    struct Chromatic {
+        ub r, c, b, a;
+    };
+    
+    struct Coords {
+        sh w, h;
+    };
+    
+    struct Texture {
+        ub u, v; uh tp;
+    };
+    
+    const ub spriteSize[4] = {
+        0, 1, 8, 16
+    };
     
     // Window
     struct {
