@@ -24,10 +24,10 @@ void CstrGraphics::reset() {
 }
 
 #define NTSC \
-    (CLOCKS_PER_SEC / 99.94)
+    (CLOCKS_PER_SEC / 59.94)
 
 #define PAL \
-    (CLOCKS_PER_SEC / 90.00)
+    (CLOCKS_PER_SEC / 50.00)
 
 // Function "mach_absolute_time()" returns Nanoseconds
 

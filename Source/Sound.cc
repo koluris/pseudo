@@ -78,7 +78,7 @@ void CstrAudio::depackVAG(voice *chn) {
             
             // Overflow
             if (chn->size == USHRT_MAX) {
-                //printf("/// PSeudo SPU Channel size overflow\n");
+                printf("/// PSeudo SPU Channel size overflow\n");
                 return;
             }
         }
@@ -281,7 +281,7 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1da8: // Data
             spuMem.iuh[spuAddr >> 1] = data;
             spuAddr += 2;
-            spuAddr &= 0x3ffff;
+            spuAddr &= 0x7ffff;
             return;
             
         /* unused */
@@ -374,7 +374,7 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
             for (uw i = 0; i < size; i++) {
                 spuMem.iuh[spuAddr >> 1] = *p++;
                 spuAddr += 2;
-                spuAddr &= 0x3ffff;
+                spuAddr &= 0x7ffff;
             }
             return;
             
@@ -382,7 +382,7 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
             for (uw i = 0; i < size; i++) {
                 *p++ = spuMem.iuh[spuAddr >> 1];
                 spuAddr += 2;
-                spuAddr &= 0x3ffff;
+                spuAddr &= 0x7ffff;
             }
             return;
     }

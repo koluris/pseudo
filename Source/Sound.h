@@ -60,6 +60,9 @@ class CstrAudio {
     void voiceOn (uh);
     void voiceOff(uh);
     
+    void spuFranWriteDMAMem(uh *, int);
+    void spuFranReadDMAMem(uh *, int);
+    
 public:
     CstrAudio() {
         // OpenAL
