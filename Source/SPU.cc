@@ -7,6 +7,7 @@ CstrAudio audio;
 
 void CstrAudio::reset() {
     spuAddr = ~(0);
+    memset(iFMod, 0, sizeof(iFMod));
     
     // Channels reset
     for (auto &item : spuVoices) {
@@ -15,15 +16,13 @@ void CstrAudio::reset() {
         item.pStart = spuMemC;
         item.pCurr  = spuMemC;
     }
-    
-    memset(iFMod, 0, sizeof(iFMod));
 }
 
 void CstrAudio::voiceOn(uh data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
+            spuVoices[n].create = true;
             spuVoices[n].bIgnoreLoop = 0;
-            spuVoices[n].bNew = 1;
         }
     }
 }
@@ -40,12 +39,12 @@ void CstrAudio::FModOn(uh data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
             if (n) {
-                spuVoices[n].bFMod = 1;
-                spuVoices[n - 1].bFMod = 2;
+                spuVoices[n].fmod = 1;
+                spuVoices[n - 1].fmod = 2;
             }
         }
         else {
-            spuVoices[n].bFMod = 0;
+            spuVoices[n].fmod = 0;
         }
     }
 }
@@ -53,10 +52,10 @@ void CstrAudio::FModOn(uh data) {
 void CstrAudio::NoiseOn(uh data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
-            spuVoices[n].bNoise = 1;
+            spuVoices[n].noise = true;
         }
         else {
-            spuVoices[n].bNoise = 0;
+            spuVoices[n].noise = false;
         }
     }
 }
@@ -184,7 +183,7 @@ uh CstrAudio::read(uw addr) {
 		
         switch(addr & 0x0f) {
             case 12:
-                if (spuVoices[ch].bNew)
+                if (spuVoices[ch].create)
                         return 1;
                 
                 return 0;
@@ -219,14 +218,15 @@ uh CstrAudio::read(uw addr) {
 }
 
 void CstrAudio::StartSound(voice *chn) {
-    chn->on = true;
-    chn->pos = 0x10000;
+    chn->on     = true;
+    chn->create = false;
+    chn->pos    = 0x10000;
     
 	chn->pCurr = chn->pStart;
 	chn->s_1 = 0;
 	chn->s_2 = 0;
+    
 	chn->iSBPos = 28;
-	chn->bNew = 0;
     chn->SB[29] = 0;
     chn->SB[30] = 0;
     chn->SB[31] = 0;
@@ -241,7 +241,7 @@ void CstrAudio::VoiceChangeFrequency(voice *chn) {
 }
 
 void CstrAudio::StoreInterpolationVal(voice *chn, int fa) {
-    if (chn->bFMod == 2) {
+    if (chn->fmod == 2) {
         chn->SB[29] = fa;
     }
 	else {
@@ -279,7 +279,7 @@ void CstrAudio::decodeStream() {
     
     while(!psx.suspended) {
         for (auto &chn : spuVoices) {
-            if (chn.bNew) {
+            if (chn.create) {
                 StartSound(&chn);
             }
             
@@ -349,9 +349,9 @@ void CstrAudio::decodeStream() {
                     chn.pos -= 0x10000;
                 }
                 
-                fa = chn.bNoise ? 0 : chn.SB[29];
+                fa = chn.noise ? 0 : chn.SB[29];
                 
-                if (chn.bFMod == 2) {
+                if (chn.fmod == 2) {
                     iFMod[ns] = fa;
                 }
                 else {

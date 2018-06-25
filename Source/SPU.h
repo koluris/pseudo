@@ -15,10 +15,10 @@ class CstrAudio {
     } sbuf;
     
     struct voice {
-        bool on;
-        sw pos, volumeL, volumeR;
+        bool on, create, noise;
+        sw pos, fmod, volumeL, volumeR;
         
-        sw bNew, iSBPos, sinc, SB[32], bStop, iActFreq, iUsedFreq, bIgnoreLoop, iRawPitch, s_1, s_2, bNoise, bFMod, iOldNoise;
+        sw iSBPos, sinc, SB[32], iActFreq, iUsedFreq, bIgnoreLoop, iRawPitch, s_1, s_2;
         ub *pStart, *pCurr, *pLoop;
     } spuVoices[MAX_CHANNELS + 1];
     
@@ -28,7 +28,7 @@ class CstrAudio {
     uh spuCtrl = 0;
     uh spuStat = 0;
     uw spuAddr;
-    int iFMod[44100];
+    int iFMod[SAMPLE_RATE];
     
     void voiceOn (uh);
     void voiceOff(uh);
