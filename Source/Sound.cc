@@ -197,7 +197,7 @@ void CstrAudio::voiceOn(uh data) {
 void CstrAudio::voiceOff(uh data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
-            spuVoices[n].on = false;
+            //spuVoices[n].on = false;
         }
     }
 }

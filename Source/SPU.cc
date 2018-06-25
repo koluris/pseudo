@@ -31,7 +31,7 @@ void CstrAudio::voiceOn(uh data) {
 void CstrAudio::voiceOff(uh data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
-            spuVoices[n].bStop = 1;
+            //spuVoices[n].on = false;
         }
     }
 }
@@ -61,7 +61,7 @@ void CstrAudio::NoiseOn(uh data) {
     }
 }
 
-int calcVolume(sh data) {
+int setVolume(sh data) {
     sh ret = data;
     
     if (data & 0x8000) {
@@ -100,11 +100,11 @@ void CstrAudio::write(uw addr, uh data) {
 		
         switch(addr & 0xf) {
             case 0:
-                spuVoices[ch].volumeL = calcVolume(data);
+                spuVoices[ch].volumeL = setVolume(data);
                 break;
             
             case 2:
-                spuVoices[ch].volumeR = calcVolume(data);
+                spuVoices[ch].volumeR = setVolume(data);
                 break;
             
             case 4:
@@ -220,14 +220,13 @@ uh CstrAudio::read(uw addr) {
 
 void CstrAudio::StartSound(voice *chn) {
     chn->on = true;
+    chn->pos = 0x10000;
     
 	chn->pCurr = chn->pStart;
 	chn->s_1 = 0;
 	chn->s_2 = 0;
 	chn->iSBPos = 28;
 	chn->bNew = 0;
-	chn->bStop = 0;
-	chn->pos = 0x10000;
     chn->SB[29] = 0;
     chn->SB[30] = 0;
     chn->SB[31] = 0;
