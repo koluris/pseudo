@@ -81,7 +81,7 @@ typedef int8_t  sb; // bite
 #import "SIO.h"
 
 #ifndef MYSPU
-    #import "spu_fran.h"
+    #import "SPU.h"
 #else
     #import "Sound.h"
 #endif

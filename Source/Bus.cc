@@ -41,11 +41,7 @@ void CstrBus::checkDMA(uw addr, uw data) {
                 break;
                 
             case DMA_SPU:
-#ifdef MYSPU
                 audio.executeDMA(dma);
-#else
-                executeDMA(dma);
-#endif
                 break;
                 
             case DMA_CLEAR_OT:

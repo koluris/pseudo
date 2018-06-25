@@ -138,11 +138,7 @@
     
     // Audio
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
-#ifdef MYSPU
         audio.decodeStream();
-#else
-        psxSpuFran.fillBuffer();
-#endif
     }]];
 }
 

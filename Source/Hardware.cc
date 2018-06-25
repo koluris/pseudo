@@ -61,11 +61,7 @@ void CstrHardware::write16(uw addr, uh data) {
             return;
             
         case 0x1c00 ... 0x1dfe: // Audio
-#ifdef MYSPU
             audio.write(addr, data);
-#else
-            spuFranWriteRegister(addr, data);
-#endif
             return;
             
         /* unused */
@@ -126,11 +122,7 @@ uh CstrHardware::read16(uw addr) {
             return rootc.read<uh>(addr);
             
         case 0x1c00 ... 0x1e0e: // Audio
-#ifdef MYSPU
             return audio.read(addr);
-#else
-            return spuFranReadRegister(addr);
-#endif
             
         /* unused */
         case 0x1014: // ?

@@ -21,9 +21,6 @@ void CstrPSeudo::init(const char *path) {
     if (fp) {
         if (fileSize(fp) == mem.rom.size) {
             fread(mem.rom.ptr, 1, mem.rom.size, fp);
-#ifndef MYSPU
-            psxSpuFran.init();
-#endif
             reset();
         }
         else { // Incorrect file size
@@ -42,11 +39,7 @@ void CstrPSeudo::init(const char *path) {
 void CstrPSeudo::reset() {
     suspended = false;
     
-#ifdef MYSPU
     audio.reset();
-#else
-    psxSpuFran.reset();
-#endif
       bus.reset();
     cache.reset();
       cpu.reset();
