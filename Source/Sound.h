@@ -1,3 +1,5 @@
+#ifdef MYSPU
+
 class CstrAudio {
     enum {
         SAMPLE_RATE    =  44100,
@@ -106,3 +108,5 @@ public:
 };
 
 extern CstrAudio audio;
+
+#endif

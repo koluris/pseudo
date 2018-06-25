@@ -66,6 +66,8 @@ typedef int8_t  sb; // bite
 // OpenAL
 #define alSourceStream  alSourcePlay
 
+//#define MYSPU
+
 // User imports
 #import "Bus.h"
 #import "Cache.h"
@@ -77,7 +79,12 @@ typedef int8_t  sb; // bite
 #import "PSeudo.h"
 #import "R3000A.h"
 #import "SIO.h"
-#import "Sound.h"
+
+#ifndef MYSPU
+    #import "spu_fran.h"
+#else
+    #import "Sound.h"
+#endif
 
 //union {
 //    struct {

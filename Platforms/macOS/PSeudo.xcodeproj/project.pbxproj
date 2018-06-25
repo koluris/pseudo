@@ -24,6 +24,7 @@
 		42CB1D6E206E34680023337A /* Counters.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42CB1D6C206E34680023337A /* Counters.cc */; };
 		42DB69702070DF0800000D08 /* Graphics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42DB696E2070DF0800000D08 /* Graphics.cc */; };
 		42DE0D5920711EA200EEB549 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42DE0D5820711EA200EEB549 /* OpenGL.framework */; };
+		42E3DB3920E0D2F200F4DBAF /* spu_fran.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42E3DB3620E0D2F100F4DBAF /* spu_fran.cpp */; };
 		42E4FF6E20D3F2F200CC105A /* Hardware.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42E4FF6D20D3F2F100CC105A /* Hardware.cc */; };
 		42EBBCD32062482200824B95 /* Main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 42EBBCD22062482200824B95 /* Main.mm */; };
 		42EBBCD52062482200824B95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42EBBCD42062482200824B95 /* Assets.xcassets */; };
@@ -64,6 +65,8 @@
 		42DB696E2070DF0800000D08 /* Graphics.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Graphics.cc; sourceTree = "<group>"; };
 		42DB696F2070DF0800000D08 /* Graphics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Graphics.h; sourceTree = "<group>"; };
 		42DE0D5820711EA200EEB549 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		42E3DB3620E0D2F100F4DBAF /* spu_fran.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = spu_fran.cpp; sourceTree = "<group>"; };
+		42E3DB3820E0D2F200F4DBAF /* spu_fran.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spu_fran.h; sourceTree = "<group>"; };
 		42E4FF6D20D3F2F100CC105A /* Hardware.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Hardware.cc; sourceTree = "<group>"; };
 		42EBBCCE2062482200824B95 /* PSeudo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PSeudo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42EBBCD12062482200824B95 /* Main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Main.h; sourceTree = "<group>"; };
@@ -212,6 +215,8 @@
 		42B6B61720B57D4500D70027 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
+				42E3DB3620E0D2F100F4DBAF /* spu_fran.cpp */,
+				42E3DB3820E0D2F200F4DBAF /* spu_fran.h */,
 				42B6B61820B57D5700D70027 /* Sound.cc */,
 				42B6B61920B57D5700D70027 /* Sound.h */,
 			);
@@ -373,6 +378,7 @@
 				428EAF2F207376EF003BC141 /* Bus.cc in Sources */,
 				42EBBCD32062482200824B95 /* Main.mm in Sources */,
 				420D65E520CD7DCD00EA04BD /* OpenGLView.mm in Sources */,
+				42E3DB3920E0D2F200F4DBAF /* spu_fran.cpp in Sources */,
 				42B9957B20626481009B67BE /* R3000A.cc in Sources */,
 				42CA2D3620AF4776003F72D0 /* Options.mm in Sources */,
 				42CA2A2E20C920AC00A4CDF4 /* GTE.cc in Sources */,
