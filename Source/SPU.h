@@ -38,6 +38,8 @@ class CstrAudio {
     void StartSound(voice *);
     void VoiceChangeFrequency(voice *);
     void StoreInterpolationVal(voice *, int);
+    void spuFranWriteDMAMem(uh *, int);
+    void spuFranReadDMAMem (uh *, int);
     
     // OpenAL
     ALCdevice *device;

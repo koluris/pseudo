@@ -393,6 +393,28 @@ void CstrAudio::decodeStream() {
     }
 }
 
+void CstrAudio::spuFranReadDMAMem(uh *p, int size) {
+    if (spuAddr + (size<<1) >= 0x80000) {
+        memcp(p, &spuMem[spuAddr>>1], 0x7FFFF-spuAddr+1);
+        memcp(p+(0x7FFFF-spuAddr+1), spuMem, (size<<1)-(0x7FFFF-spuAddr+1));
+        spuAddr = (size<<1) - (0x7FFFF-spuAddr+1);
+    } else {
+        memcpy(p,&spuMem[spuAddr>>1], (size<<1));
+        spuAddr += (size<<1);
+    }
+}
+
+void CstrAudio::spuFranWriteDMAMem(uh *p, int size) {
+    if (spuAddr+(size<<1)>0x7FFFF) {
+        memcp(&spuMem[spuAddr>>1], p, 0x7FFFF-spuAddr+1);
+        memcp(spuMem, p+(0x7FFFF-spuAddr+1), (size<<1)-(0x7FFFF-spuAddr+1));
+        spuAddr = (size<<1)-(0x7FFFF-spuAddr+1);
+    } else {
+        memcp(&spuMem[spuAddr>>1], p, (size<<1));
+        spuAddr += (size<<1);
+    }
+}
+
 void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
     uh *p   = (uh *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
     uw size = (dma->bcr >> 16) * (dma->bcr & 0xffff) * 2;
@@ -404,6 +426,7 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
                 spuAddr += 2;
                 spuAddr &= 0x7ffff;
             }
+            //spuFranWriteDMAMem(p, size);
             return;
             
         case 0x01000200:
@@ -412,6 +435,7 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
                 spuAddr += 2;
                 spuAddr &= 0x7ffff;
             }
+            //spuFranReadDMAMem(p, size);
             return;
     }
     
