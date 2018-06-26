@@ -86,11 +86,12 @@ void CstrAudio::depackVAG(voice *chn) {
         // Fin
         ub op = spuMem.iub[p + 1];
         
-        if (op == 3 || op == 7) { // Termination
-            return;
-        }
         if (op == 6) { // Repeat
             chn->raddr = chn->size;
+        }
+        
+        if (op == 3 || op == 7) { // Termination
+            return;
         }
         
         // Advance Buffer
@@ -180,7 +181,7 @@ void CstrAudio::decodeStream() {
     }
 }
 
-void CstrAudio::voiceOn(uh data) {
+void CstrAudio::voiceOn(uw data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
             spuVoices[n].count = 0;
@@ -194,7 +195,7 @@ void CstrAudio::voiceOn(uh data) {
     }
 }
 
-void CstrAudio::voiceOff(uh data) {
+void CstrAudio::voiceOff(uw data) {
     for (int n = 0; n < MAX_CHANNELS; n++) {
         if (data & (1 << n)) {
             //spuVoices[n].on = false;

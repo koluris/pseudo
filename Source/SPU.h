@@ -30,16 +30,14 @@ class CstrAudio {
     uw spuAddr;
     int iFMod[SAMPLE_RATE];
     
-    void voiceOn (uh);
-    void voiceOff(uh);
-    void FModOn  (uh);
-    void NoiseOn (uh);
+    void voiceOn (uw);
+    void voiceOff(uw);
+    void FModOn  (uw);
+    void NoiseOn (uw);
     void setPitch(int, int);
     void StartSound(voice *);
     void VoiceChangeFrequency(voice *);
     void StoreInterpolationVal(voice *, int);
-    void spuFranWriteDMAMem(uh *, int);
-    void spuFranReadDMAMem (uh *, int);
     
     // OpenAL
     ALCdevice *device;

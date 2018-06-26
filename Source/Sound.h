@@ -57,8 +57,8 @@ class CstrAudio {
     sh setVolume(sh);
     
     // Voices
-    void voiceOn (uh);
-    void voiceOff(uh);
+    void voiceOn (uw);
+    void voiceOff(uw);
     
     void spuFranWriteDMAMem(uh *, int);
     void spuFranReadDMAMem(uh *, int);
