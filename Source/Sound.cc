@@ -14,8 +14,8 @@ CstrAudio audio;
 
 void CstrAudio::reset() {
     // Mem
-    spuMem = { 0 };
-    sbuf   = { 0 };
+    memset(&spuMem, 0, sizeof(spuMem));
+    sbuf = { 0 };
     
     // Channels reset
     for (auto &item : spuVoices) {
@@ -50,54 +50,119 @@ sh CstrAudio::setVolume(sh data) {
     return ret & 0x3fff;
 }
 
+double f[5][2] = {
+    { 0.0, 0.0 },
+    { 60.0 / 64.0, 0.0 },
+    { 115.0 / 64.0, -52.0 / 64.0 },
+    { 98.0 / 64.0, -55.0 / 64.0 },
+    { 122.0 / 64.0, -60.0 / 64.0 }
+};
+
+double samples[28];
+
 void CstrAudio::depackVAG(voice *chn) {
-    uw p = chn->saddr;
-    sh s_1 = 0;
-    sh s_2 = 0;
-    sh temp[28] = { 0 };
+    ub *p = (ub *)&spuMem[chn->saddr/2];
+    ub *q = (ub *)chn->bfr;
     
-    while(1) {
-        ub shift  = spuMem.iub[p] & 15;
-        ub filter = spuMem.iub[p] >> 4;
+    int d, s;
+    static double s_1 = 0.0;
+    static double s_2 = 0.0;
+    
+    for (;;) {
+        int filter = *p++;
+        int shift = filter & 0xf;
+        filter >>= 4;
+        int op = *p++;
         
-        for (int i = 2; i < 16; i++) {
-            sh a = ((spuMem.iub[p + i] & 0x0f) << 12);
-            sh b = ((spuMem.iub[p + i] & 0xf0) <<  8);
-            if (a & 0x8000) a |= 0xffff0000;
-            if (b & 0x8000) b |= 0xffff0000;
-            temp[i * 2 - 4] = a >> shift;
-            temp[i * 2 - 3] = b >> shift;
+        for (int i = 0; i < 28; i += 2) {
+            d = *p++;
+            
+            s = (d & 0x0f) << 12;
+            if (s & 0x8000) s |= 0xffff0000;
+            samples[i + 0] = (double)(s >> shift);
+            
+            s = (d & 0xf0) <<  8;
+            if (s & 0x8000) s |= 0xffff0000;
+            samples[i + 1] = (double)(s >> shift);
         }
         
         for (int i = 0; i < 28; i++) {
-            sh res = temp[i] + ((s_1 * f[filter][0] + s_2 * f[filter][1] + 32) >> 6);
+            samples[i] = samples[i] + s_1 * f[filter][0] + s_2 * f[filter][1];
             s_2 = s_1;
-            s_1 = res;
-            res = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
-            chn->buffer.ish[chn->size++] = res;
+            s_1 = samples[i];
+            d = (int)(samples[i] + 0.5);
+            *q++=(d & 0xff);
+            *q++=(d >> 8);
             
-            // Overflow
-            if (chn->size == USHRT_MAX) {
+            chn->size++;
+            
+            if (chn->size == 65536-1) {
                 printf("/// PSeudo SPU Channel size overflow\n");
                 return;
             }
         }
         
-        // Fin
-        ub op = spuMem.iub[p + 1];
-        
-        if (op == 6) { // Repeat
+        if (op == 6) {
             chn->raddr = chn->size;
         }
         
-        if (op == 3 || op == 7) { // Termination
+        if (op == 3 || op == 7) {
             return;
         }
-        
-        // Advance Buffer
-        p += 16;
     }
 }
+
+//void CstrAudio::depackVAG(voice *chn) {
+//    //uw p = chn->saddr;
+//    ub *p = (ub *)&spuMem.iuh[chn->saddr/2];
+//    sh s_1 = 0;
+//    sh s_2 = 0;
+//    sh temp[28] = { 0 };
+//
+//    while(1) {
+//        ub shift  = *p & 15;
+//        ub filter = *p >> 4;
+//
+//        for (int i = 2; i < 16; i++) {
+//            p++;
+//            sh a = ((*p & 0x0f) << 12);
+//            sh b = ((*p & 0xf0) <<  8);
+//            if (a & 0x8000) a |= 0xffff0000;
+//            if (b & 0x8000) b |= 0xffff0000;
+//            temp[i * 2 - 4] = a >> shift;
+//            temp[i * 2 - 3] = b >> shift;
+//        }
+//
+//        for (int i = 0; i < 28; i++) {
+//            sh res = temp[i] + ((s_1 * f[filter][0] + s_2 * f[filter][1] + 32) >> 6);
+//            s_2 = s_1;
+//            s_1 = res;
+//            res = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
+//            chn->buffer.ish[chn->size++] = res;
+//
+//            // Overflow
+//            if (chn->size == USHRT_MAX) {
+//                printf("/// PSeudo SPU Channel size overflow\n");
+//                return;
+//            }
+//        }
+//
+//        // Fin
+//        p -= 14;
+//        ub op = *p;
+//
+//        if (op == 6) { // Repeat
+//            chn->raddr = chn->size;
+//        }
+//
+//        if (op == 3 || op == 7) { // Termination
+//            return;
+//        }
+//
+//        // Advance Buffer
+//        p += 16;
+//    }
+//}
 
 void CstrAudio::stream() {
     ALint state;
@@ -126,11 +191,11 @@ void CstrAudio::decodeStream() {
                 
                 // Mix Channel Samples
                 if (stereo) {
-                    sbuf.temp[i*2+0] += (+chn.buffer.ish[chn.pos] * chn.volumeL) / MAX_VOLUME;
-                    sbuf.temp[i*2+1] += (-chn.buffer.ish[chn.pos] * chn.volumeR) / MAX_VOLUME;
+                    sbuf.temp[i*2+0] += (+chn.bfr[chn.pos] * chn.volumeL) / MAX_VOLUME;
+                    sbuf.temp[i*2+1] += (-chn.bfr[chn.pos] * chn.volumeR) / MAX_VOLUME;
                 }
                 else {
-                    sbuf.temp[i] += (chn.buffer.ish[chn.pos] * ((chn.volumeL + chn.volumeR) / 2)) / MAX_VOLUME;
+                    sbuf.temp[i] += (chn.bfr[chn.pos] * ((chn.volumeL + chn.volumeR) / 2)) / MAX_VOLUME;
                 }
                 
                 // End of Sample
@@ -280,7 +345,7 @@ void CstrAudio::write(uw addr, uh data) {
             return;
             
         case 0x1da8: // Data
-            spuMem.iuh[spuAddr >> 1] = data;
+            spuMem[spuAddr >> 1] = data;
             spuAddr += 2;
             spuAddr &= 0x7ffff;
             return;
@@ -298,7 +363,7 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1d9e: // Mute 2
         case 0x1daa: // Control
         case 0x1da2: // Reverb Address
-        case 0x1dac:
+        case 0x1dac: // ?
         case 0x1db0: // CD Volume L
         case 0x1db2: // CD Volume R
         case 0x1db4:
@@ -373,7 +438,7 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
     switch(dma->chcr) {
         case 0x01000201: // Write
             for (uw i = 0; i < size; i++) {
-                spuMem.iuh[spuAddr >> 1] = *p++;
+                spuMem[spuAddr >> 1] = *p++;
                 spuAddr += 2;
                 spuAddr &= 0x7ffff;
             }
@@ -381,7 +446,7 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
             
         case 0x01000200: // Read
             for (uw i = 0; i < size; i++) {
-                *p++ = spuMem.iuh[spuAddr >> 1];
+                *p++ = spuMem[spuAddr >> 1];
                 spuAddr += 2;
                 spuAddr &= 0x7ffff;
             }

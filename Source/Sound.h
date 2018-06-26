@@ -9,27 +9,19 @@ class CstrAudio {
         ALC_BUF_AMOUNT =     16,
     };
     
-    const sh f[5][2] = {
-        {   0,   0 },
-        {  60,   0 },
-        { 115, -52 },
-        {  98, -55 },
-        { 122, -60 },
-    };
+//    const sh f[5][2] = {
+//        {   0,   0 },
+//        {  60,   0 },
+//        { 115, -52 },
+//        {  98, -55 },
+//        { 122, -60 },
+//    };
     
-    union {
-        uh iuh[1024 * 256];
-        ub iub[1024 * 256 * 2];
-    } spuMem;
+    uh spuMem[1024 * 256];
     
     struct voice {
         bool on;
-        
-        union {
-            sh ish[USHRT_MAX];
-            ub iub[USHRT_MAX * 2];
-        } buffer;
-        
+        sh bfr[USHRT_MAX];
         uw count, saddr;
         sw pos, size;
         sh volumeL, volumeR, freq, raddr;
@@ -37,7 +29,7 @@ class CstrAudio {
     
     struct {
         sw temp[SBUF_SIZE * 2];
-        sh  fin[SBUF_SIZE * 2];
+        sh fin [SBUF_SIZE * 2];
     } sbuf;
     
     uw spuAddr;
@@ -59,9 +51,6 @@ class CstrAudio {
     // Voices
     void voiceOn (uw);
     void voiceOff(uw);
-    
-    void spuFranWriteDMAMem(uh *, int);
-    void spuFranReadDMAMem(uh *, int);
     
 public:
     CstrAudio() {
