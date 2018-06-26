@@ -28,7 +28,7 @@ void CstrAudio::reset() {
     spuVolumeR = MAX_VOLUME;
     stereo     = true;
     
-    //bus.interruptSet(CstrBus::IRQ_SPU);
+    //bus.interruptSet(CstrBus::INT_SPU);
 }
 
 sh CstrAudio::setVolume(sh data) {
@@ -50,119 +50,55 @@ sh CstrAudio::setVolume(sh data) {
     return ret & 0x3fff;
 }
 
-double f[5][2] = {
-    { 0.0, 0.0 },
-    { 60.0 / 64.0, 0.0 },
-    { 115.0 / 64.0, -52.0 / 64.0 },
-    { 98.0 / 64.0, -55.0 / 64.0 },
-    { 122.0 / 64.0, -60.0 / 64.0 }
-};
-
-double samples[28];
+#define audioSet(a, b, c) \
+    res = (*p & a) << b; \
+    if (res & 0x8000) res |= 0xffff0000; \
+    temp[i + c] = res >> shift
 
 void CstrAudio::depackVAG(voice *chn) {
-    ub *p = (ub *)&spuMem[chn->saddr/2];
-    ub *q = (ub *)chn->bfr;
+    ub *p = (ub *)&spuMem[chn->saddr / 2];
+    sh res, temp[28] = { 0 };
     
-    int d, s;
-    static double s_1 = 0.0;
-    static double s_2 = 0.0;
+    static sh s[2] = {
+        0,
+        0,
+    };
     
-    for (;;) {
-        int filter = *p++;
-        int shift = filter & 0xf;
-        filter >>= 4;
-        int op = *p++;
+    while(1) {
+        ub shift   = *p & 15;
+        ub predict = *p >> 4;
         
-        for (int i = 0; i < 28; i += 2) {
-            d = *p++;
-            
-            s = (d & 0x0f) << 12;
-            if (s & 0x8000) s |= 0xffff0000;
-            samples[i + 0] = (double)(s >> shift);
-            
-            s = (d & 0xf0) <<  8;
-            if (s & 0x8000) s |= 0xffff0000;
-            samples[i + 1] = (double)(s >> shift);
+        p += 2;
+        
+        for (int i = 0; i < 28; i += 2, p++) {
+            audioSet(0x0f, 0xc, 0);
+            audioSet(0xf0, 0x8, 1);
         }
         
         for (int i = 0; i < 28; i++) {
-            samples[i] = samples[i] + s_1 * f[filter][0] + s_2 * f[filter][1];
-            s_2 = s_1;
-            s_1 = samples[i];
-            d = (int)(samples[i] + 0.5);
-            *q++=(d & 0xff);
-            *q++=(d >> 8);
+            res = temp[i] + ((s[0] * f[predict][0] + s[1] * f[predict][1] + 32) >> 6);
+            s[1] = s[0];
+            s[0] = res;
+            chn->bfr[chn->size++] = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
             
-            chn->size++;
-            
-            if (chn->size == 65536-1) {
+            if (chn->size == USHRT_MAX) {
                 printf("/// PSeudo SPU Channel size overflow\n");
                 return;
             }
         }
         
-        if (op == 6) {
+        // Operators
+        ub op = *(p - 15);
+        
+        if (op == 6) { // Repeat
             chn->raddr = chn->size;
         }
         
-        if (op == 3 || op == 7) {
+        if (op == 3 || op == 7) { // End
             return;
         }
     }
 }
-
-//void CstrAudio::depackVAG(voice *chn) {
-//    //uw p = chn->saddr;
-//    ub *p = (ub *)&spuMem.iuh[chn->saddr/2];
-//    sh s_1 = 0;
-//    sh s_2 = 0;
-//    sh temp[28] = { 0 };
-//
-//    while(1) {
-//        ub shift  = *p & 15;
-//        ub filter = *p >> 4;
-//
-//        for (int i = 2; i < 16; i++) {
-//            p++;
-//            sh a = ((*p & 0x0f) << 12);
-//            sh b = ((*p & 0xf0) <<  8);
-//            if (a & 0x8000) a |= 0xffff0000;
-//            if (b & 0x8000) b |= 0xffff0000;
-//            temp[i * 2 - 4] = a >> shift;
-//            temp[i * 2 - 3] = b >> shift;
-//        }
-//
-//        for (int i = 0; i < 28; i++) {
-//            sh res = temp[i] + ((s_1 * f[filter][0] + s_2 * f[filter][1] + 32) >> 6);
-//            s_2 = s_1;
-//            s_1 = res;
-//            res = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
-//            chn->buffer.ish[chn->size++] = res;
-//
-//            // Overflow
-//            if (chn->size == USHRT_MAX) {
-//                printf("/// PSeudo SPU Channel size overflow\n");
-//                return;
-//            }
-//        }
-//
-//        // Fin
-//        p -= 14;
-//        ub op = *p;
-//
-//        if (op == 6) { // Repeat
-//            chn->raddr = chn->size;
-//        }
-//
-//        if (op == 3 || op == 7) { // Termination
-//            return;
-//        }
-//
-//        // Advance Buffer
-//        p += 16;
-//    }
-//}
 
 void CstrAudio::stream() {
     ALint state;

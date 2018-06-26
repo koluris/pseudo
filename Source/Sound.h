@@ -9,22 +9,10 @@ class CstrAudio {
         ALC_BUF_AMOUNT =     16,
     };
     
-//    const sh f[5][2] = {
-//        {   0,   0 },
-//        {  60,   0 },
-//        { 115, -52 },
-//        {  98, -55 },
-//        { 122, -60 },
-//    };
-    
-    uh spuMem[1024 * 256];
-    
     struct voice {
         bool on;
-        sh bfr[USHRT_MAX];
-        uw count, saddr;
-        sw pos, size;
-        sh volumeL, volumeR, freq, raddr;
+        sh bfr[USHRT_MAX], volumeL, volumeR;
+        sw count, freq, pos, raddr, saddr, size;
     } spuVoices[MAX_CHANNELS];
     
     struct {
@@ -32,6 +20,15 @@ class CstrAudio {
         sh fin [SBUF_SIZE * 2];
     } sbuf;
     
+    const sh f[5][2] = {
+        {   0,   0 },
+        {  60,   0 },
+        { 115, -52 },
+        {  98, -55 },
+        { 122, -60 },
+    };
+    
+    uh spuMem[1024 * 256];
     uw spuAddr;
     sh spuVolumeL, spuVolumeR;
     bool stereo;

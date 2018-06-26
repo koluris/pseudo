@@ -7,7 +7,7 @@ CstrAudio audio;
 
 void CstrAudio::reset() {
     spuAddr = ~(0);
-    memset(iFMod, 0, sizeof(iFMod));
+    //memset(iFMod, 0, sizeof(iFMod));
     
     // Channels reset
     for (auto &item : spuVoices) {
@@ -36,28 +36,28 @@ void CstrAudio::voiceOff(uw data) {
 }
 
 void CstrAudio::FModOn(uw data) {
-    for (int n = 0; n < MAX_CHANNELS; n++) {
-        if (data & (1 << n)) {
-            if (n) {
-                spuVoices[n].fmod = 1;
-                spuVoices[n - 1].fmod = 2;
-            }
-        }
-        else {
-            spuVoices[n].fmod = 0;
-        }
-    }
+//    for (int n = 0; n < MAX_CHANNELS; n++) {
+//        if (data & (1 << n)) {
+//            if (n) {
+//                spuVoices[n].fmod = 1;
+//                spuVoices[n - 1].fmod = 2;
+//            }
+//        }
+//        else {
+//            spuVoices[n].fmod = 0;
+//        }
+//    }
 }
 
 void CstrAudio::NoiseOn(uw data) {
-    for (int n = 0; n < MAX_CHANNELS; n++) {
-        if (data & (1 << n)) {
-            spuVoices[n].noise = true;
-        }
-        else {
-            spuVoices[n].noise = false;
-        }
-    }
+//    for (int n = 0; n < MAX_CHANNELS; n++) {
+//        if (data & (1 << n)) {
+//            spuVoices[n].noise = true;
+//        }
+//        else {
+//            spuVoices[n].noise = false;
+//        }
+//    }
 }
 
 int setVolume(sh data) {
@@ -80,14 +80,15 @@ int setVolume(sh data) {
 }
 
 void CstrAudio::setPitch(int ch, int val) {
-	val = MIN(val, 0x3fff);
-	spuVoices[ch].iRawPitch = val;
-	val = (44100 * val) / 4096;
-	
-    if (val < 1)
-        val = 1;
-	
-    spuVoices[ch].iActFreq = val;
+//    val = MIN(val, 0x3fff);
+    spuVoices[ch].iRawPitch = val;
+//    val = (44100 * val) / 4096;
+//
+//    if (val < 1)
+//        val = 1;
+//
+//    spuVoices[ch].iActFreq = val;
+    spuVoices[ch].iActFreq = (44100 * val) / 4096;
 }
 
 void CstrAudio::write(uw addr, uh data) {
@@ -158,19 +159,19 @@ void CstrAudio::write(uw addr, uh data) {
             break;
         
         case 0x0d90:
-            FModOn(data);
+            //FModOn(data);
             break;
         
         case 0x0d92:
-            FModOn(data << 16);
+            //FModOn(data << 16);
             break;
         
         case 0x0d94:
-            NoiseOn(data);
+            //NoiseOn(data);
             break;
         
         case 0x0d96:
-            NoiseOn(data << 16);
+            //NoiseOn(data << 16);
             break;
     }
 }
@@ -181,19 +182,19 @@ uh CstrAudio::read(uw addr) {
     if (addr >= 0x0c00 && addr < 0x0d80) {
 		int ch = (addr >> 4) - 0xc0;
 		
-        switch(addr & 0x0f) {
-            case 12:
-                if (spuVoices[ch].create)
-                        return 1;
-                
-                return 0;
-                
-            case 14:
-                if (!spuVoices[ch].pLoop)
-                    return 0;
-                
-                return (spuVoices[ch].pLoop - spuMemC) >> 3;
-        }
+//        switch(addr & 0x0f) {
+//            case 12:
+//                if (spuVoices[ch].create)
+//                        return 1;
+//                
+//                return 0;
+//                
+//            case 14:
+//                if (!spuVoices[ch].pLoop)
+//                    return 0;
+//                
+//                return (spuVoices[ch].pLoop - spuMemC) >> 3;
+//        }
     }
 
 	switch(addr) {
@@ -233,7 +234,7 @@ void CstrAudio::StartSound(voice *chn) {
 }
 
 void CstrAudio::VoiceChangeFrequency(voice *chn) {
-	chn->iUsedFreq = chn->iActFreq;
+	//chn->iUsedFreq = chn->iActFreq;
 	chn->sinc = chn->iRawPitch << 4;
 	
     if (!chn->sinc)
@@ -241,19 +242,19 @@ void CstrAudio::VoiceChangeFrequency(voice *chn) {
 }
 
 void CstrAudio::StoreInterpolationVal(voice *chn, int fa) {
-    if (chn->fmod == 2) {
+    //if (chn->fmod == 2) {
         chn->SB[29] = fa;
-    }
-	else {
-        if ((spuCtrl & 0x4000) == 0) {
-			fa = 0;
-        }
-		else {
-            if (fa >  32767) fa =  32767;
-            if (fa < -32767) fa = -32767;
-        }
-		chn->SB[29] = fa;
-	}
+//    }
+//    else {
+//        if ((spuCtrl & 0x4000) == 0) {
+//            fa = 0;
+//        }
+//        else {
+//            if (fa >  32767) fa =  32767;
+//            if (fa < -32767) fa = -32767;
+//        }
+//        chn->SB[29] = fa;
+//    }
 }
 
 void CstrAudio::stream() {
@@ -349,15 +350,15 @@ void CstrAudio::decodeStream() {
                     chn.pos -= 0x10000;
                 }
                 
-                fa = chn.noise ? 0 : chn.SB[29];
+                fa = /*chn.noise ? 0 :*/ chn.SB[29];
                 
-                if (chn.fmod == 2) {
-                    iFMod[ns] = fa;
-                }
-                else {
+//                if (chn.fmod == 2) {
+//                    iFMod[ns] = fa;
+//                }
+//                else {
                     sbuf.temp[ns*2+0] += (+fa * chn.volumeL) / MAX_VOLUME;
                     sbuf.temp[ns*2+1] += (-fa * chn.volumeR) / MAX_VOLUME;
-                }
+                //}
                 chn.pos += chn.sinc;
             }
             ENDX: ;
