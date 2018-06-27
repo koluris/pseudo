@@ -22,9 +22,7 @@ void CstrAudio::reset() {
         item = { 0 };
     }
     
-    // Variables
-    spuAddr = ~(0);
-    
+    spuAddr = 0xffffffff;
     //bus.interruptSet(CstrBus::INT_SPU);
 }
 
@@ -78,7 +76,7 @@ void CstrAudio::depackVAG(voice *chn) {
             s[0] = res;
             chn->bfr[chn->size++] = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
             
-            if (chn->size == USHRT_MAX * 2) {
+            if (chn->size == SPU_CHANNEL_BUF_SIZE - 1) {
                 printf("/// PSeudo SPU Channel size overflow\n");
                 return;
             }
@@ -110,21 +108,21 @@ void CstrAudio::decodeStream() {
     while(!psx.suspended) {
         for (auto &chn : spuVoices) {
             // Channel on?
-            if (chn.size <= 28) { // 28 -> static?
+            if (chn.size <= 28) { // 28 -> static noise?
                 continue;
             }
             
-            for (int i = 0; i < SBUF_SIZE * 2; i += 2) {
+            for (int i = 0; i < SPU_SAMPLE_SIZE; i += 2) {
                 chn.count += chn.freq;
                 
-                if (chn.count >= SAMPLE_RATE) {
-                    chn.pos   += chn.count / SAMPLE_RATE;
-                    chn.count %= SAMPLE_RATE;
+                if (chn.count >= SPU_SAMPLE_RATE) {
+                    chn.pos   += chn.count / SPU_SAMPLE_RATE;
+                    chn.count %= SPU_SAMPLE_RATE;
                 }
                 
                 // Mix Channel Samples
-                sw L = sbuf[i + 0] + (chn.bfr[chn.pos] * chn.volumeL / 4) / MAX_VOLUME;
-                sw R = sbuf[i + 1] - (chn.bfr[chn.pos] * chn.volumeR / 4) / MAX_VOLUME;
+                sw L = sbuf[i + 0] + (chn.bfr[chn.pos] * chn.volumeL / 4) / SPU_MAX_VOLUME;
+                sw R = sbuf[i + 1] - (chn.bfr[chn.pos] * chn.volumeR / 4) / SPU_MAX_VOLUME;
                 
                 sbuf[i + 0] = MIN(MAX(L, SHRT_MIN), SHRT_MAX);
                 sbuf[i + 1] = MIN(MAX(R, SHRT_MIN), SHRT_MAX);
@@ -146,7 +144,7 @@ void CstrAudio::decodeStream() {
         ALint processed;
         alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
 
-        if (processed >= ALC_BUF_AMOUNT) {
+        if (processed >= SPU_ALC_BUF_AMOUNT) {
             // We have to free buffers
             printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
         }
@@ -158,7 +156,7 @@ void CstrAudio::decodeStream() {
 
         ALuint buffer;
         alSourceUnqueueBuffers(source, 1, &buffer);
-        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SBUF_SIZE*2*2, SAMPLE_RATE);
+        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE * 2, SPU_SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
         stream();
         
@@ -168,7 +166,7 @@ void CstrAudio::decodeStream() {
 }
 
 void CstrAudio::voiceOn(uw data) {
-    for (int n = 0; n < MAX_CHANNELS; n++) {
+    for (int n = 0; n < SPU_CHANNELS; n++) {
         if (data & (1 << n)) {
             spuVoices[n].count = 0;
             spuVoices[n].pos   = 0;
@@ -181,7 +179,7 @@ void CstrAudio::voiceOn(uw data) {
 }
 
 void CstrAudio::voiceOff(uw data) {
-    for (int n = 0; n < MAX_CHANNELS; n++) {
+    for (int n = 0; n < SPU_CHANNELS; n++) {
         if (data & (1 << n)) {
             //spuVoices[n].on = false;
         }
@@ -208,7 +206,7 @@ void CstrAudio::write(uw addr, uh data) {
                 return;
                 
             case 0x4: // Pitch
-                spuVoices[n].freq = MAX((data * SAMPLE_RATE) / 4096, 1);
+                spuVoices[n].freq = MAX((data * SPU_SAMPLE_RATE) / 4096, 1);
                 return;
                 
             case 0x6: // Sound Address
