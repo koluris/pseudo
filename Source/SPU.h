@@ -15,29 +15,21 @@ class CstrAudio {
     } sbuf;
     
     struct voice {
-        bool on, create, noise;
-        sw pos, fmod, volumeL, volumeR;
+        bool on, create;
+        sw pos, volumeL, volumeR;
         
         sw iSBPos, sinc, SB[32], iActFreq, iUsedFreq, bIgnoreLoop, iRawPitch, s_1, s_2;
         ub *pStart, *pCurr, *pLoop;
     } spuVoices[MAX_CHANNELS + 1];
     
-    uh regArea[10000];
     uh spuMem[256 * 1024];
     ub *spuMemC;
-    uh spuCtrl = 0;
-    uh spuStat = 0;
     uw spuAddr;
-    int iFMod[SAMPLE_RATE];
     
     void voiceOn (uw);
-    void voiceOff(uw);
-    void FModOn  (uw);
-    void NoiseOn (uw);
     void setPitch(int, int);
     void StartSound(voice *);
     void VoiceChangeFrequency(voice *);
-    void StoreInterpolationVal(voice *, int);
     
     // OpenAL
     ALCdevice *device;

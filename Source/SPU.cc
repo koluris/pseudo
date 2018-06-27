@@ -5,9 +5,14 @@
 
 CstrAudio audio;
 
+#define spuAcc(addr) \
+    *(uh *)&mem.hwr.ptr[addr]
+
+#define spuChannel(addr) \
+    (addr >> 4) & 0x1f
+
 void CstrAudio::reset() {
     spuAddr = ~(0);
-    //memset(iFMod, 0, sizeof(iFMod));
     
     // Channels reset
     for (auto &item : spuVoices) {
@@ -25,39 +30,6 @@ void CstrAudio::voiceOn(uw data) {
             spuVoices[n].bIgnoreLoop = 0;
         }
     }
-}
-
-void CstrAudio::voiceOff(uw data) {
-    for (int n = 0; n < MAX_CHANNELS; n++) {
-        if (data & (1 << n)) {
-            //spuVoices[n].on = false;
-        }
-    }
-}
-
-void CstrAudio::FModOn(uw data) {
-//    for (int n = 0; n < MAX_CHANNELS; n++) {
-//        if (data & (1 << n)) {
-//            if (n) {
-//                spuVoices[n].fmod = 1;
-//                spuVoices[n - 1].fmod = 2;
-//            }
-//        }
-//        else {
-//            spuVoices[n].fmod = 0;
-//        }
-//    }
-}
-
-void CstrAudio::NoiseOn(uw data) {
-//    for (int n = 0; n < MAX_CHANNELS; n++) {
-//        if (data & (1 << n)) {
-//            spuVoices[n].noise = true;
-//        }
-//        else {
-//            spuVoices[n].noise = false;
-//        }
-//    }
 }
 
 int setVolume(sh data) {
@@ -80,134 +52,76 @@ int setVolume(sh data) {
 }
 
 void CstrAudio::setPitch(int ch, int val) {
-//    val = MIN(val, 0x3fff);
     spuVoices[ch].iRawPitch = val;
-//    val = (44100 * val) / 4096;
-//
-//    if (val < 1)
-//        val = 1;
-//
-//    spuVoices[ch].iActFreq = val;
     spuVoices[ch].iActFreq = (44100 * val) / 4096;
 }
 
 void CstrAudio::write(uw addr, uh data) {
-	addr &= 0xfff;
-    regArea[(addr - 0xc00) >> 1] = data;
+    addr = LO_BITS(addr);
     
-	if (addr >= 0x0c00 && addr < 0x0d80) {
-		int ch = (addr >> 4) - 0xc0;
+    spuAcc(addr) = data;
+    
+	if (addr >= 0x1c00 && addr < 0x1d80) {
+		ub n = spuChannel(addr);
 		
         switch(addr & 0xf) {
             case 0:
-                spuVoices[ch].volumeL = setVolume(data);
+                spuVoices[n].volumeL = setVolume(data);
                 break;
             
             case 2:
-                spuVoices[ch].volumeR = setVolume(data);
+                spuVoices[n].volumeR = setVolume(data);
                 break;
             
             case 4:
-                setPitch(ch, data);
+                setPitch(n, data);
                 break;
             
             case 6:
-                spuVoices[ch].pStart = spuMemC + (data << 3);
+                spuVoices[n].pStart = spuMemC + (data << 3);
                 break;
             
             case 14:
-                spuVoices[ch].pLoop = spuMemC + (data << 3);
-                spuVoices[ch].bIgnoreLoop = 1;
+                spuVoices[n].pLoop = spuMemC + (data << 3);
+                spuVoices[n].bIgnoreLoop = 1;
                 break;
         }
 		return;
 	}
     
     switch(addr) {
-        case 0x0da6:
+        case 0x1da6:
             spuAddr = data << 3;
             break;
         
-        case 0x0da8:
+        case 0x1da8:
             spuMem[spuAddr >> 1] = data;
             spuAddr += 2;
             spuAddr &= 0x7ffff;
             break;
         
-        case 0x0daa:
-            spuCtrl = data;
-            break;
-        
-        case 0x0dae:
-            spuStat = data & 0xf800;
-            break;
-        
-        case 0x0d88:
+        case 0x1d88:
             voiceOn(data);
             break;
         
-        case 0x0d8a:
+        case 0x1d8a:
             voiceOn(data << 16);
-            break;
-        
-        case 0x0d8c:
-            voiceOff(data);
-            break;
-        
-        case 0x0d8e:
-            voiceOff(data << 16);
-            break;
-        
-        case 0x0d90:
-            //FModOn(data);
-            break;
-        
-        case 0x0d92:
-            //FModOn(data << 16);
-            break;
-        
-        case 0x0d94:
-            //NoiseOn(data);
-            break;
-        
-        case 0x0d96:
-            //NoiseOn(data << 16);
             break;
     }
 }
 
 uh CstrAudio::read(uw addr) {
-	addr &= 0xfff;
-    
-    if (addr >= 0x0c00 && addr < 0x0d80) {
-		int ch = (addr >> 4) - 0xc0;
-		
-//        switch(addr & 0x0f) {
-//            case 12:
-//                if (spuVoices[ch].create)
-//                        return 1;
-//                
-//                return 0;
-//                
-//            case 14:
-//                if (!spuVoices[ch].pLoop)
-//                    return 0;
-//                
-//                return (spuVoices[ch].pLoop - spuMemC) >> 3;
-//        }
+    addr = LO_BITS(addr);
+	
+    if (addr >= 0x1c00 && addr < 0x1d80) {
+        return spuAcc(addr);
     }
 
 	switch(addr) {
-        case 0x0daa:
-            return spuCtrl;
-            
-        case 0x0dae:
-            return spuStat;
-            
-        case 0x0da6:
+        case 0x1da6:
             return spuAddr >> 3;
             
-        case 0x0da8:
+        case 0x1da8:
             {
                 uh s = spuMem[spuAddr >> 1];
                 spuAddr += 2;
@@ -215,7 +129,7 @@ uh CstrAudio::read(uw addr) {
                 return s;
             }
 	}
-	return regArea[(addr - 0xc00) >> 1];
+	return spuAcc(addr);
 }
 
 void CstrAudio::StartSound(voice *chn) {
@@ -234,27 +148,10 @@ void CstrAudio::StartSound(voice *chn) {
 }
 
 void CstrAudio::VoiceChangeFrequency(voice *chn) {
-	//chn->iUsedFreq = chn->iActFreq;
 	chn->sinc = chn->iRawPitch << 4;
 	
     if (!chn->sinc)
         chn->sinc = 1;
-}
-
-void CstrAudio::StoreInterpolationVal(voice *chn, int fa) {
-    //if (chn->fmod == 2) {
-        chn->SB[29] = fa;
-//    }
-//    else {
-//        if ((spuCtrl & 0x4000) == 0) {
-//            fa = 0;
-//        }
-//        else {
-//            if (fa >  32767) fa =  32767;
-//            if (fa < -32767) fa = -32767;
-//        }
-//        chn->SB[29] = fa;
-//    }
 }
 
 void CstrAudio::stream() {
@@ -275,8 +172,9 @@ void CstrAudio::decodeStream() {
         { 122, -60 },
     };
     
+    sh s;
+    ub predict_nr, shift_factor, flags;
     int s_1, s_2, fa;
-    int predict_nr, shift_factor, flags, s;
     
     while(!psx.suspended) {
         for (auto &chn : spuVoices) {
@@ -303,29 +201,28 @@ void CstrAudio::decodeStream() {
                         chn.iSBPos = 0;
                         s_1 = chn.s_1;
                         s_2 = chn.s_2;
-                        predict_nr = (int)*chn.pCurr;
+                        predict_nr = *chn.pCurr;
                         chn.pCurr++;
                         shift_factor = predict_nr & 0xf;
                         predict_nr >>= 4;
-                        flags = (int)*chn.pCurr;
+                        flags = *chn.pCurr;
                         chn.pCurr++;
 
                         for (int i = 0; i < 28; chn.pCurr++) {
-                            s = ((((int)*chn.pCurr) & 0x0f) << 12);
+                            s = (((*chn.pCurr) & 0x0f) << 12);
                             if (s & 0x8000) s |= 0xffff0000;
                             fa = (s >> shift_factor);
                             fa = fa + ((s_1 * f[predict_nr][0]) >> 6) + ((s_2 * f[predict_nr][1]) >> 6);
                             s_2 = s_1;
                             s_1 = fa;
-                            
-                            s = ((((int)*chn.pCurr) & 0xf0) <<  8);
                             chn.SB[i++] = fa;
+                            
+                            s = (((*chn.pCurr) & 0xf0) <<  8);
                             if (s & 0x8000) s |= 0xffff0000;
                             fa = (s >> shift_factor);
                             fa = fa + ((s_1 * f[predict_nr][0]) >> 6) + ((s_2 * f[predict_nr][1]) >> 6);
                             s_2 = s_1;
                             s_1 = fa;
-                            
                             chn.SB[i++] = fa;
                         }
                         
@@ -346,27 +243,21 @@ void CstrAudio::decodeStream() {
                     }
                     
                     fa = chn.SB[chn.iSBPos++];
-                    StoreInterpolationVal(&chn, fa);
+                    chn.SB[29] = fa;
                     chn.pos -= 0x10000;
                 }
                 
-                fa = /*chn.noise ? 0 :*/ chn.SB[29];
+                fa = chn.SB[29];
+
+                sbuf.temp[ns*2+0] += (+fa * chn.volumeL) / MAX_VOLUME;
+                sbuf.temp[ns*2+1] += (-fa * chn.volumeR) / MAX_VOLUME;
                 
-//                if (chn.fmod == 2) {
-//                    iFMod[ns] = fa;
-//                }
-//                else {
-                    sbuf.temp[ns*2+0] += (+fa * chn.volumeL) / MAX_VOLUME;
-                    sbuf.temp[ns*2+1] += (-fa * chn.volumeR) / MAX_VOLUME;
-                //}
+                sbuf.fin[ns*2+0] = (+(sbuf.temp[ns*2+0] / 4) * 16383) / MAX_VOLUME;
+                sbuf.fin[ns*2+1] = (-(sbuf.temp[ns*2+1] / 4) * 16383) / MAX_VOLUME;
+                
                 chn.pos += chn.sinc;
             }
             ENDX: ;
-        }
-        
-        for (int i = 0; i < SBUF_SIZE; i++) {
-            sbuf.fin[i*2+0] = (+(sbuf.temp[i*2+0] / 4) * 16383) / MAX_VOLUME;
-            sbuf.fin[i*2+1] = (-(sbuf.temp[i*2+1] / 4) * 16383) / MAX_VOLUME;
         }
         
         // OpenAL

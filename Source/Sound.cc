@@ -54,9 +54,9 @@ sh CstrAudio::setVolume(sh data) {
 
 void CstrAudio::depackVAG(voice *chn) {
     ub *p = (ub *)&spuMem[chn->saddr / 2];
-    sh res, temp[28] = { 0 };
+    sw res, temp[28] = { 0 };
     
-    static sh s[2] = {
+    static sw s[2] = {
         0,
         0,
     };
@@ -78,7 +78,7 @@ void CstrAudio::depackVAG(voice *chn) {
             s[0] = res;
             chn->bfr[chn->size++] = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
             
-            if (chn->size == USHRT_MAX) {
+            if (chn->size == USHRT_MAX * 2) {
                 printf("/// PSeudo SPU Channel size overflow\n");
                 return;
             }
