@@ -84,7 +84,7 @@ class CstrDraw {
     
     void reset();
     void opaqueClipState(bool);
-    ub *opaqueFunc(ub);
+    ub opaqueFunc(ub);
     void setDrawArea(int, uw);
     
 public:

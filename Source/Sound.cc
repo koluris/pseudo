@@ -51,7 +51,7 @@ sh CstrAudio::setVolume(sh data) {
     temp[i + c] = rest >> shift
 
 void CstrAudio::depackVAG(voice *chn) {
-    ub *p = (ub *)&spuMem[chn->saddr / 2];
+    ub *p = (ub *)&spuMem[chn->saddr >> 1];
     sw rest, temp[28] = { 0 };
     
     static sw s[2] = {
@@ -60,18 +60,14 @@ void CstrAudio::depackVAG(voice *chn) {
     };
     
     while(chn->size < SPU_CHANNEL_BUF_SIZE) {
-        ub shift   = *p & 15;
-        ub predict = *p >> 4;
-        
-        p += 2;
+        ub shift   = *p & 0xf;
+        ub predict = *p++ >> 4;
+        ub op      = *p++;
         
         for (int i = 0; i < 28; i += 2, p++) {
             audioSet(0x0f, 0xc, 0);
             audioSet(0xf0, 0x8, 1);
         }
-        
-        // Operators
-        ub op = *(p - 15);
         
         for (int i = 0; i < 28; i++) {
             rest = temp[i] + ((s[0] * f[predict][0] + s[1] * f[predict][1] + 32) >> 6);
@@ -80,12 +76,13 @@ void CstrAudio::depackVAG(voice *chn) {
             chn->bfr[chn->size++] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX);
         }
         
-        if (op == 6) { // Repeat
-            chn->raddr = chn->size;
-        }
-        
-        if (op == 3 || op == 7) { // End
-            return;
+        switch(op) {
+            case 3: // End
+            case 7:
+                return;
+                
+            case 6: // Repeat
+                chn->raddr = chn->size;
         }
     }
     

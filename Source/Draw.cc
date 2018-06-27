@@ -88,15 +88,13 @@ void CstrDraw::opaqueClipState(bool enable) {
     }
 }
 
-ub *CstrDraw::opaqueFunc(ub a) {
-    ub *b = new ub[2];
+ub CstrDraw::opaqueFunc(ub a) {
+    ub b1 = a ? opaque : 0;
+    ub b2 = a ? bit[opaque].trans : COLOR_MAX;
     
-    b[0] = a ? opaque : 0;
-    b[1] = a ? bit[opaque].trans : COLOR_MAX;
+    GLBlendFunc(bit[b1].src, bit[b1].dst);
     
-    GLBlendFunc(bit[b[0]].src, bit[b[0]].dst);
-    
-    return b;
+    return b2;
 }
 
 void CstrDraw::setDrawArea(int plane, uw data) {
@@ -222,7 +220,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     opaque = (tex[1]->tp >> 5) & 3;
                 }
                 
-                ub *b = opaqueFunc(setup->transparent);
+                const ub b = opaqueFunc(setup->transparent);
                 
                 GLStart(GL_TRIANGLE_STRIP);
                 for (int i = 0; i < points; i++) {
@@ -230,7 +228,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     vx[i]->w += offset.h;
                     vx[i]->h += offset.v;
                     
-                    GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, b[1]);
+                    GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, b);
                     GLTexCoord2s(tex[i]->u, tex[i]->v);
                     GLVertex2s  (vx [i]->w, vx [i]->h);
                 }
@@ -261,7 +259,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     parse( vx, &packets[1], points, 1);
                 }
                 
-                ub *b = opaqueFunc(setup->transparent);
+                const ub b = opaqueFunc(setup->transparent);
                 
                 GLStart(GL_LINE_STRIP);
                 for (int i = 0; i < points; i++) {
@@ -275,7 +273,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     vx[i]->w += offset.h;
                     vx[i]->h += offset.v;
                     
-                    GLColor4ub(hue[i]->r, hue[i]->c, hue[i]->b, b[1]);
+                    GLColor4ub(hue[i]->r, hue[i]->c, hue[i]->b, b);
                     GLVertex2s(vx [i]->w, vx [i]->h);
                 }
                 GLEnd();
@@ -310,8 +308,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     cache.fetchTexture(spriteTP, tex[0]->tp);
                 }
                 
-                ub *b = opaqueFunc(setup->transparent);
-                GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, b[1]);
+                const ub b = opaqueFunc(setup->transparent);
+                GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, b);
                 
                 GLStart(GL_TRIANGLE_STRIP);
                     // Cast offset
