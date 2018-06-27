@@ -15,7 +15,7 @@ CstrAudio audio;
 void CstrAudio::reset() {
     // Mem
     memset(&spuMem, 0, sizeof(spuMem));
-    sbuf = { 0 };
+    memset(&  sbuf, 0, sizeof(sbuf));
     
     // Channels reset
     for (auto &item : spuVoices) {
@@ -23,10 +23,7 @@ void CstrAudio::reset() {
     }
     
     // Variables
-    spuAddr    = ~(0);
-    spuVolumeL = MAX_VOLUME;
-    spuVolumeR = MAX_VOLUME;
-    stereo     = true;
+    spuAddr = ~(0);
     
     //bus.interruptSet(CstrBus::INT_SPU);
 }
@@ -117,7 +114,7 @@ void CstrAudio::decodeStream() {
                 continue;
             }
             
-            for (int i = 0; i < SBUF_SIZE; i++) {
+            for (int i = 0; i < SBUF_SIZE * 2; i += 2) {
                 chn.count += chn.freq;
                 
                 if (chn.count >= SAMPLE_RATE) {
@@ -126,13 +123,11 @@ void CstrAudio::decodeStream() {
                 }
                 
                 // Mix Channel Samples
-                if (stereo) {
-                    sbuf.temp[i*2+0] += (+chn.bfr[chn.pos] * chn.volumeL) / MAX_VOLUME;
-                    sbuf.temp[i*2+1] += (-chn.bfr[chn.pos] * chn.volumeR) / MAX_VOLUME;
-                }
-                else {
-                    sbuf.temp[i] += (chn.bfr[chn.pos] * ((chn.volumeL + chn.volumeR) / 2)) / MAX_VOLUME;
-                }
+                sw L = sbuf[i + 0] + (chn.bfr[chn.pos] * chn.volumeL / 4) / MAX_VOLUME;
+                sw R = sbuf[i + 1] - (chn.bfr[chn.pos] * chn.volumeR / 4) / MAX_VOLUME;
+                
+                sbuf[i + 0] = MIN(MAX(L, SHRT_MIN), SHRT_MAX);
+                sbuf[i + 1] = MIN(MAX(R, SHRT_MIN), SHRT_MAX);
                 
                 // End of Sample
                 if (chn.pos >= chn.size) {
@@ -144,16 +139,6 @@ void CstrAudio::decodeStream() {
                     chn.on = false;
                     break;
                 }
-            }
-        }
-        // Volume Mix
-        for (int i = 0; i < SBUF_SIZE; i++) {
-            if (stereo) {
-                sbuf.fin[i*2+0] = (+(sbuf.temp[i*2+0] / 4) * spuVolumeL) / MAX_VOLUME;
-                sbuf.fin[i*2+1] = (-(sbuf.temp[i*2+1] / 4) * spuVolumeR) / MAX_VOLUME;
-            }
-            else {
-                sbuf.fin[i] = ((sbuf.temp[i] / 4) * ((spuVolumeL + spuVolumeR) / 2)) / MAX_VOLUME;
             }
         }
         
@@ -173,12 +158,12 @@ void CstrAudio::decodeStream() {
 
         ALuint buffer;
         alSourceUnqueueBuffers(source, 1, &buffer);
-        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
+        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SBUF_SIZE*2*2, SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
         stream();
         
         // Clear
-        sbuf = { 0 };
+        memset(&sbuf, 0, sizeof(sbuf));
     }
 }
 
@@ -252,14 +237,6 @@ void CstrAudio::write(uw addr, uh data) {
     
     // HW
     switch(addr) {
-        case 0x1d80: // Volume L
-            spuVolumeL = setVolume(data);
-            return;
-        
-        case 0x1d82: // Volume R
-            spuVolumeR = setVolume(data);
-            return;
-        
         case 0x1d88: // Sound On 1
             voiceOn(data);
             return;
@@ -287,6 +264,8 @@ void CstrAudio::write(uw addr, uh data) {
             return;
             
         /* unused */
+        case 0x1d80: // Volume L
+        case 0x1d82: // Volume R
         case 0x1d84: // Reverb Volume L
         case 0x1d86: // Reverb Volume R
         case 0x1d90: // FM Mode On 1

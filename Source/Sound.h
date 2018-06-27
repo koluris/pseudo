@@ -9,17 +9,6 @@ class CstrAudio {
         ALC_BUF_AMOUNT =     16,
     };
     
-    struct voice {
-        bool on;
-        sh bfr[USHRT_MAX], volumeL, volumeR;
-        sw count, freq, pos, raddr, saddr, size;
-    } spuVoices[MAX_CHANNELS];
-    
-    struct {
-        sw temp[SBUF_SIZE * 2];
-        sh fin [SBUF_SIZE * 2];
-    } sbuf;
-    
     const sh f[5][2] = {
         {   0,   0 },
         {  60,   0 },
@@ -28,10 +17,25 @@ class CstrAudio {
         { 122, -60 },
     };
     
+    struct voice {
+        bool on;
+        
+        sh bfr[USHRT_MAX];
+        
+        sh volumeL;
+        sh volumeR;
+        
+        sw count;
+        sw freq;
+        sw pos;
+        sw raddr;
+        sw saddr;
+        sw size;
+    } spuVoices[MAX_CHANNELS];
+    
     uh spuMem[1024 * 256];
     uw spuAddr;
-    sh spuVolumeL, spuVolumeR;
-    bool stereo;
+    sh sbuf[SBUF_SIZE * 2];
     
     // OpenAL
     ALCdevice *device;
@@ -69,7 +73,7 @@ public:
         alGenBuffers(ALC_BUF_AMOUNT, bfr);
         
         for (auto &item : bfr) {
-            alBufferData(item, AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
+            alBufferData(item, AL_FORMAT_STEREO16, sbuf, SBUF_SIZE*2*2, SAMPLE_RATE);
         }
         
         alSourceQueueBuffers(source, ALC_BUF_AMOUNT, bfr);
