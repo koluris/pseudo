@@ -33,7 +33,6 @@ void CstrDraw::reset() {
     GLScalef(1.0 / 256, 1.0 / 256, 1.0);
     GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
-    GLTexEnvi(GL_TEXTURE_ENV, GL_ALPHA_SCALE, 2);
     
     // Redraw
     resize(window.h, window.v);

@@ -15,7 +15,6 @@ CstrAudio audio;
 void CstrAudio::reset() {
     // Mem
     memset(&spuMem, 0, sizeof(spuMem));
-    memset(&  sbuf, 0, sizeof(sbuf));
     
     // Channels reset
     for (auto &item : spuVoices) {
@@ -59,7 +58,7 @@ void CstrAudio::depackVAG(voice *chn) {
         0,
     };
     
-    while(chn->size < SPU_CHANNEL_BUF_SIZE) {
+    while(chn->size < SPU_CHANNEL_BUF_SIZE - 28) {
         ub shift   = *p & 0xf;
         ub predict = *p++ >> 4;
         ub op      = *p++;
@@ -100,6 +99,11 @@ void CstrAudio::stream() {
 
 void CstrAudio::decodeStream() {
     while(!psx.suspended) {
+        sw temp[SPU_SAMPLE_SIZE] = { 0 };
+        
+        // Clear
+        memset(&sbuf, 0, sizeof(sbuf));
+        
         for (auto &chn : spuVoices) {
             // Channel on?
             if (chn.size <= 28) { // 28 -> static noise?
@@ -115,11 +119,8 @@ void CstrAudio::decodeStream() {
                 }
                 
                 // Mix Channel Samples
-                sw L = sbuf[i + 0] + (chn.bfr[chn.pos] * chn.volumeL / 4) / SPU_MAX_VOLUME;
-                sw R = sbuf[i + 1] - (chn.bfr[chn.pos] * chn.volumeR / 4) / SPU_MAX_VOLUME;
-                
-                sbuf[i + 0] = MIN(MAX(L, SHRT_MIN), SHRT_MAX);
-                sbuf[i + 1] = MIN(MAX(R, SHRT_MIN), SHRT_MAX);
+                temp[i + 0] += (+chn.bfr[chn.pos] * chn.volumeL) / SPU_MAX_VOLUME;
+                temp[i + 1] += (-chn.bfr[chn.pos] * chn.volumeR) / SPU_MAX_VOLUME;
                 
                 // End of Sample
                 if (chn.pos >= chn.size) {
@@ -132,6 +133,12 @@ void CstrAudio::decodeStream() {
                     break;
                 }
             }
+        }
+        
+        // Volume Mix
+        for (int i = 0; i < SPU_SAMPLE_SIZE; i += 2) {
+            sbuf[i + 0] = +temp[i + 0] / 4;
+            sbuf[i + 1] = -temp[i + 1] / 4;
         }
         
         // OpenAL
@@ -153,9 +160,6 @@ void CstrAudio::decodeStream() {
         alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE * 2, SPU_SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
         stream();
-        
-        // Clear
-        memset(&sbuf, 0, sizeof(sbuf));
     }
 }
 
