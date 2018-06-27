@@ -18,8 +18,6 @@ class CstrAudio {
     };
     
     struct voice {
-        bool on;
-        
         sh bfr[USHRT_MAX];
         
         sh volumeL;
