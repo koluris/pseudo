@@ -46,20 +46,20 @@ sh CstrAudio::setVolume(sh data) {
 }
 
 #define audioSet(a, b, c) \
-    res = (*p & a) << b; \
-    if (res & 0x8000) res |= 0xffff0000; \
-    temp[i + c] = res >> shift
+    rest = (*p & a) << b; \
+    if (rest & 0x8000) rest |= 0xffff0000; \
+    temp[i + c] = rest >> shift
 
 void CstrAudio::depackVAG(voice *chn) {
     ub *p = (ub *)&spuMem[chn->saddr / 2];
-    sw res, temp[28] = { 0 };
+    sw rest, temp[28] = { 0 };
     
     static sw s[2] = {
         0,
         0,
     };
     
-    while(1) {
+    while(chn->size < SPU_CHANNEL_BUF_SIZE) {
         ub shift   = *p & 15;
         ub predict = *p >> 4;
         
@@ -70,20 +70,15 @@ void CstrAudio::depackVAG(voice *chn) {
             audioSet(0xf0, 0x8, 1);
         }
         
-        for (int i = 0; i < 28; i++) {
-            res = temp[i] + ((s[0] * f[predict][0] + s[1] * f[predict][1] + 32) >> 6);
-            s[1] = s[0];
-            s[0] = res;
-            chn->bfr[chn->size++] = MIN(MAX(res, SHRT_MIN), SHRT_MAX);
-            
-            if (chn->size == SPU_CHANNEL_BUF_SIZE - 1) {
-                printf("/// PSeudo SPU Channel size overflow\n");
-                return;
-            }
-        }
-        
         // Operators
         ub op = *(p - 15);
+        
+        for (int i = 0; i < 28; i++) {
+            rest = temp[i] + ((s[0] * f[predict][0] + s[1] * f[predict][1] + 32) >> 6);
+            s[1] = s[0];
+            s[0] = rest;
+            chn->bfr[chn->size++] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX);
+        }
         
         if (op == 6) { // Repeat
             chn->raddr = chn->size;
@@ -93,6 +88,8 @@ void CstrAudio::depackVAG(voice *chn) {
             return;
         }
     }
+    
+    printf("/// PSeudo SPU Channel size overflow\n");
 }
 
 void CstrAudio::stream() {
