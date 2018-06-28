@@ -7,7 +7,7 @@ class CstrAudio {
         SPU_CHANNEL_BUF_SIZE = 1 * (USHRT_MAX + 1), // hs-001
         SPU_MAX_VOLUME       = 0x3fff,
         SPU_SAMPLE_RATE      = 44100,
-        SPU_SAMPLE_SIZE      = 256,
+        SPU_SAMPLE_SIZE      = 512,
     };
     
     const sh f[5][2] = {

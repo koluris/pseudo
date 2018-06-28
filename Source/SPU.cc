@@ -26,7 +26,6 @@ void CstrAudio::voiceOn(uw data) {
     for (int n = 0; n < SPU_CHANNELS; n++) {
         if (data & (1 << n)) {
             spuVoices[n].create = true;
-            spuVoices[n].bIgnoreLoop = 0;
         }
     }
 }
@@ -60,18 +59,41 @@ void CstrAudio::stream() {
 }
 
 #define audioSet(a, b) \
-    rest = (*chn.p & a) << b; \
+    rest = (*chn->p & a) << b; \
     if (rest & 0x8000) rest |= 0xffff0000; \
-    fa = rest >> shift; \
-    fa += ((s_1 * f[predict][0] + s_2 * f[predict][1] + 32) >> 6); \
+    rest >>= shift; \
+    rest += ((s_1 * f[predict][0] + s_2 * f[predict][1] + 32) >> 6); \
     s_2 = s_1; \
-    s_1 = fa; \
-    chn.bfr[n++] = fa
+    s_1 = rest; \
+    chn->bfr[n++] = rest
+
+void CstrAudio::depackVAG(voice *chn) {
+    sw s_1 = chn->s_1;
+    sw s_2 = chn->s_2;
+    
+    sw rest;
+    
+    ub shift   = *chn->p & 0xf;
+    ub predict = *chn->p++ >> 4;
+    ub op      = *chn->p++;
+    
+    for (int n = 0; n < 28; chn->p++) {
+        audioSet(0x0f, 0xc);
+        audioSet(0xf0, 0x8);
+    }
+    
+    if (op & 4) {
+        chn->raddr = chn->p - 16;
+    }
+    
+    if (op & 1) {
+        chn->p = (op != 3 || !chn->raddr) ? (ub *)-1 : chn->raddr;
+    }
+    chn->s_1 = s_1;
+    chn->s_2 = s_2;
+}
 
 void CstrAudio::decodeStream() {
-    sh rest;
-    sw s_1, s_2, fa;
-    
     while(!psx.suspended) {
         sw temp[SPU_SAMPLE_SIZE] = { 0 };
         
@@ -79,13 +101,11 @@ void CstrAudio::decodeStream() {
         memset(&sbuf, 0, sizeof(sbuf));
         
         for (auto &chn : spuVoices) {
-            NEXT_CHANNEL:
-            
             if (chn.create) {
                 chn.on      = true;
                 chn.create  = false;
                 chn.p       = chn.saddr;
-                chn.pos     = 0x10000;
+                chn.pos     = USHRT_MAX + 1;
                 chn.sbpos   = 28;
                 chn.s_1     = 0;
                 chn.s_2     = 0;
@@ -99,14 +119,8 @@ void CstrAudio::decodeStream() {
                 continue;
             }
             
-            chn.sinc = chn.pitch << 4; // * 16 bits
-            
-            if (chn.sinc == 0) {
-                chn.sinc  = 1;
-            }
-            
             for (int i = 0; i < SPU_SAMPLE_SIZE; i += 2) {
-                while(chn.pos >= 0x10000) {
+                while(chn.pos >= USHRT_MAX + 1) {
                     if (chn.sbpos == 28) {
                         if (chn.p == (ub *)-1) {
                             chn.on = false;
@@ -114,46 +128,20 @@ void CstrAudio::decodeStream() {
                         }
                         
                         chn.sbpos = 0;
-                        s_1 = chn.s_1;
-                        s_2 = chn.s_2;
-                        
-                        ub shift   = *chn.p & 0xf;
-                        ub predict = *chn.p++ >> 4;
-                        ub op      = *chn.p++;
-
-                        for (int n = 0; n < 28; chn.p++) {
-                            audioSet(0x0f, 0xc);
-                            audioSet(0xf0, 0x8);
-                        }
-                        
-                        if ((op & 4) && (!chn.bIgnoreLoop)) {
-                            chn.raddr = chn.p - 16;
-                        }
-                        
-                        if (op & 1) {
-                            if (op != 3 || chn.raddr == NULL) {
-                                chn.p = (ub *)-1;
-                            }
-                            else {
-                                chn.p = chn.raddr;
-                            }
-                        }
-                        chn.s_1 = s_1;
-                        chn.s_2 = s_2;
+                        depackVAG(&chn);
                     }
                     
-                    fa = chn.bfr[chn.sbpos++];
-                    chn.bfr[29] = fa;
-                    chn.pos -= 0x10000;
+                    chn.bfr[29] = chn.bfr[chn.sbpos++];
+                    chn.pos -= USHRT_MAX + 1;
                 }
                 
-                fa = chn.bfr[29];
-
-                temp[i + 0] += (+fa * chn.volumeL) / SPU_MAX_VOLUME;
-                temp[i + 1] += (-fa * chn.volumeR) / SPU_MAX_VOLUME;
+                temp[i + 0] += (+chn.bfr[29] * chn.volumeL) / SPU_MAX_VOLUME;
+                temp[i + 1] += (-chn.bfr[29] * chn.volumeR) / SPU_MAX_VOLUME;
                 
                 chn.pos += chn.sinc;
             }
+            NEXT_CHANNEL:
+                continue;
         }
         
         for (int i = 0; i < SPU_SAMPLE_SIZE; i += 2) {
@@ -203,8 +191,7 @@ void CstrAudio::write(uw addr, uh data) {
                 return;
                 
             case 0x4: // Pitch
-                spuVoices[n].pitch = data;
-                spuVoices[n].freq  = (44100 * data) / 4096;
+                spuVoices[n].sinc = data << 4;
                 return;
                 
             case 0x6: // Sound Address
@@ -213,7 +200,6 @@ void CstrAudio::write(uw addr, uh data) {
                 
             case 0xe: // Return Address
                 spuVoices[n].raddr = ptr + (data << 3);
-                spuVoices[n].bIgnoreLoop = 1;
                 return;
                 
             /* unused */

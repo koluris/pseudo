@@ -15,13 +15,12 @@ CstrAudio audio;
 void CstrAudio::reset() {
     // Mem
     memset(&spuMem, 0, sizeof(spuMem));
+    spuAddr = 0xffffffff;
     
     // Channels reset
     for (auto &item : spuVoices) {
         item = { 0 };
     }
-    
-    spuAddr = 0xffffffff;
     //bus.interruptSet(CstrBus::INT_SPU);
 }
 
@@ -44,14 +43,17 @@ sh CstrAudio::setVolume(sh data) {
     return ret & 0x3fff;
 }
 
-#define audioSet(a, b, c) \
+#define audioSet(a, b) \
     rest = (*p & a) << b; \
     if (rest & 0x8000) rest |= 0xffff0000; \
-    temp[i + c] = rest >> shift
+    rest = (rest >> shift) + ((s[0] * f[predict][0] + s[1] * f[predict][1] + 32) >> 6); \
+    s[1] = s[0]; \
+    s[0] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX); \
+    chn->bfr[chn->size++] = s[0]
 
 void CstrAudio::depackVAG(voice *chn) {
     ub *p = (ub *)&spuMem[chn->saddr >> 1];
-    sw rest, temp[28] = { 0 };
+    sw rest;
     
     static sw s[2] = {
         0,
@@ -63,16 +65,9 @@ void CstrAudio::depackVAG(voice *chn) {
         ub predict = *p++ >> 4;
         ub op      = *p++;
         
-        for (int i = 0; i < 28; i += 2, p++) {
-            audioSet(0x0f, 0xc, 0);
-            audioSet(0xf0, 0x8, 1);
-        }
-        
-        for (int i = 0; i < 28; i++) {
-            rest = temp[i] + ((s[0] * f[predict][0] + s[1] * f[predict][1] + 32) >> 6);
-            s[1] = s[0];
-            s[0] = rest;
-            chn->bfr[chn->size++] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX);
+        for (int i = 0; i < 28; i+=2, p++) {
+            audioSet(0x0f, 0xc);
+            audioSet(0xf0, 0x8);
         }
         
         switch(op) {
@@ -82,12 +77,6 @@ void CstrAudio::depackVAG(voice *chn) {
                 
             case 6: // Repeat
                 chn->raddr = chn->size;
-                break;
-                
-            default:
-                if (op) {
-                    printf("%d\n", op);
-                }
         }
     }
     
@@ -142,8 +131,8 @@ void CstrAudio::decodeStream() {
         
         // Volume Mix
         for (int i = 0; i < SPU_SAMPLE_SIZE; i += 2) {
-            sbuf[i + 0] = MIN(MAX(temp[i + 0] / 2, SHRT_MIN), SHRT_MAX);
-            sbuf[i + 1] = MIN(MAX(temp[i + 1] / 2, SHRT_MIN), SHRT_MAX);
+            sbuf[i + 0] = MIN(MAX(+(temp[i + 0] / 2), SHRT_MIN), SHRT_MAX);
+            sbuf[i + 1] = MIN(MAX(-(temp[i + 1] / 2), SHRT_MIN), SHRT_MAX);
         }
         
         // OpenAL

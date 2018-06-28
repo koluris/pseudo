@@ -1,14 +1,6 @@
 #ifndef MYSPU
 
 class CstrAudio {
-//    enum {
-//        SAMPLE_RATE    =  44100,
-//        MAX_CHANNELS   =     24,
-//        SBUF_SIZE      =    512,
-//        MAX_VOLUME     = 0x3fff,
-//        ALC_BUF_AMOUNT =     16,
-//    };
-    
     enum {
         SPU_ALC_BUF_AMOUNT   = 16,
         SPU_CHANNELS         = 24,
@@ -23,7 +15,7 @@ class CstrAudio {
     
     struct voice {
         bool on, create;
-        sw bfr[32], sbpos, pos, s_1, s_2, bIgnoreLoop, sinc, freq, used, pitch;
+        sw bfr[32], sbpos, pos, s_1, s_2, sinc;
         ub *p, *saddr, *raddr;
         sw volumeL, volumeR;
     } spuVoices[SPU_CHANNELS + 1];
@@ -33,6 +25,8 @@ class CstrAudio {
     uw spuAddr;
     sh sbuf[SPU_SAMPLE_SIZE];
     
+    void depackVAG(voice *);
+    void stream();
     void voiceOn(uw);
     
     // OpenAL
@@ -78,7 +72,6 @@ public:
     }
     
 	void reset();
-    void stream();
     void decodeStream();
     
     // Store
