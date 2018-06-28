@@ -148,6 +148,15 @@ void CstrAudio::stream() {
     }
 }
 
+#define audioSet(a, b) \
+    rest = (*chn.p & a) << b; \
+    if (rest & 0x8000) rest |= 0xffff0000; \
+    fa = rest >> shift; \
+    fa += ((s_1 * f[predict][0] + s_2 * f[predict][1] + 32) >> 6); \
+    s_2 = s_1; \
+    s_1 = fa; \
+    chn.bfr[n++] = fa
+
 void CstrAudio::decodeStream() {
     const sh f[5][2] = {
         {   0,   0 },
@@ -208,21 +217,8 @@ void CstrAudio::decodeStream() {
                         ub op      = *chn.p++;
 
                         for (int n = 0; n < 28; chn.p++) {
-                            rest = (*chn.p & 0x0f) << 12;
-                            if (rest & 0x8000) rest |= 0xffff0000;
-                            fa = rest >> shift;
-                            fa += ((s_1 * f[predict][0] + s_2 * f[predict][1] + 32) >> 6);
-                            s_2 = s_1;
-                            s_1 = fa;
-                            chn.bfr[n++] = fa;
-                            
-                            rest = (*chn.p & 0xf0) <<  8;
-                            if (rest & 0x8000) rest |= 0xffff0000;
-                            fa = rest >> shift;
-                            fa += ((s_1 * f[predict][0] + s_2 * f[predict][1] + 32) >> 6);
-                            s_2 = s_1;
-                            s_1 = fa;
-                            chn.bfr[n++] = fa;
+                            audioSet(0x0f, 0xc);
+                            audioSet(0xf0, 0x8);
                         }
                         
                         if ((op & 4) && (!chn.bIgnoreLoop)) {
