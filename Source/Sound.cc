@@ -100,7 +100,7 @@ void CstrAudio::decodeStream() {
         
         for (auto &chn : spuVoices) {
             // Channel on?
-            if (chn.size < 28) { // 28 -> static noise?
+            if (chn.size < 1) {
                 continue;
             }
             
@@ -123,6 +123,8 @@ void CstrAudio::decodeStream() {
                         chn.count = 0;
                         continue;
                     }
+                    
+                    chn.size = 0;
                     break;
                 }
             }
