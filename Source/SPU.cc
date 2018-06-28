@@ -149,7 +149,7 @@ void CstrAudio::stream() {
 }
 
 void CstrAudio::decodeStream() {
-    const int f[5][2] = {
+    const sh f[5][2] = {
         {   0,   0 },
         {  60,   0 },
         { 115, -52 },
@@ -158,23 +158,25 @@ void CstrAudio::decodeStream() {
     };
     
     sh rest;
-    int s_1, s_2, fa;
+    sw s_1, s_2, fa;
     
     while(!psx.suspended) {
-        sw temp[SBUF_SIZE * 2] = { 0 };
+        sw temp[SBUF_SIZE] = { 0 };
         
         // Clear
         memset(&sbuf, 0, sizeof(sbuf));
         
         for (auto &chn : spuVoices) {
+            NEXT_CHANNEL:
+            
             if (chn.create) {
-                chn.on     = true;
-                chn.create = false;
-                chn.pos    = 0x10000;
-                chn.p = chn.saddr;
-                chn.s_1 = 0;
-                chn.s_2 = 0;
-                chn.sbpos = 28;
+                chn.on      = true;
+                chn.create  = false;
+                chn.p       = chn.saddr;
+                chn.pos     = 0x10000;
+                chn.sbpos   = 28;
+                chn.s_1     = 0;
+                chn.s_2     = 0;
                 chn.bfr[29] = 0;
                 chn.bfr[30] = 0;
                 chn.bfr[31] = 0;
@@ -185,15 +187,16 @@ void CstrAudio::decodeStream() {
                 continue;
             }
             
-            if (chn.iActFreq != chn.iUsedFreq)
+            if (chn.iActFreq != chn.iUsedFreq) {
                 VoiceChangeFrequency(&chn);
+            }
             
-            for (int ns = 0; ns < SBUF_SIZE; ns++) {
+            for (int i = 0; i < SBUF_SIZE; i += 2) {
                 while(chn.pos >= 0x10000) {
                     if (chn.sbpos == 28) {
                         if (chn.p == (ub *)-1) {
                             chn.on = false;
-                            redirect ENDX;
+                            redirect NEXT_CHANNEL;
                         }
                         
                         chn.sbpos = 0;
@@ -204,14 +207,14 @@ void CstrAudio::decodeStream() {
                         ub predict = *chn.p++ >> 4;
                         ub op      = *chn.p++;
 
-                        for (int i = 0; i < 28; chn.p++) {
+                        for (int n = 0; n < 28; chn.p++) {
                             rest = (*chn.p & 0x0f) << 12;
                             if (rest & 0x8000) rest |= 0xffff0000;
                             fa = rest >> shift;
                             fa += ((s_1 * f[predict][0] + s_2 * f[predict][1] + 32) >> 6);
                             s_2 = s_1;
                             s_1 = fa;
-                            chn.bfr[i++] = fa;
+                            chn.bfr[n++] = fa;
                             
                             rest = (*chn.p & 0xf0) <<  8;
                             if (rest & 0x8000) rest |= 0xffff0000;
@@ -219,7 +222,7 @@ void CstrAudio::decodeStream() {
                             fa += ((s_1 * f[predict][0] + s_2 * f[predict][1] + 32) >> 6);
                             s_2 = s_1;
                             s_1 = fa;
-                            chn.bfr[i++] = fa;
+                            chn.bfr[n++] = fa;
                         }
                         
                         if ((op & 4) && (!chn.bIgnoreLoop)) {
@@ -245,17 +248,16 @@ void CstrAudio::decodeStream() {
                 
                 fa = chn.bfr[29];
 
-                temp[ns*2+0] += (+fa * chn.volumeL) / MAX_VOLUME;
-                temp[ns*2+1] += (-fa * chn.volumeR) / MAX_VOLUME;
+                temp[i + 0] += (+fa * chn.volumeL) / MAX_VOLUME;
+                temp[i + 1] += (-fa * chn.volumeR) / MAX_VOLUME;
                 
                 chn.pos += chn.sinc;
             }
-            ENDX: ;
         }
         
-        for (int ns = 0; ns < SBUF_SIZE; ns++) {
-            sbuf[ns*2+0] = (+(temp[ns*2+0] / 4) * 16383) / MAX_VOLUME;
-            sbuf[ns*2+1] = (-(temp[ns*2+1] / 4) * 16383) / MAX_VOLUME;
+        for (int i = 0; i < SBUF_SIZE; i += 2) {
+            sbuf[i + 0] = +(temp[i + 0] / 4);
+            sbuf[i + 1] = -(temp[i + 1] / 4);
         }
         
         // OpenAL
@@ -274,7 +276,7 @@ void CstrAudio::decodeStream() {
         
         ALuint buffer;
         alSourceUnqueueBuffers(source, 1, &buffer);
-        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SBUF_SIZE*2*2, SAMPLE_RATE);
+        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SBUF_SIZE*2, SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
         stream();
     }
