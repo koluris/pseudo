@@ -53,19 +53,18 @@ sh CstrAudio::setVolume(sh data) {
 
 void CstrAudio::depackVAG(voice *chn) {
     ub *p = (ub *)&spuMem[chn->saddr >> 1];
-    sw rest;
     
     static sw s[2] = {
         0,
         0,
     };
     
-    while(chn->size < SPU_CHANNEL_BUF_SIZE - 28) {
+    for(; chn->size < SPU_CHANNEL_BUF_SIZE - 28;) {
         ub shift   = *p & 0xf;
         ub predict = *p++ >> 4;
         ub op      = *p++;
         
-        for (int i = 0; i < 28; i+=2, p++) {
+        for (int i = chn->size, rest; chn->size < i + 28; p++) {
             audioSet(0x0f, 0xc);
             audioSet(0xf0, 0x8);
         }
@@ -101,7 +100,7 @@ void CstrAudio::decodeStream() {
         
         for (auto &chn : spuVoices) {
             // Channel on?
-            if (chn.size <= 28) { // 28 -> static noise?
+            if (chn.size < 28) { // 28 -> static noise?
                 continue;
             }
             
