@@ -1,12 +1,20 @@
 #ifndef MYSPU
 
 class CstrAudio {
+//    enum {
+//        SAMPLE_RATE    =  44100,
+//        MAX_CHANNELS   =     24,
+//        SBUF_SIZE      =    512,
+//        MAX_VOLUME     = 0x3fff,
+//        ALC_BUF_AMOUNT =     16,
+//    };
+    
     enum {
-        SAMPLE_RATE    =  44100,
-        MAX_CHANNELS   =     24,
-        SBUF_SIZE      =    512,
-        MAX_VOLUME     = 0x3fff,
-        ALC_BUF_AMOUNT =     16,
+        SPU_ALC_BUF_AMOUNT   = 16,
+        SPU_CHANNELS         = 24,
+        SPU_MAX_VOLUME       = 0x3fff,
+        SPU_SAMPLE_RATE      = 44100,
+        SPU_SAMPLE_SIZE      = 256,
     };
     
     const sh f[5][2] = {
@@ -18,12 +26,12 @@ class CstrAudio {
         sw bfr[32], sbpos, pos, s_1, s_2, bIgnoreLoop, sinc, freq, used, pitch;
         ub *p, *saddr, *raddr;
         sw volumeL, volumeR;
-    } spuVoices[MAX_CHANNELS + 1];
+    } spuVoices[SPU_CHANNELS + 1];
     
-    uh spuMem[256 * 1024];
     ub *ptr;
+    uh spuMem[256 * 1024];
     uw spuAddr;
-    sh sbuf[SBUF_SIZE];
+    sh sbuf[SPU_SAMPLE_SIZE];
     
     void voiceOn(uw);
     
@@ -31,7 +39,7 @@ class CstrAudio {
     ALCdevice *device;
     ALCcontext *ctx;
     ALuint source;
-    ALuint bfr[ALC_BUF_AMOUNT];
+    ALuint bfr[SPU_ALC_BUF_AMOUNT];
     
 public:
     CstrAudio() {
@@ -52,18 +60,18 @@ public:
         }
         
         alGenSources(1, &source);
-        alGenBuffers(ALC_BUF_AMOUNT, bfr);
+        alGenBuffers(SPU_ALC_BUF_AMOUNT, bfr);
         
         for (auto &item : bfr) {
-            alBufferData(item, AL_FORMAT_STEREO16, sbuf, SBUF_SIZE*2, SAMPLE_RATE);
+            alBufferData(item, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE * 2, SPU_SAMPLE_RATE);
         }
         
-        alSourceQueueBuffers(source, ALC_BUF_AMOUNT, bfr);
+        alSourceQueueBuffers(source, SPU_ALC_BUF_AMOUNT, bfr);
     }
     
     ~CstrAudio() {
         alDeleteSources(1, &source);
-        alDeleteBuffers(ALC_BUF_AMOUNT, bfr);
+        alDeleteBuffers(SPU_ALC_BUF_AMOUNT, bfr);
         ALCdevice *device = alcGetContextsDevice(ctx);
         alcMakeContextCurrent(NULL);
         alcCloseDevice(device);
