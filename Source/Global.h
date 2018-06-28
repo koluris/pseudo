@@ -66,7 +66,7 @@ typedef int8_t  sb; // bite
 // OpenAL
 #define alSourceStream  alSourcePlay
 
-//#define MYSPU
+#define MYSPU
 
 // User imports
 #import "Bus.h"
