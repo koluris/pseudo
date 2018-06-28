@@ -9,22 +9,23 @@ class CstrAudio {
         ALC_BUF_AMOUNT =     16,
     };
     
+    const sh f[5][2] = {
+        { 0, 0 }, { 60, 0 }, { 115, -52 }, { 98, -55 }, { 122, -60 }
+    };
+    
     struct voice {
         bool on, create;
-        sw bfr[32], sbpos, pos, s_1, s_2, bIgnoreLoop, sinc, iActFreq, iUsedFreq, iRawPitch;
+        sw bfr[32], sbpos, pos, s_1, s_2, bIgnoreLoop, sinc, freq, used, pitch;
         ub *p, *saddr, *raddr;
         sw volumeL, volumeR;
     } spuVoices[MAX_CHANNELS + 1];
     
     uh spuMem[256 * 1024];
-    ub *spuMemC;
+    ub *ptr;
     uw spuAddr;
     sh sbuf[SBUF_SIZE];
     
-    void voiceOn (uw);
-    void setPitch(int, int);
-    void StartSound(voice *);
-    void VoiceChangeFrequency(voice *);
+    void voiceOn(uw);
     
     // OpenAL
     ALCdevice *device;
@@ -34,7 +35,7 @@ class CstrAudio {
     
 public:
     CstrAudio() {
-        spuMemC = (ub *)spuMem;
+        ptr = (ub *)spuMem;
         
         // OpenAL
         device = alcOpenDevice(NULL);

@@ -1,9 +1,7 @@
 #import "Global.h"
 
-
 #ifndef MYSPU
 
-CstrAudio audio;
 
 #define spuAcc(addr) \
     *(uh *)&mem.hwr.ptr[addr]
@@ -11,15 +9,16 @@ CstrAudio audio;
 #define spuChannel(addr) \
     (addr >> 4) & 0x1f
 
+
+CstrAudio audio;
+
 void CstrAudio::reset() {
-    spuAddr = ~(0);
+    spuAddr = 0xffffffff;
     
     // Channels reset
     for (auto &item : spuVoices) {
         item = { 0 };
-        item.p      = spuMemC;
-        item.saddr  = spuMemC;
-        item.raddr  = spuMemC;
+        item.p = item.saddr = item.raddr = ptr;
     }
 }
 
@@ -51,92 +50,157 @@ int setVolume(sh data) {
     return ret & 0x3fff;
 }
 
-void CstrAudio::setPitch(int ch, int val) {
-    spuVoices[ch].iRawPitch = val;
-    spuVoices[ch].iActFreq = (44100 * val) / 4096;
-}
-
 void CstrAudio::write(uw addr, uh data) {
+    // Switch to low order bits
     addr = LO_BITS(addr);
     
     spuAcc(addr) = data;
     
-	if (addr >= 0x1c00 && addr < 0x1d80) {
+    // Channels
+	if (addr >= 0x1c00 && addr < 0x1d7e) {
 		ub n = spuChannel(addr);
 		
         switch(addr & 0xf) {
-            case 0:
+            case 0x0: // Volume L
                 spuVoices[n].volumeL = setVolume(data);
-                break;
+                return;
             
-            case 2:
+            case 0x2: // Volume R
                 spuVoices[n].volumeR = setVolume(data);
-                break;
+                return;
             
-            case 4:
-                setPitch(n, data);
-                break;
+            case 0x4: // Pitch
+                spuVoices[n].pitch = data;
+                spuVoices[n].freq  = (44100 * data) / 4096;
+                return;
             
-            case 6:
-                spuVoices[n].saddr = spuMemC + (data << 3);
-                break;
+            case 0x6: // Sound Address
+                spuVoices[n].saddr = ptr + (data << 3);
+                return;
             
-            case 14:
-                spuVoices[n].raddr = spuMemC + (data << 3);
+            case 0xe: // Return Address
+                spuVoices[n].raddr = ptr + (data << 3);
                 spuVoices[n].bIgnoreLoop = 1;
-                break;
+                return;
+                
+            /* unused */
+            case 0x8:
+            case 0xa:
+            case 0xc:
+                return;
         }
-		return;
+        
+        printx("/// PSeudo SPU write phase: $%x <- $%x", addr, data);
 	}
     
+    // Reverb
+    if (addr >= 0x1dc0 && addr <= 0x1dfe) {
+        return;
+    }
+    
+    // HW
     switch(addr) {
-        case 0x1da6:
+        case 0x1d88: // Sound On 1
+            voiceOn(data);
+            return;
+            
+        case 0x1d8a: // Sound On 2
+            voiceOn(data << 16);
+            return;
+            
+        case 0x1da6: // Transfer Address
             spuAddr = data << 3;
-            break;
+            return;
         
-        case 0x1da8:
+        case 0x1da8: // Data
             spuMem[spuAddr >> 1] = data;
             spuAddr += 2;
             spuAddr &= 0x7ffff;
-            break;
-        
-        case 0x1d88:
-            voiceOn(data);
-            break;
-        
-        case 0x1d8a:
-            voiceOn(data << 16);
-            break;
+            return;
+            
+        /* unused */
+        case 0x1d80: // Volume L
+        case 0x1d82: // Volume R
+        case 0x1d84: // Reverb Volume L
+        case 0x1d86: // Reverb Volume R
+        case 0x1d8c: // Sound Off 1
+        case 0x1d8e: // Sound Off 2
+        case 0x1d90: // FM Mode On 1
+        case 0x1d92: // FM Mode On 2
+        case 0x1d94: // Noise Mode On 1
+        case 0x1d96: // Noise Mode On 2
+        case 0x1d98: // Reverb Mode On 1
+        case 0x1d9a: // Reverb Mode On 2
+        case 0x1d9c: // Mute 1
+        case 0x1d9e: // Mute 2
+        case 0x1daa: // Control
+        case 0x1da2: // Reverb Address
+        case 0x1dac: // ?
+        case 0x1db0: // CD Volume L
+        case 0x1db2: // CD Volume R
+        case 0x1db4:
+        case 0x1db6:
+            return;
     }
+    
+    printx("/// PSeudo SPU write: $%x <- $%x", addr, data);
 }
 
 uh CstrAudio::read(uw addr) {
+    // Switch to low order bits
     addr = LO_BITS(addr);
 	
-    if (addr >= 0x1c00 && addr < 0x1d80) {
-        return spuAcc(addr);
+    // Channels
+    if (addr >= 0x1c00 && addr <= 0x1d7e) {
+        switch(addr & 0xf) {
+                /* unused */
+            case 0x0:
+            case 0x2:
+            case 0x4:
+            case 0x6:
+            case 0x8:
+            case 0xa:
+            case 0xc:
+            case 0xe:
+                return spuAcc(addr);
+        }
+        
+        printx("/// PSeudo SPU read phase: $%x", (addr & 0xf));
     }
 
+    // HW
 	switch(addr) {
-        case 0x1da6:
+        case 0x1da6: // Transfer Address
             return spuAddr >> 3;
             
-        case 0x1da8:
-            {
-                uh s = spuMem[spuAddr >> 1];
-                spuAddr += 2;
-                spuAddr &= 0x7ffff;
-                return s;
-            }
+        /* unused */
+        case 0x1d88: // Sound On 1
+        case 0x1d8a: // Sound On 2
+        case 0x1d8c: // Sound Off 1
+        case 0x1d8e: // Sound Off 2
+        case 0x1d94: // Noise Mode On 1
+        case 0x1d96: // Noise Mode On 2
+        case 0x1d98: // Reverb Mode On 1
+        case 0x1d9a: // Reverb Mode On 2
+        case 0x1d9c: // Voice Status 0 - 15
+        case 0x1daa: // Control
+        case 0x1dac: // ?
+        case 0x1dae: // Status
+        case 0x1db8:
+        case 0x1dba:
+        case 0x1e00:
+        case 0x1e02:
+        case 0x1e04:
+        case 0x1e06:
+        case 0x1e08:
+        case 0x1e0a:
+        case 0x1e0c:
+        case 0x1e0e:
+            return spuAcc(addr);
 	}
-	return spuAcc(addr);
-}
-
-void CstrAudio::VoiceChangeFrequency(voice *chn) {
-	chn->sinc = chn->iRawPitch << 4;
-	
-    if (!chn->sinc)
-        chn->sinc = 1;
+    
+    printx("/// PSeudo SPU read: $%x", addr);
+    return 0;
 }
 
 void CstrAudio::stream() {
@@ -158,14 +222,6 @@ void CstrAudio::stream() {
     chn.bfr[n++] = fa
 
 void CstrAudio::decodeStream() {
-    const sh f[5][2] = {
-        {   0,   0 },
-        {  60,   0 },
-        { 115, -52 },
-        {  98, -55 },
-        { 122, -60 },
-    };
-    
     sh rest;
     sw s_1, s_2, fa;
     
@@ -196,8 +252,10 @@ void CstrAudio::decodeStream() {
                 continue;
             }
             
-            if (chn.iActFreq != chn.iUsedFreq) {
-                VoiceChangeFrequency(&chn);
+            chn.sinc = chn.pitch << 4; // * 16 bits
+            
+            if (chn.sinc == 0) {
+                chn.sinc  = 1;
             }
             
             for (int i = 0; i < SBUF_SIZE; i += 2) {
