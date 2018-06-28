@@ -82,6 +82,12 @@ void CstrAudio::depackVAG(voice *chn) {
                 
             case 6: // Repeat
                 chn->raddr = chn->size;
+                break;
+                
+            default:
+                if (op) {
+                    printf("%d\n", op);
+                }
         }
     }
     
@@ -129,7 +135,6 @@ void CstrAudio::decodeStream() {
                         chn.count = 0;
                         continue;
                     }
-                    //chn.on = false;
                     break;
                 }
             }
@@ -137,8 +142,8 @@ void CstrAudio::decodeStream() {
         
         // Volume Mix
         for (int i = 0; i < SPU_SAMPLE_SIZE; i += 2) {
-            sbuf[i + 0] = +temp[i + 0] / 4;
-            sbuf[i + 1] = -temp[i + 1] / 4;
+            sbuf[i + 0] = MIN(MAX(temp[i + 0] / 2, SHRT_MIN), SHRT_MAX);
+            sbuf[i + 1] = MIN(MAX(temp[i + 1] / 2, SHRT_MIN), SHRT_MAX);
         }
         
         // OpenAL

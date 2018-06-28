@@ -4,7 +4,7 @@ class CstrAudio {
     enum {
         SPU_ALC_BUF_AMOUNT   = 16,
         SPU_CHANNELS         = 24,
-        SPU_CHANNEL_BUF_SIZE = 2 * USHRT_MAX,
+        SPU_CHANNEL_BUF_SIZE = 1 * (USHRT_MAX + 1), // hs-001
         SPU_MAX_VOLUME       = 0x3fff,
         SPU_SAMPLE_RATE      = 44100,
         SPU_SAMPLE_SIZE      = 256,
@@ -16,8 +16,8 @@ class CstrAudio {
     
     struct voice {
         sh bfr[SPU_CHANNEL_BUF_SIZE];
-        sh volumeL, volumeR;
         sw count, freq, pos, raddr, saddr, size;
+        sh volumeL, volumeR;
     } spuVoices[SPU_CHANNELS];
     
     uh spuMem[1024 * 256];
