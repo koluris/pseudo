@@ -9,22 +9,18 @@ class CstrAudio {
         ALC_BUF_AMOUNT =     16,
     };
     
-    struct {
-        sw temp[SBUF_SIZE * 2];
-        sh  fin[SBUF_SIZE * 2];
-    } sbuf;
-    
     struct voice {
         bool on, create;
         sw pos, volumeL, volumeR;
         
-        sw iSBPos, sinc, SB[32], iActFreq, iUsedFreq, bIgnoreLoop, iRawPitch, s_1, s_2;
-        ub *pStart, *pCurr, *pLoop;
+        sw sbpos, sinc, bfr[32], iActFreq, iUsedFreq, bIgnoreLoop, iRawPitch, s_1, s_2;
+        ub *saddr, *p, *raddr;
     } spuVoices[MAX_CHANNELS + 1];
     
     uh spuMem[256 * 1024];
     ub *spuMemC;
     uw spuAddr;
+    sh sbuf[SBUF_SIZE * 2];
     
     void voiceOn (uw);
     void setPitch(int, int);
@@ -59,7 +55,7 @@ public:
         alGenBuffers(ALC_BUF_AMOUNT, bfr);
         
         for (auto &item : bfr) {
-            alBufferData(item, AL_FORMAT_STEREO16, sbuf.fin, SBUF_SIZE*2*2, SAMPLE_RATE);
+            alBufferData(item, AL_FORMAT_STEREO16, sbuf, SBUF_SIZE*2*2, SAMPLE_RATE);
         }
         
         alSourceQueueBuffers(source, ALC_BUF_AMOUNT, bfr);
