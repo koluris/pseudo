@@ -199,7 +199,7 @@ VRAM_END:
         modeDMA = GPU_DMA_NONE;
     }
     
-    return count >> 1;
+    return (count + (count % 2 ? 1 : 0)) >> 1;
 }
 
 void CstrGraphics::dataWrite(uw *ptr, sw size) {
