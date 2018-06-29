@@ -42,12 +42,12 @@ void CstrGraphics::refresh() {
     ret.status ^= GPU_STAT_ODDLINES;
     
     // FPS throttle
-//    double now = mach_absolute_time() / 1000.0;
-//    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
-//    
-//    if (then > now) {
-//        usleep(then - now);
-//    }
+    double now = mach_absolute_time() / 1000.0;
+    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
+    
+    if (then > now) {
+        usleep(then - now);
+    }
     
     // Draw
     if (ret.disabled) {
