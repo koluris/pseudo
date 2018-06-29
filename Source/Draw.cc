@@ -224,6 +224,12 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 GLStart(GL_TRIANGLE_STRIP);
                 for (int i = 0; i < points; i++) {
+                    if (setup->texture && setup->exposure) {
+                        hue[i]->r = 127;
+                        hue[i]->c = 127;
+                        hue[i]->b = 127;
+                    }
+                    
                     // Cast offset
                     vx[i]->w += offset.h;
                     vx[i]->h += offset.v;
