@@ -1,6 +1,8 @@
 class CstrDraw {
     enum {
-        COLOR_MAX = 255,
+        COLOR_MAX  = 255,
+        COLOR_HALF = COLOR_MAX >> 1,
+        
         LINE_TERM_CODE = 0x55555555
     };
     

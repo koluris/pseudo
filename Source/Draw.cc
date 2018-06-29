@@ -123,7 +123,7 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     GLID();
     GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
     
-    GLColor4ub(127, 127, 127, 255);
+    GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
     
     GLEnable(GL_TEXTURE_2D);
     GLBindTexture  (GL_TEXTURE_2D, fb16tex);
@@ -225,9 +225,9 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 GLStart(GL_TRIANGLE_STRIP);
                 for (int i = 0; i < points; i++) {
                     if (setup->texture && setup->exposure) {
-                        hue[i]->r = 127;
-                        hue[i]->c = 127;
-                        hue[i]->b = 127;
+                        hue[i]->r = COLOR_HALF;
+                        hue[i]->c = COLOR_HALF;
+                        hue[i]->b = COLOR_HALF;
                     }
                     
                     // Cast offset
