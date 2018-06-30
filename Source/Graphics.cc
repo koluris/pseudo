@@ -55,6 +55,7 @@ void CstrGraphics::refresh() {
     }
     
     if (modeDMA == GPU_DMA_NONE) {
+        bus.interruptSet(CstrBus::INT_VSYNC);
         GLFlush();
     }
 }

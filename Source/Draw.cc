@@ -321,7 +321,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     // Cast offset
                     vx[0]->w += offset.h;
                     vx[0]->h += offset.v;
-                
+                    
                     GLTexCoord2s(tex[0]->u,            tex[0]->v);
                     GLVertex2s  (vx [0]->w,            vx [0]->h);
                     GLTexCoord2s(tex[0]->u + sz[0]->w, tex[0]->v);
