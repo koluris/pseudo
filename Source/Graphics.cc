@@ -41,6 +41,11 @@ double then = 1.0;
 void CstrGraphics::refresh() {
     ret.status ^= GPU_STAT_ODDLINES;
     
+    if (ret.disabled) {
+        GLClear(GL_COLOR_BUFFER_BIT);
+        GLFlush();
+    }
+    
     // FPS throttle
     double now = mach_absolute_time() / 1000.0;
     then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
@@ -50,14 +55,8 @@ void CstrGraphics::refresh() {
     }
     
     // Draw
-    if (ret.disabled) {
-        GLClear(GL_COLOR_BUFFER_BIT);
-    }
-    
-    if (modeDMA == GPU_DMA_NONE) {
-        bus.interruptSet(CstrBus::INT_VSYNC);
-        GLFlush();
-    }
+    GLFlush();
+    bus.interruptSet(CstrBus::INT_VSYNC);
 }
 
 void CstrGraphics::write(uw addr, uw data) {
