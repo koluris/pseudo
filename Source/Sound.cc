@@ -23,7 +23,7 @@ void CstrAudio::reset() {
     }
 }
 
-sh CstrAudio::setVolume(sh data) {
+sh CstrAudio::setVolume(sh data) { // Sweep mode
     return (data & 0x8000 ? data ^ 0xffff : data) & 0x3fff;
 }
 
