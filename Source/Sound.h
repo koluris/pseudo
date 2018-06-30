@@ -24,11 +24,10 @@ class CstrAudio {
     uw spuAddr;
     sh sbuf[SPU_SAMPLE_SIZE];
     
-    void stream();
-    void depackVAG(voice *);
     sh setVolume(sh);
     void voiceOn (uw);
     void voiceOff(uw);
+    void stream();
     
     // OpenAL
     ALCdevice *device;

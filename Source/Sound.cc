@@ -33,37 +33,58 @@ sh CstrAudio::setVolume(sh data) {
     rest = (rest >> shift) + ((s[0] * f[predict][0] + s[1] * f[predict][1] + 32) >> 6); \
     s[1] = s[0]; \
     s[0] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX); \
-    chn->bfr[chn->size++] = s[0]
+    chn.bfr[chn.size++] = s[0]
 
-void CstrAudio::depackVAG(voice *chn) {
-    ub *p = (ub *)&spuMem[chn->saddr >> 1];
-    
-    static sw s[2] = {
-        0,
-        0,
-    };
-    
-    for(; chn->size < SPU_CHANNEL_BUF_SIZE - 28;) {
-        ub shift   = *p & 0xf;
-        ub predict = *p++ >> 4;
-        ub op      = *p++;
-        
-        for (int i = chn->size, rest; chn->size < i + 28; p++) {
-            audioSet(0x0f, 0xc);
-            audioSet(0xf0, 0x8);
-        }
-        
-        switch(op) {
-            case 3: // End
-            case 7:
-                return;
+void CstrAudio::voiceOn(uw data) {
+    for (int n = 0; n < SPU_CHANNELS; n++) {
+        if (data & (1 << n)) {
+            auto &chn = spuVoices[n];
+            chn.count = 0;
+            chn.pos   = 0;
+            chn.raddr = 0;
+            chn.size  = 0;
+            
+            { // Depack VAG
+                ub *p = (ub *)&spuMem[chn.saddr >> 1];
                 
-            case 6: // Repeat
-                chn->raddr = chn->size;
+                static sw s[2] = {
+                    0,
+                    0,
+                };
+                
+                for(; chn.size < SPU_CHANNEL_BUF_SIZE - 28;) {
+                    ub shift   = *p & 0xf;
+                    ub predict = *p++ >> 4;
+                    ub op      = *p++;
+                    
+                    for (int i = chn.size, rest; chn.size < i + 28; p++) {
+                        audioSet(0x0f, 0xc);
+                        audioSet(0xf0, 0x8);
+                    }
+                    
+                    switch(op) {
+                        case 3: // End
+                        case 7:
+                            redirect NEXT_CHANNEL;
+                            
+                        case 6: // Repeat
+                            chn.raddr = chn.size;
+                    }
+                }
+                
+                printf("/// PSeudo SPU Channel size overflow\n");
+            }
+        }
+        NEXT_CHANNEL: ;
+    }
+}
+
+void CstrAudio::voiceOff(uw data) {
+    for (int n = 0; n < SPU_CHANNELS; n++) {
+        if (data & (1 << n)) {
+            //spuVoices[n].size = 0;
         }
     }
-    
-    printf("/// PSeudo SPU Channel size overflow\n");
 }
 
 void CstrAudio::stream() {
@@ -139,27 +160,6 @@ void CstrAudio::decodeStream() {
         alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE * 2, SPU_SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
         stream();
-    }
-}
-
-void CstrAudio::voiceOn(uw data) {
-    for (int n = 0; n < SPU_CHANNELS; n++) {
-        if (data & (1 << n)) {
-            spuVoices[n].count = 0;
-            spuVoices[n].pos   = 0;
-            spuVoices[n].raddr = 0;
-            spuVoices[n].size  = 0;
-            
-            depackVAG(&spuVoices[n]);
-        }
-    }
-}
-
-void CstrAudio::voiceOff(uw data) {
-    for (int n = 0; n < SPU_CHANNELS; n++) {
-        if (data & (1 << n)) {
-            //spuVoices[n].on = false;
-        }
     }
 }
 
