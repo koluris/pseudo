@@ -404,12 +404,15 @@ void CstrMips::step(bool branched) {
     printx("/// PSeudo $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
 }
 
+#define LAZY_CLOCK \
+    64
+
 void CstrMips::branch(uw addr) {
     // Execute instruction in slot
     step (true);
     setpc(addr);
     
-    if (opcodeCount >= 64) {
+    if (opcodeCount >= LAZY_CLOCK) {
         // Rootcounters, interrupts
         rootc.update();
         bus.interruptsUpdate();
@@ -420,7 +423,7 @@ void CstrMips::branch(uw addr) {
                 exception(0x400, false);
             }
         }
-        opcodeCount %= 64;
+        opcodeCount %= LAZY_CLOCK;
     }
 }
 
