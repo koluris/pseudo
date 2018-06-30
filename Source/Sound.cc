@@ -21,26 +21,10 @@ void CstrAudio::reset() {
     for (auto &item : spuVoices) {
         item = { 0 };
     }
-    //bus.interruptSet(CstrBus::INT_SPU);
 }
 
 sh CstrAudio::setVolume(sh data) {
-    sh ret = data;
-    
-    if (data & 0x8000) {
-        if (data & 0x1000) {
-            ret ^= 0xffff;
-        }
-        ret = ((ret & 0x7f) + 1) / 2;
-        ret += ret / (2 * ((data & 0x2000) ? -1 : 1));
-        ret *= 128;
-    }
-    else {
-        if (data & 0x4000) {
-            ret = 0x3fff - (data & 0x3fff);
-        }
-    }
-    return ret & 0x3fff;
+    return (data & 0x8000 ? data ^ 0xffff : data) & 0x3fff;
 }
 
 #define audioSet(a, b) \
