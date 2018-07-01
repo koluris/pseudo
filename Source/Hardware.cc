@@ -128,6 +128,7 @@ uh CstrHardware::read16(uw addr) {
         case 0x1014: // ?
         case 0x104a: // SIO Control
         case 0x104e: // SIO Baud
+        case 0x1054: // SIO Status
         case 0x1070: // iStatus
         case 0x1074: // iMask
             return accessMem(mem.hwr, uh);
