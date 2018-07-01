@@ -43,19 +43,23 @@ void CstrGraphics::refresh() {
     
     if (ret.disabled) {
         GLClear(GL_COLOR_BUFFER_BIT);
-        GLFlush();
+#ifdef MAC_OS_X
+        [[app.openGLView openGLContext] flushBuffer];
+#endif
     }
     
     // FPS throttle
-    double now = mach_absolute_time() / 1000.0;
-    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
-    
-    if (then > now) {
-        usleep(then - now);
-    }
+//    double now = mach_absolute_time() / 1000.0;
+//    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
+//
+//    if (then > now) {
+//        usleep(then - now);
+//    }
     
     // Draw
-    GLFlush();
+#ifdef MAC_OS_X
+    [[app.openGLView openGLContext] flushBuffer];
+#endif
     bus.interruptSet(CstrBus::INT_VSYNC);
 }
 

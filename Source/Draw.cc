@@ -38,7 +38,7 @@ void CstrDraw::reset() {
     resize(window.h, window.v);
     GLClearColor(0, 0, 0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
-    GLFlush();
+    [[app.openGLView openGLContext] flushBuffer];
     
     // 16-bit texture
     cache.createTexture(&fb16tex, FRAME_W, FRAME_H);

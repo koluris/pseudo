@@ -7,6 +7,12 @@
     self = [super initWithCoder:coder];
     
     if (self) {
+        NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:(NSOpenGLPixelFormatAttribute[]) {
+            NSOpenGLPFADoubleBuffer, 76, 0
+        }];
+        
+        self = [super initWithFrame:self.frame pixelFormat:pixelFormat];
+        
         [self registerForDraggedTypes:[NSArray arrayWithObjects: NSFilenamesPboardType, nil]];
     }
     return self;
