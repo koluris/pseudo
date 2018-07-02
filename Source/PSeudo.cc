@@ -99,6 +99,7 @@ void CstrPSeudo::console(uw *r, uw addr) {
             char put = toupper(r[4] & 0xff);
 #ifdef APPLE_MACOS
             [app consolePrint:[NSChars charsWithFormat:@"%c", put]];
+#elif  APPLE_IOS
 #endif
         }
     }

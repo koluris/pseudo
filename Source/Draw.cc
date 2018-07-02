@@ -117,8 +117,11 @@ void CstrDraw::setDrawArea(int plane, uw data) {
         e2[3] = -e2[3];
     }
     
+#ifdef APPLE_MACOS
     GLClipPlane(GL_CLIP_PLANE0 + (plane + 0), e1);
     GLClipPlane(GL_CLIP_PLANE0 + (plane + 1), e2);
+#elif  APPLE_IOS
+#endif
 }
 
 void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
