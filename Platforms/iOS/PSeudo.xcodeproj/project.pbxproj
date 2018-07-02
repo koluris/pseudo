@@ -21,6 +21,9 @@
 		4225F70220EA58D000152D47 /* Sound.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4225F6F220EA58D000152D47 /* Sound.cc */; };
 		4225F70320EA58D000152D47 /* Graphics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4225F6F420EA58D000152D47 /* Graphics.cc */; };
 		42A67DC220EA571600E3BD88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42A67DC120EA571600E3BD88 /* Assets.xcassets */; };
+		42FE052A20EA7080003D88E4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FE052920EA707F003D88E4 /* UIKit.framework */; };
+		42FE052C20EA7090003D88E4 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FE052B20EA7090003D88E4 /* OpenAL.framework */; };
+		42FE052E20EA7096003D88E4 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FE052D20EA7096003D88E4 /* OpenGLES.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +57,9 @@
 		42A67DC120EA571600E3BD88 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		42A67DC620EA571600E3BD88 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		42A67DCE20EA57A900E3BD88 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
+		42FE052920EA707F003D88E4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		42FE052B20EA7090003D88E4 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		42FE052D20EA7096003D88E4 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +67,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42FE052C20EA7090003D88E4 /* OpenAL.framework in Frameworks */,
+				42FE052E20EA7096003D88E4 /* OpenGLES.framework in Frameworks */,
+				42FE052A20EA7080003D88E4 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,6 +210,7 @@
 				4225F6DF20EA58D000152D47 /* Source */,
 				42A67DD120EA57FA00E3BD88 /* GUI */,
 				42A67DD020EA57E600E3BD88 /* Resources */,
+				42FE052820EA707F003D88E4 /* Frameworks */,
 				42A67DB620EA571500E3BD88 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -238,6 +248,16 @@
 				4225F6DB20EA589D00152D47 /* Main.h */,
 			);
 			name = Main;
+			sourceTree = "<group>";
+		};
+		42FE052820EA707F003D88E4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				42FE052B20EA7090003D88E4 /* OpenAL.framework */,
+				42FE052D20EA7096003D88E4 /* OpenGLES.framework */,
+				42FE052920EA707F003D88E4 /* UIKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -449,10 +469,12 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = "-Wno-c++11-narrowing";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dkoluris.pseudo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -468,10 +490,12 @@
 				DEVELOPMENT_TEAM = "";
 				GCC_PREPROCESSOR_DEFINITIONS = APPLE_IOS;
 				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_CFLAGS = "-Wno-c++11-narrowing";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dkoluris.pseudo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

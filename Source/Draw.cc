@@ -65,7 +65,12 @@ void CstrDraw::resize(sh w, sh h) {
 #endif
         GLMatrixMode(GL_PROJECTION);
         GLID();
-        GLOrtho(0, w, h, 0, 1, -1);
+        
+#ifdef APPLE_MACOS
+        GLOrtho (0, w, h, 0, 1, -1);
+#elif  APPLE_IOS
+        GLOrthof(0, w, h, 0, 1, -1);
+#endif
         
         // Make current
         res.h = w;

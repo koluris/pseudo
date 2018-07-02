@@ -1,8 +1,8 @@
 // Standard C libraries
-#import <ctype.h>
-#import <stdio.h>
 #import <stdlib.h>
+#import <stdio.h>
 #import <string.h>
+#import <limits.h>
 #import <mach/mach_time.h>
 
 #ifdef APPLE_MACOS
@@ -11,10 +11,12 @@
     #import <OpenAL/alc.h>
 
     #import "../Platforms/macOS/Global.h"
-#elif APPLE_IOS
+#elif  APPLE_IOS
     #import <OpenGLES/ES1/gl.h>
     #import <OpenAL/al.h>
     #import <OpenAL/alc.h>
+
+    #import "../Platforms/iOS/Global.h"
 #endif
 
 //#import <AL/al.h>
@@ -31,11 +33,11 @@ typedef int32_t sw; // word
 typedef int16_t sh; // halfword
 typedef int8_t  sb; // bite
 
-// Defines
-#define memcp       memcpy
-#define redirect    goto
+// Basic
+#define memcp               memcpy
+#define redirect            goto
 
-// OpenGL
+// OpenGL 1.1
 #define GLBindTexture       glBindTexture
 #define GLBlendFunc         glBlendFunc
 #define GLClear             glClear
@@ -65,8 +67,12 @@ typedef int8_t  sb; // bite
 #define GLVertex2s          glVertex2s
 #define GLViewport          glViewport
 
+// OpenGLES 1.0
+#define GLClipPlanef        glClipPlanef
+#define GLOrthof            glOrthof
+
 // OpenAL
-#define alSourceStream  alSourcePlay
+#define alSourceStream      alSourcePlay
 
 // User imports
 #import "Bus.h"
