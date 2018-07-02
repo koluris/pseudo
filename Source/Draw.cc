@@ -1,3 +1,5 @@
+/* Base structure and authentic idea PSeudo (Credits: Dennis Koluris) */
+
 #import "Global.h"
 
 
@@ -38,27 +40,27 @@ void CstrDraw::reset() {
     resize(window.h, window.v);
     GLClearColor(0, 0, 0, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
-    [[app.openGLView openGLContext] flushBuffer];
+    swapBuffers();
     
     // 16-bit texture
     cache.createTexture(&fb16tex, FRAME_W, FRAME_H);
 }
 
-#define SHOW_VRAM \
-    0
-
-#define KEEP_ASPECT_RATIO \
-    0
+void CstrDraw::swapBuffers() {
+#ifdef MAC_OS_X
+    [[app.openGLView openGLContext] flushBuffer];
+#endif
+}
 
 void CstrDraw::resize(sh w, sh h) {
-#if SHOW_VRAM
+#if 0
     w = FRAME_W;
     h = FRAME_H;
 #endif
     
     // Not current
     if (res.h != w || res.v != h) {
-#if KEEP_ASPECT_RATIO
+#if 0
         GLViewport((window.h - w) / 2, (window.v - h) / 2, w, h); // Keep PSX aspect ratio
 #endif
         GLMatrixMode(GL_PROJECTION);

@@ -1,3 +1,5 @@
+/* Base structure taken from PCSX open source emulator, and improved upon (Credits: Linuzappz, Shadow) */
+
 #import "Global.h"
 
 

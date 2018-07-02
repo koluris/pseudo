@@ -8,7 +8,7 @@
     
     if (self) {
         NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:(NSOpenGLPixelFormatAttribute[]) {
-            NSOpenGLPFADoubleBuffer, 76, 0
+            NSOpenGLPFADoubleBuffer, 76, 0 /* Preserve draw buffer */
         }];
         
         self = [super initWithFrame:self.frame pixelFormat:pixelFormat];

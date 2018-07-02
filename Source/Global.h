@@ -29,7 +29,6 @@ typedef int16_t sh; // halfword
 typedef int8_t  sb; // bite
 
 // Defines
-#define TYPEDEF     typedef
 #define memcp       memcpy
 #define redirect    goto
 
@@ -66,8 +65,6 @@ typedef int8_t  sb; // bite
 // OpenAL
 #define alSourceStream  alSourcePlay
 
-#define MYSPU
-
 // User imports
 #import "Bus.h"
 #import "Cache.h"
@@ -79,12 +76,7 @@ typedef int8_t  sb; // bite
 #import "PSeudo.h"
 #import "R3000A.h"
 #import "SIO.h"
-
-#ifndef MYSPU
-    #import "SPU.h"
-#else
-    #import "Sound.h"
-#endif
+#import "Sound.h"
 
 //union {
 //    struct {

@@ -1,3 +1,5 @@
+/* Base structure taken from PCSX-df open source emulator, and improved upon (Credits: Stephen Chao) */
+
 #import "Global.h"
 
 
@@ -43,23 +45,21 @@ void CstrGraphics::refresh() {
     
     if (ret.disabled) {
         GLClear(GL_COLOR_BUFFER_BIT);
-#ifdef MAC_OS_X
-        [[app.openGLView openGLContext] flushBuffer];
-#endif
+        draw.swapBuffers();
     }
     
     // FPS throttle
-//    double now = mach_absolute_time() / 1000.0;
-//    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
-//
-//    if (then > now) {
-//        usleep(then - now);
-//    }
+#if 0
+    double now = mach_absolute_time() / 1000.0;
+    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
+    
+    if (then > now) {
+        usleep(then - now);
+    }
+#endif
     
     // Draw
-#ifdef MAC_OS_X
-    [[app.openGLView openGLContext] flushBuffer];
-#endif
+    draw.swapBuffers();
     bus.interruptSet(CstrBus::INT_VSYNC);
 }
 

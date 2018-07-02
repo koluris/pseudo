@@ -1,7 +1,7 @@
+/* Base structure taken from SOPE open source emulator, and improved upon (Credits: SaD, Linuzappz) */
+
 #import "Global.h"
 
-
-#ifdef MYSPU
 
 #define spuAcc(addr) \
     *(uh *)&mem.hwr.ptr[addr]
@@ -344,5 +344,3 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
     
     printx("/// PSeudo SPU DMA: $%x", dma->chcr);
 }
-
-#endif

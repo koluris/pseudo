@@ -1,5 +1,3 @@
-#ifdef MYSPU
-
 class CstrAudio {
     enum {
         SPU_ALC_BUF_AMOUNT   = 16,
@@ -83,5 +81,3 @@ public:
 };
 
 extern CstrAudio audio;
-
-#endif

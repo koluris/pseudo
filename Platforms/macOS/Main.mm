@@ -133,10 +133,12 @@
         [[self.openGLView openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
         [[self.openGLView openGLContext] makeCurrentContext];
         
-//        CGLError err = CGLEnable(CGLGetCurrentContext(), kCGLCEMPEngine);
-//        if (err != kCGLNoError) {
-//            printf("GL Multithread error: %i\n", err);
-//        }
+#if 0
+        CGLError err = CGLEnable(CGLGetCurrentContext(), kCGLCEMPEnGine);
+        if (err != kCGLNoError) {
+            printf("GL Multithread error: %i\n", err);
+        }
+#endif
         
         cpu.run();
     }]];
