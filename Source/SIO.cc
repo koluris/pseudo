@@ -43,7 +43,7 @@ void CstrSerial::reset() {
 }
 
 void CstrSerial::padListener(int code, bool pushed) {
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
     if (code ==  19) { // Select
         btnCheck(PAD_BTN_SELECT);
     }

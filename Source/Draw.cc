@@ -47,7 +47,7 @@ void CstrDraw::reset() {
 }
 
 void CstrDraw::swapBuffers() {
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
     [[app.openGLView openGLContext] flushBuffer];
 #endif
 }

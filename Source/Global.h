@@ -4,18 +4,21 @@
 #import <stdlib.h>
 #import <string.h>
 #import <mach/mach_time.h>
-#import <OpenGL/gl.h>
 
-// Apple macOS
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
+    #import <OpenGL/gl.h>
     #import <OpenAL/al.h>
     #import <OpenAL/alc.h>
 
     #import "../Platforms/macOS/Global.h"
-#else
-    #import <AL/al.h>
-    #import <AL/alc.h>
+#elif APPLE_IOS
+    #import <OpenGLES/ES1/gl.h>
+    #import <OpenAL/al.h>
+    #import <OpenAL/alc.h>
 #endif
+
+//#import <AL/al.h>
+//#import <AL/alc.h>
 
 // Data
 typedef uint64_t ud; // uns doubleword

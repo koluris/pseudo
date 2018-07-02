@@ -26,14 +26,14 @@ void CstrPSeudo::init(const char *path) {
             reset();
         }
         else { // Incorrect file size
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
 #endif
         }
         
         fclose(fp);
     }
     else { // File not found
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
 #endif
     }
 }
@@ -54,7 +54,7 @@ void CstrPSeudo::reset() {
     ub version[0x1b];
     memcp(version, &mem.rom.ptr[mem.rom.size - 0xc7], sizeof(version));
     
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
     [app consoleClear];
     [app consolePrint:[NSChars charsWithFormat:@"%s\n\nPSeudo™ : Alpha 0.73\n-> reset complete\n", version]];
 #endif
@@ -81,14 +81,14 @@ void CstrPSeudo::executable(const char *path) {
             cpu.base[29] = header.s_addr;
         }
         else { // Incorrect file size
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
 #endif
         }
         
         fclose(fp);
     }
     else { // File not found
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
 #endif
     }
 }
@@ -97,7 +97,7 @@ void CstrPSeudo::console(uw *r, uw addr) {
     if (addr == 0xb0) {
         if (r[9] == 59 || r[9] == 61) {
             char put = toupper(r[4] & 0xff);
-#ifdef MAC_OS_X
+#ifdef APPLE_MACOS
             [app consolePrint:[NSChars charsWithFormat:@"%c", put]];
 #endif
         }
