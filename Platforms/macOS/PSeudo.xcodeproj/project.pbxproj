@@ -70,6 +70,7 @@
 		42EBBCD92062482200824B95 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		42EBBCE32062494200824B95 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		42EDE0F220C2C5B2005CC990 /* Square.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Square.icns; sourceTree = "<group>"; };
+		42F35B0120EC1D1300E73711 /* Dude.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dude.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +165,7 @@
 		429C3EBA2064FDC500915293 /* Mem */ = {
 			isa = PBXGroup;
 			children = (
+				42F35B0020EC1D0700E73711 /* Dude */,
 				429C3EBB206500B500915293 /* Mem.cc */,
 				429C3EBC206500B500915293 /* Mem.h */,
 			);
@@ -290,6 +292,14 @@
 				42EBBCD92062482200824B95 /* Info.plist */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		42F35B0020EC1D0700E73711 /* Dude */ = {
+			isa = PBXGroup;
+			children = (
+				42F35B0120EC1D1300E73711 /* Dude.h */,
+			);
+			name = Dude;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

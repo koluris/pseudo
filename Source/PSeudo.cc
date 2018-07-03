@@ -23,6 +23,7 @@ void CstrPSeudo::init(const char *path) {
     if (fp) {
         if (fileSize(fp) == mem.rom.size) {
             fread(mem.rom.ptr, 1, mem.rom.size, fp);
+            //memcp(mem.rom.ptr, dude, sizeof(dude));
             reset();
         }
         else { // Incorrect file size

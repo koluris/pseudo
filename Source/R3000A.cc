@@ -77,6 +77,18 @@ void CstrMips::bootstrap() {
 //        }
 //    }
 //    printf("%d positions\n", i);
+    
+//    FILE *bios = fopen("/Library/WebServer/Documents/pseudo/Source/Dude.h", "w");
+//    fprintf(bios, "const ub dude[0x80000] = {");
+//
+//    for (uw addr = 0; addr < 0x80000; addr++) {
+//        if (addr % 16 == 0) {
+//            fprintf(bios, "\n\t");
+//        }
+//        fprintf(bios, "0x%02x, ", mem.tst.ptr[addr]);
+//    }
+//    fprintf(bios, "\n};");
+//    fclose(bios);
 }
 
 void CstrMips::run() {
