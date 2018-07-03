@@ -20,16 +20,22 @@ class CstrMem {
 public:
     heap ram, rom, hwr;
     
+    heap tst;
+    
     CstrMem() {
         ram.ptr = new ub[ram.size = 0x200000];
         rom.ptr = new ub[rom.size = 0x80000];
         hwr.ptr = new ub[hwr.size = 0x4000];
+        
+        tst.ptr = new ub[tst.size = 0x80000];
     }
     
     ~CstrMem() {
         delete[] ram.ptr;
         delete[] rom.ptr;
         delete[] hwr.ptr;
+        
+        delete[] tst.ptr;
     }
     
     void reset();

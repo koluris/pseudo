@@ -67,6 +67,16 @@ void CstrMips::bootstrap() {
     while(pc != 0x80030000) {
         step(false);
     }
+    
+//    int i = 0;
+//
+//    for (int addr = 0xbfc00000; addr < 0xbfc00000 + 0x80000; addr += 4) {
+//        if (accessMem(mem.tst, uw) != 0) {
+//            printf("0x%08x / 0x%08x\n", addr, accessMem(mem.tst, uw));
+//            i++;
+//        }
+//    }
+//    printf("%d positions\n", i);
 }
 
 void CstrMips::run() {
@@ -77,6 +87,11 @@ void CstrMips::run() {
 }
 
 void CstrMips::step(bool branched) {
+//    if ((pc >> 20) == 0xbfc) {
+//        uw addr = pc;
+//        accessMem(mem.tst, uw) = accessMem(mem.rom, uw);
+//    }
+    
     uw code = *instCache++; pc += 4;
     base[0] = 0;
     opcodeCount++;

@@ -10,6 +10,8 @@ void CstrMem::reset() {
     memset(ram.ptr, 0, ram.size);
     memset(hwr.ptr, 0, hwr.size);
     
+    memset(tst.ptr, 0, tst.size);
+    
     //bus.interruptSet(CstrBus::INT_SPU);
 }
 

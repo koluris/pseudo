@@ -49,6 +49,8 @@ void CstrDraw::reset() {
 void CstrDraw::swapBuffers() {
 #ifdef APPLE_MACOS
     [[app.openGLView openGLContext] flushBuffer];
+#elif  APPLE_IOS
+    // TODO
 #endif
 }
 
@@ -118,9 +120,11 @@ void CstrDraw::setDrawArea(int plane, uw data) {
     }
     
 #ifdef APPLE_MACOS
-    GLClipPlane(GL_CLIP_PLANE0 + (plane + 0), e1);
-    GLClipPlane(GL_CLIP_PLANE0 + (plane + 1), e2);
+    GLClipPlane (GL_CLIP_PLANE0 + (plane + 0), e1);
+    GLClipPlane (GL_CLIP_PLANE0 + (plane + 1), e2);
 #elif  APPLE_IOS
+    GLClipPlanef(GL_CLIP_PLANE0 + (plane + 0), (float *)e1);
+    GLClipPlanef(GL_CLIP_PLANE0 + (plane + 1), (float *)e2);
 #endif
 }
 
@@ -147,6 +151,7 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
         GLTexCoord2s(W, H); GLVertex2s(X+W, Y+H);
     GLEnd();
 #elif  APPLE_IOS
+    // TODO
 #endif
     
     GLDisable(GL_TEXTURE_2D);
@@ -191,6 +196,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                                 vx[0]->w + sz[0]->w,
                                 vx[0]->h + sz[0]->h);
 #elif  APPLE_IOS
+                        // TODO
 #endif
                         
                         opaqueClipState(true);
@@ -257,6 +263,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 }
                 GLEnd();
 #elif  APPLE_IOS
+                // TODO
 #endif
                 GLDisable(GL_TEXTURE_2D);
             }
@@ -304,6 +311,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 }
                 GLEnd();
 #elif  APPLE_IOS
+                // TODO
 #endif
             }
             return;
@@ -355,6 +363,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     GLVertex2s  (vx [0]->w + sz[0]->w, vx [0]->h + sz[0]->h);
                 GLEnd();
 #elif  APPLE_IOS
+                // TODO
 #endif
                 
                 GLDisable(GL_TEXTURE_2D);
