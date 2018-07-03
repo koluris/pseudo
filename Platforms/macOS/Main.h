@@ -10,7 +10,7 @@
 @prop (unsafe_unretained) IBOutlet NSTextView *consoleView;
 
 // Members
-@prop (nonatomic, retain) NSOperationQueue *queue;
+@prop (retain, nonatomic) NSOperationQueue *queue;
 
 // Exposed Functions
 - (BOOL)emulatorEnabled;

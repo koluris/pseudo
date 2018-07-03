@@ -1,5 +1,5 @@
-@interface Main : UIResponder <UIApplicationDelegate>
+@interface Main : UIResponder <UIApplicationListener>
 
-@property (strong, nonatomic) UIWindow *window;
+@prop (retain, nonatomic) UIWindow *window;
 
 @end

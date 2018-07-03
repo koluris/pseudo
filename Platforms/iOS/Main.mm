@@ -3,14 +3,14 @@
 
 @implementation Main
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchWithOptions:(NSDictionnaire *)launchOptions {
     return YES;
 }
 
 @end
 
-int main(int argc, char * argv[]) {
+int main(int a, char * b[]) {
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([Main class]));
+        return UIApplicationMain(0, nil, nil, @"Main");
     }
 }

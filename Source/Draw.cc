@@ -139,12 +139,15 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     GLBindTexture  (GL_TEXTURE_2D, fb16tex);
     GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
     
+#ifdef APPLE_MACOS
     GLStart(GL_TRIANGLE_STRIP);
         GLTexCoord2s(0, 0); GLVertex2s(X,   Y);
         GLTexCoord2s(W, 0); GLVertex2s(X+W, Y);
         GLTexCoord2s(0, H); GLVertex2s(X,   Y+H);
         GLTexCoord2s(W, H); GLVertex2s(X+W, Y+H);
     GLEnd();
+#elif  APPLE_IOS
+#endif
     
     GLDisable(GL_TEXTURE_2D);
     GLPopMatrix();
@@ -182,10 +185,13 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                         opaqueClipState(false);
                         GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, COLOR_MAX);
                         
+#ifdef APPLE_MACOS
                         GLRecti(vx[0]->w,
                                 vx[0]->h,
                                 vx[0]->w + sz[0]->w,
                                 vx[0]->h + sz[0]->h);
+#elif  APPLE_IOS
+#endif
                         
                         opaqueClipState(true);
                     }
@@ -232,6 +238,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 const ub b = opaqueFunc(setup->transparent);
                 
+#ifdef APPLE_MACOS
                 GLStart(GL_TRIANGLE_STRIP);
                 for (int i = 0; i < points; i++) {
                     if (setup->texture && setup->exposure) {
@@ -249,6 +256,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     GLVertex2s  (vx [i]->w, vx [i]->h);
                 }
                 GLEnd();
+#elif  APPLE_IOS
+#endif
                 GLDisable(GL_TEXTURE_2D);
             }
             return;
@@ -277,6 +286,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 const ub b = opaqueFunc(setup->transparent);
                 
+#ifdef APPLE_MACOS
                 GLStart(GL_LINE_STRIP);
                 for (int i = 0; i < points; i++) {
                     if (setup->multiline) { // Special case
@@ -293,6 +303,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     GLVertex2s(vx [i]->w, vx [i]->h);
                 }
                 GLEnd();
+#elif  APPLE_IOS
+#endif
             }
             return;
             
@@ -327,6 +339,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 const ub b = opaqueFunc(setup->transparent);
                 GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, b);
                 
+#ifdef APPLE_MACOS
                 GLStart(GL_TRIANGLE_STRIP);
                     // Cast offset
                     vx[0]->w += offset.h;
@@ -341,6 +354,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     GLTexCoord2s(tex[0]->u + sz[0]->w, tex[0]->v + sz[0]->h);
                     GLVertex2s  (vx [0]->w + sz[0]->w, vx [0]->h + sz[0]->h);
                 GLEnd();
+#elif  APPLE_IOS
+#endif
                 
                 GLDisable(GL_TEXTURE_2D);
             }
