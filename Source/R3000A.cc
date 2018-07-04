@@ -67,28 +67,6 @@ void CstrMips::bootstrap() {
     while(pc != 0x80030000) {
         step(false);
     }
-    
-//    int i = 0;
-//
-//    for (int addr = 0xbfc00000; addr < 0xbfc00000 + 0x80000; addr += 4) {
-//        if (accessMem(mem.tst, uw) != 0) {
-//            printf("0x%08x / 0x%08x\n", addr, accessMem(mem.tst, uw));
-//            i++;
-//        }
-//    }
-//    printf("%d positions\n", i);
-    
-//    FILE *bios = fopen("/Library/WebServer/Documents/pseudo/Source/Dude.h", "w");
-//    fprintf(bios, "const ub dude[0x80000] = {");
-//
-//    for (uw addr = 0; addr < 0x80000; addr++) {
-//        if (addr % 16 == 0) {
-//            fprintf(bios, "\n\t");
-//        }
-//        fprintf(bios, "0x%02x, ", mem.tst.ptr[addr]);
-//    }
-//    fprintf(bios, "\n};");
-//    fclose(bios);
 }
 
 void CstrMips::run() {
@@ -99,11 +77,6 @@ void CstrMips::run() {
 }
 
 void CstrMips::step(bool branched) {
-//    if ((pc >> 20) == 0xbfc) {
-//        uw addr = pc;
-//        accessMem(mem.tst, uw) = accessMem(mem.rom, uw);
-//    }
-    
     uw code = *instCache++; pc += 4;
     base[0] = 0;
     opcodeCount++;

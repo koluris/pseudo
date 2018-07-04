@@ -18,7 +18,6 @@ class CstrSerial {
     
     uh btnState;
     ub bfr[5], cnt;
-    //bool fireInterrupt;
     
 public:
     void reset();

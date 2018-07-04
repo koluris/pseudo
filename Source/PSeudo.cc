@@ -5,17 +5,6 @@
 
 CstrPSeudo psx;
 
-// Exposed functions
-//
-// psx.init(const char *path)
-// psx.reset()
-// psx.executable(const char *path)
-// draw.setWindowResolution(uh w, uh h)
-
-// Exposed variables
-//
-// psx.suspended
-
 void CstrPSeudo::init(const char *path) {
     FILE *fp = fopen(path, "rb");
     
@@ -23,17 +12,16 @@ void CstrPSeudo::init(const char *path) {
     if (fp) {
         if (fileSize(fp) == mem.rom.size) {
             fread(mem.rom.ptr, 1, mem.rom.size, fp);
-            //memcp(mem.rom.ptr, dude, sizeof(dude));
             reset();
         }
-        else { // Incorrect file size
-            // TODO
+        else {
+            // TODO: Incorrect file size
         }
         
         fclose(fp);
     }
-    else { // File not found
-        // TODO
+    else {
+        // TODO: File not found
     }
 }
 
@@ -81,14 +69,14 @@ void CstrPSeudo::executable(const char *path) {
             cpu.base[28] = header.cp0;
             cpu.base[29] = header.s_addr;
         }
-        else { // Incorrect file size
-            // TODO
+        else {
+            // TODO: Incorrect file size
         }
         
         fclose(fp);
     }
-    else { // File not found
-        // TODO
+    else {
+        // TODO: File not found
     }
 }
 
