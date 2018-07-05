@@ -4,7 +4,7 @@
     exit(0)
 
 // Low order bits
-#define LO_BITS(addr) \
+#define LOW_BITS(addr) \
     (addr & 0xffff)
 
 

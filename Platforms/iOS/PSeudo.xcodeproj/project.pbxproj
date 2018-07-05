@@ -21,6 +21,7 @@
 		4225F70220EA58D000152D47 /* Sound.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4225F6F220EA58D000152D47 /* Sound.cc */; };
 		4225F70320EA58D000152D47 /* Graphics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4225F6F420EA58D000152D47 /* Graphics.cc */; };
 		42A67DC220EA571600E3BD88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42A67DC120EA571600E3BD88 /* Assets.xcassets */; };
+		42BCBD2D20EE720700AC4CB1 /* CD.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42BCBD2B20EE720700AC4CB1 /* CD.cc */; };
 		42FE052A20EA7080003D88E4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FE052920EA707F003D88E4 /* UIKit.framework */; };
 		42FE052C20EA7090003D88E4 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FE052B20EA7090003D88E4 /* OpenAL.framework */; };
 		42FE052E20EA7096003D88E4 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42FE052D20EA7096003D88E4 /* OpenGLES.framework */; };
@@ -57,6 +58,8 @@
 		42A67DC120EA571600E3BD88 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		42A67DC620EA571600E3BD88 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		42A67DCE20EA57A900E3BD88 /* Global.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Global.h; sourceTree = "<group>"; };
+		42BCBD2B20EE720700AC4CB1 /* CD.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = CD.cc; sourceTree = "<group>"; };
+		42BCBD2C20EE720700AC4CB1 /* CD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CD.h; sourceTree = "<group>"; };
 		42FE052920EA707F003D88E4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		42FE052B20EA7090003D88E4 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		42FE052D20EA7096003D88E4 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -80,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				4225F70520EA58E200152D47 /* Bus */,
+				42BCBD2A20EE71F700AC4CB1 /* CD */,
 				4225F70920EA592F00152D47 /* Counters */,
 				4225F70720EA590900152D47 /* Graphics */,
 				4225F70620EA58FC00152D47 /* Hardware */,
@@ -241,6 +245,15 @@
 			name = GUI;
 			sourceTree = "<group>";
 		};
+		42BCBD2A20EE71F700AC4CB1 /* CD */ = {
+			isa = PBXGroup;
+			children = (
+				42BCBD2B20EE720700AC4CB1 /* CD.cc */,
+				42BCBD2C20EE720700AC4CB1 /* CD.h */,
+			);
+			name = CD;
+			sourceTree = "<group>";
+		};
 		42FE052720EA5A1E003D88E4 /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -336,6 +349,7 @@
 				4225F70220EA58D000152D47 /* Sound.cc in Sources */,
 				4225F6FC20EA58D000152D47 /* R3000A.cc in Sources */,
 				4225F70320EA58D000152D47 /* Graphics.cc in Sources */,
+				42BCBD2D20EE720700AC4CB1 /* CD.cc in Sources */,
 				4225F6FD20EA58D000152D47 /* Hardware.cc in Sources */,
 				4225F6FE20EA58D000152D47 /* PSeudo.cc in Sources */,
 				4225F6DC20EA589D00152D47 /* Main.mm in Sources */,

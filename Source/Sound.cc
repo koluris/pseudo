@@ -165,7 +165,7 @@ void CstrAudio::decodeStream() {
 
 void CstrAudio::write(uw addr, uh data) {
     // Switch to low order bits
-    addr = LO_BITS(addr);
+    addr = LOW_BITS(addr);
     
     spuAcc(addr) = data;
     
@@ -265,7 +265,7 @@ void CstrAudio::write(uw addr, uh data) {
 
 uh CstrAudio::read(uw addr) {
     // Switch to low order bits
-    addr = LO_BITS(addr);
+    addr = LOW_BITS(addr);
     
     // Channels
     if (addr >= 0x1c00 && addr <= 0x1d7e) {

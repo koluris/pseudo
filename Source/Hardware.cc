@@ -6,7 +6,7 @@
 CstrHardware io;
 
 void CstrHardware::write32(uw addr, uw data) {
-    switch(LO_BITS(addr)) {
+    switch(LOW_BITS(addr)) {
         case 0x1070: // iStatus
             data32 &= data & mask32;
             return;
@@ -49,11 +49,12 @@ void CstrHardware::write32(uw addr, uw data) {
             accessMem(mem.hwr, uw) = data;
             return;
     }
+    
     printx("/// PSeudo Hardware Write 32: $%x <- $%x", addr, data);
 }
 
 void CstrHardware::write16(uw addr, uh data) {
-    switch(LO_BITS(addr)) {
+    switch(LOW_BITS(addr)) {
         case 0x1070: // iStatus
             data16 &= data & mask16;
             return;
@@ -73,27 +74,28 @@ void CstrHardware::write16(uw addr, uh data) {
             accessMem(mem.hwr, uh) = data;
             return;
     }
+    
     printx("/// PSeudo Hardware Write 16: $%x <- $%x", addr, data);
 }
 
 void CstrHardware::write08(uw addr, ub data) {
-    switch(LO_BITS(addr)) {
-        case 0x1800:
+    switch(LOW_BITS(addr)) {
+        case 0x1800 ... 0x1803: // CD-ROM
             cd.write(addr, data);
             return;
             
         /* unused */
         case 0x1040: // SIO Data
-        //case 0x1800 ... 0x1803: // CD-ROM
         case 0x2041:
             accessMem(mem.hwr, ub) = data;
             return;
     }
+    
     printx("/// PSeudo Hardware Write 08: $%x <- $%x", addr, data);
 }
 
 uw CstrHardware::read32(uw addr) {
-    switch(LO_BITS(addr)) {
+    switch(LOW_BITS(addr)) {
         case 0x1100 ... 0x1110: // Rootcounters
             return rootc.read<uw>(addr);
             
@@ -114,17 +116,17 @@ uw CstrHardware::read32(uw addr) {
         case 0x1824: // MDEC 1
             return accessMem(mem.hwr, uw);
     }
-    printx("/// PSeudo Hardware Read 32: $%x", addr);
     
+    printx("/// PSeudo Hardware Read 32: $%x", addr);
     return 0;
 }
 
 uh CstrHardware::read16(uw addr) {
-    switch(LO_BITS(addr)) {
+    switch(LOW_BITS(addr)) {
         case 0x1044: // SIO Status
             return sio.read16();
             
-        case 0x1110 ... 0x1128: // Rootcounters
+        case 0x1100 ... 0x1128: // Rootcounters
             return rootc.read<uh>(addr);
             
         case 0x1c00 ... 0x1e0e: // Audio
@@ -139,21 +141,20 @@ uh CstrHardware::read16(uw addr) {
         case 0x1074: // iMask
             return accessMem(mem.hwr, uh);
     }
-    printx("/// PSeudo Hardware Read 16: $%x", addr);
     
+    printx("/// PSeudo Hardware Read 16: $%x", addr);
     return 0;
 }
 
 ub CstrHardware::read08(uw addr) {
-    switch(LO_BITS(addr)) {
+    switch(LOW_BITS(addr)) {
         case 0x1040: // SIO Data
             return sio.read08();
             
-        /* unused */
-        //case 0x1800 ... 0x1803: // CD-ROM
-            return accessMem(mem.hwr, ub);
+        case 0x1800 ... 0x1803: // CD-ROM
+            return cd.read(addr);
     }
-    printx("/// PSeudo Hardware Read 08: $%x", addr);
     
+    printx("/// PSeudo Hardware Read 08: $%x", addr);
     return 0;
 }
