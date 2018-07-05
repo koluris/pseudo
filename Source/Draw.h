@@ -37,7 +37,7 @@ class CstrDraw {
     };
     
     struct SPRT {
-        ub             : 1;
+        ub exposure    : 1;
         ub transparent : 1;
         ub texture     : 1;
         ub size        : 2;

@@ -342,6 +342,12 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 if (setup->texture) {
                     GLEnable(GL_TEXTURE_2D);
                     cache.fetchTexture(spriteTP, tex[0]->tp);
+                    
+                    if (setup->exposure) { // This is not in specs?
+                        hue[0]->r = COLOR_HALF;
+                        hue[0]->c = COLOR_HALF;
+                        hue[0]->b = COLOR_HALF;
+                    }
                 }
                 
                 const ub b = opaqueFunc(setup->transparent);
@@ -365,7 +371,6 @@ void CstrDraw::primitive(uw addr, uw *packets) {
 #elif  APPLE_IOS
                 // TODO
 #endif
-                
                 GLDisable(GL_TEXTURE_2D);
             }
             return;
