@@ -144,17 +144,17 @@ void CstrAudio::decodeStream() {
         // OpenAL
         ALint processed;
         alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-
+        
         if (processed >= SPU_ALC_BUF_AMOUNT) {
             // We have to free buffers
             printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
         }
-
+        
         while(--processed < 0) {
             stream();
             alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
         }
-
+        
         ALuint buffer;
         alSourceUnqueueBuffers(source, 1, &buffer);
         alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE * 2, SPU_SAMPLE_RATE);

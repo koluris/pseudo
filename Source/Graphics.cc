@@ -117,7 +117,7 @@ void CstrGraphics::write(uw addr, uw data) {
                                 //printf("2 %d / %d\n", w, h);
                             }
                             else {
-                                vdiff = vdiff == 226 ? 240 : vdiff; // pdx-59.psx
+                                vdiff = vdiff == 226 ? 240 : vdiff; // paradox-059
                                 draw.resize(w, vpos ? vpos : vdiff);
                                 //printf("3 %d / %d\n", w, (vpos ? vpos : vdiff));
                             }

@@ -74,6 +74,7 @@ typedef int8_t  sb; // bite
 // User imports
 #import "Bus.h"
 #import "Cache.h"
+#import "CD.h"
 #import "Counters.h"
 #import "Draw.h"
 #import "Graphics.h"

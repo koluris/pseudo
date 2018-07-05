@@ -78,9 +78,13 @@ void CstrHardware::write16(uw addr, uh data) {
 
 void CstrHardware::write08(uw addr, ub data) {
     switch(LO_BITS(addr)) {
+        case 0x1800:
+            cd.write(addr, data);
+            return;
+            
         /* unused */
         case 0x1040: // SIO Data
-        case 0x1800 ... 0x1803: // CD-ROM
+        //case 0x1800 ... 0x1803: // CD-ROM
         case 0x2041:
             accessMem(mem.hwr, ub) = data;
             return;
@@ -146,7 +150,7 @@ ub CstrHardware::read08(uw addr) {
             return sio.read08();
             
         /* unused */
-        case 0x1800 ... 0x1803: // CD-ROM
+        //case 0x1800 ... 0x1803: // CD-ROM
             return accessMem(mem.hwr, ub);
     }
     printx("/// PSeudo Hardware Read 08: $%x", addr);
