@@ -46,15 +46,16 @@ void CstrCD::write(uw addr, ub data) {
             return;
             
         case 2:
-            if (data == 7 && order == 2) {
-                res.ok    = true;
-                param.ptr = 0;
-                order     = 0;
-                status    = 0;
-                ctrl     &= ~3; // 0
-                return;
+            if (data == 7) {
+                if (order == 2) {
+                    res.ok    = true;
+                    param.ptr = 0;
+                    order     = 0;
+                    status    = 0;
+                    ctrl      = 0;
+                    return;
+                }
             }
-            
             order = 0;
             
             if (param.ptr < 8) {
@@ -63,17 +64,14 @@ void CstrCD::write(uw addr, ub data) {
             return;
             
         case 3:
-            if (data == 7 && order == 1) {
-                order = 2;
-            }
-            else {
-                order = 0;
-            }
-            
-            if (data == 7 && res.ok) {
-                res.ptr  = 0;
-                res.size = 0;
-                status   = 0;
+            if (data == 7) {
+                order = (order == 1) ? 2 : 0;
+                
+                if (res.ok) {
+                    res.ptr  = 0;
+                    res.size = 0;
+                    status   = 0;
+                }
             }
             return;
     }
@@ -88,10 +86,10 @@ ub CstrCD::read(uw addr) {
                 int ret = ctrl;
                 
                 if (res.ok && res.size) {
-                    ret |= 0x20;
+                    ret |=  (0x20);
                 }
                 else {
-                    ret &= ~0x20;
+                    ret &= ~(0x20);
                 }
                 
                 return ret | 0x18;
