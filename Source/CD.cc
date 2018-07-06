@@ -83,7 +83,7 @@ ub CstrCD::read(uw addr) {
     switch(addr & 0xf) {
         case 0:
             {
-                int ret = ctrl;
+                ub ret = ctrl;
                 
                 if (res.ok && res.size) {
                     ret |=  (0x20);
@@ -97,7 +97,7 @@ ub CstrCD::read(uw addr) {
             
         case 1:
             {
-                int ret = 0;
+                ub ret = 0;
                 
                 if (res.size) {
                     ret = res.data[res.ptr++];
