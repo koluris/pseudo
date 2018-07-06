@@ -1,6 +1,6 @@
 #import "Global.h"
 
-
+/*
 CstrCD cd;
 
 void CstrCD::reset() {
@@ -114,6 +114,112 @@ ub CstrCD::read(uw addr) {
             
         case 3:
             return status;
+    }
+    
+    printx("/// PSeudo CD read: %d", (addr & 0xf));
+    return 0;
+}*/
+
+CstrCD cd;
+
+void CstrCD::reset() {
+    ebus = { 0 };
+    interrupt = { 0 };
+    interrupt.status = 0xe0;
+    
+    check  = CD_CTRL_PH | CD_CTRL_NP;
+    status = CD_STAT_STANDBY;
+    kind   = CD_CMD_TYPE_BLOCKING;
+}
+
+void CstrCD::exec(ub data) {
+    switch(data) {
+        case 1: // nop
+            ebus.res[0] = &status;
+            kind = CD_CMD_TYPE_BLOCKING;
+            break;
+            
+        default:
+            printx("/// PSeudo CD exec: %d", data);
+            break;
+    }
+    
+    bus.interruptSet(CstrBus::INT_CD); // ?
+    // SET_MAIN(cdrom);
+    // blockEnd = 0;
+}
+
+void CstrCD::write(uw addr, ub data) {
+    switch(addr & 0xf) {
+        case 0:
+            switch(data) {
+                case 0:
+                    check &= ~(CD_CTRL_MODE_1 | CD_CTRL_MODE_0);
+                    return;
+                    
+                case 1:
+                    check &= ~(CD_CTRL_MODE_1);
+                    check |=  (CD_CTRL_MODE_0);
+                    return;
+            }
+            
+            printx("/// PSeudo CD write 0: %d", data);
+            return;
+            
+        case 1:
+            switch(check & 0x03) {
+                case 0:
+                    if (!interrupt.queued) {
+                        if ((interrupt.status & 0x7) || (check & CD_CTRL_BUSY)) {
+                            printx("/// PSeudo CD write %d (interrupt.status & 0x7) || (check & CD_CTRL_BUSY)", 1);
+                        }
+                    }
+                    else {
+                        printx("/// PSeudo CD write %d !interrupt.queued case 2", 1);
+                    }
+                    
+                    exec(data);
+                    return;
+            }
+            
+            printx("/// PSeudo CD write 1: %d", (check & 0x03));
+            return;
+            
+        case 3:
+            switch(check & 0x03) {
+                case 0:
+                    switch(data) {
+                        case 0:
+                            return;
+                    }
+                    
+                    printx("/// PSeudo CD write 3, 0: 0x%x", data);
+                    return;
+            }
+            
+            printx("/// PSeudo CD write 3: %d", (check & 0x03));
+            return;
+    }
+    
+    printx("/// PSeudo CD write: %d <- 0x%x", (addr & 0xf), data);
+}
+
+ub CstrCD::read(uw addr) {
+    switch(addr & 0xf) {
+        case 0:
+            return check;
+            
+        case 3:
+            switch(check & 0x03) {
+                case 0:
+                    return 0xff;
+                    
+                case 1:
+                    return interrupt.status;
+            }
+            
+            printx("/// PSeudo CD read 3: %d", (check & 0x03));
+            return 0;
     }
     
     printx("/// PSeudo CD read: %d", (addr & 0xf));
