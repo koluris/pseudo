@@ -1,16 +1,10 @@
 class CstrCD {
-    ub stat;
-    int order;
-    bool occupied;
+    struct base {
+        ub ok, ptr, size, data[8];
+    };
     
-    struct {
-        bool ok;
-        ub p, c, data[8];
-    } res;
-    
-    struct {
-        ub p, c, data[8];
-    } param;
+    ub ctrl, status, order;
+    base res, param;
     
 public:
     void reset();

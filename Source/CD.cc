@@ -1,30 +1,26 @@
 #import "Global.h"
 
 
-#define cdrAcc(addr) \
-    mem.hwr.ptr[0x1800 | addr]
-
-
 CstrCD cd;
 
 void CstrCD::reset() {
     res   = { 0 };
     param = { 0 };
     
-    stat     = 0;
-    order    = 0;
-    occupied = false;
+    ctrl   = 0;
+    status = 0;
+    order  = 0;
 }
 
 void CstrCD::write(uw addr, ub data) {
     switch(addr & 0xf) {
         case 0:
             if (!data) {
-                param.p = 0;
-                param.c = 0;
-                res.ok  = false;
+                res.ok    = false;
+                param.ptr = 0;
             }
-            else if (data & 1) {
+            
+            if (data & 1) {
                 res.ok = true;
                 
                 if (data == 1) {
@@ -34,70 +30,39 @@ void CstrCD::write(uw addr, ub data) {
             return;
             
         case 1:
-            stat = 2;
+            status = 2;
             
             switch(data) {
                 case 1: // nop
-                    res.ok      = true;
-                    res.p       = 0;
-                    res.c       = 1;
-                    res.data[0] = 0x02;
-                    stat        = 2;
-                    occupied    = true;
-                    break;
-                    
-                case 10: // init
-                    //mode      = 0;
-                    res.ok      = true;
-                    res.p       = 0;
-                    res.c       = 1;
-                    res.data[0] = 0x22;
-                    stat        = 2;
-                    occupied    = false;
-                    break;
-                    
-                case 12: // demute
-                    res.ok      = true;
-                    res.p       = 0;
-                    res.c       = 1;
-                    res.data[0] = 0x02;
-                    stat        = 2;
-                    occupied    = false;
-                    break;
-                    
-                case 128: // ?
-                    stat = 2;
-                    break;
-                    
-                default:
-                    printx("/// PSeudo CD write 1: %d", data);
+                    status      = 3;
+                    res.data[0] = status;
+                    res.size    = 1;
                     break;
             }
             
+            res.ok  = true;
+            res.ptr = 0;
             bus.interruptSet(CstrBus::INT_CD);
             return;
-
-        case 2: // 0x80
+            
+        case 2:
             if (data == 7 && order == 2) {
-                res.ok  = false;
-                param.p = 0;
-                param.c = 0;
-                order   = 0;
-                stat    = 0;
-                mem.hwr.ptr[0x1800] = 0;
+                res.ok    = true;
+                param.ptr = 0;
+                order     = 0;
+                status    = 0;
+                ctrl     &= ~3; // 0
                 return;
             }
             
             order = 0;
-            param.data[param.p++] = data;
-            param.c++;
             
-            if (param.p > 7) {
-                printx("/// PSeudo CD write 2 param.p > %d", 7);
+            if (param.ptr < 8) {
+                param.data[param.ptr++] = data;
             }
             return;
-
-        case 3: // 0x00
+            
+        case 3:
             if (data == 7 && order == 1) {
                 order = 2;
             }
@@ -106,8 +71,9 @@ void CstrCD::write(uw addr, ub data) {
             }
             
             if (data == 7 && res.ok) {
-                res.c = 0;
-                stat  = 0;
+                res.ptr  = 0;
+                res.size = 0;
+                status   = 0;
             }
             return;
     }
@@ -118,16 +84,38 @@ void CstrCD::write(uw addr, ub data) {
 ub CstrCD::read(uw addr) {
     switch(addr & 0xf) {
         case 0:
-            if (occupied) {
-                cdrAcc(0) |= 0x40;
+            {
+                int ret = ctrl;
+                
+                if (res.ok && res.size) {
+                    ret |= 0x20;
+                }
+                else {
+                    ret &= ~0x20;
+                }
+                
+                return ret | 0x18;
             }
-            else {
-                cdrAcc(0) &= 0xbf;
+            
+        case 1:
+            {
+                int ret = 0;
+                
+                if (res.size) {
+                    ret = res.data[res.ptr++];
+                    
+                    if (res.ptr >= res.size) {
+                        res.ok   = false;
+                        res.ptr  = 0;
+                        res.size = 0;
+                    }
+                }
+                
+                return ret;
             }
-            return cdrAcc(0) | 0x18;
             
         case 3:
-            return cdrAcc(3) = stat;
+            return status;
     }
     
     printx("/// PSeudo CD read: %d", (addr & 0xf));
