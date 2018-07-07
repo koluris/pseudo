@@ -1,14 +1,16 @@
 #import "Global.h"
 
-/*
+
 CstrCD cd;
 
 void CstrCD::reset() {
     res   = { 0 };
     param = { 0 };
     
-    ctrl   = 0;
+    check  = 0;
+    mode   = 0;
     status = 0;
+    state  = 0;
     order  = 0;
 }
 
@@ -33,10 +35,67 @@ void CstrCD::write(uw addr, ub data) {
             status = 2;
             
             switch(data) {
-                case 1: // nop
-                    status      = 3;
-                    res.data[0] = status;
+                case  1: // Nop
+                    res.data[0] = state;
                     res.size    = 1;
+                    status      = 3;
+                    break;
+                    
+                case  2: // TODO
+                    break;
+                    
+                case 10: // Init
+                    res.data[0] = state = (state | CD_STAT_STANDBY) & ~(CD_STAT_PLAY);
+                    res.size    = 1;
+                    status      = 2;
+                    mode        = 0;
+                    break;
+                    
+                case 12: // Demute
+                    res.data[0] = state;
+                    res.size    = 1;
+                    status      = 2;
+                    break;
+                    
+                case 14: // TODO
+                    break;
+                    
+                case 25: // Test
+                    state |= CD_STAT_STANDBY;
+                    
+                    switch(param.data[0]) {
+                        case 0x20:
+                            res.data[0] = 0x98;
+                            res.data[1] = 0x06;
+                            res.data[2] = 0x10;
+                            res.data[3] = 0xc3;
+                            break;
+                            
+                        default:
+                            printx("/// PSeudo CD CMD Test: 0x%x", param.data[0]);
+                            break;
+                    }
+                    
+                    res.size = 8;
+                    status   = 3;
+                    break;
+                    
+                case 26: // Check ID
+                    res.data[0] = 0x00; // 0x08 insert PSX CD-ROM
+                    res.data[1] = 0x80; // 0x80 into BIOS
+                    res.data[2] = 0x00;
+                    res.data[3] = 0x00;
+                    
+                    //*(uw *)(res.data + 4) = SCExID;
+                    
+                    res.size = 8;
+                    status   = 2;
+                    break;
+                    
+                default:
+                    if (data != 128) {
+                        printx("/// PSeudo CD CMD: %d", data);
+                    }
                     break;
             }
             
@@ -50,9 +109,9 @@ void CstrCD::write(uw addr, ub data) {
                 if (order == 2) {
                     res.ok    = true;
                     param.ptr = 0;
-                    order     = 0;
+                    check     = 0;
                     status    = 0;
-                    ctrl      = 0;
+                    order     = 0;
                     return;
                 }
             }
@@ -80,37 +139,28 @@ void CstrCD::write(uw addr, ub data) {
 }
 
 ub CstrCD::read(uw addr) {
+    ub ret = 0;
+    
     switch(addr & 0xf) {
         case 0:
-            {
-                ub ret = ctrl;
-                
-                if (res.ok && res.size) {
-                    ret |=  (0x20);
-                }
-                else {
-                    ret &= ~(0x20);
-                }
-                
-                return ret | 0x18;
+            ret = (check | 0x18) & ~(0x20);
+            
+            if (res.ok && res.size) {
+                ret |= 0x20;
             }
+            return ret;
             
         case 1:
-            {
-                ub ret = 0;
+            if (res.size) {
+                ret = res.data[res.ptr++];
                 
-                if (res.size) {
-                    ret = res.data[res.ptr++];
-                    
-                    if (res.ptr >= res.size) {
-                        res.ok   = false;
-                        res.ptr  = 0;
-                        res.size = 0;
-                    }
+                if (res.ptr >= res.size) {
+                    res.ok   = false;
+                    res.ptr  = 0;
+                    res.size = 0;
                 }
-                
-                return ret;
             }
+            return ret;
             
         case 3:
             return status;
@@ -118,8 +168,9 @@ ub CstrCD::read(uw addr) {
     
     printx("/// PSeudo CD read: %d", (addr & 0xf));
     return 0;
-}*/
+}
 
+/*
 CstrCD cd;
 
 void CstrCD::reset() {
@@ -224,4 +275,4 @@ ub CstrCD::read(uw addr) {
     
     printx("/// PSeudo CD read: %d", (addr & 0xf));
     return 0;
-}
+}*/

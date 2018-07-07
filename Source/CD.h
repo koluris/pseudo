@@ -1,10 +1,15 @@
-/*
+
 class CstrCD {
+    enum {
+        CD_STAT_PLAY    = 0x80,
+        CD_STAT_STANDBY = 0x02,
+    };
+    
     struct base {
         ub ok, ptr, size, data[8];
     };
     
-    ub ctrl, status, order;
+    ub check, mode, status, state, order;
     base res, param;
     
 public:
@@ -18,8 +23,8 @@ public:
 };
 
 extern CstrCD cd;
-*/
 
+/*
 class CstrCD {
     enum {
         CD_CTRL_BUSY   = 0x80,
@@ -60,4 +65,4 @@ public:
     ub read(uw);
 };
 
-extern CstrCD cd;
+extern CstrCD cd;*/

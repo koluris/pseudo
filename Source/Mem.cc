@@ -120,12 +120,14 @@ ub CstrMem::read08(uw addr) {
     switch(addr) {
         case 0x00000000 ... (0x00800000-1): // RAM
         case 0x80000000 ... (0x80800000-1):
+        case 0xa0000000 ... (0xa0200000-1):
             return accessMem(ram, ub);
             
         case 0xbfc00000 ... (0xbfc80000-1): // ROM
             return accessMem(rom, ub);
             
-        case 0x1f000084: // Serial?
+        case 0x1f000004: // Serial?
+        case 0x1f000084:
             return 0;
             
         case 0x1f800000 ... (0x1f800400-1): // Scratchpad
