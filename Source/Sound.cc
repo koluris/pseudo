@@ -169,48 +169,43 @@ void CstrAudio::write(uw addr, uh data) {
     
     spuAcc(addr) = data;
     
-    // Channels
-    if (addr >= 0x1c00 && addr <= 0x1d7e) {
-        ub n = spuChannel(addr);
-        
-        switch(addr & 0xf) {
-            case 0x0: // Volume L
-                spuVoices[n].volumeL = setVolume(data);
-                return;
-                
-            case 0x2: // Volume R
-                spuVoices[n].volumeR = setVolume(data);
-                return;
-                
-            case 0x4: // Pitch
-                spuVoices[n].freq = MAX((data * SPU_SAMPLE_RATE) / 4096, 1);
-                return;
-                
-            case 0x6: // Sound Address
-                spuVoices[n].saddr = data << 3;
-                return;
-                
-            case 0xe: // Return Address
-                spuVoices[n].raddr = data << 3;
-                return;
-                
-            /* unused */
-            case 0x8:
-            case 0xa:
-            case 0xc:
-                return;
-        }
-        
-        printx("/// PSeudo SPU write phase: $%x <- $%x", addr, data);
-    }
-    
-    // Reverb
-    if (addr >= 0x1dc0 && addr <= 0x1dfe) {
-        return;
-    }
-    
-    // HW
     switch(addr) {
+        case 0x1c00 ... 0x1d7e: // Channels
+            {
+                ub n = spuChannel(addr);
+                
+                switch(addr & 0xf) {
+                    case 0x0: // Volume L
+                        spuVoices[n].volumeL = setVolume(data);
+                        return;
+                        
+                    case 0x2: // Volume R
+                        spuVoices[n].volumeR = setVolume(data);
+                        return;
+                        
+                    case 0x4: // Pitch
+                        spuVoices[n].freq = MAX((data * SPU_SAMPLE_RATE) / 4096, 1);
+                        return;
+                        
+                    case 0x6: // Sound Address
+                        spuVoices[n].saddr = data << 3;
+                        return;
+                        
+                    case 0xe: // Return Address
+                        spuVoices[n].raddr = data << 3;
+                        return;
+                        
+                    /* unused */
+                    case 0x8:
+                    case 0xa:
+                    case 0xc:
+                        return;
+                }
+                
+                printx("/// PSeudo SPU write phase: 0x%x <- 0x%x", (addr & 0xf), data);
+                return;
+            }
+            
         case 0x1d88: // Sound On 1
             voiceOn(data);
             return;
@@ -257,36 +252,37 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1db2: // CD Volume R
         case 0x1db4:
         case 0x1db6:
+        case 0x1dc0 ... 0x1dfe: // Reverb
             return;
     }
     
-    printx("/// PSeudo SPU write: $%x <- $%x", addr, data);
+    printx("/// PSeudo SPU write: 0x%x <- 0x%x", addr, data);
 }
 
 uh CstrAudio::read(uw addr) {
     // Switch to low order bits
     addr = LOW_BITS(addr);
     
-    // Channels
-    if (addr >= 0x1c00 && addr <= 0x1d7e) {
-        switch(addr & 0xf) {
-            /* unused */
-            case 0x0:
-            case 0x2:
-            case 0x4:
-            case 0x6:
-            case 0x8:
-            case 0xa:
-            case 0xc:
-            case 0xe:
-                return spuAcc(addr);
-        }
-        
-        printx("/// PSeudo SPU read phase: $%x", (addr & 0xf));
-    }
-    
-    // HW
     switch(addr) {
+        case 0x1c00 ... 0x1d7e: // Channels
+            {
+                switch(addr & 0xf) {
+                    /* unused */
+                    case 0x0:
+                    case 0x2:
+                    case 0x4:
+                    case 0x6:
+                    case 0x8:
+                    case 0xa:
+                    case 0xc:
+                    case 0xe:
+                        return spuAcc(addr);
+                }
+                
+                printx("/// PSeudo SPU read phase: 0x%x", (addr & 0xf));
+                return 0;
+            }
+            
         case 0x1da6: // Transfer Address
             return spuAddr >> 3;
             
@@ -316,7 +312,7 @@ uh CstrAudio::read(uw addr) {
             return spuAcc(addr);
     }
     
-    printx("/// PSeudo SPU read: $%x", addr);
+    printx("/// PSeudo SPU read: 0x%x", addr);
     return 0;
 }
 
@@ -342,5 +338,5 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
             return;
     }
     
-    printx("/// PSeudo SPU DMA: $%x", dma->chcr);
+    printx("/// PSeudo SPU DMA: 0x%x", dma->chcr);
 }

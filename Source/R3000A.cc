@@ -207,7 +207,7 @@ void CstrMips::step(bool branched) {
                     return;
             }
             
-            printx("/// PSeudo $%08x | Unknown special opcode $%08x | %d", pc, code, (code & 63));
+            printx("/// PSeudo 0x%08x | Unknown special opcode 0x%08x | %d", pc, code, (code & 63));
             return;
             
         case 1: // REGIMM
@@ -233,7 +233,7 @@ void CstrMips::step(bool branched) {
                     return;
             }
             
-            printx("/// PSeudo $%08x | Unknown bcond opcode $%08x | %d", pc, code, rt);
+            printx("/// PSeudo 0x%08x | Unknown bcond opcode 0x%08x | %d", pc, code, rt);
             return;
             
         case 2: // J
@@ -316,7 +316,7 @@ void CstrMips::step(bool branched) {
                     return;
             }
             
-            printx("/// PSeudo $%08x | Unknown cop0 opcode $%08x | %d", pc, code, rs);
+            printx("/// PSeudo 0x%08x | Unknown cop0 opcode 0x%08x | %d", pc, code, rs);
             return;
             
         case 18: // COP2
@@ -403,7 +403,7 @@ void CstrMips::step(bool branched) {
             return;
     }
     
-    printx("/// PSeudo $%08x | Unknown basic opcode $%08x | %d", pc, code, opcode);
+    printx("/// PSeudo 0x%08x | Unknown basic opcode 0x%08x | %d", pc, code, opcode);
 }
 
 #define LAZY_CLOCK \

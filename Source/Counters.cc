@@ -89,7 +89,7 @@ void CstrCounters::write(uw addr, T data) {
             return;
     }
     
-    printx("/// PSeudo RTC Write(%lu): $%x", sizeof(T), (addr & 0xf));
+    printx("/// PSeudo RTC Write(%lu): 0x%x", sizeof(T), (addr & 0xf));
 }
 
 template void CstrCounters::write<uw>(uw, uw);
@@ -110,7 +110,7 @@ T CstrCounters::read(uw addr) {
             return dst(  p);
     }
     
-    printx("/// PSeudo RTC Read(%lu): $%x", sizeof(T), (addr & 0xf));
+    printx("/// PSeudo RTC Read(%lu): 0x%x", sizeof(T), (addr & 0xf));
     return 0;
 }
 

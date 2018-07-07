@@ -5,12 +5,11 @@ class CstrCD {
         CD_STAT_STANDBY = 0x02,
     };
     
-    struct base {
+    struct {
         ub ok, ptr, size, data[8];
-    };
+    } res, param;
     
     ub check, mode, status, state, order;
-    base res, param;
     
 public:
     void reset();

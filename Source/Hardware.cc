@@ -50,7 +50,7 @@ void CstrHardware::write32(uw addr, uw data) {
             return;
     }
     
-    printx("/// PSeudo Hardware Write 32: $%x <- $%x", addr, data);
+    printx("/// PSeudo Hardware Write 32: 0x%x <- 0x%x", addr, data);
 }
 
 void CstrHardware::write16(uw addr, uh data) {
@@ -75,7 +75,7 @@ void CstrHardware::write16(uw addr, uh data) {
             return;
     }
     
-    printx("/// PSeudo Hardware Write 16: $%x <- $%x", addr, data);
+    printx("/// PSeudo Hardware Write 16: 0x%x <- 0x%x", addr, data);
 }
 
 void CstrHardware::write08(uw addr, ub data) {
@@ -91,7 +91,7 @@ void CstrHardware::write08(uw addr, ub data) {
             return;
     }
     
-    printx("/// PSeudo Hardware Write 08: $%x <- $%x", addr, data);
+    printx("/// PSeudo Hardware Write 08: 0x%x <- 0x%x", addr, data);
 }
 
 uw CstrHardware::read32(uw addr) {
@@ -117,7 +117,7 @@ uw CstrHardware::read32(uw addr) {
             return accessMem(mem.hwr, uw);
     }
     
-    printx("/// PSeudo Hardware Read 32: $%x", addr);
+    printx("/// PSeudo Hardware Read 32: 0x%x", addr);
     return 0;
 }
 
@@ -142,7 +142,7 @@ uh CstrHardware::read16(uw addr) {
             return accessMem(mem.hwr, uh);
     }
     
-    printx("/// PSeudo Hardware Read 16: $%x", addr);
+    printx("/// PSeudo Hardware Read 16: 0x%x", addr);
     return 0;
 }
 
@@ -155,6 +155,6 @@ ub CstrHardware::read08(uw addr) {
             return cd.read(addr);
     }
     
-    printx("/// PSeudo Hardware Read 08: $%x", addr);
+    printx("/// PSeudo Hardware Read 08: 0x%x", addr);
     return 0;
 }

@@ -339,6 +339,8 @@ void CstrMips::writeCop2(uw addr) {
         case 13:
         case 14:
         case 20:
+        case 21:
+        case 22:
             return;
     }
     
@@ -348,6 +350,7 @@ void CstrMips::writeCop2(uw addr) {
 void CstrMips::readCop2(uw addr) {
     switch(addr) {
         /* unused */
+        case  6:
         case  7:
         case  8:
         case  9:
@@ -503,7 +506,7 @@ void CstrMips::executeCop2(uw code) {
                         break;
                         
                     default:
-                        printx("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) $%08x\n", (code & 0xf8000));
+                        printx("/// PSeudo Unknown cop2 mvmva (code & 0xf8000) 0x%08x\n", (code & 0xf8000));
                         break;
                 }
                 
@@ -518,7 +521,7 @@ void CstrMips::executeCop2(uw code) {
                         break;
                         
                     default:
-                        printx("/// PSeudo Unknown cop2 mvmva (code & 0x6000) $%08x\n", (code & 0x6000));
+                        printx("/// PSeudo Unknown cop2 mvmva (code & 0x6000) 0x%08x\n", (code & 0x6000));
                         break;
                 }
                 
