@@ -8,14 +8,15 @@ PSeudo aims to be the world's simplest PSX emulator both in terms of user experi
 
 ## Completion
 Here's a list with the overall progress of the emulator, broken down in distinct parts. Components with 0% progress are not listed.
-* `95% -> BIOS Bootstrap`
 * `95% -> PSX-EXE Loader`
 * `90% -> CPU Mips R3000A`
+* `90% -> Interrupts`
+* `85% -> GPU Primitives & Commands`
 * `80% -> Mem IO`
-* `70% -> GPU Textures`
-* `65% -> GPU Primitives & Commands`
-* `60% -> Audio`
-* `60% -> Interrupts`
-* `55% -> Rootcounters`
+* `75% -> GPU Textures`
+* `70% -> Audio`
+* `60% -> Rootcounters`
+* `60% -> DMA`
 * `50% -> Serial IO`
-* `45% -> DMA`
+* `20% -> GTE (Co-processor 2)`
+* `15% -> CD-ROM Decoder`
