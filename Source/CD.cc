@@ -65,10 +65,7 @@ void CstrCD::write(uw addr, ub data) {
                     
                     switch(param.data[0]) {
                         case 0x20:
-                            res.data[0] = 0x98;
-                            res.data[1] = 0x06;
-                            res.data[2] = 0x10;
-                            res.data[3] = 0xc3;
+                            // Timestamp?
                             break;
                             
                         default:

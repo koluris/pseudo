@@ -356,6 +356,7 @@ void CstrMips::readCop2(uw addr) {
         case 12:
         case 13:
         case 14:
+        case 16:
         case 17:
         case 18:
         case 19:
@@ -661,6 +662,9 @@ void CstrMips::executeCop2(uw code) {
                 
                 MAC2IR1();
             }
+            return;
+            
+        case 22: // TODO
             return;
             
         case 27: // NCCS
