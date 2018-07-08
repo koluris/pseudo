@@ -4,9 +4,8 @@
 PSeudo aims to be the world's simplest PSX emulator both in terms of user experience and software implementation. It is coded in C++ and is utilizing modern APIs such as OpenGL for visuals and OpenAL for audio. I have been developing this emulator on a Mac, so for the time being it works on macOS & iOS. This will change in future releases; more platforms will be supported, as I am aiming for a cross-platform solution.
 
 [Check out the video below, for a homebrew demo/cracktro showcase:](http://www.youtube.com/watch?v=BFvLRjOE99E)
-[![YouTube video](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Bubble.png?s=100)](http://www.youtube.com/watch?v=BFvLRjOE99E "PSeudo : Alpha showcase")
 
-![Paradox cracktro](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Paradox.png?s=100)
+<a href="http://www.youtube.com/watch?v=BFvLRjOE99E"><img alt="Bubble Bobble" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Bubble.png" width="50%"/><img alt="Paradox cracktro" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Paradox.png" width="50%"/></a>
 
 ## Completion
 Here's a list with the overall progress of the emulator, broken down in distinct parts. Components with 0% progress are not listed.
