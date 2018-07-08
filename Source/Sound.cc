@@ -3,13 +3,6 @@
 #import "Global.h"
 
 
-#define spuAcc(addr) \
-    *(uh *)&mem.hwr.ptr[addr]
-
-#define spuChannel(addr) \
-    (addr >> 4) & 0x1f
-
-
 CstrAudio audio;
 
 void CstrAudio::reset() {
@@ -163,13 +156,11 @@ void CstrAudio::decodeStream() {
     }
 }
 
+#define spuChannel(addr) \
+    (addr >> 4) & 0x1f
+
 void CstrAudio::write(uw addr, uh data) {
-    // Switch to low order bits
-    addr = LOW_BITS(addr);
-    
-    spuAcc(addr) = data;
-    
-    switch(addr) {
+    switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
                 ub n = spuChannel(addr);
@@ -199,6 +190,7 @@ void CstrAudio::write(uw addr, uh data) {
                     case 0x8:
                     case 0xa:
                     case 0xc:
+                        accessMem(mem.hwr, uh) = data;
                         return;
                 }
                 
@@ -253,6 +245,7 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1db4:
         case 0x1db6:
         case 0x1dc0 ... 0x1dfe: // Reverb
+            accessMem(mem.hwr, uh) = data;
             return;
     }
     
@@ -260,10 +253,7 @@ void CstrAudio::write(uw addr, uh data) {
 }
 
 uh CstrAudio::read(uw addr) {
-    // Switch to low order bits
-    addr = LOW_BITS(addr);
-    
-    switch(addr) {
+    switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
                 switch(addr & 0xf) {
@@ -276,7 +266,7 @@ uh CstrAudio::read(uw addr) {
                     case 0xa:
                     case 0xc:
                     case 0xe:
-                        return spuAcc(addr);
+                        return accessMem(mem.hwr, uh);
                 }
                 
                 printx("/// PSeudo SPU read phase: 0x%x", (addr & 0xf));
@@ -309,7 +299,7 @@ uh CstrAudio::read(uw addr) {
         case 0x1e0a:
         case 0x1e0c:
         case 0x1e0e:
-            return spuAcc(addr);
+            return accessMem(mem.hwr, uh);
     }
     
     printx("/// PSeudo SPU read: 0x%x", addr);
