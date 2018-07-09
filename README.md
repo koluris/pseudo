@@ -1,6 +1,6 @@
 <h1>PSeudo</h1>
 
-[![GitHub stars](https://img.shields.io/github/stars/dkoluris/pseudo.svg)](https://github.com/dkoluris/pseudo/stargazers) [![GitHub license](https://img.shields.io/github/license/dkoluris/pseudo.svg)](https://github.com/dkoluris/pseudo/blob/master/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/dkoluris/pseudo.svg?style=flat-square)](https://github.com/dkoluris/pseudo/stargazers) [![GitHub license](https://img.shields.io/github/license/dkoluris/pseudo.svg?style=flat-square)](https://github.com/dkoluris/pseudo/blob/master/LICENSE) [![Twitter](https://img.shields.io/twitter/url/https/github.com/dkoluris/pseudo.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fdkoluris%2Fpseudo)
 
 <a href="https://github.com/dkoluris/pseudo/releases/tag/version-0.8">>> Get the latest PSeudo 0.8 release for Mac <<</a>
 
