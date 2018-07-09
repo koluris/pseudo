@@ -32,4 +32,4 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 
 <h2>License</h2>
 
-Apache 2
+Open-source under [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
