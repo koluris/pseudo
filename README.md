@@ -33,3 +33,7 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 <img alt="Land Before Time" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Time.jpg" width="48.5%"/><img alt="BAD" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Bad.jpg" width="48.5%" align="right"/>
 
 </a>
+
+<h2>License</h2>
+
+Apache 2
