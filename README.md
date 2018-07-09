@@ -4,9 +4,11 @@
 
 **PSeudo aims to be the world's simplest PSX emulator** both in terms of user experience and software implementation. It is coded in **C++** and is utilizing modern APIs such as **OpenGL** for visuals and **OpenAL** for audio. I have been developing this emulator on a Mac, so for the time being it works on **macOS** & **iOS**. This will change in future releases; more platforms will be supported, as I am aiming for a cross-platform solution.
 
-<a href="http://www.youtube.com/watch?v=BFvLRjOE99E">Check out the video below, for a homebrew demo/cracktro showcase:<br/>
+<br/><a href="http://www.youtube.com/watch?v=BFvLRjOE99E">Check out the video below, for a homebrew demo/cracktro showcase:<br/>
 
-<img alt="Bubble Bobble" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Bubble.png" width="50%"/><img alt="Paradox cracktro" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Paradox.png" width="50%"/>
+<img alt="FF9" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/FF9.jpg" width="48.5%"/><img alt="Super Pox" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Pox.jpg" width="48.5%" align="right"/>
+
+<img alt="Casper" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Casper.jpg" width="48.5%"/><img alt="Paradox Deadline" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Deadline.jpg" width="48.5%" align="right"/>
 
 </a>
 
@@ -26,4 +28,12 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 * `20% -> GTE (Co-processor 2)`
 * `15% -> CD-ROM Decoder`
 
-![PSeudo interface](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Options.png)
+<br/><a href="http://www.youtube.com/watch?v=BFvLRjOE99E">
+
+<img alt="Land Before Time" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Time.jpg" width="48.5%"/><img alt="BAD" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Bad.jpg" width="48.5%" align="right"/>
+
+</a>
+
+<h2>License</h2>
+
+Apache 2
