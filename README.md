@@ -6,8 +6,9 @@
 
 <a href="http://www.youtube.com/watch?v=BFvLRjOE99E">Check out the video below, for a homebrew demo/cracktro showcase:<br/>
 
-<img alt="FF9" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/FF9.jpg" width="47%"/>
-<img alt="Deadline" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Deadline.jpg" width="47%" align="right"/>
+<img alt="FF9" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/FF9.jpg" width="47%"/><img alt="Deadline" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Deadline.jpg" width="47%" align="right"/>
+
+<img alt="Casper" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Casper.jpg" width="47%"/><img alt="Pox" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Pox.jpg" width="47%" align="right"/>
 
 </a>
 
@@ -27,5 +28,4 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 * `20% -> GTE (Co-processor 2)`
 * `15% -> CD-ROM Decoder`
 
-<img alt="Land Before Time" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Time.jpg" width="47%"/>
-<img alt="2D Arcade" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Arcade.jpg" width="47%" align="right"/>
+<img alt="Land Before Time" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Time.jpg" width="47%"/><img alt="2D Arcade" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Arcade.jpg" width="47%" align="right"/>
