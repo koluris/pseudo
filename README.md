@@ -28,12 +28,6 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 * `20% -> GTE (Co-processor 2)`
 * `15% -> CD-ROM Decoder`
 
-<br/><a href="http://www.youtube.com/watch?v=BFvLRjOE99E">
-
-<img alt="Land Before Time" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Time.jpg" width="48.5%"/><img alt="BAD" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Bad.jpg" width="48.5%" align="right"/>
-
-</a>
-
 <h2>License</h2>
 
 Apache 2
