@@ -6,7 +6,7 @@
 
 <a href="http://www.youtube.com/watch?v=BFvLRjOE99E">Check out the video below, for a homebrew demo/cracktro showcase:<br/>
 
-<img alt="Bubble Bobble" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Bubble.png" width="50%"/><img alt="Paradox cracktro" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Paradox.png" width="50%"/>
+<img alt="FF9" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/FF9.jpg" width="49%"/><img alt="Deadline" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Deadline.jpg" width="49%"/>
 
 </a>
 
@@ -26,4 +26,4 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 * `20% -> GTE (Co-processor 2)`
 * `15% -> CD-ROM Decoder`
 
-![PSeudo interface](https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Options.png)
+<img alt="Land Before Time" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Time.jpg" width="49%"/><img alt="2D Arcade" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Arcade.jpg" width="49%"/>
