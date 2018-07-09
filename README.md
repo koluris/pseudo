@@ -28,6 +28,8 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 * `20% -> GTE (Co-processor 2)`
 * `15% -> CD-ROM Decoder`
 
+**PSeudo** can load some initial game screens, but nothing more for now. Also, for quite some time I will keep working on it with the provided slow CPU Interpreter.
+
 <h2>License</h2>
 
 Apache 2
