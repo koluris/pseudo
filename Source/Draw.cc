@@ -331,7 +331,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 parse(tex, &packets[2], 1, 0);
                 parse( sz, &packets[setup->texture ? 3 : 2], 1, 0);
                 
-                // Freeform size
+                // Square size
                 int size = spriteSize[setup->size];
                 
                 if (size) {
@@ -389,12 +389,16 @@ void CstrDraw::primitive(uw addr, uw *packets) {
         case GPU_TYPE_ENV:
             switch(addr) {
                 case 0xe1: // Texture P.
-                    spriteTP = (packets[0]) & 0x7ff;
+                    spriteTP = (packets[0]) & 0xffffff;
                     opaque   = (packets[0] >> 5) & 3;
                     GLBlendFunc(bit[opaque].src, bit[opaque].dst);
                     return;
                     
-                case 0xe2: // TODO: Texture Window
+                case 0xe2: // Texture Window
+                    //TWX = (((packets[0] >> 10) & 0x1f) << 3);
+                    //TWY = (((packets[0] >> 15) & 0x1f) << 3);
+                    //TWW = 255 - (((packets[0] >> 0) & 0x1f) << 3);
+                    //TWH = 255 - (((packets[0] >> 5) & 0x1f) << 3);
                     return;
                     
                 case 0xe3: // Draw Area Start

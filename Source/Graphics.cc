@@ -130,6 +130,10 @@ void CstrGraphics::write(uw addr, uw data) {
                         case 7:
                             ret.data = 2;
                             return;
+                            
+                        default:
+                            printf("Requested GPU info: %d\n", (data & 0xffffff));
+                            return;
                     }
                     return;
                     
