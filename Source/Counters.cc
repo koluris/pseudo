@@ -79,12 +79,12 @@ void CstrCounters::write(uw addr, T data) {
             return;
             
         case RTC_MODE:
-            mode( p) = data;
+            mode (p) = data;
             bound(p) = ((mode(p) & 8) && dst(p)) ? dst(p) : RTC_BOUND;
             return;
             
         case RTC_TARGET:
-            dst(  p) = data & 0xffff;
+            dst  (p) = data & 0xffff;
             bound(p) = ((mode(p) & 8) && dst(p)) ? dst(p) : RTC_BOUND;
             return;
     }
@@ -104,10 +104,10 @@ T CstrCounters::read(uw addr) {
             return count(p);
             
         case RTC_MODE:
-            return mode( p);
+            return mode (p);
             
         case RTC_TARGET:
-            return dst(  p);
+            return dst  (p);
     }
     
     printx("/// PSeudo RTC Read(%lu): 0x%x", sizeof(T), (addr & 0xf));

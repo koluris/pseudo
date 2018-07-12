@@ -16,7 +16,7 @@ void CstrMem::reset() {
 template <class T>
 void CstrMem::write(uw addr, T data) {
     if ((addr & MEM_MASK) < MEM_BOUNDS_RAM) { // RAM
-        // A shorter alternative to allow mem write
+        // A shorter method to allow mem write
         if (!(cpu.copr[12] & 0x10000)) {
             accessMem(ram, T) = data;
         }
