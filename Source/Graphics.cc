@@ -173,7 +173,7 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
     while (vrop.v.p < vrop.v.end) {
         while (vrop.h.p < vrop.h.end) {
             if (isVideo24Bit) {
-                printf("Video is 24 bits\n");
+                printf("/// PSeudo Video is 24 bits\n");
             }
             else {
                 vrop.raw[count] = cache.pixel2texel(*ptr);
@@ -291,6 +291,7 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
     switch(dma->chcr) {
         case 0x01000200:
             //dataRead(p, size);
+            printf("/// PSeudo GPU Data Read\n");
             return;
             
         case 0x01000201:
