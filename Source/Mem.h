@@ -35,17 +35,18 @@ public:
     void reset();
     
     // Store
-    void write32(uw, uw);
-    void write16(uw, uh);
-    void write08(uw, ub);
+    template <class T>
+    void write(uw, T);
     
     // Load
-    uw read32(uw);
-    uh read16(uw);
-    ub read08(uw);
+    template <class T>
+    T read(uw);
     
     // DMA
     void executeDMA(CstrBus::castDMA *);
 };
 
 extern CstrMem mem;
+
+// case 0x1f000004: // Serial?
+// case 0x1f000084:

@@ -12,16 +12,20 @@
 
 
 class CstrHardware {
+    enum {
+        HWR_ACCESS_32 = 4,
+        HWR_ACCESS_16 = 2,
+        HWR_ACCESS_08 = 1,
+    };
+    
 public:
     // Store
-    void write32(uw, uw);
-    void write16(uw, uh);
-    void write08(uw, ub);
+    template <class T>
+    void write(uw, T);
     
     // Load
-    uw read32(uw);
-    uh read16(uw);
-    ub read08(uw);
+    template <class T>
+    T read(uw);
 };
 
 extern CstrHardware io;

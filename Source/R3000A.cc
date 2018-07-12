@@ -25,10 +25,10 @@
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
 #define opcodeSWx(o, d) \
-    mem.write32(ob & ~3, (base[rt] o shift[d][ob & 3]) | (mem.read32(ob & ~3) & mask[d][ob & 3]))
+    mem.write<uw>(ob & ~3, (base[rt] o shift[d][ob & 3]) | (mem.read<uw>(ob & ~3) & mask[d][ob & 3]))
 
 #define opcodeLWx(o, d) \
-    base[rt] = (base[rt] & mask[d][ob & 3]) | (mem.read32(ob & ~3) o shift[d][ob & 3])
+    base[rt] = (base[rt] & mask[d][ob & 3]) | (mem.read<uw>(ob & ~3) o shift[d][ob & 3])
 
 
 CstrMips cpu;
@@ -345,11 +345,11 @@ void CstrMips::step(bool branched) {
             return;
             
         case 32: // LB
-            base[rt] = (sb)mem.read08(ob);
+            base[rt] = (sb)mem.read<ub>(ob);
             return;
             
         case 33: // LH
-            base[rt] = (sh)mem.read16(ob);
+            base[rt] = (sh)mem.read<uh>(ob);
             return;
             
         case 34: // LWL
@@ -357,15 +357,15 @@ void CstrMips::step(bool branched) {
             return;
             
         case 35: // LW
-            base[rt] = mem.read32(ob);
+            base[rt] = mem.read<uw>(ob);
             return;
             
         case 36: // LBU
-            base[rt] = mem.read08(ob);
+            base[rt] = mem.read<ub>(ob);
             return;
             
         case 37: // LHU
-            base[rt] = mem.read16(ob);
+            base[rt] = mem.read<uh>(ob);
             return;
             
         case 38: // LWR
@@ -373,11 +373,11 @@ void CstrMips::step(bool branched) {
             return;
             
         case 40: // SB
-            mem.write08(ob, base[rt]);
+            mem.write<ub>(ob, base[rt]);
             return;
             
         case 41: // SH
-            mem.write16(ob, base[rt]);
+            mem.write<uh>(ob, base[rt]);
             return;
             
         case 42: // SWL
@@ -385,7 +385,7 @@ void CstrMips::step(bool branched) {
             return;
             
         case 43: // SW
-            mem.write32(ob, base[rt]);
+            mem.write<uw>(ob, base[rt]);
             return;
             
         case 46: // SWR
@@ -393,13 +393,13 @@ void CstrMips::step(bool branched) {
             return;
             
         case 50: // LWC2
-            cop2d.iuw[rt] = mem.read32(ob);
+            cop2d.iuw[rt] = mem.read<uw>(ob);
             writeCop2(rt);
             return;
             
         case 58: // SWC2
             readCop2(rt);
-            mem.write32(ob, cop2d.iuw[rt]);
+            mem.write<uw>(ob, cop2d.iuw[rt]);
             return;
     }
     
