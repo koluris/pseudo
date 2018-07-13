@@ -83,7 +83,7 @@ void CstrSerial::padListener(int code, bool pushed) {
 
 uh CstrSerial::read16() {
     bus.interruptSet(CstrBus::INT_SIO0);
-    return 0xd02b; // 0xffff
+    return 0xffff;
 }
 
 ub CstrSerial::read08() {

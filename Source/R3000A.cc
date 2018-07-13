@@ -312,7 +312,7 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case RFE: // Return from exception
-                    copr[12] = (copr[12] & 0xfffffff0) | ((copr[12] >> 2) & 0xf);
+                    copr[12] = (copr[12] & ~(0xf)) | ((copr[12] >> 2) & 0xf);
                     return;
             }
             
@@ -434,7 +434,7 @@ void CstrMips::exception(uw code, bool branched) {
         printx("/// PSeudo Exception %s", "branched");
     }
     
-    copr[12] = (copr[12] & 0xffffffc0) | ((copr[12] << 2) & 0x3f);
+    copr[12] = (copr[12] & ~(0x3f)) | ((copr[12] << 2) & 0x3f);
     copr[13] = code;
     copr[14] = pc;
     
