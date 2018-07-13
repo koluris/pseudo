@@ -75,7 +75,6 @@ void CstrAudio::voiceOn(uw data) {
 void CstrAudio::voiceOff(uw data) {
     for (int n = 0; n < SPU_CHANNELS; n++) {
         if (data & (1 << n)) {
-            //spuVoices[n].size = 0;
         }
     }
 }
