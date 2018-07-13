@@ -255,7 +255,15 @@ uh CstrAudio::read(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
+                ub n = spuChannel(addr);
+                
                 switch(addr & 0xf) {
+                    case 0xc: // Hack
+                        if (spuVoices[n].size) {
+                            return 1;
+                        }
+                        return 0;
+                        
                     /* unused */
                     case 0x0:
                     case 0x2:
@@ -263,8 +271,7 @@ uh CstrAudio::read(uw addr) {
                     case 0x6:
                     case 0x8:
                     case 0xa:
-                    case 0xc:
-                    case 0xe:
+                    case 0xe: // madman
                         return accessMem(mem.hwr, uh);
                 }
                 
