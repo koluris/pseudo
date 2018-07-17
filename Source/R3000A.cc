@@ -414,10 +414,9 @@ void CstrMips::branch(uw addr) {
     step (true);
     setpc(addr);
     
-    //if (opcodeCount >= LAZY_CLOCK) {
+    if (opcodeCount >= LAZY_CLOCK) {
         // Rootcounters, interrupts
-        //rootc.update();
-        if ((opcodeCount - psxNextsCounter) >= psxNextCounter) psxRcntUpdate();
+        rootc.update();
         bus.interruptsUpdate();
         
         // Exceptions
@@ -426,8 +425,8 @@ void CstrMips::branch(uw addr) {
                 exception(0x400, false);
             }
         }
-        //opcodeCount %= LAZY_CLOCK;
-    //}
+        opcodeCount %= LAZY_CLOCK;
+    }
 }
 
 void CstrMips::exception(uw code, bool branched) {

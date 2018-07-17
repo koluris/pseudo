@@ -34,8 +34,7 @@ void CstrPSeudo::reset() {
        cd.reset();
       cpu.reset();
       mem.reset();
-    //rootc.reset();
-    psxRcntInit();
+    rootc.reset();
       sio.reset();
        vs.reset();
     

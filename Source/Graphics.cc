@@ -60,7 +60,7 @@ void CstrGraphics::refresh() {
     
     // Draw
     draw.swapBuffers();
-//    bus.interruptSet(CstrBus::INT_VSYNC);
+    bus.interruptSet(CstrBus::INT_VSYNC);
 }
 
 void CstrGraphics::write(uw addr, uw data) {
