@@ -26,9 +26,30 @@ void CstrHardware::write(uw addr, T data) {
                     dicr = (dicr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
                     return;
                     
-                case 0x1104 ... 0x1124: // Rootcounters
-                    rootc.write<uw>(addr, data);
-                    return;
+//                case 0x1104 ... 0x1124: // Rootcounters
+//                    rootc.write<uw>(addr, data);
+//                    return;
+                    
+                case 0x1100:
+                    psxRcntWcount(0, data & 0xffff); return;
+                case 0x1104:
+                    psxRcntWmode(0, data); return;
+                case 0x1108:
+                    psxRcntWtarget(0, data & 0xffff); return; //  HW_DMA_ICR&= SWAP32((~value)&0xff000000);
+                    
+                case 0x1110:
+                    psxRcntWcount(1, data & 0xffff); return;
+                case 0x1114:
+                    psxRcntWmode(1, data); return;
+                case 0x1118:
+                    psxRcntWtarget(1, data & 0xffff); return;
+                    
+                case 0x1120:
+                    psxRcntWcount(2, data & 0xffff); return;
+                case 0x1124:
+                    psxRcntWmode(2, data); return;
+                case 0x1128:
+                    psxRcntWtarget(2, data & 0xffff); return;
                     
                 case 0x1810 ... 0x1814: // Graphics
                     vs.write(addr, data);
@@ -60,9 +81,30 @@ void CstrHardware::write(uw addr, T data) {
                     data16 &= data & mask16;
                     return;
                     
-                case 0x1100 ... 0x1128: // Rootcounters
-                    rootc.write<uh>(addr, data);
-                    return;
+//                case 0x1100 ... 0x1128: // Rootcounters
+//                    rootc.write<uh>(addr, data);
+//                    return;
+                    
+                case 0x1100:
+                    psxRcntWcount(0, data); return;
+                case 0x1104:
+                    psxRcntWmode(0, data); return;
+                case 0x1108:
+                    psxRcntWtarget(0, data); return;
+                    
+                case 0x1110:
+                    psxRcntWcount(1, data); return;
+                case 0x1114:
+                    psxRcntWmode(1, data); return;
+                case 0x1118:
+                    psxRcntWtarget(1, data); return;
+                    
+                case 0x1120:
+                    psxRcntWcount(2, data); return;
+                case 0x1124:
+                    psxRcntWmode(2, data); return;
+                case 0x1128:
+                    psxRcntWtarget(2, data); return;
                     
                 case 0x1c00 ... 0x1dfe: // Audio
                     audio.write(addr, data);
@@ -104,8 +146,27 @@ T CstrHardware::read(uw addr) {
     switch(sizeof(T)) {
         case HWR_ACCESS_32:
             switch(LOW_BITS(addr)) {
-                case 0x1100 ... 0x1110: // Rootcounters
-                    return rootc.read<uw>(addr);
+//                case 0x1100 ... 0x1110: // Rootcounters
+//                    return rootc.read<uw>(addr);
+                    
+                case 0x1100:
+                    return psxRcntRcount(0);
+                case 0x1104:
+                    return psxCounters[0].mode;
+                case 0x1108:
+                    return psxCounters[0].target;
+                case 0x1110:
+                    return psxRcntRcount(1);
+                case 0x1114:
+                    return psxCounters[1].mode;
+                case 0x1118:
+                    return psxCounters[1].target;
+                case 0x1120:
+                    return psxRcntRcount(2);
+                case 0x1124:
+                    return psxCounters[2].mode;
+                case 0x1128:
+                    return psxCounters[2].target;
                     
                 case 0x1810 ... 0x1814: // Graphics
                     return vs.read(addr);
@@ -131,8 +192,27 @@ T CstrHardware::read(uw addr) {
                 case 0x1044: // SIO Status
                     return sio.read16();
                     
-                case 0x1100 ... 0x1128: // Rootcounters
-                    return rootc.read<uh>(addr);
+//                case 0x1100 ... 0x1128: // Rootcounters
+//                    return rootc.read<uh>(addr);
+                    
+                case 0x1100:
+                    return psxRcntRcount(0);
+                case 0x1104:
+                    return psxCounters[0].mode;
+                case 0x1108:
+                    return psxCounters[0].target;
+                case 0x1110:
+                    return psxRcntRcount(1);
+                case 0x1114:
+                    return psxCounters[1].mode;
+                case 0x1118:
+                    return psxCounters[1].target;
+                case 0x1120:
+                    return psxRcntRcount(2);
+                case 0x1124:
+                    return psxCounters[2].mode;
+                case 0x1128:
+                    return psxCounters[2].target;
                     
                 case 0x1c00 ... 0x1e0e: // Audio
                     return audio.read(addr);

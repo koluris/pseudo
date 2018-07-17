@@ -27,7 +27,7 @@
 }
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
-    NSURL *fileURL = [NSURL URLFromPasteboard: [sender draggingPasteboard]];
+    NSURL *fileURL = [NSURL URLFromPasteboard:[sender draggingPasteboard]];
     [app openPSXfile:fileURL];
     
     return YES;
