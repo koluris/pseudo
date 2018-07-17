@@ -26,45 +26,99 @@ void CstrCounters::reset() {
         item = RTC_BOUND;
     }
     
-    vbk = hbk = 0;
+    vbk = 0;
+    hbk = PSX_HSYNC;
 }
 
-void CstrCounters::update() {
-    count(0) += mode(0) & 0x100 ? PSX_BIAS : PSX_BIAS / 8;
-    
-    if (count(0) >= bound(0)) {
-        printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 0, 0);
-    }
-    
-    if (!(mode(1) & 0x100)) {
-        count(1) += PSX_BIAS;
+//void CstrCounters::update() {
+//    count(0) += mode(0) & 0x100 ? PSX_BIAS : PSX_BIAS / 8;
+//
+//    if (count(0) >= bound(0)) {
+//        printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 0, 0);
+//    }
+//
+//    if (!(mode(1) & 0x100)) {
+//        count(1) += PSX_BIAS;
+//
+//        if (count(1) >= bound(1)) {
+//            printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 1, 1);
+//        }
+//    }
+//    else if ((hbk += PSX_BIAS) >= PSX_HSYNC) { hbk = 0;
+//        if (++count(1) >= bound(1)) {
+//            count(1) = 0;
+//            if (mode(1) & 0x50) {
+//                bus.interruptSet(CstrBus::INT_RTC1);
+//            }
+//        }
+//    }
+//
+//    if (!(mode(2) & 1)) {
+//        count(2) += mode(2) & 0x200 ? PSX_BIAS / 8 : PSX_BIAS;
+//
+//        if (count(2) >= bound(2)) {
+//            count(2) = 0;
+//            if (mode(2) & 0x50) {
+//                bus.interruptSet(CstrBus::INT_RTC2);
+//            }
+//        }
+//    }
+//
+//    // VBlank
+//    if ((vbk += PSX_BIAS) >= (vs.isVideoPAL ? PSX_VSYNC_PAL : PSX_VSYNC_NTSC)) { vbk = 0;
+//        vs.refresh();
+//    }
+//}
 
-        if (count(1) >= bound(1)) {
-            printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 1, 1);
+void CstrCounters::update() {
+    int temp;
+    
+    temp = count(0) + ((mode(0) & 0x100) ? PSX_BIAS : PSX_BIAS / 8);
+    
+    if (temp >= bound(0) && count(0) < bound(0)) { temp = 0;
+        if (mode(0) & 0x50) {
+            printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 0, 0);
         }
     }
-    else if ((hbk += PSX_BIAS) >= PSX_HSYNC) { hbk = 0;
-        if (++count(1) >= bound(1)) {
-            count(1) = 0;
+    count(0) = temp;
+    
+    if (!(mode(1) & 0x100)) {
+        temp = count(1) + PSX_BIAS;
+        
+        if (temp >= bound(1) && count(1) < bound(1)) { temp = 0;
             if (mode(1) & 0x50) {
-                bus.interruptSet(CstrBus::INT_RTC1);
+                printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 1, 1);
             }
+        }
+        count(1) = temp;
+    }
+    else {
+        if ((hbk -= PSX_BIAS) <= 0) {
+            if (++count(1) == bound(1)) { count(1) = 0;
+                
+                if (mode(1) & 0x50) {
+                    bus.interruptSet(CstrBus::INT_RTC1);
+                }
+            }
+            hbk = PSX_HSYNC;
         }
     }
     
     if (!(mode(2) & 1)) {
-        count(2) += mode(2) & 0x200 ? PSX_BIAS / 8 : PSX_BIAS;
-
-        if (count(2) >= bound(2)) {
-            count(2) = 0;
+        temp = count(2) + ((mode(2) & 0x200) ? PSX_BIAS / 8 : PSX_BIAS);
+        
+        if (temp >= bound(2) && count(2) < bound(2)) { temp = 0;
             if (mode(2) & 0x50) {
                 bus.interruptSet(CstrBus::INT_RTC2);
             }
         }
+        count(2) = temp;
     }
     
     // VBlank
-    if ((vbk += PSX_BIAS) >= (vs.isVideoPAL ? PSX_VSYNC_PAL : PSX_VSYNC_NTSC)) { vbk = 0;
+    vbk += PSX_BIAS;
+    
+    if (vbk >= PSX_VSYNC_NTSC) { vbk = 0;
         vs.refresh();
     }
 }

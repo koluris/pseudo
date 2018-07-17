@@ -16,7 +16,7 @@ class CstrCounters {
     };
     
     uh bounds[3];
-    uw vbk, hbk;
+    sw vbk, hbk;
     
 public:
     void reset();

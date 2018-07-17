@@ -407,7 +407,7 @@ void CstrMips::step(bool branched) {
 }
 
 #define LAZY_CLOCK \
-    32
+    64
 
 void CstrMips::branch(uw addr) {
     // Execute instruction in slot
