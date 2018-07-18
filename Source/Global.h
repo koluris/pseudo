@@ -21,9 +21,12 @@
     #include "../Platforms/iOS/Global.h"
 #elif  _WIN32
 	#include <Windows.h>
-	#include <GL/GL.h>
+	#include <gl/GL.h>
 	#include "al.h"
 	#include "alc.h"
+
+	#define GL_COMBINE		0x8570
+	#define GL_RGB_SCALE	0x8573
 #endif
 
 // Data
@@ -40,6 +43,8 @@ typedef int8_t  sb; // bite
 // Basic
 #define memcp               memcpy
 #define redirect            goto
+#define MIN(a, b)			(((a) < (b)) ? (a) : (b))
+#define MAX(a, b)			(((a) > (b)) ? (a) : (b))
 
 // OpenGL 1.1
 #define GLBindTexture       glBindTexture

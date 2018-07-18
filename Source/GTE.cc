@@ -3,6 +3,8 @@
 #include "Global.h"
 
 
+#undef RGB
+
 // Accessors
 #define oooo(base, index) \
     base[(index)]
