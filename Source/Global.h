@@ -7,18 +7,18 @@
 
 #ifdef APPLE_MACOS
 	#include <mach/mach_time.h>
-    #import <OpenGL/gl.h>
-    #import <OpenAL/al.h>
-    #import <OpenAL/alc.h>
+    #include <OpenGL/gl.h>
+    #include <OpenAL/al.h>
+    #include <OpenAL/alc.h>
 
-    #import "../Platforms/macOS/Global.h"
+    #include "../Platforms/macOS/Global.h"
 #elif  APPLE_IOS
 	#include <mach/mach_time.h>
-    #import <OpenGLES/ES1/gl.h>
-    #import <OpenAL/al.h>
-    #import <OpenAL/alc.h>
+    #include <OpenGLES/ES1/gl.h>
+    #include <OpenAL/al.h>
+    #include <OpenAL/alc.h>
 
-    #import "../Platforms/iOS/Global.h"
+    #include "../Platforms/iOS/Global.h"
 #elif  _WIN32
 	#include <Windows.h>
 	#include <GL/GL.h>
