@@ -69,10 +69,26 @@ void CstrMips::bootstrap() {
     }
 }
 
+#define LAZY_CLOCK \
+    32
+
 void CstrMips::run() {
     // Go!
     while(!psx.suspended) {
         step(false);
+        
+        if (opcodeCount >= LAZY_CLOCK) {
+            rootc.update();
+            bus.interruptsUpdate();
+            
+            // Exceptions
+            if (data32 & mask32) {
+                if ((copr[12] & 0x401) == 0x401) {
+                    exception(0x400, false);
+                }
+            }
+            opcodeCount %= LAZY_CLOCK;
+        }
     }
 }
 
@@ -88,127 +104,129 @@ void CstrMips::step(bool branched) {
                     if (code) { // No operation?
                         base[rd] = base[rt] << sa;
                     }
-                    return;
+                    break;
                     
                 case 2: // SRL
                     base[rd] = base[rt] >> sa;
-                    return;
+                    break;
                     
                 case 3: // SRA
                     base[rd] = (sw)base[rt] >> sa;
-                    return;
+                    break;
                     
                 case 4: // SLLV
                     base[rd] = base[rt] << (base[rs] & 31);
-                    return;
+                    break;
                     
                 case 6: // SRLV
                     base[rd] = base[rt] >> (base[rs] & 31);
-                    return;
+                    break;
                     
                 case 7: // SRAV
                     base[rd] = (sw)base[rt] >> (base[rs] & 31);
-                    return;
+                    break;
                     
                 case 8: // JR
                     branch(base[rs]);
                     psx.console(base, pc);
-                    return;
+                    break;
                     
                 case 9: // JALR
                     base[rd] = pc + 4;
                     branch(base[rs]);
-                    return;
+                    break;
                     
                 case 12: // SYSCALL
                     pc -= 4;
                     exception(0x20, branched);
-                    return;
+                    break;
                     
                 case 13: // BREAK
-                    return;
+                    break;
                     
                 case 16: // MFHI
                     base[rd] = res.u32[1];
-                    return;
+                    break;
                     
                 case 17: // MTHI
                     res.u32[1] = base[rs];
-                    return;
+                    break;
                     
                 case 18: // MFLO
                     base[rd] = res.u32[0];
-                    return;
+                    break;
                     
                 case 19: // MTLO
                     res.u32[0] = base[rs];
-                    return;
+                    break;
                     
                 case 24: // MULT
                     res.s64 = (sd)(sw)base[rs] * (sw)base[rt];
-                    return;
+                    break;
                     
                 case 25: // MULTU
                     res.s64 = (sd)base[rs] * base[rt];
-                    return;
+                    break;
                     
                 case 26: // DIV
                     if (base[rt]) {
                         res.u32[0] = (sw)base[rs] / (sw)base[rt];
                         res.u32[1] = (sw)base[rs] % (sw)base[rt];
                     }
-                    return;
+                    break;
                     
                 case 27: // DIVU
                     if (base[rt]) {
                         res.u32[0] = base[rs] / base[rt];
                         res.u32[1] = base[rs] % base[rt];
                     }
-                    return;
+                    break;
                     
                 case 32: // ADD
                     base[rd] = base[rs] + base[rt];
-                    return;
+                    break;
                     
                 case 33: // ADDU
                     base[rd] = base[rs] + base[rt];
-                    return;
+                    break;
                     
                 case 34: // SUB
                     base[rd] = base[rs] - base[rt];
-                    return;
+                    break;
                     
                 case 35: // SUBU
                     base[rd] = base[rs] - base[rt];
-                    return;
+                    break;
                     
                 case 36: // AND
                     base[rd] = base[rs] & base[rt];
-                    return;
+                    break;
                     
                 case 37: // OR
                     base[rd] = base[rs] | base[rt];
-                    return;
+                    break;
                     
                 case 38: // XOR
                     base[rd] = base[rs] ^ base[rt];
-                    return;
+                    break;
                     
                 case 39: // NOR
                     base[rd] = ~(base[rs] | base[rt]);
-                    return;
+                    break;
                     
                 case 42: // SLT
                     base[rd] = (sw)base[rs] < (sw)base[rt];
-                    return;
+                    break;
                     
                 case 43: // SLTU
                     base[rd] = base[rs] < base[rt];
-                    return;
+                    break;
+                    
+                default:
+                    printx("/// PSeudo 0x%08x | Unknown special opcode 0x%08x | %d", pc, code, (code & 63));
+                    break;
             }
-            
-            printx("/// PSeudo 0x%08x | Unknown special opcode 0x%08x | %d", pc, code, (code & 63));
-            return;
+            break;
             
         case 1: // REGIMM
             switch(rt) {
@@ -216,13 +234,13 @@ void CstrMips::step(bool branched) {
                     if ((sw)base[rs] < 0) {
                         branch(baddr);
                     }
-                    return;
+                    break;
                     
                 case 1: // BGEZ
                     if ((sw)base[rs] >= 0) {
                         branch(baddr);
                     }
-                    return;
+                    break;
                     
                 case 17: // BGEZAL
                     base[31] = pc + 4;
@@ -230,203 +248,193 @@ void CstrMips::step(bool branched) {
                     if ((sw)base[rs] >= 0) {
                         branch(baddr);
                     }
-                    return;
+                    break;
+                    
+                default:
+                    printx("/// PSeudo 0x%08x | Unknown bcond opcode 0x%08x | %d", pc, code, rt);
+                    break;
             }
-            
-            printx("/// PSeudo 0x%08x | Unknown bcond opcode 0x%08x | %d", pc, code, rt);
-            return;
+            break;
             
         case 2: // J
             branch(saddr);
-            return;
+            break;
             
         case 3: // JAL
             base[31] = pc + 4;
             branch(saddr);
-            return;
+            break;
             
         case 4: // BEQ
             if (base[rs] == base[rt]) {
                 branch(baddr);
             }
-            return;
+            break;
             
         case 5: // BNE
             if (base[rs] != base[rt]) {
                 branch(baddr);
             }
-            return;
+            break;
             
         case 6: // BLEZ
             if ((sw)base[rs] <= 0) {
                 branch(baddr);
             }
-            return;
+            break;
             
         case 7: // BGTZ
             if ((sw)base[rs] > 0) {
                 branch(baddr);
             }
-            return;
+            break;
             
         case 8: // ADDI
             base[rt] = base[rs] + imm;
-            return;
+            break;
             
         case 9: // ADDIU
             base[rt] = base[rs] + imm;
-            return;
+            break;
             
         case 10: // SLTI
             base[rt] = (sw)base[rs] < imm;
-            return;
+            break;
             
         case 11: // SLTIU
             base[rt] = base[rs] < immu;
-            return;
+            break;
             
         case 12: // ANDI
             base[rt] = base[rs] & immu;
-            return;
+            break;
             
         case 13: // ORI
             base[rt] = base[rs] | immu;
-            return;
+            break;
             
         case 14: // XORI
             base[rt] = base[rs] ^ immu;
-            return;
+            break;
             
         case 15: // LUI
             base[rt] = code << 16;
-            return;
+            break;
             
         case 16: // COP0
             switch(rs) {
                 case MFC:
                     base[rt] = copr[rd];
-                    return;
+                    break;
                     
                 case MTC:
                     copr[rd] = base[rt];
-                    return;
+                    break;
                     
                 case RFE: // Return from exception
                     copr[12] = (copr[12] & ~(0xf)) | ((copr[12] >> 2) & 0xf);
-                    return;
+                    break;
+                    
+                default:
+                    printx("/// PSeudo 0x%08x | Unknown cop0 opcode 0x%08x | %d", pc, code, rs);
+                    break;
             }
-            
-            printx("/// PSeudo 0x%08x | Unknown cop0 opcode 0x%08x | %d", pc, code, rs);
-            return;
+            break;
             
         case 18: // COP2
             switch(rs) {
                 case MFC:
                     readCop2(rd);
                     base[rt] = cop2d.iuw[rd];
-                    return;
+                    break;
                     
                 case CFC:
                     base[rt] = cop2c.iuw[rd];
-                    return;
+                    break;
                     
                 case MTC:
                     cop2d.iuw[rd] = base[rt];
                     writeCop2(rd);
-                    return;
+                    break;
                     
                 case CTC:
                     cop2c.iuw[rd] = base[rt];
-                    return;
+                    break;
+                    
+                default: // Execute GTE opcode
+                    executeCop2(code);
+                    break;
             }
-            
-            // Execute GTE opcode
-            executeCop2(code);
-            return;
+            break;
             
         case 32: // LB
             base[rt] = (sb)mem.read<ub>(ob);
-            return;
+            break;
             
         case 33: // LH
             base[rt] = (sh)mem.read<uh>(ob);
-            return;
+            break;
             
         case 34: // LWL
             opcodeLWx(<<, 0);
-            return;
+            break;
             
         case 35: // LW
             base[rt] = mem.read<uw>(ob);
-            return;
+            break;
             
         case 36: // LBU
             base[rt] = mem.read<ub>(ob);
-            return;
+            break;
             
         case 37: // LHU
             base[rt] = mem.read<uh>(ob);
-            return;
+            break;
             
         case 38: // LWR
             opcodeLWx(>>, 1);
-            return;
+            break;
             
         case 40: // SB
             mem.write<ub>(ob, base[rt]);
-            return;
+            break;
             
         case 41: // SH
             mem.write<uh>(ob, base[rt]);
-            return;
+            break;
             
         case 42: // SWL
             opcodeSWx(>>, 2);
-            return;
+            break;
             
         case 43: // SW
             mem.write<uw>(ob, base[rt]);
-            return;
+            break;
             
         case 46: // SWR
             opcodeSWx(<<, 3);
-            return;
+            break;
             
         case 50: // LWC2
             cop2d.iuw[rt] = mem.read<uw>(ob);
             writeCop2(rt);
-            return;
+            break;
             
         case 58: // SWC2
             readCop2(rt);
             mem.write<uw>(ob, cop2d.iuw[rt]);
-            return;
+            break;
+            
+        default:
+            printx("/// PSeudo 0x%08x | Unknown basic opcode 0x%08x | %d", pc, code, opcode);
+            break;
     }
-    
-    printx("/// PSeudo 0x%08x | Unknown basic opcode 0x%08x | %d", pc, code, opcode);
 }
-
-#define LAZY_CLOCK \
-    64
 
 void CstrMips::branch(uw addr) {
     // Execute instruction in slot
     step (true);
     setpc(addr);
-    
-    if (opcodeCount >= LAZY_CLOCK) {
-        // Rootcounters, interrupts
-        rootc.update();
-        bus.interruptsUpdate();
-        
-        // Exceptions
-        if (data32 & mask32) {
-            if ((copr[12] & 0x401) == 0x401) {
-                exception(0x400, false);
-            }
-        }
-        opcodeCount %= LAZY_CLOCK;
-    }
 }
 
 void CstrMips::exception(uw code, bool branched) {

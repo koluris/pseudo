@@ -5,7 +5,7 @@ class CstrCounters {
         PSX_VSYNC_NTSC = PSX_CLOCK / 60,
         PSX_VSYNC_PAL  = PSX_CLOCK / 50,
         PSX_HSYNC      = PSX_CLOCK / 15734,
-        PSX_BIAS       = 64 // This is uttermost experimental, it's the Achilles' heel
+        PSX_BIAS       = 64
     };
     
     enum {
@@ -25,10 +25,6 @@ public:
     // Store
     template <class T>
     void write(uw, T);
-    
-    // Load
-    template <class T>
-    T read(uw);
 };
 
 extern CstrCounters rootc;
