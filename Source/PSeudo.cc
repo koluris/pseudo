@@ -1,6 +1,6 @@
 /* Base structure and authentic idea PSeudo (Credits: Dennis Koluris) */
 
-#import "Global.h"
+#include "Global.h"
 
 
 CstrPSeudo psx;
@@ -68,7 +68,7 @@ void CstrPSeudo::executable(const char *path) {
             
             // GP0 and SAddr
             cpu.base[28] = header.cp0;
-            cpu.base[29] = header.s_addr;
+            cpu.base[29] = header.s_addr2;
         }
         else {
             // TODO: Incorrect file size

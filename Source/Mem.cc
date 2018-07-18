@@ -1,6 +1,6 @@
 /* Base structure and authentic idea PSeudo (Credits: Dennis Koluris) */
 
-#import "Global.h"
+#include "Global.h"
 
 
 CstrMem mem;

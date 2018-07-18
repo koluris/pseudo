@@ -1,4 +1,4 @@
-#import "Global.h"
+#include "Global.h"
 
 
 CstrCD cd;

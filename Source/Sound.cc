@@ -1,6 +1,6 @@
 /* Base structure taken from SOPE open source emulator, and improved upon (Credits: SaD, Linuzappz) */
 
-#import "Global.h"
+#include "Global.h"
 
 
 CstrAudio audio;

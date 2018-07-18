@@ -1,6 +1,6 @@
 /* Base structure taken from PCSX-df open source emulator, and improved upon (Credits: Stephen Chao) */
 
-#import "Global.h"
+#include "Global.h"
 
 
 #define GPU_COMMAND(x) \

@@ -1,6 +1,6 @@
 /* Base structure taken from FPSE open source emulator, and improved upon (Credits: BERO, LDChen) */
 
-#import "Global.h"
+#include "Global.h"
 
 
 #define count(n) \

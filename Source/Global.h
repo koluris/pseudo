@@ -1,22 +1,29 @@
 // Standard C libraries
-#import <stdlib.h>
-#import <stdio.h>
-#import <string.h>
-#import <limits.h>
-#import <mach/mach_time.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <limits.h>
 
 #ifdef APPLE_MACOS
+	#include <mach/mach_time.h>
     #import <OpenGL/gl.h>
     #import <OpenAL/al.h>
     #import <OpenAL/alc.h>
 
     #import "../Platforms/macOS/Global.h"
 #elif  APPLE_IOS
+	#include <mach/mach_time.h>
     #import <OpenGLES/ES1/gl.h>
     #import <OpenAL/al.h>
     #import <OpenAL/alc.h>
 
     #import "../Platforms/iOS/Global.h"
+#elif  _WIN32
+	#include <Windows.h>
+	#include <GL/GL.h>
+	#include "al.h"
+	#include "alc.h"
 #endif
 
 // Data
@@ -72,15 +79,15 @@ typedef int8_t  sb; // bite
 #define alSourceStream      alSourcePlay
 
 // User imports
-#import "Bus.h"
-#import "Cache.h"
-#import "CD.h"
-#import "Counters.h"
-#import "Draw.h"
-#import "Graphics.h"
-#import "Hardware.h"
-#import "Mem.h"
-#import "PSeudo.h"
-#import "R3000A.h"
-#import "SIO.h"
-#import "Sound.h"
+#include "Bus.h"
+#include "Cache.h"
+#include "CD.h"
+#include "Counters.h"
+#include "Draw.h"
+#include "Graphics.h"
+#include "Hardware.h"
+#include "Mem.h"
+#include "PSeudo.h"
+#include "R3000A.h"
+#include "SIO.h"
+#include "Sound.h"
