@@ -103,7 +103,7 @@ void CstrCounters::write(uw addr, T data) {
             return;
     }
     
-    printx("/// PSeudo RTC Write(%lu): 0x%x", sizeof(T), (addr & 0xf));
+    printx("/// PSeudo RTC Write(%u): 0x%x", sizeof(T), (addr & 0xf));
 }
 
 template void CstrCounters::write<uw>(uw, uw);

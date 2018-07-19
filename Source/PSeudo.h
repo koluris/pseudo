@@ -1,3 +1,5 @@
+#undef s_addr
+
 #define printx(text, ...) \
     printf(text, __VA_ARGS__); \
     putchar('\n'); \
@@ -21,7 +23,7 @@ class CstrPSeudo {
         uw d_size; /* SCE */
         uw b_addr; /* SCE */
         uw b_size; /* SCE */
-        uw s_addr2;
+        uw s_addr;
         uw s_size;
         uw SavedSP;
         uw SavedFP;

@@ -34,7 +34,7 @@ void CstrMem::write(uw addr, T data) {
     }
     
     if ((addr) != 0xfffe0130) { // Known: 0x804, 0x800, 0x1e988
-        printx("/// PSeudo Mem Write(%lu): 0x%x <- 0x%x", sizeof(T), addr, data);
+        printx("/// PSeudo Mem Write(%u): 0x%x <- 0x%x", sizeof(T), addr, data);
     }
 }
 
@@ -60,7 +60,7 @@ T CstrMem::read(uw addr) {
         return accessMem(rom, T);
     }
     
-    printx("/// PSeudo Mem Read(%lu): 0x%x", sizeof(T), addr);
+    printx("/// PSeudo Mem Read(%u): 0x%x", sizeof(T), addr);
     return 0;
 }
 

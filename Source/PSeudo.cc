@@ -68,7 +68,7 @@ void CstrPSeudo::executable(const char *path) {
             
             // GP0 and SAddr
             cpu.base[28] = header.cp0;
-            cpu.base[29] = header.s_addr2;
+            cpu.base[29] = header.s_addr;
         }
         else {
             // TODO: Incorrect file size

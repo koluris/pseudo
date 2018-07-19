@@ -24,7 +24,7 @@ void CstrDraw::reset() {
     GLViewport(0, 0, window.h, window.v);
     
     if (window.multiplier > 1) { // Crap
-        GLLineWidth((GLfloat)window.multiplier);
+        GLLineWidth(window.multiplier);
     }
     
     opaqueClipState(true);
