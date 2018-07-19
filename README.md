@@ -36,7 +36,7 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 
 <h2>Compile / Build</h2>
 
-In order to build the application on **macOS** & **iOS** prerequisite is Xcode 9+. On **Windows** install **Microsoft Visual Studio 2015** and on top of that a prebuilt version of **LLVM 6.0**, we will use that instead of MSVC. This is important in order to keep the code identical between different platforms.
+In order to build the application on **macOS** & **iOS**, the prerequisite is Xcode 9+. For **Windows** install **Microsoft Visual Studio 2015** and on top of that a prebuilt version of **LLVM 6.0**, we will use that instead of MSVC. This is important in order to keep the source code identical between different platforms.
 
 <h2>License</h2>
 
