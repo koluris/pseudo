@@ -34,6 +34,10 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 
 **PSeudo** can load some initial game screens, but nothing more for now. Also, for quite some time I will keep working on it with the provided slow CPU Interpreter.
 
+<h2>Compile / Build</h2>
+
+In order to build the application on **macOS** & **iOS**, the prerequisite is Xcode 9+. For **Windows** install **Microsoft Visual Studio 2015** and on top of that a prebuilt version of **LLVM 6.0**, we will use that instead of MSVC. This is important in order to keep the source code identical between different platforms.
+
 <h2>License</h2>
 
 Open-source under [Apache 2.0 license](https://www.apache.org/licenses/LICENSE-2.0).
