@@ -286,12 +286,12 @@ void CstrGraphics::photoRead(uw *packets) {
 }
 
 void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
-    uw *p = (uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)], size = (dma->bcr >> 16) * (dma->bcr & 0xffff);
+    uw *p   = (uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
+    uw size = (dma->bcr >> 16) * (dma->bcr & 0xffff);
     
     switch(dma->chcr) {
         case 0x01000200:
             //dataRead(p, size);
-            printf("/// PSeudo GPU Data Read\n");
             return;
             
         case 0x01000201:
