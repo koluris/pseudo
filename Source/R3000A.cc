@@ -431,7 +431,7 @@ void CstrMips::step(bool branched) {
     }
 }
 
-int count2 = 0;
+int count2 = 0; // Temp hack
 
 void CstrMips::branch(uw addr) {
     // Execute instruction in slot
