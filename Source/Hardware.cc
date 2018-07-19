@@ -17,7 +17,7 @@ void CstrHardware::write(uw addr, T data) {
                 case 0x10f4: // DICR, thanks Calb, Galtor :)
                     dicr = (dicr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
                     return;
-                      
+                    
 				case 0x1810: // Graphics
 				case 0x1814:
                     vs.write(addr, data);
@@ -40,7 +40,7 @@ void CstrHardware::write(uw addr, T data) {
                 case 0x1824: // MDEC 1
                     accessMem(mem.hwr, uw) = data;
                     return;
-
+                    
 				default:
 					if (addr >= 0x1f801080 && addr <= 0x1f8010e8) { // DMA
 						if (addr & 8) {
@@ -72,13 +72,13 @@ void CstrHardware::write(uw addr, T data) {
                 case 0x1074: // iMask
                     accessMem(mem.hwr, uh) = data;
                     return;
-
+                    
 				default:
 					if (addr >= 0x1f801100 && addr <= 0x1f801128) { // Rootcounters
 						rootc.write<uw>(addr, data);
 						return;
 					}
-
+                    
 					if (addr >= 0x1f801c00 && addr <= 0x1f801dfe) { // Audio
 						audio.write(addr, data);
 						return;
@@ -93,7 +93,7 @@ void CstrHardware::write(uw addr, T data) {
                 case 0x2041:
                     accessMem(mem.hwr, ub) = data;
                     return;
-
+                    
 				default:
 					if (addr >= 0x1f801800 && addr <= 0x1f801803) { // CD-ROM
 						cd.write(addr, data);
@@ -132,7 +132,7 @@ T CstrHardware::read(uw addr) {
                 case 0x10f4: // DICR
                 case 0x1824: // MDEC 1
                     return accessMem(mem.hwr, uw);
-
+                    
 				default:
 					if (addr >= 0x1f801100 && addr <= 0x1f801110) { // Rootcounters
 						return accessMem(mem.hwr, uw);
@@ -153,12 +153,12 @@ T CstrHardware::read(uw addr) {
                 case 0x1070: // iStatus
                 case 0x1074: // iMask
 					return accessMem(mem.hwr, uh);
-
+                    
 				default:
 					if (addr >= 0x1f801100 && addr <= 0x1f801128) { // Rootcounters
 						return accessMem(mem.hwr, uh);
 					}
-
+                    
 					if (addr >= 0x1f801c00 && addr <= 0x1f801e0e) { // Audio
 						return audio.read(addr);
 					}
