@@ -67,13 +67,14 @@ void CstrHardware::write(uw addr, T data) {
                 /* unused */
                 case 0x1014: // ?
 				case 0x1048: // SIO Mode
+                case 0x104a: // SIO Control
 				case 0x104e: // SIO Baud
                 case 0x1074: // iMask
                     accessMem(mem.hwr, uh) = data;
                     return;
 
 				default:
-					if (addr >= 0x1f801104 && addr <= 0x1f801124) { // Rootcounters
+					if (addr >= 0x1f801100 && addr <= 0x1f801128) { // Rootcounters
 						rootc.write<uw>(addr, data);
 						return;
 					}

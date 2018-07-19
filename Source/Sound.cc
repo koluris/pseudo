@@ -210,43 +210,43 @@ void CstrAudio::write(uw addr, uh data) {
             return;
 
 		default:
-			if (addr >= 0x1c00 && addr <= 0x1d7e) { // Channels
+			if (addr >= 0x1f801c00 && addr <= 0x1f801d7e) { // Channels
 				ub n = spuChannel(addr);
 
 				switch(addr & 0xf) {
-				case 0x0: // Volume L
-					spuVoices[n].volumeL = setVolume(data);
-					return;
+                    case 0x0: // Volume L
+                        spuVoices[n].volumeL = setVolume(data);
+                        return;
 
-				case 0x2: // Volume R
-					spuVoices[n].volumeR = setVolume(data);
-					return;
+                    case 0x2: // Volume R
+                        spuVoices[n].volumeR = setVolume(data);
+                        return;
 
-				case 0x4: // Pitch
-					spuVoices[n].freq = MAX((data * SPU_SAMPLE_RATE) / 4096, 1);
-					return;
+                    case 0x4: // Pitch
+                        spuVoices[n].freq = MAX((data * SPU_SAMPLE_RATE) / 4096, 1);
+                        return;
 
-				case 0x6: // Sound Address
-					spuVoices[n].saddr = data << 3;
-					return;
+                    case 0x6: // Sound Address
+                        spuVoices[n].saddr = data << 3;
+                        return;
 
-				case 0xe: // Return Address
-					spuVoices[n].raddr = data << 3;
-					return;
+                    case 0xe: // Return Address
+                        spuVoices[n].raddr = data << 3;
+                        return;
 
-					/* unused */
-				case 0x8:
-				case 0xa:
-				case 0xc:
-					accessMem(mem.hwr, uh) = data;
-					return;
+                        /* unused */
+                    case 0x8:
+                    case 0xa:
+                    case 0xc:
+                        accessMem(mem.hwr, uh) = data;
+                        return;
 				}
 
 				printx("/// PSeudo SPU write phase: 0x%x <- 0x%x", (addr & 0xf), data);
 				return;
 			}
 
-			if (addr >= 0x1dc0 && addr <= 0x1dfe) { // Reverb
+			if (addr >= 0x1f801dc0 && addr <= 0x1f801dfe) { // Reverb
 				accessMem(mem.hwr, uh) = data;
 				return;
 			}
@@ -286,25 +286,25 @@ uh CstrAudio::read(uw addr) {
             return accessMem(mem.hwr, uh);
 
 		default:
-			if (addr >= 0x1c00 && addr <= 0x1d7e) { // Channels
+			if (addr >= 0x1f801c00 && addr <= 0x1f801d7e) { // Channels
 				ub n = spuChannel(addr);
 
 				switch(addr & 0xf) {
-				case 0xc: // Hack
-					if (spuVoices[n].size) {
-						return 1;
-					}
-					return 0;
+                    case 0xc: // Hack
+                        if (spuVoices[n].size) {
+                            return 1;
+                        }
+                        return 0;
 
-					/* unused */
-				case 0x0:
-				case 0x2:
-				case 0x4:
-				case 0x6:
-				case 0x8:
-				case 0xa:
-				case 0xe: // madman
-					return accessMem(mem.hwr, uh);
+                        /* unused */
+                    case 0x0:
+                    case 0x2:
+                    case 0x4:
+                    case 0x6:
+                    case 0x8:
+                    case 0xa:
+                    case 0xe: // madman
+                        return accessMem(mem.hwr, uh);
 				}
 
 				printx("/// PSeudo SPU read phase: 0x%x", (addr & 0xf));
