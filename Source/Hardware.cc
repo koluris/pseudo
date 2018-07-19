@@ -14,23 +14,12 @@ void CstrHardware::write(uw addr, T data) {
                     data32 &= data & mask32;
                     return;
                     
-                case 0x1080 ... 0x10e8: // DMA
-                    if (addr & 8) {
-                        bus.checkDMA(addr, data);
-                        return;
-                    }
-                    accessMem(mem.hwr, uw) = data;
-                    return;
-                    
                 case 0x10f4: // DICR, thanks Calb, Galtor :)
                     dicr = (dicr & (~((data & 0xff000000) | 0xffffff))) | (data & 0xffffff);
                     return;
-                    
-                case 0x1104 ... 0x1124: // Rootcounters
-                    rootc.write<uw>(addr, data);
-                    return;
-                    
-                case 0x1810 ... 0x1814: // Graphics
+                      
+				case 0x1810: // Graphics
+				case 0x1814:
                     vs.write(addr, data);
                     return;
                     
@@ -51,6 +40,21 @@ void CstrHardware::write(uw addr, T data) {
                 case 0x1824: // MDEC 1
                     accessMem(mem.hwr, uw) = data;
                     return;
+
+				default:
+					if (addr >= 0x1f801080 && addr <= 0x1f8010e8) { // DMA
+						if (addr & 8) {
+							bus.checkDMA(addr, data);
+							return;
+						}
+						accessMem(mem.hwr, uw) = data;
+						return;
+					}
+					
+					if (addr >= 0x1f801104 && addr <= 0x1f801124) { // Rootcounters
+						rootc.write<uw>(addr, data);
+						return;
+					}
             }
             break;
             
@@ -60,34 +64,40 @@ void CstrHardware::write(uw addr, T data) {
                     data16 &= data & mask16;
                     return;
                     
-                case 0x1100 ... 0x1128: // Rootcounters
-                    rootc.write<uh>(addr, data);
-                    return;
-                    
-                case 0x1c00 ... 0x1dfe: // Audio
-                    audio.write(addr, data);
-                    return;
-                    
                 /* unused */
                 case 0x1014: // ?
-                case 0x1048 ... 0x104e: // SIO Mode, Control, Baud
+				case 0x1048: // SIO Mode
+				case 0x104e: // SIO Baud
                 case 0x1074: // iMask
                     accessMem(mem.hwr, uh) = data;
                     return;
+
+				default:
+					if (addr >= 0x1f801104 && addr <= 0x1f801124) { // Rootcounters
+						rootc.write<uw>(addr, data);
+						return;
+					}
+
+					if (addr >= 0x1f801c00 && addr <= 0x1f801dfe) { // Audio
+						audio.write(addr, data);
+						return;
+					}
             }
             break;
             
         case HWR_ACCESS_08:
-            switch(LOW_BITS(addr)) {
-                case 0x1800 ... 0x1803: // CD-ROM
-                    cd.write(addr, data);
-                    return;
-                    
+            switch(LOW_BITS(addr)) {   
                 /* unused */
                 case 0x1040: // SIO Data
                 case 0x2041:
                     accessMem(mem.hwr, ub) = data;
                     return;
+
+				default:
+					if (addr >= 0x1f801800 && addr <= 0x1f801803) { // CD-ROM
+						cd.write(addr, data);
+						return;
+					}
             }
             break;
     }
@@ -104,7 +114,8 @@ T CstrHardware::read(uw addr) {
     switch(sizeof(T)) {
         case HWR_ACCESS_32:
             switch(LOW_BITS(addr)) {
-                case 0x1810 ... 0x1814: // Graphics
+				case 0x1810: // Graphics
+				case 0x1814:
                     return vs.read(addr);
                     
                 /* unused */
@@ -118,9 +129,13 @@ T CstrHardware::read(uw addr) {
                 case 0x10e8:
                 case 0x10f0: // DPCR
                 case 0x10f4: // DICR
-                case 0x1100 ... 0x1110: // Rootcounters
                 case 0x1824: // MDEC 1
                     return accessMem(mem.hwr, uw);
+
+				default:
+					if (addr >= 0x1f801100 && addr <= 0x1f801110) { // Rootcounters
+						return accessMem(mem.hwr, uw);
+					}
             }
             break;
             
@@ -129,9 +144,6 @@ T CstrHardware::read(uw addr) {
                 case 0x1044: // SIO Status
                     return sio.read16();
                     
-                case 0x1c00 ... 0x1e0e: // Audio
-                    return audio.read(addr);
-                    
                 /* unused */
                 case 0x1014: // ?
                 case 0x104a: // SIO Control
@@ -139,8 +151,16 @@ T CstrHardware::read(uw addr) {
                 case 0x1054: // SIO Status
                 case 0x1070: // iStatus
                 case 0x1074: // iMask
-                case 0x1100 ... 0x1128: // Rootcounters
-                    return accessMem(mem.hwr, uh);
+					return accessMem(mem.hwr, uh);
+
+				default:
+					if (addr >= 0x1f801100 && addr <= 0x1f801128) { // Rootcounters
+						return accessMem(mem.hwr, uh);
+					}
+
+					if (addr >= 0x1f801c00 && addr <= 0x1f801e0e) { // Audio
+						return audio.read(addr);
+					}
             }
             break;
             
@@ -149,8 +169,10 @@ T CstrHardware::read(uw addr) {
                 case 0x1040: // SIO Data
                     return sio.read08();
                     
-                case 0x1800 ... 0x1803: // CD-ROM
-                    return cd.read(addr);
+				default:
+					if (addr >= 0x1f801800 && addr <= 0x1f801803) { // CD-ROM
+						return cd.read(addr);
+					}
             }
             break;
     }
