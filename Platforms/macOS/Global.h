@@ -35,8 +35,8 @@
 #define NSForeColorAttributeName        NSForegroundColorAttributeName
 #define kCode                           keyCode
 #define addLocalMonitorForEventsMask    addLocalMonitorForEventsMatchingMask
-#define NSDownMask                      NSKeyDownMask
-#define NSUpMask                        NSKeyUpMask
+#define NSDownMask                      NSEventMaskKeyDown
+#define NSUpMask                        NSEventMaskKeyUp
 
 #import "OpenGLView.h"
 #import "Options.h"
