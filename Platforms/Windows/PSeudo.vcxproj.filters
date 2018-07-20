@@ -1,102 +1,135 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{b15f9f2b-cc2d-433b-b4e9-21debee83199}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Source">
+      <UniqueIdentifier>{fb263044-bd1c-4d6d-b7d0-17d7c379d33e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Source\Bus">
+      <UniqueIdentifier>{f0b5845d-ca0a-453b-902b-32a086b74948}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\CD">
+      <UniqueIdentifier>{9ab8bb73-b3a0-468d-a807-73236e3ebb1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Counters">
+      <UniqueIdentifier>{97297058-c470-4e21-b001-47c005e7647e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Hardware">
+      <UniqueIdentifier>{7b71f962-a27d-4c61-a8b6-ee40357f490f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Mem">
+      <UniqueIdentifier>{8dbfee9e-c165-4737-af73-6d0e82ee6360}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics">
+      <UniqueIdentifier>{3f9c83c6-3fdb-4498-a399-22b3b191cfa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics\Cache">
+      <UniqueIdentifier>{da7e2645-a7a9-487f-826b-92f278132341}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics\Draw">
+      <UniqueIdentifier>{0b906562-496b-45ee-ae1d-bf7f199507bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sound">
+      <UniqueIdentifier>{ad6ed695-109d-45d0-b1fd-7f1c9560b85d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\R3000A">
+      <UniqueIdentifier>{d5cbfd3f-3453-489a-8b27-b596eae15225}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\R3000A\GTE">
+      <UniqueIdentifier>{6a0c1d06-72ee-41b3-8f29-a3c99aa4052c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\SIO">
+      <UniqueIdentifier>{e8af0c97-3fdc-4bcb-950b-b76a4c1b8660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\PSeudo">
+      <UniqueIdentifier>{9e82197c-cd0b-46bf-935e-e8c2048dd749}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Bus.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Cache.cc">
-      <Filter>Source Files</Filter>
+      <Filter>Source\Bus</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\CD.cc">
-      <Filter>Source Files</Filter>
+      <Filter>Source\CD</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Counters.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Draw.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\GTE.cc">
-      <Filter>Source Files</Filter>
+      <Filter>Source\Counters</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Hardware.cc">
-      <Filter>Source Files</Filter>
+      <Filter>Source\Hardware</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Mem.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\PSeudo.cc">
-      <Filter>Source Files</Filter>
+      <Filter>Source\Mem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\R3000A.cc">
-      <Filter>Source Files</Filter>
+      <Filter>Source\R3000A</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\SIO.cc">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\Source\GTE.cc">
+      <Filter>Source\R3000A\GTE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\PSeudo.cc">
+      <Filter>Source\PSeudo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Cache.cc">
+      <Filter>Source\Graphics\Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Draw.cc">
+      <Filter>Source\Graphics\Draw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics.cc">
+      <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Sound.cc">
-      <Filter>Source Files</Filter>
+      <Filter>Source\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\SIO.cc">
+      <Filter>Source\SIO</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Bus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Cache.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source\Bus</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\CD.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source\CD</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Counters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Draw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Global.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Graphics.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source\Counters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Hardware.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source\Hardware</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Mem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\PSeudo.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source\Mem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\R3000A.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source\R3000A</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\SIO.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\..\Source\PSeudo.h">
+      <Filter>Source\PSeudo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Cache.h">
+      <Filter>Source\Graphics\Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Draw.h">
+      <Filter>Source\Graphics\Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Sound.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\SIO.h">
+      <Filter>Source\SIO</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Global.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

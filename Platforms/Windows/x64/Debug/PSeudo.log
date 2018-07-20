@@ -1,0 +1,217 @@
+﻿clang-cl.exe : warning : argument unused during compilation: '/Gm' [-Wunused-command-line-argument]
+..\..\Source\Cache.cc(11,16): warning : suggest braces around initialization of subobject [-Wmissing-braces]
+          tc = { 0 };
+                 ^
+                 {}
+..\..\Source\Cache.cc(51,13): warning : suggest braces around initialization of subobject [-Wmissing-braces]
+      tex = { 0 };
+              ^
+              {}
+..\..\Source\Cache.cc(51,13): warning : suggest braces around initialization of subobject [-Wmissing-braces]
+      tex = { 0 };
+              ^
+              {}
+  3 warnings generated.
+..\..\Source\Counters.cc(106,46): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo RTC Write(%u): 0x%x", sizeof(T), (addr & 0xf));
+                                   ~~          ^~~~~~~~~
+                                   %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Counters.cc(109,29):  note: in instantiation of function template specialization 'CstrCounters::write<unsigned int>' requested here
+  template void CstrCounters::write<uw>(uw, uw);
+                              ^
+..\..\Source\Counters.cc(106,46): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo RTC Write(%u): 0x%x", sizeof(T), (addr & 0xf));
+                                   ~~          ^~~~~~~~~
+                                   %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Counters.cc(110,29):  note: in instantiation of function template specialization 'CstrCounters::write<unsigned short>' requested here
+  template void CstrCounters::write<uh>(uw, uh);
+                              ^
+  2 warnings generated.
+..\..\Source\Draw.cc(245,26): warning : unused variable 'b' [-Wunused-variable]
+                  const ub b = opaqueFunc(setup->transparent);
+                           ^
+..\..\Source\Draw.cc(294,26): warning : unused variable 'b' [-Wunused-variable]
+                  const ub b = opaqueFunc(setup->transparent);
+                           ^
+  2 warnings generated.
+..\..\Source\Graphics.cc(16,14): warning : suggest braces around initialization of subobject [-Wmissing-braces]
+      pipe = { 0 };
+               ^
+               {}
+..\..\Source\Graphics.cc(82,30): warning : suggest braces around initialization of subobject [-Wmissing-braces]
+                      pipe = { 0 };
+                               ^
+                               {}
+  2 warnings generated.
+..\..\Source\Hardware.cc(95,53): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo HW Write(%u): 0x%x <- 0x%x", sizeof(T), addr, data);
+                                  ~~                  ^~~~~~~~~
+                                  %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Hardware.cc(98,29):  note: in instantiation of function template specialization 'CstrHardware::write<unsigned int>' requested here
+  template void CstrHardware::write<uw>(uw, uw);
+                              ^
+..\..\Source\Hardware.cc(95,53): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo HW Write(%u): 0x%x <- 0x%x", sizeof(T), addr, data);
+                                  ~~                  ^~~~~~~~~
+                                  %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Hardware.cc(99,29):  note: in instantiation of function template specialization 'CstrHardware::write<unsigned short>' requested here
+  template void CstrHardware::write<uh>(uw, uh);
+                              ^
+..\..\Source\Hardware.cc(95,53): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo HW Write(%u): 0x%x <- 0x%x", sizeof(T), addr, data);
+                                  ~~                  ^~~~~~~~~
+                                  %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Hardware.cc(100,29):  note: in instantiation of function template specialization 'CstrHardware::write<unsigned char>' requested here
+  template void CstrHardware::write<ub>(uw, ub);
+                              ^
+..\..\Source\Hardware.cc(158,44): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo HW Read(%u): 0x%x", sizeof(T), addr);
+                                 ~~          ^~~~~~~~~
+                                 %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Hardware.cc(162,27):  note: in instantiation of function template specialization 'CstrHardware::read<unsigned int>' requested here
+  template uw CstrHardware::read<uw>(uw);
+                            ^
+..\..\Source\Hardware.cc(158,44): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo HW Read(%u): 0x%x", sizeof(T), addr);
+                                 ~~          ^~~~~~~~~
+                                 %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Hardware.cc(163,27):  note: in instantiation of function template specialization 'CstrHardware::read<unsigned short>' requested here
+  template uh CstrHardware::read<uh>(uw);
+                            ^
+..\..\Source\Hardware.cc(158,44): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo HW Read(%u): 0x%x", sizeof(T), addr);
+                                 ~~          ^~~~~~~~~
+                                 %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Hardware.cc(164,27):  note: in instantiation of function template specialization 'CstrHardware::read<unsigned char>' requested here
+  template ub CstrHardware::read<ub>(uw);
+                            ^
+  6 warnings generated.
+..\..\Source\Mem.cc(37,58): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+          printx("/// PSeudo Mem Write(%u): 0x%x <- 0x%x", sizeof(T), addr, data);
+                                       ~~                  ^~~~~~~~~
+                                       %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Mem.cc(41,24):  note: in instantiation of function template specialization 'CstrMem::write<unsigned int>' requested here
+  template void CstrMem::write<uw>(uw, uw);
+                         ^
+..\..\Source\Mem.cc(37,58): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+          printx("/// PSeudo Mem Write(%u): 0x%x <- 0x%x", sizeof(T), addr, data);
+                                       ~~                  ^~~~~~~~~
+                                       %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Mem.cc(42,24):  note: in instantiation of function template specialization 'CstrMem::write<unsigned short>' requested here
+  template void CstrMem::write<uh>(uw, uh);
+                         ^
+..\..\Source\Mem.cc(37,58): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+          printx("/// PSeudo Mem Write(%u): 0x%x <- 0x%x", sizeof(T), addr, data);
+                                       ~~                  ^~~~~~~~~
+                                       %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Mem.cc(43,24):  note: in instantiation of function template specialization 'CstrMem::write<unsigned char>' requested here
+  template void CstrMem::write<ub>(uw, ub);
+                         ^
+..\..\Source\Mem.cc(63,45): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo Mem Read(%u): 0x%x", sizeof(T), addr);
+                                  ~~          ^~~~~~~~~
+                                  %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Mem.cc(67,22):  note: in instantiation of function template specialization 'CstrMem::read<unsigned int>' requested here
+  template uw CstrMem::read<uw>(uw);
+                       ^
+..\..\Source\Mem.cc(63,45): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo Mem Read(%u): 0x%x", sizeof(T), addr);
+                                  ~~          ^~~~~~~~~
+                                  %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Mem.cc(68,22):  note: in instantiation of function template specialization 'CstrMem::read<unsigned short>' requested here
+  template uh CstrMem::read<uh>(uw);
+                       ^
+..\..\Source\Mem.cc(63,45): warning : format specifies type 'unsigned int' but the argument has type 'unsigned long long' [-Wformat]
+      printx("/// PSeudo Mem Read(%u): 0x%x", sizeof(T), addr);
+                                  ~~          ^~~~~~~~~
+                                  %llu
+  ..\..\Source/PSeudo.h(4,18):  note: expanded from macro 'printx'
+      printf(text, __VA_ARGS__); \
+                   ^~~~~~~~~~~
+  ..\..\Source\Mem.cc(69,22):  note: in instantiation of function template specialization 'CstrMem::read<unsigned char>' requested here
+  template ub CstrMem::read<ub>(uw);
+                       ^
+  6 warnings generated.
+..\..\Source\PSeudo.cc(9,16): warning : 'fopen' is deprecated: This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details. [-Wdeprecated-declarations]
+      FILE *fp = fopen(path, "rb");
+                 ^
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(204,16):  note: 'fopen' has been explicitly marked deprecated here
+  _Check_return_ _CRT_INSECURE_DEPRECATE(fopen_s)
+                 ^
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\vcruntime.h(269,55):  note: expanded from macro '_CRT_INSECURE_DEPRECATE'
+          #define _CRT_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT(    \
+                                                        ^
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\vcruntime.h(259,47):  note: expanded from macro '_CRT_DEPRECATE_TEXT'
+  #define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))
+                                                ^
+..\..\Source\PSeudo.cc(54,16): warning : 'fopen' is deprecated: This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details. [-Wdeprecated-declarations]
+      FILE *fp = fopen(path, "rb");
+                 ^
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(204,16):  note: 'fopen' has been explicitly marked deprecated here
+  _Check_return_ _CRT_INSECURE_DEPRECATE(fopen_s)
+                 ^
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\vcruntime.h(269,55):  note: expanded from macro '_CRT_INSECURE_DEPRECATE'
+          #define _CRT_INSECURE_DEPRECATE(_Replacement) _CRT_DEPRECATE_TEXT(    \
+                                                        ^
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\vcruntime.h(259,47):  note: expanded from macro '_CRT_DEPRECATE_TEXT'
+  #define _CRT_DEPRECATE_TEXT(_Text) __declspec(deprecated(_Text))
+                                                ^
+..\..\Source\PSeudo.cc(87,18): warning : unused variable 'put' [-Wunused-variable]
+              char put = toupper(r[4] & 0xff);
+                   ^
+  3 warnings generated.
+..\..\Source\R3000A.cc(45,15): warning : suggest braces around initialization of subobject [-Wmissing-braces]
+      cop2c = { 0 };
+                ^
+                {}
+..\..\Source\R3000A.cc(46,15): warning : suggest braces around initialization of subobject [-Wmissing-braces]
+      cop2d = { 0 };
+                ^
+                {}
+  2 warnings generated.
+..\..\Source\Sound.cc(15,18): warning : suggest braces around initialization of subobject [-Wmissing-braces]
+          item = { 0 };
+                   ^
+                   {}
+  1 warning generated.
+  PSeudo.vcxproj -> C:\Users\Ντένις\Documents\pseudo\Platforms\Windows\x64\Debug\PSeudo.exe
+  PSeudo.vcxproj -> C:\Users\Ντένις\Documents\pseudo\Platforms\Windows\x64\Debug\PSeudo.pdb (Partial PDB)
