@@ -131,5 +131,8 @@
     <ClInclude Include="..\..\Source\Global.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

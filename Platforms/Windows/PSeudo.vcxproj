@@ -48,6 +48,7 @@
     <ClInclude Include="..\..\Source\R3000A.h" />
     <ClInclude Include="..\..\Source\SIO.h" />
     <ClInclude Include="..\..\Source\Sound.h" />
+    <ClInclude Include="Global.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
