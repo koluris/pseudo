@@ -46,6 +46,9 @@
     <Filter Include="Source\PSeudo">
       <UniqueIdentifier>{9e82197c-cd0b-46bf-935e-e8c2048dd749}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI\Window">
+      <UniqueIdentifier>{f1f56d4e-3318-4aca-a5b1-78af8b3b6753}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Bus.cc">
@@ -88,7 +91,7 @@
       <Filter>Source\SIO</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
-      <Filter>GUI</Filter>
+      <Filter>GUI\Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

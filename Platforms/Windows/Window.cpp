@@ -28,21 +28,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     WNDCLASS wc = {
-        0, WndProc, 0, 0, hInst, LoadIcon(hInst, (LPCSTR)IDI_MAIN), LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_WINDOW+1), NULL, szWindowClass
+        0, WndProc, 0, 0, hInst, LoadIcon(hInst, (LPCSTR)0), LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_WINDOW+1), 0, "wc"
     };
     
-    if (!RegisterClass(&wc)) {
-        MessageBox(NULL, _T("Call to RegisterClassEx failed!"), _T("Win32 Guided Tour"), NULL);
+    if (!MakeClass(&wc)) {
+		MesBox(0, "MakeClass failed", "PSeudo", 0);
         
         return 1;
     }
     
     hInst = hInstance;
     
-    HWND hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 500, 100, NULL, NULL, hInstance, NULL);
+    HWND hWnd = CreateWindow("wc", "PSeudoU+2122 : Alpha", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 500, 100, 0, 0, hInstance, 0);
     
     if (!hWnd) {
-        MessageBox(NULL, _T("Call to CreateWindow failed!"), _T("Win32 Guided Tour"), NULL);
+		MesBox(0, "CreateWindow failed", "PSeudo", 0);
         
         return 1;
     }
@@ -51,9 +51,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     UpdateWindow(hWnd);
     
     MSG mes;
-    while(GetMessage(&mes, NULL, 0, 0)) {
-        TranslateMessage(&mes);
-        DispatchMessage(&mes);
+    while(GetMes(&mes, 0, 0, 0)) {
+		TranslateMes(&mes);
+		 DispatchMes(&mes);
     }
     
     return (int)mes.wParam;
