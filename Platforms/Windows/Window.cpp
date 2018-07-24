@@ -1,68 +1,60 @@
 #include "Global.h"
 
 
-const char g_szClassName[] = "myWindowClass";
+HWND hWnd;
+HINSTANCE hInst;
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-	switch (msg) {
-	case WM_CLOSE:
-		DestroyWindow(hwnd);
-		break;
-
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-
-	default:
-		return DefWindowProc(hwnd, msg, wParam, lParam);
-	}
-	return 0;
+LRESULT CALLBACK WndProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
+    switch(mes) {
+        case WM_CREATE:
+            printf("WM_CREATE\n");
+            return 0;
+            
+        case WM_COMMAND:
+            printf("WM_COMMAND\n");
+            return 0;
+            
+        case WM_CLOSE:
+            printf("WM_CLOSE\n");
+            return 0;
+            
+        case WM_DESTROY:
+            printf("WM_DESTROY\n");
+            return 0;
+    }
+    
+    return DefWindowProc(hWnd, mes, wParam, lParam);
 }
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-	WNDCLASSEX wc;
-	HWND hwnd;
-	MSG Msg;
-
-	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.style = 0;
-	wc.lpfnWndProc = WndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = g_szClassName;
-	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-
-	if (!RegisterClassEx(&wc)) {
-		MessageBox(NULL, "Window Registration Failed!", "Error!",
-			MB_ICONEXCLAMATION | MB_OK);
-		return 0;
-	}
-
-	hwnd = CreateWindowEx(
-		WS_EX_CLIENTEDGE,
-		g_szClassName,
-		"The title of my window",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 240, 120,
-		NULL, NULL, hInstance, NULL);
-
-	if (hwnd == NULL) {
-		MessageBox(NULL, "Window Creation Failed!", "Error!",
-			MB_ICONEXCLAMATION | MB_OK);
-		return 0;
-	}
-
-	ShowWindow(hwnd, nCmdShow);
-	UpdateWindow(hwnd);
-
-	while (GetMessage(&Msg, NULL, 0, 0) > 0) {
-		TranslateMessage(&Msg);
-		DispatchMessage(&Msg);
-	}
-	return Msg.wParam;
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    WNDCLASS wc = {
+        0, WndProc, 0, 0, hInst, LoadIcon(hInst, (LPCSTR)IDI_MAIN), LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_WINDOW+1), NULL, szWindowClass
+    };
+    
+    if (!RegisterClass(&wc)) {
+        MessageBox(NULL, _T("Call to RegisterClassEx failed!"), _T("Win32 Guided Tour"), NULL);
+        
+        return 1;
+    }
+    
+    hInst = hInstance;
+    
+    HWND hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 500, 100, NULL, NULL, hInstance, NULL);
+    
+    if (!hWnd) {
+        MessageBox(NULL, _T("Call to CreateWindow failed!"), _T("Win32 Guided Tour"), NULL);
+        
+        return 1;
+    }
+    
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
+    
+    MSG mes;
+    while(GetMessage(&mes, NULL, 0, 0)) {
+        TranslateMessage(&mes);
+        DispatchMessage(&mes);
+    }
+    
+    return (int)mes.wParam;
 }
