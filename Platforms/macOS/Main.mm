@@ -190,6 +190,7 @@
 }
 
 - (void)setWindowResolution {
+    [[self.openGLView openGLContext] makeCurrentContext];
     NSChars *code = [self.options readTextFrom:@"windowResolution"];
     
     if (![code isEqualToChars:@""]) {

@@ -21,7 +21,7 @@ void CstrDraw::reset() {
     spriteTP = 0;
     
     // OpenGL
-    GLViewport(0, 0, window.h, window.v);
+    GLViewport(0, 0, window.h * 2, window.v * 2);
     
     if (window.multiplier > 1) { // Crap
         GLLineWidth(window.multiplier);
