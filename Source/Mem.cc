@@ -33,9 +33,11 @@ void CstrMem::write(uw addr, T data) {
         return;
     }
     
-    if ((addr) != 0xfffe0130) { // Known: 0x804, 0x800, 0x1e988
-        printx("/// PSeudo Mem Write(%u): 0x%x <- 0x%x", (uw)sizeof(T), addr, data);
+    if ((addr) == 0xfffe0130) { // Known: 0x804, 0x800, 0x1e988
+        return;
     }
+    
+    printx("/// PSeudo Mem Write(%u): 0x%x <- 0x%x", (uw)sizeof(T), addr, data);
 }
 
 template void CstrMem::write<uw>(uw, uw);

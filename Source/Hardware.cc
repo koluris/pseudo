@@ -85,7 +85,7 @@ void CstrHardware::write(uw addr, T data) {
                     
                 /* unused */
                 case 0x1040: // SIO Data
-                case 0x2041:
+                case 0x2041: // DIP Switch?
                     accessMem(mem.hwr, ub) = data;
                     return;
             }
@@ -112,10 +112,7 @@ T CstrHardware::read(uw addr) {
                 case 0x1060: // RAM Size
                 case 0x1070: // iStatus
                 case 0x1074: // iMask
-                case 0x1098: // DMA
-                case 0x10a8:
-                case 0x10c8:
-                case 0x10e8:
+                case 0x1098 ... 0x10e8: // DMA
                 case 0x10f0: // DPCR
                 case 0x10f4: // DICR
                 case 0x1100 ... 0x1110: // Rootcounters

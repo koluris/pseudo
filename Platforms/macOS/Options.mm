@@ -18,19 +18,19 @@
         [self writeNumber:1
                        to:@"firstRun"];
         
-        [self writeNumber:0
+        [self writeNumber:1
                        to:@"cpuMode"];
         
         [self writeNumber:0
                        to:@"skipBootScreen"];
         
-        [self writeNumber:0
+        [self writeNumber:1
                        to:@"windowResolution"];
         
-        [self writeNumber:1
+        [self writeNumber:0
                        to:@"smoothTextures"];
         
-        [self writeNumber:2
+        [self writeNumber:1
                        to:@"fpsLimit"];
         
         [self writeNumber:1

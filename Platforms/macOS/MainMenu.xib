@@ -110,13 +110,13 @@
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cWs-EW-cq1">
                         <rect key="frame" x="146" y="248" width="143" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="Compiler (Faster)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="bN4-h8-S80" id="zFG-k3-b4e">
+                        <popUpButtonCell key="cell" type="push" title="Compiler (Faster)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="bN4-h8-S80" id="zFG-k3-b4e">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" id="0Tv-e7-76C">
                                 <items>
-                                    <menuItem title="Compiler (Faster)" state="on" id="bN4-h8-S80"/>
-                                    <menuItem title="Interpreter" id="qzV-hB-AdX"/>
+                                    <menuItem title="Compiler (Faster)" enabled="NO" id="bN4-h8-S80"/>
+                                    <menuItem title="Interpreter" state="on" id="qzV-hB-AdX"/>
                                 </items>
                             </menu>
                         </popUpButtonCell>
@@ -178,14 +178,14 @@
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lb2-AB-c0b">
                         <rect key="frame" x="146" y="129" width="102" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="No" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="qak-Ts-hZW" id="5BZ-Kg-P1j">
+                        <popUpButtonCell key="cell" type="push" title="No" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="qak-Ts-hZW" id="5BZ-Kg-P1j">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" id="9pD-mg-sCz">
                                 <items>
-                                    <menuItem title="No" state="on" id="qak-Ts-hZW"/>
-                                    <menuItem title="60 (PAL)" id="Idj-Ed-hn8"/>
-                                    <menuItem title="50 (NTSC)" id="PUj-6z-iNf"/>
+                                    <menuItem title="No" enabled="NO" id="qak-Ts-hZW"/>
+                                    <menuItem title="60 (NTSC)" state="on" id="Idj-Ed-hn8"/>
+                                    <menuItem title="50 (PAL)" id="PUj-6z-iNf"/>
                                 </items>
                             </menu>
                         </popUpButtonCell>
