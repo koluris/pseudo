@@ -77,8 +77,9 @@ void CstrCounters::update() {
     
     // VBlank
     vbk += PSX_BIAS;
-    
+
     if (vbk >= (vs.isVideoPAL ? PSX_VSYNC_PAL : PSX_VSYNC_NTSC)) { vbk = 0;
+        bus.interruptSet(CstrBus::INT_VSYNC);
         vs.refresh();
     }
 }

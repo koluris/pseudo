@@ -77,18 +77,18 @@ void CstrMips::run() {
     while(!psx.suspended) {
         step(false);
         
-//        if (opcodeCount >= LAZY_CLOCK) {
-//            rootc.update();
-//            bus.interruptsUpdate();
-//
-//            // Exceptions
-//            if (data32 & mask32) {
-//                if ((copr[12] & 0x401) == 0x401) {
-//                    exception(0x400, false);
-//                }
-//            }
-//            opcodeCount %= LAZY_CLOCK;
-//        }
+        if (opcodeCount >= LAZY_CLOCK) {
+            rootc.update();
+            bus.interruptsUpdate();
+            
+            if (data32 & mask32) {
+                if ((copr[12] & 0x401) == 0x401) {
+                    exception(0x400, false);
+                }
+            }
+            
+            opcodeCount %= LAZY_CLOCK;
+        }
     }
 }
 
@@ -431,24 +431,10 @@ void CstrMips::step(bool branched) {
     }
 }
 
-int count2 = 0; // Temp hack
-
 void CstrMips::branch(uw addr) {
     // Execute instruction in slot
     step (true);
     setpc(addr);
-    
-    if ((++count2 % 4) == 0) { count2 = 0;
-        rootc.update();
-        bus.interruptsUpdate();
-        
-        // Exceptions
-        if (data32 & mask32) {
-            if ((copr[12] & 0x401) == 0x401) {
-                exception(0x400, false);
-            }
-        }
-    }
 }
 
 void CstrMips::exception(uw code, bool branched) {
