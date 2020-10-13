@@ -4,7 +4,7 @@ class CstrCounters {
         PSX_CLOCK      = 33868800,
         PSX_VSYNC_NTSC = PSX_CLOCK / 60,
         PSX_VSYNC_PAL  = PSX_CLOCK / 50,
-        PSX_HSYNC      = PSX_CLOCK / 15734
+        PSX_HSYNC      = PSX_CLOCK / 30000 // ?
     };
     
     enum {
