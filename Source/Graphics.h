@@ -94,9 +94,9 @@ class CstrGraphics {
     uw modeDMA;
     uh vpos, vdiff;
     
-    int fetchMem(uh *, sw);
     void dataWrite(uw *, sw);
     void dataRead (uw *, sw);
+    int fetchMem(uh *, sw);
     
 public:
     CstrGraphics() {

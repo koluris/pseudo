@@ -161,6 +161,57 @@ uw CstrGraphics::read(uw addr) {
     return 0;
 }
 
+void CstrGraphics::dataWrite(uw *ptr, sw size) {
+    int i = 0;
+    
+    while (i < size) {
+        if (modeDMA == GPU_DMA_MEM2VRAM) {
+            if ((i += fetchMem((uh *)ptr, size - i)) >= size) {
+                continue;
+            }
+            ptr += i;
+        }
+        
+        ret.data = *ptr++;
+        i++;
+        
+        if (!pipe.size) {
+            ub prim  = GPU_COMMAND(ret.data);
+            ub count = pSize[prim];
+            
+            if (count) {
+                pipe.data[0] = ret.data;
+                pipe.prim = prim;
+                pipe.size = count;
+                pipe.row  = 1;
+            }
+            else {
+                continue;
+            }
+        }
+        else {
+            pipe.data[pipe.row] = ret.data;
+            
+            if (pipe.size > 128) { // Lines with termination code
+                if ((pipe.size == 254 && pipe.row >= 3) || (pipe.size == 255 && pipe.row >= 4 && !(pipe.row & 1))) {
+                    if ((pipe.data[pipe.row] & 0xf000f000) == 0x50005000) {
+                        pipe.row = pipe.size - 1;
+                    }
+                }
+            }
+            
+            pipe.row++;
+        }
+        
+        if (pipe.size == pipe.row) {
+            pipe.size = 0;
+            pipe.row  = 0;
+            
+            draw.primitive(pipe.prim, pipe.data);
+        }
+    }
+}
+
 int CstrGraphics::fetchMem(uh *ptr, sw size) {
     if (!vrop.enabled) {
         modeDMA = GPU_DMA_NONE;
@@ -211,57 +262,6 @@ VRAM_END:
         count++;
     }
     return count >> 1;
-}
-
-void CstrGraphics::dataWrite(uw *ptr, sw size) {
-    int i = 0;
-    
-    while (i < size) {
-        if (modeDMA == GPU_DMA_MEM2VRAM) {
-            if ((i += fetchMem((uh *)ptr, size - i)) >= size) {
-                continue;
-            }
-            ptr += i;
-        }
-        
-        ret.data = *ptr++;
-        i++;
-        
-        if (!pipe.size) {
-            ub prim  = GPU_COMMAND(ret.data);
-            ub count = pSize[prim];
-            
-            if (count) {
-                pipe.data[0] = ret.data;
-                pipe.prim = prim;
-                pipe.size = count;
-                pipe.row  = 1;
-            }
-            else {
-                continue;
-            }
-        }
-        else {
-            pipe.data[pipe.row] = ret.data;
-            
-            if (pipe.size > 128) { // Lines with termination code
-                if ((pipe.size == 254 && pipe.row >= 3) || (pipe.size == 255 && pipe.row >= 4 && !(pipe.row & 1))) {
-                    if ((pipe.data[pipe.row] & 0xf000f000) == 0x50005000) {
-                        pipe.row = pipe.size - 1;
-                    }
-                }
-            }
-            
-            pipe.row++;
-        }
-        
-        if (pipe.size == pipe.row) {
-            pipe.size = 0;
-            pipe.row  = 0;
-            
-            draw.primitive(pipe.prim, pipe.data);
-        }
-    }
 }
 
 void CstrGraphics::photoMove(uw *packets) {
