@@ -70,7 +70,7 @@ void CstrMips::bootstrap() {
 }
 
 void CstrMips::run() {
-    const int threshold = 64;
+    const int threshold = 100;
     
     while(!psx.suspended) {
         step(false);
