@@ -69,16 +69,14 @@ void CstrMips::bootstrap() {
     }
 }
 
-#define LAZY_CLOCK \
-    64
-
 void CstrMips::run() {
-    // Go!
+    const int threshold = 64;
+    
     while(!psx.suspended) {
         step(false);
         
-        if (opcodeCount >= LAZY_CLOCK) {
-            rootc.update();
+        if (threshold <= opcodeCount) {
+            rootc.update(threshold);
             bus.interruptsUpdate();
             
             if (data32 & mask32) {
@@ -87,7 +85,7 @@ void CstrMips::run() {
                 }
             }
             
-            opcodeCount %= LAZY_CLOCK;
+            opcodeCount = 0;
         }
     }
 }
