@@ -11,7 +11,7 @@ class CstrCache {
     
     struct {
         struct { // Mem position of texture and color lookup table
-			uw w, h, cc;
+            uw w, h, cc;
         } pos;
         
         GLuint uid, tex;

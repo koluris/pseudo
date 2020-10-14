@@ -49,25 +49,25 @@ public:
         
         // OpenAL
         device = alcOpenDevice(NULL);
-
+        
         if (!device) {
             printf("ALC Device error\n");
         }
-
+        
         ctx = alcCreateContext(device, NULL);
         alcMakeContextCurrent(ctx);
-
+        
         if (!ctx) {
             printf("ALC Context error\n");
         }
-
+        
         alGenSources(1, &source);
         alGenBuffers(SPU_ALC_BUF_AMOUNT, bfr);
-
+        
         for (auto &item : bfr) {
             alBufferData(item, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
         }
-
+        
         alSourceQueueBuffers(source, SPU_ALC_BUF_AMOUNT, bfr);
     }
     

@@ -81,7 +81,7 @@ void CstrAudio::decodeStream() {
                             audioSet(0x0f, 0xc);
                             audioSet(0xf0, 0x8);
                         }
-
+                        
                         if ((op & 4) && (!ch.repeat)) {
                             ch.raddr = ch.paddr - 16;
                         }
@@ -107,17 +107,17 @@ void CstrAudio::decodeStream() {
         // OpenAL
         ALint processed;
         alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-
+        
         if (processed >= SPU_ALC_BUF_AMOUNT) {
             // We have to free buffers
             printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
         }
-
+        
         while(--processed < 0) {
             freeBuffers();
             alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
         }
-
+        
         ALuint buffer;
         alSourceUnqueueBuffers(source, 1, &buffer);
         alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
@@ -128,7 +128,7 @@ void CstrAudio::decodeStream() {
 void CstrAudio::freeBuffers() {
     ALint state;
     alGetSourcei(source, AL_SOURCE_STATE, &state);
-
+    
     if (state != AL_PLAYING) {
         alSourceStream(source);
     }
@@ -139,29 +139,29 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
                 ub ch = SPU_CHANNEL(addr);
-
+                
                 switch(addr & 0xf) {
                     case 0x0: // Volume L
                         spuVoices[ch].volumeL = setVolume(data);
                         return;
-
+                        
                     case 0x2: // Volume R
                         spuVoices[ch].volumeR = setVolume(data);
                         return;
-
+                        
                     case 0x4: // Pitch
                         spuVoices[ch].freq = MIN(data, 0x3fff) << 4;
                         return;
-
+                        
                     case 0x6: // Sound Address
                         spuVoices[ch].saddr = spuMemC + (data << 3);
                         return;
-
+                        
                     case 0xe: // Return Address
                         spuVoices[ch].raddr = spuMemC + (data << 3);
                         spuVoices[ch].repeat = true;
                         return;
-
+                        
                     /* unused */
                     case 0x8:
                     case 0xa:
@@ -169,29 +169,29 @@ void CstrAudio::write(uw addr, uh data) {
                         accessMem(mem.hwr, uh) = data;
                         return;
                 }
-
+                
                 printx("/// PSeudo SPU write phase: 0x%x <- 0x%x", (addr & 0xf), data);
                 return;
             }
-
+            
         case 0x1d88: // Sound On 1
             voiceOn(data);
             return;
-
+            
         case 0x1d8a: // Sound On 2
             voiceOn(data << 16);
             return;
-
+            
         case 0x1da6: // Transfer Address
             spuAddr = data << 3;
             return;
-
+            
         case 0x1da8: // Data
             spuMem[spuAddr >> 1] = data;
             spuAddr += 2;
             spuAddr &= 0x7ffff;
             return;
-
+            
         /* unused */
         case 0x1d80: // Volume L
         case 0x1d82: // Volume R
@@ -218,7 +218,7 @@ void CstrAudio::write(uw addr, uh data) {
             accessMem(mem.hwr, uh) = data;
             return;
     }
-
+    
     printx("/// PSeudo SPU write: 0x%x <- 0x%x", addr, data);
 }
 
@@ -227,7 +227,7 @@ uh CstrAudio::read(uw addr) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
                 ub ch = SPU_CHANNEL(addr);
-
+                
                 switch(addr & 0xf) {
                     case 0xc: // Hack
                         if (spuVoices[ch].isNew) {
@@ -240,7 +240,7 @@ uh CstrAudio::read(uw addr) {
                             return (spuVoices[ch].raddr - spuMemC) >> 3;
                         }
                         return 0;
-
+                        
                     /* unused */
                     case 0x0:
                     case 0x2:
@@ -250,14 +250,14 @@ uh CstrAudio::read(uw addr) {
                     case 0xa:
                         return accessMem(mem.hwr, uh);
                 }
-
+                
                 printx("/// PSeudo SPU read phase: 0x%x", (addr & 0xf));
                 return 0;
             }
-
+            
         case 0x1da6: // Transfer Address
             return spuAddr >> 3;
-
+            
         /* unused */
         case 0x1d88: // Sound On 1
         case 0x1d8a: // Sound On 2
@@ -276,7 +276,7 @@ uh CstrAudio::read(uw addr) {
         case 0x1e00 ... 0x1e0e: // ?
             return accessMem(mem.hwr, uh);
     }
-
+    
     printx("/// PSeudo SPU read: 0x%x", addr);
     return 0;
 }
@@ -284,7 +284,7 @@ uh CstrAudio::read(uw addr) {
 void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
     uh *p = (uh *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
     uw size = (dma->bcr >> 16) * (dma->bcr & 0xffff) * 2;
-
+    
     switch(dma->chcr) {
         case 0x01000201: // Write
             for (uw i = 0; i < size; i++) {
@@ -293,7 +293,7 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
                 spuAddr &= 0x7ffff;
             }
             return;
-
+            
         case 0x01000200: // Read
             for (uw i = 0; i < size; i++) {
                 *p++ = spuMem[spuAddr >> 1];
@@ -302,6 +302,6 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
             }
             return;
     }
-
+    
     printx("/// PSeudo SPU DMA: 0x%x", dma->chcr);
 }
