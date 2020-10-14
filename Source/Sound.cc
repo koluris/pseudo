@@ -31,14 +31,11 @@ void CstrAudio::voiceOn(uw data) {
     }
 }
 
-void CstrAudio::voiceOff(uw data) {
-}
-
 void CstrAudio::write(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
-                int ch = spuChannel(addr);
+                ub ch = spuChannel(addr);
 
                 switch(addr & 0xf) {
                     case 0x0: // Volume L
@@ -82,14 +79,6 @@ void CstrAudio::write(uw addr, uh data) {
             voiceOn(data << 16);
             return;
 
-        case 0x1d8c: // Sound Off 1
-            voiceOff(data);
-            return;
-
-        case 0x1d8e: // Sound Off 2
-            voiceOff(data << 16);
-            return;
-
         case 0x1da6: // Transfer Address
             spuAddr = data << 3;
             return;
@@ -105,6 +94,8 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1d82: // Volume R
         case 0x1d84: // Reverb Volume L
         case 0x1d86: // Reverb Volume R
+        case 0x1d8c: // Sound Off 1
+        case 0x1d8e: // Sound Off 2
         case 0x1d90: // FM Mode On 1
         case 0x1d92: // FM Mode On 2
         case 0x1d94: // Noise Mode On 1
@@ -132,7 +123,7 @@ uh CstrAudio::read(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
-                int ch = spuChannel(addr);
+                ub ch = spuChannel(addr);
 
                 switch(addr & 0xf) {
                     case 0xc: // Hack

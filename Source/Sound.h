@@ -34,8 +34,7 @@ class CstrAudio {
     } spuVoices[SPU_MAX_CHAN];
     
     sh setVolume(sh);
-    void voiceOn (uw);
-    void voiceOff(uw);
+    void voiceOn(uw);
     void freeBuffers();
     
 public:
