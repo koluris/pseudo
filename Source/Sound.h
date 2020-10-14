@@ -1,19 +1,18 @@
 class CstrAudio {
     enum {
-        SPU_ALC_BUF_AMOUNT = 16,
         SPU_SAMPLE_RATE    = 44100,
         SPU_SAMPLE_SIZE    = 512,
         SPU_SAMPLE_COUNT   = SPU_SAMPLE_SIZE / 4,
-        SPU_MAX_CHAN       = 24 + 1
+        SPU_MAX_CHAN       = 24 + 1,
+        SPU_ALC_BUF_AMOUNT = 16
     };
     
     const int f[5][2] = {
         { 0, 0 }, { 60, 0 }, { 115, -52 }, { 98, -55 }, { 122, -60 }
     };
     
+    uh spuMem[256 * 1024]; ub *spuMemC;
     uh sbuf[SPU_SAMPLE_SIZE];
-    uh spuMem[256 * 1024];
-    ub *spuMemC;
     uw spuAddr;
     
     // OpenAL
@@ -23,25 +22,21 @@ class CstrAudio {
     ALuint bfr[SPU_ALC_BUF_AMOUNT];
     
     struct voices {
-        bool on, isNew, endLoop;
+        bool isNew, active, repeat;
+        sw spos, bpos, freq, sample;
+        sh volumeL, volumeR;
+        sw bfr[28], s[2];
         
         // Address
         ub *saddr; // Start
         ub *paddr; // Current
         ub *raddr; // Return
-        
-        sh volumeL, volumeR;
-        sw bpos, spos, freq, sample;
-        sw s_1, s_2;
-        sw bfr[28];
-        
     } spuVoices[SPU_MAX_CHAN];
     
     sh setVolume(sh);
     void voiceOn (uw);
     void voiceOff(uw);
-    void output();
-    void stream();
+    void freeBuffers();
     
 public:
     CstrAudio() {
@@ -87,14 +82,8 @@ public:
     
     void reset();
     void decodeStream();
-    
-    // Store
     void write(uw, uh);
-    
-    // Load
     uh read(uw);
-    
-    // DMA
     void executeDMA(CstrBus::castDMA *);
 };
 
