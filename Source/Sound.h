@@ -135,14 +135,12 @@ public:
     void reset();
     void write(uw, uh);
     uh read(uw);
-    int fillBuffer(char *stream, int size);
     void executeDMA(CstrBus::castDMA *);
     void decodeStream();
 };
 
 extern CstrAudio audio;
 
-#define H_SPUReverbAddr  0x0da2
 #define H_SPUirqAddr     0x0da4
 #define H_SPUaddr        0x0da6
 #define H_SPUdata        0x0da8
@@ -160,15 +158,10 @@ extern CstrAudio audio;
 #define H_FMod2          0x0d92
 #define H_Noise1         0x0d94
 #define H_Noise2         0x0d96
-#define H_RVBon1         0x0d98
-#define H_RVBon2         0x0d9a
 #define H_SPUMute1       0x0d9c
 #define H_SPUMute2       0x0d9e
-#define H_CDLeft         0x0db0
-#define H_CDRight        0x0db2
 #define H_ExtLeft        0x0db4
 #define H_ExtRight       0x0db6
-#define H_Reverb         0x0dc0
 #define H_SPUPitch0      0x0c04
 #define H_SPUPitch1      0x0c14
 #define H_SPUPitch2      0x0c24
@@ -243,31 +236,6 @@ extern CstrAudio audio;
 #define H_SPULoopAdr21  0x0d5e
 #define H_SPULoopAdr22  0x0d6e
 #define H_SPULoopAdr23  0x0d7e
-
-#define H_SPU_ADSRLevel0   0x0c08
-#define H_SPU_ADSRLevel1   0x0c18
-#define H_SPU_ADSRLevel2   0x0c28
-#define H_SPU_ADSRLevel3   0x0c38
-#define H_SPU_ADSRLevel4   0x0c48
-#define H_SPU_ADSRLevel5   0x0c58
-#define H_SPU_ADSRLevel6   0x0c68
-#define H_SPU_ADSRLevel7   0x0c78
-#define H_SPU_ADSRLevel8   0x0c88
-#define H_SPU_ADSRLevel9   0x0c98
-#define H_SPU_ADSRLevel10  0x0ca8
-#define H_SPU_ADSRLevel11  0x0cb8
-#define H_SPU_ADSRLevel12  0x0cc8
-#define H_SPU_ADSRLevel13  0x0cd8
-#define H_SPU_ADSRLevel14  0x0ce8
-#define H_SPU_ADSRLevel15  0x0cf8
-#define H_SPU_ADSRLevel16  0x0d08
-#define H_SPU_ADSRLevel17  0x0d18
-#define H_SPU_ADSRLevel18  0x0d28
-#define H_SPU_ADSRLevel19  0x0d38
-#define H_SPU_ADSRLevel20  0x0d48
-#define H_SPU_ADSRLevel21  0x0d58
-#define H_SPU_ADSRLevel22  0x0d68
-#define H_SPU_ADSRLevel23  0x0d78
 
 #define CTRL_IRQ                0x40
 #define CTRL_REVERB             0x80
