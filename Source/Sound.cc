@@ -10,12 +10,13 @@ void CstrAudio::init() {
     for (int i = 0; i < (MAXCHAN + 1); i++) {
         spuVoices[i].saddr = spuMemC;
         spuVoices[i].raddr = spuMemC;
-        spuVoices[i].pCurr = spuMemC;
+        spuVoices[i].paddr = spuMemC;
     }
 }
 
 void CstrAudio::reset() {
     spuAddr = 0xffffffff;
+    
     for (auto &item : spuVoices) {
         item = { 0 };
     }
@@ -25,7 +26,7 @@ void CstrAudio::voiceOn(uw data) {
     for (int n = 0; n < (MAXCHAN + 1); n++) {
         if (data & (1 << n) && spuVoices[n].saddr) {
             spuVoices[n].bNew = 1;
-            spuVoices[n].bIgnoreLoop = 0;
+            spuVoices[n].endLoop = false;
         }
     }
 }
@@ -64,7 +65,7 @@ void CstrAudio::write(uw addr, uh data) {
 
                     case 0xe: // Return Address
                         spuVoices[ch].raddr = spuMemC + (data << 3);
-                        spuVoices[ch].bIgnoreLoop = 1;
+                        spuVoices[ch].endLoop = true;
                         return;
 
                     /* unused */
@@ -199,84 +200,78 @@ uh CstrAudio::read(uw addr) {
     return 0;
 }
 
+#define audioSet(a, b) \
+    rest = (*ch.paddr & a) << b; \
+    if (rest & 0x8000) rest |= 0xffff0000; \
+    rest = (rest >> shift) + ((s[0] * f[predict][0] + s[1] * f[predict][1] + 32) >> 6); \
+    s[1] = s[0]; \
+    s[0] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX); \
+    ch.bfr[i++] = s[0]
+
 void CstrAudio::decodeStream() {
     while(!psx.suspended) {
-        int s_1, s_2;
-        
         memset(&sbuf, 0, SPU_SAMPLE_SIZE);
         
         for (int n = 0; n < (MAXCHAN + 1); n++) {
             auto &ch = spuVoices[n];
             
             if (ch.bNew) {
-                ch.pCurr = ch.saddr;
+                ch.paddr = ch.saddr;
                 ch.s_1 = 0;
                 ch.s_2 = 0;
                 ch.iSBPos = 28;
                 ch.bNew = 0;
-                ch.bOn = true;
+                ch.on = true;
                 ch.spos = 0x10000;
                 ch.sample = 0;
             }
             
-            if (ch.bOn == false) {
+            if (ch.on == false) {
                 continue;
             }
             
             for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
                 for (; ch.spos >= 0x10000; ch.spos -= 0x10000) {
                     if (ch.iSBPos == 28) {
-                        if (ch.pCurr == (ub *)-1) {
-                            ch.bOn = false;
+                        if (ch.paddr == (ub *)-1) {
+                            ch.on = false;
                             goto SPU_CHANNEL_END;
                         }
                         
-                        ch.iSBPos = 0;
-                        s_1 = ch.s_1;
-                        s_2 = ch.s_2;
+                        ub shift   = *ch.paddr & 0xf;
+                        ub predict = *ch.paddr++ >> 4;
+                        ub op      = *ch.paddr++;
                         
-                        ub predict = *ch.pCurr;
-                        ch.pCurr++;
-                        ub shift = predict & 0xf;
-                        predict >>= 4;
-                        ub op = *ch.pCurr++;
+                        sw s[2] = {
+                            ch.s_1,
+                            ch.s_2,
+                        };
+                        
+                        ch.iSBPos = 0;
 
-                        for (int i = 0, rest; i < 28; ch.pCurr++) {
-                            rest = (*ch.pCurr & 0x0f) << 12;
-                            if (rest & 0x8000) rest |= 0xffff0000;
-                            rest = rest >> shift;
-                            rest = rest + ((s_1 * f[predict][0]) >> 6) + ((s_2 * f[predict][1]) >> 6);
-                            s_2 = s_1;
-                            s_1 = rest;
-                            ch.SB[i++] = rest;
-                            
-                            rest = (*ch.pCurr & 0xf0) << 8;
-                            if (rest & 0x8000) rest |= 0xffff0000;
-                            rest = rest >> shift;
-                            rest = rest + ((s_1 * f[predict][0]) >> 6) + ((s_2 * f[predict][1]) >> 6);
-                            s_2 = s_1;
-                            s_1 = rest;
-                            ch.SB[i++] = rest;
+                        for (int i = 0, rest; i < 28; ch.paddr++) {
+                            audioSet(0x0f, 0xc);
+                            audioSet(0xf0, 0x8);
                         }
 
-                        if ((op & 4) && (!ch.bIgnoreLoop)) {
-                            ch.raddr = ch.pCurr - 16;
+                        if ((op & 4) && (!ch.endLoop)) {
+                            ch.raddr = ch.paddr - 16;
                         }
                         
                         if (op & 1) {
                             if (op != 3 || ch.raddr == NULL) {
-                                ch.pCurr = (ub *)-1;
+                                ch.paddr = (ub *)-1;
                             }
                             else {
-                                ch.pCurr = ch.raddr;
+                                ch.paddr = ch.raddr;
                             }
                         }
                         
-                        ch.s_1 = s_1;
-                        ch.s_2 = s_2;
+                        ch.s_1 = s[0];
+                        ch.s_2 = s[1];
                     }
                     
-                    ch.sample = ch.SB[ch.iSBPos++] >> 2;
+                    ch.sample = ch.bfr[ch.iSBPos++] >> 2;
                 }
                 
                 sbuf[(ns * 2) + 0] += (ch.sample * ch.volumeL) >> 14;
