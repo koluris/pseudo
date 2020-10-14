@@ -80,6 +80,8 @@
 //    void executeDMA(CstrBus::castDMA *);
 //};
 
+#define MAXCHAN 24
+
 class CstrAudio {
     enum {
         SPU_ALC_BUF_AMOUNT = 16,
@@ -97,6 +99,41 @@ class CstrAudio {
     ALuint bfr[SPU_ALC_BUF_AMOUNT];
     
     void stream();
+    
+    struct voices {
+        int bNew;
+        int iSBPos;
+        int spos;
+        int sinc;
+        int SB[32];
+        int sval;
+        ub *pStart;
+        ub *pCurr;
+        ub *pLoop;
+        int bOn;
+        int bStop;
+        int iActFreq;
+        int iUsedFreq;
+        int iLeftVolume;
+        int bIgnoreLoop;
+        int iRightVolume;
+        int iRawPitch;
+        int s_1;
+        int s_2;
+        int bNoise;
+        int bFMod;
+        int iOldNoise;
+    } spuVoices[MAXCHAN + 1];
+    
+    void SoundOn(int, int, uh);
+    void SoundOff(int, int, uh);
+    void FModOn(int, int, uh);
+    void NoiseOn(int, int, uh);
+    void setPitch(int, int);
+    void StartSound(int);
+    void VoiceChangeFrequency(int);
+    void FModChangeFrequency(int, int);
+    void StoreInterpolationVal(int, int);
     
 public:
     CstrAudio() {
