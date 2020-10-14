@@ -8,8 +8,8 @@ void CstrAudio::init() {
     spuMemC = (ub *)spuMem;
     
     for (int i = 0; i < (MAXCHAN + 1); i++) {
-        spuVoices[i].pLoop = spuMemC;
-        spuVoices[i].pStart = spuMemC;
+        spuVoices[i].saddr = spuMemC;
+        spuVoices[i].raddr = spuMemC;
         spuVoices[i].pCurr = spuMemC;
     }
 }
@@ -23,44 +23,20 @@ void CstrAudio::reset() {
 
 void CstrAudio::voiceOn(uw data) {
     for (int n = 0; n < (MAXCHAN + 1); n++) {
-        if (data & (1 << n) && spuVoices[n].pStart) {
-            spuVoices[n].bIgnoreLoop = 0;
+        if (data & (1 << n) && spuVoices[n].saddr) {
             spuVoices[n].bNew = 1;
+            spuVoices[n].bIgnoreLoop = 0;
         }
     }
 }
 
 void CstrAudio::voiceOff(uw data) {
     for (int n = 0; n < (MAXCHAN + 1); n++) {
-        if (data & (1 << n)) {
-            spuVoices[n].bStop |= data & 1;
-        }
     }
 }
 
 int CstrAudio::setVolume(sh data) {
     return ((data & 0x7fff) ^ 0x4000) - 0x4000;
-}
-
-void CstrAudio::setPitch(int ch, int data) {
-    spuVoices[ch].freq = MIN(data, 0x3fff) << 4;
-}
-
-void CstrAudio::StartSound(int n) {
-    auto &chn = spuVoices[n];
-    
-    chn.pCurr = chn.pStart;
-    chn.s_1 = 0;
-    chn.s_2 = 0;
-    chn.iSBPos = 28;
-    chn.bNew = 0;
-    chn.bStop = 0;
-    chn.bOn = 1;
-    chn.spos = 0x10000;
-    
-    chn.SB[29] = 0;
-    chn.SB[30] = 0;
-    chn.SB[31] = 0;
 }
 
 void CstrAudio::write(uw addr, uh data) {
@@ -79,15 +55,15 @@ void CstrAudio::write(uw addr, uh data) {
                         return;
 
                     case 0x4: // Pitch
-                        setPitch(ch, data);
+                        spuVoices[ch].freq = MIN(data, 0x3fff) << 4;
                         return;
 
                     case 0x6: // Sound Address
-                        spuVoices[ch].pStart = spuMemC + (data << 3);
+                        spuVoices[ch].saddr = spuMemC + (data << 3);
                         return;
 
                     case 0xe: // Return Address
-                        spuVoices[ch].pLoop = spuMemC + (data << 3);
+                        spuVoices[ch].raddr = spuMemC + (data << 3);
                         spuVoices[ch].bIgnoreLoop = 1;
                         return;
 
@@ -171,8 +147,8 @@ uh CstrAudio::read(uw addr) {
                         return 0;
                         
                     case 0xe: // Madman
-                        if (spuVoices[ch].pLoop) {
-                            return (spuVoices[ch].pLoop - spuMemC) >> 3;
+                        if (spuVoices[ch].raddr) {
+                            return (spuVoices[ch].raddr - spuMemC) >> 3;
                         }
                         return 0;
 
@@ -225,8 +201,7 @@ uh CstrAudio::read(uw addr) {
 
 void CstrAudio::decodeStream() {
     while(!psx.suspended) {
-        int s_1, s_2, fa;
-        int predict_nr, shift_factor, flags, s;
+        int s_1, s_2;
         
         memset(&sbuf, 0, SPU_SAMPLE_SIZE);
         
@@ -234,60 +209,66 @@ void CstrAudio::decodeStream() {
             auto &ch = spuVoices[n];
             
             if (ch.bNew) {
-                StartSound(n);
+                ch.pCurr = ch.saddr;
+                ch.s_1 = 0;
+                ch.s_2 = 0;
+                ch.iSBPos = 28;
+                ch.bNew = 0;
+                ch.bOn = true;
+                ch.spos = 0x10000;
+                ch.sample = 0;
             }
             
-            if (!ch.bOn) {
+            if (ch.bOn == false) {
                 continue;
             }
             
             for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
                 for (; ch.spos >= 0x10000; ch.spos -= 0x10000) {
                     if (ch.iSBPos == 28) {
-                        if (ch.pCurr == (ub *)-1)
-                        {
-                            ch.bOn = 0;
+                        if (ch.pCurr == (ub *)-1) {
+                            ch.bOn = false;
                             goto SPU_CHANNEL_END;
                         }
                         
                         ch.iSBPos = 0;
                         s_1 = ch.s_1;
                         s_2 = ch.s_2;
-                        predict_nr = *ch.pCurr;
+                        
+                        ub predict = *ch.pCurr;
                         ch.pCurr++;
-                        shift_factor = predict_nr & 0xf;
-                        predict_nr >>= 4;
-                        flags = *ch.pCurr;
-                        ch.pCurr++;
+                        ub shift = predict & 0xf;
+                        predict >>= 4;
+                        ub op = *ch.pCurr++;
 
-                        for (int i = 0; i < 28; ch.pCurr++) {
-                            s = ((*ch.pCurr) & 0x0f) << 12;
-                            if (s & 0x8000) s |= 0xffff0000;
-                            fa = (s >> shift_factor);
-                            fa = fa + ((s_1 * f[predict_nr][0]) >> 6) + ((s_2 * f[predict_nr][1]) >> 6);
+                        for (int i = 0, rest; i < 28; ch.pCurr++) {
+                            rest = (*ch.pCurr & 0x0f) << 12;
+                            if (rest & 0x8000) rest |= 0xffff0000;
+                            rest = rest >> shift;
+                            rest = rest + ((s_1 * f[predict][0]) >> 6) + ((s_2 * f[predict][1]) >> 6);
                             s_2 = s_1;
-                            s_1 = fa;
-                            ch.SB[i++] = fa;
+                            s_1 = rest;
+                            ch.SB[i++] = rest;
                             
-                            s = ((*ch.pCurr) & 0xf0) << 8;
-                            if (s & 0x8000) s |= 0xffff0000;
-                            fa = s >> shift_factor;
-                            fa = fa + ((s_1 * f[predict_nr][0]) >> 6) + ((s_2 * f[predict_nr][1]) >> 6);
+                            rest = (*ch.pCurr & 0xf0) << 8;
+                            if (rest & 0x8000) rest |= 0xffff0000;
+                            rest = rest >> shift;
+                            rest = rest + ((s_1 * f[predict][0]) >> 6) + ((s_2 * f[predict][1]) >> 6);
                             s_2 = s_1;
-                            s_1 = fa;
-                            ch.SB[i++] = fa;
+                            s_1 = rest;
+                            ch.SB[i++] = rest;
                         }
 
-                        if ((flags & 4) && (!ch.bIgnoreLoop)) {
-                            ch.pLoop = ch.pCurr - 16;
+                        if ((op & 4) && (!ch.bIgnoreLoop)) {
+                            ch.raddr = ch.pCurr - 16;
                         }
                         
-                        if (flags & 1) {
-                            if (flags != 3 || ch.pLoop == NULL) {
-                                ch.pCurr = (ub *) -1;
+                        if (op & 1) {
+                            if (op != 3 || ch.raddr == NULL) {
+                                ch.pCurr = (ub *)-1;
                             }
                             else {
-                                ch.pCurr = ch.pLoop;
+                                ch.pCurr = ch.raddr;
                             }
                         }
                         
@@ -295,13 +276,11 @@ void CstrAudio::decodeStream() {
                         ch.s_2 = s_2;
                     }
                     
-                    ch.SB[29] = ch.SB[ch.iSBPos++];
+                    ch.sample = ch.SB[ch.iSBPos++] >> 2;
                 }
                 
-                ch.sval = ch.SB[29] >> 2;
-                
-                sbuf[(ns * 2) + 0] += (ch.sval * ch.volumeL) >> 14;
-                sbuf[(ns * 2) + 1] += (ch.sval * ch.volumeR) >> 14;
+                sbuf[(ns * 2) + 0] += (ch.sample * ch.volumeL) >> 14;
+                sbuf[(ns * 2) + 1] += (ch.sample * ch.volumeR) >> 14;
                 
                 ch.spos += ch.freq;
             }

@@ -24,30 +24,22 @@ class CstrAudio {
     ALuint bfr[SPU_ALC_BUF_AMOUNT];
     
     struct voices {
+        ub *saddr, *raddr;
+        sh volumeL, volumeR;
+        sw spos, freq;
+        sw s_1, s_2;
+        bool bOn;
+        int sample;
         int bNew;
         int iSBPos;
-        int spos;
-        int freq;
-        int SB[32];
-        int sval;
-        ub *pStart;
+        int SB[28];
         ub *pCurr;
-        ub *pLoop;
-        int bOn;
-        int bStop;
-        int volumeL;
-        int volumeR;
         int bIgnoreLoop;
-        int s_1;
-        int s_2;
+        
     } spuVoices[MAXCHAN + 1];
     
-    void voiceOn (uw);
+    void voiceOn(uw);
     void voiceOff(uw);
-    
-    void setPitch(int, int);
-    void StartSound(int);
-    void VoiceChangeFrequency(int);
     int setVolume(sh);
     void output();
     void stream();
