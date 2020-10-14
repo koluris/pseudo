@@ -2,10 +2,12 @@
 
 #include "Global.h"
 
-CstrAudio audio;
 
-#define spuChannel(addr) \
+#define SPU_CHANNEL(addr) \
     (addr >> 4) & 0x1f
+
+
+CstrAudio audio;
 
 void CstrAudio::reset() {
     freeBuffers();
@@ -136,7 +138,7 @@ void CstrAudio::write(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
-                ub ch = spuChannel(addr);
+                ub ch = SPU_CHANNEL(addr);
 
                 switch(addr & 0xf) {
                     case 0x0: // Volume L
@@ -224,7 +226,7 @@ uh CstrAudio::read(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
-                ub ch = spuChannel(addr);
+                ub ch = SPU_CHANNEL(addr);
 
                 switch(addr & 0xf) {
                     case 0xc: // Hack
