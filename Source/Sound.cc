@@ -42,16 +42,8 @@ int CstrAudio::setVolume(sh data) {
     return ((data & 0x7fff) ^ 0x4000) - 0x4000;
 }
 
-void CstrAudio::setPitch(int ch, int val) {
-    val = MIN(val, 0x3fff);
-    spuVoices[ch].iRawPitch = val;
-    val = (44100 * val) / 4096;
-    
-    if (val < 1) {
-        val = 1;
-    }
-    
-    spuVoices[ch].iActFreq = val;
+void CstrAudio::setPitch(int ch, int data) {
+    spuVoices[ch].freq = MIN(data, 0x3fff) << 4;
 }
 
 void CstrAudio::StartSound(int n) {
@@ -69,17 +61,6 @@ void CstrAudio::StartSound(int n) {
     chn.SB[29] = 0;
     chn.SB[30] = 0;
     chn.SB[31] = 0;
-}
-
-void CstrAudio::VoiceChangeFrequency(int n) {
-    auto &chn = spuVoices[n];
-    
-    chn.iUsedFreq = chn.iActFreq;
-    chn.sinc = chn.iRawPitch << 4;
-    
-    if (!chn.sinc) {
-        chn.sinc = 1;
-    }
 }
 
 void CstrAudio::write(uw addr, uh data) {
@@ -242,15 +223,6 @@ uh CstrAudio::read(uw addr) {
     return 0;
 }
 
-void CstrAudio::stream() {
-    ALint state;
-    alGetSourcei(source, AL_SOURCE_STATE, &state);
-
-    if (state != AL_PLAYING) {
-        alSourceStream(source);
-    }
-}
-
 void CstrAudio::decodeStream() {
     while(!psx.suspended) {
         int s_1, s_2, fa;
@@ -269,12 +241,8 @@ void CstrAudio::decodeStream() {
                 continue;
             }
             
-            if (ch.iActFreq != ch.iUsedFreq) {
-                VoiceChangeFrequency(n);
-            }
-            
             for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
-                while (ch.spos >= 0x10000) {
+                for (; ch.spos >= 0x10000; ch.spos -= 0x10000) {
                     if (ch.iSBPos == 28) {
                         if (ch.pCurr == (ub *)-1)
                         {
@@ -327,42 +295,52 @@ void CstrAudio::decodeStream() {
                         ch.s_2 = s_2;
                     }
                     
-                    fa = ch.SB[ch.iSBPos++];
-                    ch.SB[29] = fa;
-                    ch.spos -= 0x10000;
+                    ch.SB[29] = ch.SB[ch.iSBPos++];
                 }
                 
-                fa = ch.SB[29];
-                ch.sval = fa >> 2;
+                ch.sval = ch.SB[29] >> 2;
                 
                 sbuf[(ns * 2) + 0] += (ch.sval * ch.volumeL) >> 14;
                 sbuf[(ns * 2) + 1] += (ch.sval * ch.volumeR) >> 14;
                 
-                ch.spos += ch.sinc;
+                ch.spos += ch.freq;
             }
             
             SPU_CHANNEL_END: ;
         }
         
-        // OpenAL
-        ALint processed;
-        alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+        output();
+    }
+}
 
-        if (processed >= SPU_ALC_BUF_AMOUNT) {
-            // We have to free buffers
-            printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
-        }
+void CstrAudio::output() {
+    // OpenAL
+    ALint processed;
+    alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
 
-        while(--processed < 0) {
-            stream();
-            alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-        }
+    if (processed >= SPU_ALC_BUF_AMOUNT) {
+        // We have to free buffers
+        printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
+    }
 
-        ALuint buffer;
-        alSourceUnqueueBuffers(source, 1, &buffer);
-        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
-        alSourceQueueBuffers(source, 1, &buffer);
+    while(--processed < 0) {
         stream();
+        alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+    }
+
+    ALuint buffer;
+    alSourceUnqueueBuffers(source, 1, &buffer);
+    alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
+    alSourceQueueBuffers(source, 1, &buffer);
+    stream();
+}
+
+void CstrAudio::stream() {
+    ALint state;
+    alGetSourcei(source, AL_SOURCE_STATE, &state);
+
+    if (state != AL_PLAYING) {
+        alSourceStream(source);
     }
 }
 

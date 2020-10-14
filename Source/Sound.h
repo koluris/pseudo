@@ -27,7 +27,7 @@ class CstrAudio {
         int bNew;
         int iSBPos;
         int spos;
-        int sinc;
+        int freq;
         int SB[32];
         int sval;
         ub *pStart;
@@ -35,12 +35,9 @@ class CstrAudio {
         ub *pLoop;
         int bOn;
         int bStop;
-        int iActFreq;
-        int iUsedFreq;
         int volumeL;
         int volumeR;
         int bIgnoreLoop;
-        int iRawPitch;
         int s_1;
         int s_2;
     } spuVoices[MAXCHAN + 1];
@@ -52,6 +49,7 @@ class CstrAudio {
     void StartSound(int);
     void VoiceChangeFrequency(int);
     int setVolume(sh);
+    void output();
     void stream();
     
 public:
