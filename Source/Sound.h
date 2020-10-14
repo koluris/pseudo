@@ -16,7 +16,7 @@ class CstrAudio {
     uh spuMem[256 * 1024];
     ub *spuMemC;
     uw spuAddr;
-        
+    
     // OpenAL
     ALCdevice *device;
     ALCcontext *ctx;
@@ -24,15 +24,18 @@ class CstrAudio {
     ALuint bfr[SPU_ALC_BUF_AMOUNT];
     
     struct voices {
-        ub *saddr, *paddr, *raddr;
+        bool on, isNew, endLoop;
+        
+        // Address
+        ub *saddr; // Start
+        ub *paddr; // Current
+        ub *raddr; // Return
+        
         sh volumeL, volumeR;
-        sw spos, freq;
+        sw bpos, spos, freq, sample;
         sw s_1, s_2;
-        bool on, endLoop;
-        int sample;
-        int bfr[28];
-        int bNew;
-        int iSBPos;
+        sw bfr[28];
+        
     } spuVoices[MAXCHAN + 1];
     
     void voiceOn(uw);

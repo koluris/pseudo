@@ -25,15 +25,13 @@ void CstrAudio::reset() {
 void CstrAudio::voiceOn(uw data) {
     for (int n = 0; n < (MAXCHAN + 1); n++) {
         if (data & (1 << n) && spuVoices[n].saddr) {
-            spuVoices[n].bNew = 1;
+            spuVoices[n].isNew = true;
             spuVoices[n].endLoop = false;
         }
     }
 }
 
 void CstrAudio::voiceOff(uw data) {
-    for (int n = 0; n < (MAXCHAN + 1); n++) {
-    }
 }
 
 int CstrAudio::setVolume(sh data) {
@@ -142,7 +140,7 @@ uh CstrAudio::read(uw addr) {
 
                 switch(addr & 0xf) {
                     case 0xc: // Hack
-                        if (spuVoices[ch].bNew) {
+                        if (spuVoices[ch].isNew) {
                             return 1;
                         }
                         return 0;
@@ -215,14 +213,14 @@ void CstrAudio::decodeStream() {
         for (int n = 0; n < (MAXCHAN + 1); n++) {
             auto &ch = spuVoices[n];
             
-            if (ch.bNew) {
+            if (ch.isNew) {
+                ch.on = true;
+                ch.isNew = false;
+                ch.bpos = 28;
+                ch.spos = 0x10000;
                 ch.paddr = ch.saddr;
                 ch.s_1 = 0;
                 ch.s_2 = 0;
-                ch.iSBPos = 28;
-                ch.bNew = 0;
-                ch.on = true;
-                ch.spos = 0x10000;
                 ch.sample = 0;
             }
             
@@ -232,10 +230,10 @@ void CstrAudio::decodeStream() {
             
             for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
                 for (; ch.spos >= 0x10000; ch.spos -= 0x10000) {
-                    if (ch.iSBPos == 28) {
+                    if (ch.bpos == 28) {
                         if (ch.paddr == (ub *)-1) {
                             ch.on = false;
-                            goto SPU_CHANNEL_END;
+                            redirect SPU_CHANNEL_END;
                         }
                         
                         ub shift   = *ch.paddr & 0xf;
@@ -247,7 +245,7 @@ void CstrAudio::decodeStream() {
                             ch.s_2,
                         };
                         
-                        ch.iSBPos = 0;
+                        ch.bpos = 0;
 
                         for (int i = 0, rest; i < 28; ch.paddr++) {
                             audioSet(0x0f, 0xc);
@@ -258,20 +256,15 @@ void CstrAudio::decodeStream() {
                             ch.raddr = ch.paddr - 16;
                         }
                         
-                        if (op & 1) {
-                            if (op != 3 || ch.raddr == NULL) {
-                                ch.paddr = (ub *)-1;
-                            }
-                            else {
-                                ch.paddr = ch.raddr;
-                            }
+                        if ((op & 1)) {
+                            ch.paddr = (op != 3 || ch.raddr == NULL) ? (ub *)-1 : ch.raddr;
                         }
                         
                         ch.s_1 = s[0];
                         ch.s_2 = s[1];
                     }
                     
-                    ch.sample = ch.bfr[ch.iSBPos++] >> 2;
+                    ch.sample = ch.bfr[ch.bpos++] >> 2;
                 }
                 
                 sbuf[(ns * 2) + 0] += (ch.sample * ch.volumeL) >> 14;
