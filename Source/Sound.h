@@ -95,6 +95,9 @@ class CstrAudio {
     };
     
     uh sbuf[SPU_SAMPLE_SIZE];
+    uh spuMem[256 * 1024];
+    ub *spuMemC;
+    uw spuAddr;
         
     // OpenAL
     ALCdevice *device;
@@ -122,20 +125,14 @@ class CstrAudio {
         int iRawPitch;
         int s_1;
         int s_2;
-        int bNoise;
-        int bFMod;
-        int iOldNoise;
     } spuVoices[MAXCHAN + 1];
     
     void SoundOn(int, int, uh);
     void SoundOff(int, int, uh);
-    void FModOn(int, int, uh);
-    void NoiseOn(int, int, uh);
     void setPitch(int, int);
     void StartSound(int);
     void VoiceChangeFrequency(int);
-    void FModChangeFrequency(int, int);
-    void StoreInterpolationVal(int, int);
+    int calcVolume(sh);
     void stream();
     
 public:
