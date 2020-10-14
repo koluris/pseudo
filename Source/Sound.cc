@@ -7,7 +7,7 @@ CstrAudio audio;
 uh spuMem[256 * 1024];
 ub *spuMemC;
 uw spuAddr;
-int iFMod[44100];
+int freqModulation[44100];
 
 #define spuCtrl \
     *(uh *)&mem.hwr.ptr[0x1daa]
@@ -111,11 +111,11 @@ void CstrAudio::write(uw addr, uh data) {
 
                 switch(addr & 0xf) {
                     case 0x0: // Volume L
-                        spuVoices[ch].iLeftVolume = calcVolume(data);
+                        spuVoices[ch].volumeL = calcVolume(data);
                         return;
 
                     case 0x2: // Volume R
-                        spuVoices[ch].iRightVolume = calcVolume(data);
+                        spuVoices[ch].volumeR = calcVolume(data);
                         return;
 
                     case 0x4: // Pitch
@@ -276,59 +276,63 @@ uh CstrAudio::read(uw addr) {
 }
 
 void CstrAudio::StartSound(int n) {
-    auto &pChannel = spuVoices[n];
-    pChannel.pCurr = pChannel.pStart;
-    pChannel.s_1 = 0;
-    pChannel.s_2 = 0;
-    pChannel.iSBPos = 28;
-    pChannel.bNew = 0;
-    pChannel.bStop = 0;
-    pChannel.bOn = 1;
-    pChannel.SB[29] = 0;
-    pChannel.SB[30] = 0;
-    pChannel.spos = 0x10000;
-    pChannel.SB[31] = 0;
+    auto &chn = spuVoices[n];
+    
+    chn.pCurr = chn.pStart;
+    chn.s_1 = 0;
+    chn.s_2 = 0;
+    chn.iSBPos = 28;
+    chn.bNew = 0;
+    chn.bStop = 0;
+    chn.bOn = 1;
+    chn.SB[29] = 0;
+    chn.SB[30] = 0;
+    chn.spos = 0x10000;
+    chn.SB[31] = 0;
 }
 
 void CstrAudio::VoiceChangeFrequency(int n) {
-    auto &pChannel = spuVoices[n];
-    pChannel.iUsedFreq = pChannel.iActFreq;
-    pChannel.sinc = pChannel.iRawPitch << 4;
+    auto &chn = spuVoices[n];
     
-    if (!pChannel.sinc) {
-        pChannel.sinc = 1;
+    chn.iUsedFreq = chn.iActFreq;
+    chn.sinc = chn.iRawPitch << 4;
+    
+    if (!chn.sinc) {
+        chn.sinc = 1;
     }
 }
 
 void CstrAudio::FModChangeFrequency(int n, int ns) {
-    auto &pChannel = spuVoices[n];
-    int NP = pChannel.iRawPitch;
-    NP = ((32768 + iFMod[ns]) * NP) / 32768;
+    auto &chn = spuVoices[n];
     
-    if (NP > 0x3FFF) {
-        NP = 0x3FFF;
+    int NP = chn.iRawPitch;
+    NP = ((32768 + freqModulation[ns]) * NP) / 32768;
+    
+    if (NP > 0x3fff) {
+        NP = 0x3fff;
     }
     
     if (NP < 0x1) {
         NP = 0x1;
     }
     
-    NP = (44100L * NP) / 4096;
-    pChannel.iActFreq = NP;
-    pChannel.iUsedFreq = NP;
-    pChannel.sinc = ((NP / 10) << 16) / 4410;
+    NP = (44100 * NP) / 4096;
+    chn.iActFreq = NP;
+    chn.iUsedFreq = NP;
+    chn.sinc = ((NP / 10) << 16) / 4410;
     
-    if (!pChannel.sinc) {
-        pChannel.sinc = 1;
+    if (!chn.sinc) {
+        chn.sinc = 1;
     }
     
-    iFMod[ns] = 0;
+    freqModulation[ns] = 0;
 }
 
 void CstrAudio::StoreInterpolationVal(int n, int fa) {
-    auto &pChannel = spuVoices[n];
-    if (pChannel.bFMod == 2) {
-        pChannel.SB[29] = fa;
+    auto &chn = spuVoices[n];
+    
+    if (chn.bFMod == 2) {
+        chn.SB[29] = fa;
     }
     else {
         if ((spuCtrl & 0x4000) == 0) {
@@ -344,21 +348,20 @@ void CstrAudio::StoreInterpolationVal(int n, int fa) {
             }
         }
         
-        pChannel.SB[29] = fa;
+        chn.SB[29] = fa;
     }
 }
 
 void CstrAudio::init() {
     spuMemC = (ub *)spuMem;
-    //memset((void *)spuVoices, 0, (MAXCHAN + 1) * sizeof(SPUCHAN));
     
-    for(int i = 0; i < MAXCHAN; i++) {
+    for (int i = 0; i < (MAXCHAN + 1); i++) {
         spuVoices[i].pLoop = spuMemC;
         spuVoices[i].pStart = spuMemC;
         spuVoices[i].pCurr = spuMemC;
     }
     
-    memset(iFMod, 0, sizeof(iFMod));
+    memset(freqModulation, 0, sizeof(freqModulation));
 }
 
 void CstrAudio::reset() {
@@ -379,13 +382,11 @@ void CstrAudio::stream() {
 
 void CstrAudio::decodeStream() {
     while(!psx.suspended) {
+        int s_1, s_2, fa;
+        int predict_nr, shift_factor, flags, s;
+        
         memset(&sbuf, 0, SPU_SAMPLE_SIZE);
         
-        int s_1,s_2,fa;
-        int predict_nr,shift_factor,flags,s;
-        static const int f[5][2] = {{0,0},{60,0},{115,-52},{98,-55},{122,-60}};
-        
-        //for (auto &ch : spuVoices) {
         for (int n = 0; n < (MAXCHAN + 1); n++) {
             auto &ch = spuVoices[n];
             
@@ -402,7 +403,7 @@ void CstrAudio::decodeStream() {
             }
             
             for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
-                if (ch.bFMod == 1 && iFMod[ns]) {
+                if (ch.bFMod == 1 && freqModulation[ns]) {
                     FModChangeFrequency(n, ns);
                 }
                 
@@ -471,14 +472,14 @@ void CstrAudio::decodeStream() {
                     fa = ch.SB[29];
                 }
                 
-                //ch->sval = (MixADSR(ch) * fa) >> 10;
                 ch.sval = fa >> 2;
                 
                 if (ch.bFMod == 2) {
-                    iFMod[ns] = ch.sval;
-                } else {
-                    sbuf[(ns * 2) + 0] += (ch.sval * ch.iLeftVolume ) >> 14;
-                    sbuf[(ns * 2) + 1] += (ch.sval * ch.iRightVolume) >> 14;
+                    freqModulation[ns] = ch.sval;
+                }
+                else {
+                    sbuf[(ns * 2) + 0] += (ch.sval * ch.volumeL) >> 14;
+                    sbuf[(ns * 2) + 1] += (ch.sval * ch.volumeR) >> 14;
                 }
                 
                 ch.spos += ch.sinc;

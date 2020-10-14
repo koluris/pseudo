@@ -90,6 +90,10 @@ class CstrAudio {
         SPU_SAMPLE_COUNT   = SPU_SAMPLE_SIZE / 4
     };
     
+    const int f[5][2] = {
+        { 0, 0 }, { 60, 0 }, { 115, -52 }, { 98, -55 }, { 122, -60 }
+    };
+    
     uh sbuf[SPU_SAMPLE_SIZE];
         
     // OpenAL
@@ -97,8 +101,6 @@ class CstrAudio {
     ALCcontext *ctx;
     ALuint source;
     ALuint bfr[SPU_ALC_BUF_AMOUNT];
-    
-    void stream();
     
     struct voices {
         int bNew;
@@ -114,9 +116,9 @@ class CstrAudio {
         int bStop;
         int iActFreq;
         int iUsedFreq;
-        int iLeftVolume;
+        int volumeL;
+        int volumeR;
         int bIgnoreLoop;
-        int iRightVolume;
         int iRawPitch;
         int s_1;
         int s_2;
@@ -134,6 +136,7 @@ class CstrAudio {
     void VoiceChangeFrequency(int);
     void FModChangeFrequency(int, int);
     void StoreInterpolationVal(int, int);
+    void stream();
     
 public:
     CstrAudio() {
