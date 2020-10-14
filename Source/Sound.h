@@ -1,11 +1,10 @@
-#define MAXCHAN 24
-
 class CstrAudio {
     enum {
         SPU_ALC_BUF_AMOUNT = 16,
         SPU_SAMPLE_RATE    = 44100,
-        SPU_SAMPLE_SIZE    = 256,
-        SPU_SAMPLE_COUNT   = SPU_SAMPLE_SIZE / 4
+        SPU_SAMPLE_SIZE    = 512,
+        SPU_SAMPLE_COUNT   = SPU_SAMPLE_SIZE / 4,
+        SPU_MAX_CHAN       = 24 + 1
     };
     
     const int f[5][2] = {
@@ -36,7 +35,7 @@ class CstrAudio {
         sw s_1, s_2;
         sw bfr[28];
         
-    } spuVoices[MAXCHAN + 1];
+    } spuVoices[SPU_MAX_CHAN];
     
     void voiceOn(uw);
     void voiceOff(uw);
@@ -46,6 +45,14 @@ class CstrAudio {
     
 public:
     CstrAudio() {
+        spuMemC = (ub *)spuMem;
+        
+        for (int i = 0; i < SPU_MAX_CHAN; i++) {
+            spuVoices[i].saddr = spuMemC;
+            spuVoices[i].raddr = spuMemC;
+            spuVoices[i].paddr = spuMemC;
+        }
+        
         // OpenAL
         device = alcOpenDevice(NULL);
 

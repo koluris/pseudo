@@ -4,16 +4,6 @@
 
 CstrAudio audio;
 
-void CstrAudio::init() {
-    spuMemC = (ub *)spuMem;
-    
-    for (int i = 0; i < (MAXCHAN + 1); i++) {
-        spuVoices[i].saddr = spuMemC;
-        spuVoices[i].raddr = spuMemC;
-        spuVoices[i].paddr = spuMemC;
-    }
-}
-
 void CstrAudio::reset() {
     spuAddr = 0xffffffff;
     
@@ -23,7 +13,7 @@ void CstrAudio::reset() {
 }
 
 void CstrAudio::voiceOn(uw data) {
-    for (int n = 0; n < (MAXCHAN + 1); n++) {
+    for (int n = 0; n < SPU_MAX_CHAN; n++) {
         if (data & (1 << n) && spuVoices[n].saddr) {
             spuVoices[n].isNew = true;
             spuVoices[n].endLoop = false;
@@ -210,7 +200,7 @@ void CstrAudio::decodeStream() {
     while(!psx.suspended) {
         memset(&sbuf, 0, SPU_SAMPLE_SIZE);
         
-        for (int n = 0; n < (MAXCHAN + 1); n++) {
+        for (int n = 0; n < SPU_MAX_CHAN; n++) {
             auto &ch = spuVoices[n];
             
             if (ch.isNew) {

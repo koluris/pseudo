@@ -7,7 +7,6 @@ CstrPSeudo psx;
 
 void CstrPSeudo::init(const char *path) {
     FILE *fp = fopen(path, "rb");
-    audio.init();
     
     // Available
     if (fp) {
