@@ -4,53 +4,43 @@
 
 CstrAudio audio;
 
-// num of channels
-#define MAXCHAN     24
+#define MAXCHAN 24
 
-typedef struct
-{
- int               bNew;
-
- int               iSBPos;
- int               spos;
- int               sinc;
- int               SB[32];
- int               sval;
-
- unsigned char *   pStart;
- unsigned char *   pCurr;
- unsigned char *   pLoop;
-
- int               bOn;
- int               bStop;
- int               iActFreq;
- int               iUsedFreq;
- int               iLeftVolume;
- int               bIgnoreLoop;
- int               iRightVolume;
- int               iRawPitch;
- int               s_1;
- int               s_2;
- int               bNoise;
- int               bFMod;
- int               iOldNoise;
+typedef struct {
+    int bNew;
+    int iSBPos;
+    int spos;
+    int sinc;
+    int SB[32];
+    int sval;
+    ub *pStart;
+    ub *pCurr;
+    ub *pLoop;
+    int bOn;
+    int bStop;
+    int iActFreq;
+    int iUsedFreq;
+    int iLeftVolume;
+    int bIgnoreLoop;
+    int iRightVolume;
+    int iRawPitch;
+    int s_1;
+    int s_2;
+    int bNoise;
+    int bFMod;
+    int iOldNoise;
 } SPUCHAN;
 
-static uh regArea[10000];
-static uh spuMem[256*1024];
+static uh spuMem[256 * 1024];
 static ub *spuMemC;
-static ub *pMixIrq=0;
-
-static SPUCHAN s_chan[MAXCHAN+1];
-
-static uh spuCtrl = 0;
-static uh spuStat = 0;
-static uh spuIrq = 0;
-static uw spuAddr = 0xFFFFFFFF;
-
+static SPUCHAN spuVoices[MAXCHAN + 1];
+static uw spuAddr = 0xffffffff;
 int iFMod[44100];
 
-static void spuFranReadDMAMem(uh *pusPSXMem, int size) {
+#define spuCtrl \
+    *(uh *)&mem.hwr.ptr[0x1daa]
+
+void spuFranReadDMAMem(uh *pusPSXMem, int size) {
     if (spuAddr + (size<<1) >= 0x80000) {
         memcpy(pusPSXMem, &spuMem[spuAddr>>1], 0x7FFFF-spuAddr+1);
         memcpy(pusPSXMem+(0x7FFFF-spuAddr+1), spuMem, (size<<1)-(0x7FFFF-spuAddr+1));
@@ -61,7 +51,7 @@ static void spuFranReadDMAMem(uh *pusPSXMem, int size) {
     }
 }
 
-static void spuFranWriteDMAMem(uh *pusPSXMem, int size) {
+void spuFranWriteDMAMem(uh *pusPSXMem, int size) {
     if (spuAddr+(size<<1)>0x7FFFF) {
         memcpy(&spuMem[spuAddr>>1], pusPSXMem, 0x7FFFF-spuAddr+1);
         memcpy(spuMem, pusPSXMem+(0x7FFFF-spuAddr+1), (size<<1)-(0x7FFFF-spuAddr+1));
@@ -72,39 +62,39 @@ static void spuFranWriteDMAMem(uh *pusPSXMem, int size) {
     }
 }
 
-static inline void SoundOn(int start, int end, uh data) {
+void SoundOn(int start, int end, uh data) {
     for (int ch = start; ch < end; ch++,data>>=1) {
-        if ((data&1) && s_chan[ch].pStart) {
-            s_chan[ch].bIgnoreLoop=0;
-            s_chan[ch].bNew=1;
+        if ((data&1) && spuVoices[ch].pStart) {
+            spuVoices[ch].bIgnoreLoop=0;
+            spuVoices[ch].bNew=1;
         }
     }
 }
 
-static inline void SoundOff(int start,int end, uh data) {
+void SoundOff(int start,int end, uh data) {
     for (int ch = start; ch < end; ch++,data>>=1)
-        s_chan[ch].bStop |= (data & 1);
+    spuVoices[ch].bStop |= (data & 1);
 }
 
-static inline void FModOn(int start,int end, uh data) {
+void FModOn(int start,int end, uh data) {
     for (int ch = start; ch < end; ch++,data>>=1) {
         if (data & 1) {
             if (ch > 0) {
-                s_chan[ch].bFMod = 1;
-                s_chan[ch-1].bFMod=2;
+                spuVoices[ch].bFMod = 1;
+                spuVoices[ch-1].bFMod=2;
             }
         } else {
-            s_chan[ch].bFMod = 0;
+            spuVoices[ch].bFMod = 0;
         }
     }
 }
 
-static inline void NoiseOn(int start,int end, uh data) {
+void NoiseOn(int start,int end, uh data) {
     for (int ch=start;ch<end;ch++,data>>=1)
-        s_chan[ch].bNoise = data & 1;
+    spuVoices[ch].bNoise = data & 1;
 }
 
-static inline int calcVolume(sh vol) {
+int calcVolume(sh vol) {
     if (vol & 0x8000) {
         int sInc=1;
         if (vol & 0x2000)
@@ -122,101 +112,186 @@ static inline int calcVolume(sh vol) {
     return vol;
 }
 
-static inline void setPitch(int ch, int val) {
+void setPitch(int ch, int val) {
     val = MIN(val, 0x3FFF);
-    s_chan[ch].iRawPitch = val;
+    spuVoices[ch].iRawPitch = val;
     val = (44100*val) / 4096;
     if (val < 1)
         val = 1;
-    s_chan[ch].iActFreq = val;
+    spuVoices[ch].iActFreq = val;
 }
 
-void CstrAudio::write(uw reg, uh data) {
-    reg &= 0xFFF;
-    regArea[(reg-0xC00)>>1] = data;
-    if (reg>=0x0C00 && reg<0x0D80) {
-        int ch = (reg>>4) - 0xC0;
-        switch (reg&0x0F) {
-        case 0:
-            s_chan[ch].iLeftVolume = calcVolume(data);
-            break;
-        case 2:
-            s_chan[ch].iRightVolume = calcVolume(data);
-            break;
-        case 4:
-            setPitch(ch, data);
-            break;
-        case 6:
-            s_chan[ch].pStart = spuMemC + (data<<3);
-            break;
-        case 8:
-            break;
-        case 10:
-            break;
-        case 12:
-            break;
-        case 14:
-            s_chan[ch].pLoop = spuMemC + (data<<3);
-            s_chan[ch].bIgnoreLoop = 1;
-            break;
-        }
-        return;
+void CstrAudio::write(uw addr, uh data) {
+    switch(LOW_BITS(addr)) {
+        case 0x1c00 ... 0x1d7e: // Channels
+            {
+                int ch = (addr>>4) & 0x1f;
+
+                switch(addr & 0xf) {
+                    case 0x0: // Volume L
+                        spuVoices[ch].iLeftVolume = calcVolume(data);
+                        return;
+
+                    case 0x2: // Volume R
+                        spuVoices[ch].iRightVolume = calcVolume(data);
+                        return;
+
+                    case 0x4: // Pitch
+                        setPitch(ch, data);
+                        return;
+
+                    case 0x6: // Sound Address
+                        spuVoices[ch].pStart = spuMemC + (data<<3);
+                        return;
+
+                    case 0xe: // Return Address
+                        spuVoices[ch].pLoop = spuMemC + (data<<3);
+                        spuVoices[ch].bIgnoreLoop = 1;
+                        return;
+
+                    /* unused */
+                    case 0x8:
+                    case 0xa:
+                    case 0xc:
+                        accessMem(mem.hwr, uh) = data;
+                        return;
+                }
+
+                printx("/// PSeudo SPU write phase: 0x%x <- 0x%x", (addr & 0xf), data);
+                return;
+            }
+
+        case 0x1d88: // Sound On 1
+            SoundOn(0,16,data);
+            return;
+
+        case 0x1d8a: // Sound On 2
+            SoundOn(16,24,data);
+            return;
+
+        case 0x1d8c: // Sound Off 1
+            SoundOff(0,16,data);
+            return;
+
+        case 0x1d8e: // Sound Off 2
+            SoundOff(16,24,data);
+            return;
+            
+        case 0x1d90: // FM Mode On 1
+            FModOn(0,16,data);
+            return;
+            
+        case 0x1d92: // FM Mode On 2
+            FModOn(16,24,data);
+            return;
+            
+        case 0x1d94: // Noise Mode On 1
+            NoiseOn(0,16,data);
+            return;
+            
+        case 0x1d96: // Noise Mode On 2
+            NoiseOn(16,24,data);
+            return;
+
+        case 0x1da6: // Transfer Address
+            spuAddr = data << 3;
+            return;
+
+        case 0x1da8: // Data
+            spuMem[spuAddr >> 1] = data;
+            spuAddr += 2;
+            spuAddr &= 0x7ffff;
+            return;
+
+        /* unused */
+        case 0x1d80: // Volume L
+        case 0x1d82: // Volume R
+        case 0x1d84: // Reverb Volume L
+        case 0x1d86: // Reverb Volume R
+        case 0x1d98: // Reverb Mode On 1
+        case 0x1d9a: // Reverb Mode On 2
+        case 0x1d9c: // Mute 1
+        case 0x1d9e: // Mute 2
+        case 0x1daa: // Control
+        case 0x1da2: // Reverb Address
+        case 0x1dac: // ?
+        case 0x1db0: // CD Volume L
+        case 0x1db2: // CD Volume R
+        case 0x1db4:
+        case 0x1db6:
+        case 0x1dc0 ... 0x1dfe: // Reverb
+            accessMem(mem.hwr, uh) = data;
+            return;
     }
-    switch (reg) {
-    case H_SPUaddr:
-        spuAddr = data << 3;
-        break;
-    case H_SPUdata:
-        spuMem[spuAddr>>1] = data;
-        spuAddr += 2;
-        spuAddr &= 0x7FFFF;
-        break;
-    case H_SPUctrl    : spuCtrl=data;         break;
-    case H_SPUstat    : spuStat=data & 0xF800;     break;
-    case H_SPUirqAddr : spuIrq = data;        break;
-    case H_SPUon1     : SoundOn(0,16,data);         break;
-    case H_SPUon2     : SoundOn(16,24,data);     break;
-    case H_SPUoff1    : SoundOff(0,16,data);     break;
-    case H_SPUoff2    : SoundOff(16,24,data);     break;
-    case H_FMod1      : FModOn(0,16,data);         break;
-    case H_FMod2      : FModOn(16,24,data);         break;
-    case H_Noise1     : NoiseOn(0,16,data);         break;
-    case H_Noise2     : NoiseOn(16,24,data);     break;
-    }
+
+    printx("/// PSeudo SPU write: 0x%x <- 0x%x", addr, data);
 }
 
-uh CstrAudio::read(uw reg) {
-    reg &= 0xFFF;
-    if (reg>=0x0C00 && reg<0x0D80) {
-        int ch=(reg>>4)-0xc0;
-        switch (reg&0x0F) {
-        case 12: {
-            if (s_chan[ch].bNew)
-                return 1;
-        case 14:
-            if (!s_chan[ch].pLoop)
+uh CstrAudio::read(uw addr) {
+    switch(LOW_BITS(addr)) {
+        case 0x1c00 ... 0x1d7e: // Channels
+            {
+                int ch=(addr>>4) & 0x1f;
+
+                switch(addr & 0xf) {
+                    case 0xc: // Hack
+                        if (spuVoices[ch].bNew)
+                            return 1;
+                        return 0;
+                        
+                    case 0xe: // madman
+                        if (!spuVoices[ch].pLoop)
+                            return 0;
+                        return (spuVoices[ch].pLoop-spuMemC) >> 3;
+
+                    /* unused */
+                    case 0x0:
+                    case 0x2:
+                    case 0x4:
+                    case 0x6:
+                    case 0x8:
+                    case 0xa:
+                        return accessMem(mem.hwr, uh);
+                }
+
+                printx("/// PSeudo SPU read phase: 0x%x", (addr & 0xf));
                 return 0;
-            return (s_chan[ch].pLoop-spuMemC) >> 3;
-        }
-        }
+            }
+
+        case 0x1da6: // Transfer Address
+            return spuAddr >> 3;
+
+        /* unused */
+        case 0x1d88: // Sound On 1
+        case 0x1d8a: // Sound On 2
+        case 0x1d8c: // Sound Off 1
+        case 0x1d8e: // Sound Off 2
+        case 0x1d94: // Noise Mode On 1
+        case 0x1d96: // Noise Mode On 2
+        case 0x1d98: // Reverb Mode On 1
+        case 0x1d9a: // Reverb Mode On 2
+        case 0x1d9c: // Voice Status 0 - 15
+        case 0x1daa: // Control
+        case 0x1dac: // ?
+        case 0x1dae: // Status
+        case 0x1db8:
+        case 0x1dba:
+        case 0x1e00:
+        case 0x1e02:
+        case 0x1e04:
+        case 0x1e06:
+        case 0x1e08:
+        case 0x1e0a:
+        case 0x1e0c:
+        case 0x1e0e:
+            return accessMem(mem.hwr, uh);
     }
 
-    switch(reg) {
-    case H_SPUctrl: return spuCtrl;
-    case H_SPUstat: return spuStat;
-    case H_SPUaddr: return spuAddr>>3;
-    case H_SPUdata: {
-        uh s = spuMem[spuAddr>>1];
-        spuAddr += 2;
-        spuAddr &= 0x7FFFF;
-        return s;
-    }
-    case H_SPUirqAddr: return spuIrq;
-    }
-    return regArea[(reg-0xc00)>>1];
+    printx("/// PSeudo SPU read: 0x%x", addr);
+    return 0;
 }
 
-static inline void StartSound(SPUCHAN * pChannel) {
+void StartSound(SPUCHAN * pChannel) {
     pChannel->pCurr=pChannel->pStart;
     pChannel->s_1=0;
     pChannel->s_2=0;
@@ -230,13 +305,13 @@ static inline void StartSound(SPUCHAN * pChannel) {
     pChannel->SB[31]=0;
 }
 
-static inline void VoiceChangeFrequency(SPUCHAN * pChannel) {
+void VoiceChangeFrequency(SPUCHAN * pChannel) {
     pChannel->iUsedFreq=pChannel->iActFreq;
     pChannel->sinc=pChannel->iRawPitch<<4;
     if(!pChannel->sinc) pChannel->sinc=1;
 }
 
-inline void FModChangeFrequency(SPUCHAN * pChannel,int ns)
+void FModChangeFrequency(SPUCHAN * pChannel,int ns)
 {
     int NP=pChannel->iRawPitch;
     NP=((32768L+iFMod[ns])*NP)/32768L;
@@ -250,7 +325,7 @@ inline void FModChangeFrequency(SPUCHAN * pChannel,int ns)
     iFMod[ns]=0;
 }
 
-inline void StoreInterpolationVal(SPUCHAN * pChannel,int fa)
+void StoreInterpolationVal(SPUCHAN * pChannel,int fa)
 {
     if(pChannel->bFMod==2)
         pChannel->SB[29]=fa;
@@ -269,19 +344,17 @@ inline void StoreInterpolationVal(SPUCHAN * pChannel,int fa)
 
 bool CstrAudio::init() {
     spuMemC=(unsigned char *)spuMem;
-    memset((void *)s_chan,0,MAXCHAN*sizeof(SPUCHAN));
+    memset((void *)spuVoices,0,MAXCHAN*sizeof(SPUCHAN));
     
-    spuIrq=0;
     spuAddr=0xFFFFFFFF;
     spuMemC=(unsigned char *)spuMem;
-    pMixIrq=0;
-    memset((void *)s_chan,0,(MAXCHAN+1)*sizeof(SPUCHAN));
+    memset((void *)spuVoices,0,(MAXCHAN+1)*sizeof(SPUCHAN));
 
     for(int i=0;i<MAXCHAN;i++)
     {
-        s_chan[i].pLoop=spuMemC;
-        s_chan[i].pStart=spuMemC;
-        s_chan[i].pCurr=spuMemC;
+        spuVoices[i].pLoop=spuMemC;
+        spuVoices[i].pStart=spuMemC;
+        spuVoices[i].pCurr=spuMemC;
     }
     memset(iFMod, 0, sizeof(iFMod));
     return true;
@@ -308,7 +381,7 @@ void CstrAudio::decodeStream() {
         int predict_nr,shift_factor,flags,s;
         static const int f[5][2] = {{0,0},{60,0},{115,-52},{98,-55},{122,-60}};
         
-        for (SPUCHAN *ch = s_chan; ch != s_chan + MAXCHAN; ch++) {
+        for (SPUCHAN *ch = spuVoices; ch != spuVoices + MAXCHAN; ch++) {
             if (ch->bNew)
                 StartSound(ch);
             if (!ch->bOn)
@@ -423,7 +496,6 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
 
     printx("/// PSeudo SPU DMA: 0x%x", dma->chcr);
 }
-
 
 //void CstrAudio::reset() {
 //    // Mem
