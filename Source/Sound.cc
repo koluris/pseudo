@@ -31,6 +31,107 @@ void CstrAudio::voiceOn(uw data) {
     }
 }
 
+#define audioSet(a, b) \
+    rest = (*ch.paddr & a) << b; \
+    if (rest & 0x8000) rest |= 0xffff0000; \
+    rest = (rest >> shift) + ((ch.s[0] * f[predict][0] + ch.s[1] * f[predict][1] + 32) >> 6); \
+    ch.s[1] = ch.s[0]; \
+    ch.s[0] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX); \
+    ch.bfr[i++] = ch.s[0]
+
+void CstrAudio::decodeStream() {
+    while(!psx.suspended) {
+        memset(&sbuf, 0, SPU_SAMPLE_SIZE);
+        
+        for (int n = 0; n < SPU_MAX_CHAN; n++) {
+            auto &ch = spuVoices[n];
+            
+            if (ch.isNew) {
+                ch.paddr  = ch.saddr;
+                ch.spos   = 0x10000;
+                ch.bpos   = 28;
+                ch.sample = 0;
+                ch.s[0]   = 0;
+                ch.s[1]   = 0;
+                
+                ch.isNew  = false;
+                ch.active = true;
+            }
+            
+            if (ch.active == false) {
+                continue;
+            }
+            
+            for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
+                for (; ch.spos >= 0x10000; ch.spos -= 0x10000) {
+                    if (ch.bpos == 28) {
+                        if (ch.paddr == (ub *)-1) {
+                            ch.active = false;
+                            redirect SPU_NEXT_CHANNEL;
+                        }
+                        
+                        ch.bpos = 0;
+                        ub shift   = *ch.paddr & 0xf;
+                        ub predict = *ch.paddr++ >> 4;
+                        ub op      = *ch.paddr++;
+                        
+                        for (int i = 0, rest; i < 28; ch.paddr++) {
+                            audioSet(0x0f, 0xc);
+                            audioSet(0xf0, 0x8);
+                        }
+
+                        if ((op & 4) && (!ch.repeat)) {
+                            ch.raddr = ch.paddr - 16;
+                        }
+                        
+                        if ((op & 1)) {
+                            ch.paddr = (op != 3 || ch.raddr == NULL) ? (ub *)-1 : ch.raddr;
+                        }
+                    }
+                    
+                    ch.sample = ch.bfr[ch.bpos++] >> 2;
+                }
+                
+                sbuf[(ns * 2) + 0] += (ch.sample * ch.volumeL) >> 14;
+                sbuf[(ns * 2) + 1] += (ch.sample * ch.volumeR) >> 14;
+                
+                ch.spos += ch.freq;
+            }
+            
+            SPU_NEXT_CHANNEL:
+                continue;
+        }
+        
+        // OpenAL
+        ALint processed;
+        alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+
+        if (processed >= SPU_ALC_BUF_AMOUNT) {
+            // We have to free buffers
+            printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
+        }
+
+        while(--processed < 0) {
+            freeBuffers();
+            alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+        }
+
+        ALuint buffer;
+        alSourceUnqueueBuffers(source, 1, &buffer);
+        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
+        alSourceQueueBuffers(source, 1, &buffer);
+    }
+}
+
+void CstrAudio::freeBuffers() {
+    ALint state;
+    alGetSourcei(source, AL_SOURCE_STATE, &state);
+
+    if (state != AL_PLAYING) {
+        alSourceStream(source);
+    }
+}
+
 void CstrAudio::write(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
@@ -176,107 +277,6 @@ uh CstrAudio::read(uw addr) {
 
     printx("/// PSeudo SPU read: 0x%x", addr);
     return 0;
-}
-
-#define audioSet(a, b) \
-    rest = (*ch.paddr & a) << b; \
-    if (rest & 0x8000) rest |= 0xffff0000; \
-    rest = (rest >> shift) + ((ch.s[0] * f[predict][0] + ch.s[1] * f[predict][1] + 32) >> 6); \
-    ch.s[1] = ch.s[0]; \
-    ch.s[0] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX); \
-    ch.bfr[i++] = ch.s[0]
-
-void CstrAudio::decodeStream() {
-    while(!psx.suspended) {
-        memset(&sbuf, 0, SPU_SAMPLE_SIZE);
-        
-        for (int n = 0; n < SPU_MAX_CHAN; n++) {
-            auto &ch = spuVoices[n];
-            
-            if (ch.isNew) {
-                ch.paddr  = ch.saddr;
-                ch.spos   = 0x10000;
-                ch.bpos   = 28;
-                ch.sample = 0;
-                ch.s[0]   = 0;
-                ch.s[1]   = 0;
-                
-                ch.isNew  = false;
-                ch.active = true;
-            }
-            
-            if (ch.active == false) {
-                continue;
-            }
-            
-            for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
-                for (; ch.spos >= 0x10000; ch.spos -= 0x10000) {
-                    if (ch.bpos == 28) {
-                        if (ch.paddr == (ub *)-1) {
-                            ch.active = false;
-                            redirect SPU_NEXT_CHANNEL;
-                        }
-                        
-                        ch.bpos = 0;
-                        ub shift   = *ch.paddr & 0xf;
-                        ub predict = *ch.paddr++ >> 4;
-                        ub op      = *ch.paddr++;
-                        
-                        for (int i = 0, rest; i < 28; ch.paddr++) {
-                            audioSet(0x0f, 0xc);
-                            audioSet(0xf0, 0x8);
-                        }
-
-                        if ((op & 4) && (!ch.repeat)) {
-                            ch.raddr = ch.paddr - 16;
-                        }
-                        
-                        if ((op & 1)) {
-                            ch.paddr = (op != 3 || ch.raddr == NULL) ? (ub *)-1 : ch.raddr;
-                        }
-                    }
-                    
-                    ch.sample = ch.bfr[ch.bpos++] >> 2;
-                }
-                
-                sbuf[(ns * 2) + 0] += (ch.sample * ch.volumeL) >> 14;
-                sbuf[(ns * 2) + 1] += (ch.sample * ch.volumeR) >> 14;
-                
-                ch.spos += ch.freq;
-            }
-            
-            SPU_NEXT_CHANNEL:
-                continue;
-        }
-        
-        // OpenAL
-        ALint processed;
-        alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-
-        if (processed >= SPU_ALC_BUF_AMOUNT) {
-            // We have to free buffers
-            printf("/// PSeudo Inadequent ALC buffer size -> %d\n", processed);
-        }
-
-        while(--processed < 0) {
-            freeBuffers();
-            alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-        }
-
-        ALuint buffer;
-        alSourceUnqueueBuffers(source, 1, &buffer);
-        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
-        alSourceQueueBuffers(source, 1, &buffer);
-    }
-}
-
-void CstrAudio::freeBuffers() {
-    ALint state;
-    alGetSourcei(source, AL_SOURCE_STATE, &state);
-
-    if (state != AL_PLAYING) {
-        alSourceStream(source);
-    }
 }
 
 void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
