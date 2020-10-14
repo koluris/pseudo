@@ -64,9 +64,10 @@ void CstrAudio::StartSound(int n) {
     chn.bNew = 0;
     chn.bStop = 0;
     chn.bOn = 1;
+    chn.spos = 0x10000;
+    
     chn.SB[29] = 0;
     chn.SB[30] = 0;
-    chn.spos = 0x10000;
     chn.SB[31] = 0;
 }
 
