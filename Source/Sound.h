@@ -84,7 +84,8 @@ class CstrAudio {
     enum {
         SPU_ALC_BUF_AMOUNT = 16,
         SPU_SAMPLE_RATE    = 44100,
-        SPU_SAMPLE_SIZE    = 256
+        SPU_SAMPLE_SIZE    = 256,
+        SPU_SAMPLE_COUNT   = SPU_SAMPLE_SIZE / 4
     };
     
     uh sbuf[SPU_SAMPLE_SIZE];
@@ -117,7 +118,7 @@ public:
         alGenBuffers(SPU_ALC_BUF_AMOUNT, bfr);
 
         for (auto &item : bfr) {
-            alBufferData(item, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE * 4, SPU_SAMPLE_RATE);
+            alBufferData(item, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
         }
 
         alSourceQueueBuffers(source, SPU_ALC_BUF_AMOUNT, bfr);
@@ -131,7 +132,7 @@ public:
         alcCloseDevice(device);
     }
     
-    bool init();
+    void init();
     void reset();
     void write(uw, uh);
     uh read(uw);

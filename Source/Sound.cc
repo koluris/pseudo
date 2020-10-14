@@ -31,57 +31,58 @@ typedef struct {
     int iOldNoise;
 } SPUCHAN;
 
-static uh spuMem[256 * 1024];
-static ub *spuMemC;
-static SPUCHAN spuVoices[MAXCHAN + 1];
-static uw spuAddr = 0xffffffff;
+uh spuMem[256 * 1024];
+ub *spuMemC;
+SPUCHAN spuVoices[MAXCHAN + 1];
+uw spuAddr;
 int iFMod[44100];
 
 #define spuCtrl \
     *(uh *)&mem.hwr.ptr[0x1daa]
 
 void spuFranReadDMAMem(uh *pusPSXMem, int size) {
-    if (spuAddr + (size<<1) >= 0x80000) {
-        memcpy(pusPSXMem, &spuMem[spuAddr>>1], 0x7FFFF-spuAddr+1);
-        memcpy(pusPSXMem+(0x7FFFF-spuAddr+1), spuMem, (size<<1)-(0x7FFFF-spuAddr+1));
-        spuAddr = (size<<1) - (0x7FFFF-spuAddr+1);
+    if (spuAddr + (size << 1) >= 0x80000) {
+        memcpy(pusPSXMem, &spuMem[spuAddr >> 1], 0x7ffff - spuAddr + 1);
+        memcpy(pusPSXMem + (0x7ffff - spuAddr + 1), spuMem, (size << 1) - (0x7ffff - spuAddr + 1));
+        spuAddr = (size << 1) - (0x7ffff - spuAddr + 1);
     } else {
-        memcpy(pusPSXMem,&spuMem[spuAddr>>1], (size<<1));
-        spuAddr += (size<<1);
+        memcpy(pusPSXMem, &spuMem[spuAddr >> 1], (size << 1));
+        spuAddr += (size << 1);
     }
 }
 
 void spuFranWriteDMAMem(uh *pusPSXMem, int size) {
-    if (spuAddr+(size<<1)>0x7FFFF) {
-        memcpy(&spuMem[spuAddr>>1], pusPSXMem, 0x7FFFF-spuAddr+1);
-        memcpy(spuMem, pusPSXMem+(0x7FFFF-spuAddr+1), (size<<1)-(0x7FFFF-spuAddr+1));
-        spuAddr = (size<<1)-(0x7FFFF-spuAddr+1);
+    if (spuAddr + (size << 1) > 0x7ffff) {
+        memcpy(&spuMem[spuAddr >> 1], pusPSXMem, 0x7ffff - spuAddr + 1);
+        memcpy(spuMem, pusPSXMem + (0x7ffff - spuAddr + 1), (size << 1) - (0x7ffff - spuAddr + 1));
+        spuAddr = (size << 1) - (0x7ffff - spuAddr + 1);
     } else {
-        memcpy(&spuMem[spuAddr>>1], pusPSXMem, (size<<1));
-        spuAddr += (size<<1);
+        memcpy(&spuMem[spuAddr >> 1], pusPSXMem, (size << 1));
+        spuAddr += (size << 1);
     }
 }
 
 void SoundOn(int start, int end, uh data) {
-    for (int ch = start; ch < end; ch++,data>>=1) {
-        if ((data&1) && spuVoices[ch].pStart) {
-            spuVoices[ch].bIgnoreLoop=0;
-            spuVoices[ch].bNew=1;
+    for (int ch = start; ch < end; ch++, data >>= 1) {
+        if ((data & 1) && spuVoices[ch].pStart) {
+            spuVoices[ch].bIgnoreLoop = 0;
+            spuVoices[ch].bNew = 1;
         }
     }
 }
 
 void SoundOff(int start,int end, uh data) {
-    for (int ch = start; ch < end; ch++,data>>=1)
-    spuVoices[ch].bStop |= (data & 1);
+    for (int ch = start; ch < end; ch++, data >>= 1) {
+        spuVoices[ch].bStop |= (data & 1);
+    }
 }
 
-void FModOn(int start,int end, uh data) {
-    for (int ch = start; ch < end; ch++,data>>=1) {
+void FModOn(int start, int end, uh data) {
+    for (int ch = start; ch < end; ch++, data >>= 1) {
         if (data & 1) {
             if (ch > 0) {
                 spuVoices[ch].bFMod = 1;
-                spuVoices[ch-1].bFMod=2;
+                spuVoices[ch - 1].bFMod = 2;
             }
         } else {
             spuVoices[ch].bFMod = 0;
@@ -89,35 +90,44 @@ void FModOn(int start,int end, uh data) {
     }
 }
 
-void NoiseOn(int start,int end, uh data) {
-    for (int ch=start;ch<end;ch++,data>>=1)
-    spuVoices[ch].bNoise = data & 1;
+void NoiseOn(int start, int end, uh data) {
+    for (int ch = start; ch < end; ch++, data >>= 1) {
+        spuVoices[ch].bNoise = data & 1;
+    }
 }
 
 int calcVolume(sh vol) {
     if (vol & 0x8000) {
-        int sInc=1;
-        if (vol & 0x2000)
+        int sInc = 1;
+        
+        if (vol & 0x2000) {
             sInc = -1;
-        if (vol & 0x1000)
-            vol ^= 0xFFFF;
-        vol = ((vol&0x7F)+1)/2;
-        vol += vol/(2*sInc);
+        }
+        
+        if (vol & 0x1000) {
+            vol ^= 0xffff;
+        }
+        
+        vol = ((vol & 0x7f) + 1) / 2;
+        vol += vol / (2 * sInc);
         vol *= 128;
     } else {
-        if (vol & 0x4000)
-            vol = 0x3FFF - (vol&0x3FFF);
+        if (vol & 0x4000) {
+            vol = 0x3fff - (vol & 0x3fff);
+        }
     }
-    vol &= 0x3FFF;
+    
+    vol &= 0x3fff;
     return vol;
 }
 
 void setPitch(int ch, int val) {
-    val = MIN(val, 0x3FFF);
+    val = MIN(val, 0x3fff);
     spuVoices[ch].iRawPitch = val;
-    val = (44100*val) / 4096;
-    if (val < 1)
+    val = (44100 * val) / 4096;
+    if (val < 1) {
         val = 1;
+    }
     spuVoices[ch].iActFreq = val;
 }
 
@@ -125,7 +135,7 @@ void CstrAudio::write(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
-                int ch = (addr>>4) & 0x1f;
+                int ch = (addr >> 4) & 0x1f;
 
                 switch(addr & 0xf) {
                     case 0x0: // Volume L
@@ -231,18 +241,20 @@ uh CstrAudio::read(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
             {
-                int ch=(addr>>4) & 0x1f;
+                int ch = (addr >> 4) & 0x1f;
 
                 switch(addr & 0xf) {
                     case 0xc: // Hack
-                        if (spuVoices[ch].bNew)
+                        if (spuVoices[ch].bNew) {
                             return 1;
+                        }
                         return 0;
                         
-                    case 0xe: // madman
-                        if (!spuVoices[ch].pLoop)
-                            return 0;
-                        return (spuVoices[ch].pLoop-spuMemC) >> 3;
+                    case 0xe: // Madman
+                        if (spuVoices[ch].pLoop) {
+                            return (spuVoices[ch].pLoop - spuMemC) >> 3;
+                        }
+                        return 0;
 
                     /* unused */
                     case 0x0:
@@ -292,75 +304,89 @@ uh CstrAudio::read(uw addr) {
 }
 
 void StartSound(SPUCHAN * pChannel) {
-    pChannel->pCurr=pChannel->pStart;
-    pChannel->s_1=0;
-    pChannel->s_2=0;
-    pChannel->iSBPos=28;
-    pChannel->bNew=0;
-    pChannel->bStop=0;
-    pChannel->bOn=1;
-    pChannel->SB[29]=0;
-    pChannel->SB[30]=0;
-    pChannel->spos=0x10000;
-    pChannel->SB[31]=0;
+    pChannel->pCurr = pChannel->pStart;
+    pChannel->s_1 = 0;
+    pChannel->s_2 = 0;
+    pChannel->iSBPos = 28;
+    pChannel->bNew = 0;
+    pChannel->bStop = 0;
+    pChannel->bOn = 1;
+    pChannel->SB[29] = 0;
+    pChannel->SB[30] = 0;
+    pChannel->spos = 0x10000;
+    pChannel->SB[31] = 0;
 }
 
-void VoiceChangeFrequency(SPUCHAN * pChannel) {
-    pChannel->iUsedFreq=pChannel->iActFreq;
-    pChannel->sinc=pChannel->iRawPitch<<4;
-    if(!pChannel->sinc) pChannel->sinc=1;
-}
-
-void FModChangeFrequency(SPUCHAN * pChannel,int ns)
-{
-    int NP=pChannel->iRawPitch;
-    NP=((32768L+iFMod[ns])*NP)/32768L;
-    if(NP>0x3FFF) NP=0x3FFF;
-    if(NP<0x1) NP=0x1;
-    NP=(44100L*NP)/(4096L);
-    pChannel->iActFreq=NP;
-    pChannel->iUsedFreq=NP;
-    pChannel->sinc=(((NP/10)<<16)/4410);
-    if(!pChannel->sinc) pChannel->sinc=1;
-    iFMod[ns]=0;
-}
-
-void StoreInterpolationVal(SPUCHAN * pChannel,int fa)
-{
-    if(pChannel->bFMod==2)
-        pChannel->SB[29]=fa;
-    else
-    {
-        if((spuCtrl&0x4000)==0)
-            fa=0;
-        else
-            {
-                if(fa>32767L)  fa=32767L;
-                if(fa<-32767L) fa=-32767L;
-            }
-        pChannel->SB[29]=fa;
-    }
-}
-
-bool CstrAudio::init() {
-    spuMemC=(unsigned char *)spuMem;
-    memset((void *)spuVoices,0,MAXCHAN*sizeof(SPUCHAN));
+void VoiceChangeFrequency(SPUCHAN *pChannel) {
+    pChannel->iUsedFreq = pChannel->iActFreq;
+    pChannel->sinc = pChannel->iRawPitch << 4;
     
-    spuAddr=0xFFFFFFFF;
-    spuMemC=(unsigned char *)spuMem;
-    memset((void *)spuVoices,0,(MAXCHAN+1)*sizeof(SPUCHAN));
-
-    for(int i=0;i<MAXCHAN;i++)
-    {
-        spuVoices[i].pLoop=spuMemC;
-        spuVoices[i].pStart=spuMemC;
-        spuVoices[i].pCurr=spuMemC;
+    if (!pChannel->sinc) {
+        pChannel->sinc = 1;
     }
+}
+
+void FModChangeFrequency(SPUCHAN *pChannel, int ns) {
+    int NP = pChannel->iRawPitch;
+    NP = ((32768 + iFMod[ns]) * NP) / 32768;
+    
+    if (NP > 0x3FFF) {
+        NP = 0x3FFF;
+    }
+    
+    if (NP < 0x1) {
+        NP = 0x1;
+    }
+    
+    NP = (44100L * NP) / 4096;
+    pChannel->iActFreq = NP;
+    pChannel->iUsedFreq = NP;
+    pChannel->sinc = ((NP / 10) << 16) / 4410;
+    
+    if (!pChannel->sinc) {
+        pChannel->sinc = 1;
+    }
+    
+    iFMod[ns] = 0;
+}
+
+void StoreInterpolationVal(SPUCHAN *pChannel, int fa) {
+    if (pChannel->bFMod == 2) {
+        pChannel->SB[29] = fa;
+    }
+    else {
+        if ((spuCtrl & 0x4000) == 0) {
+            fa = 0;
+        }
+        else {
+            if (fa > 32767) {
+                fa = 32767;
+            }
+            
+            if (fa < -32767) {
+                fa = -32767;
+            }
+        }
+        
+        pChannel->SB[29] = fa;
+    }
+}
+
+void CstrAudio::init() {
+    spuMemC = (ub *)spuMem;
+    memset((void *)spuVoices, 0, (MAXCHAN + 1) * sizeof(SPUCHAN));
+    
+    for(int i = 0; i < MAXCHAN; i++) {
+        spuVoices[i].pLoop = spuMemC;
+        spuVoices[i].pStart = spuMemC;
+        spuVoices[i].pCurr = spuMemC;
+    }
+    
     memset(iFMod, 0, sizeof(iFMod));
-    return true;
 }
 
 void CstrAudio::reset() {
+    spuAddr = 0xffffffff;
 }
 
 void CstrAudio::stream() {
@@ -374,88 +400,109 @@ void CstrAudio::stream() {
 
 void CstrAudio::decodeStream() {
     while(!psx.suspended) {
-        int sampleCount = 256 / 4;
-        memset(&sbuf, 0, sampleCount * 4);
+        memset(&sbuf, 0, SPU_SAMPLE_SIZE);
         
         int s_1,s_2,fa;
         int predict_nr,shift_factor,flags,s;
         static const int f[5][2] = {{0,0},{60,0},{115,-52},{98,-55},{122,-60}};
         
         for (SPUCHAN *ch = spuVoices; ch != spuVoices + MAXCHAN; ch++) {
-            if (ch->bNew)
+            if (ch->bNew) {
                 StartSound(ch);
-            if (!ch->bOn)
+            }
+            
+            if (!ch->bOn) {
                 continue;
-            if (ch->iActFreq != ch->iUsedFreq)
+            }
+            
+            if (ch->iActFreq != ch->iUsedFreq) {
                 VoiceChangeFrequency(ch);
-            for (int ns = 0; ns < sampleCount; ns++) {
-                if (ch->bFMod==1 && iFMod[ns])
+            }
+            
+            for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
+                if (ch->bFMod==1 && iFMod[ns]) {
                     FModChangeFrequency(ch, ns);
+                }
+                
                 while (ch->spos >= 0x10000) {
                     if (ch->iSBPos == 28) {
                         if (ch->pCurr == (ub *)-1)
                         {
-                            ch->bOn=0;
-                            goto ENDX;
+                            ch->bOn = 0;
+                            goto SPU_CHANNEL_END;
                         }
-                        ch->iSBPos=0;
-                        s_1=ch->s_1;
-                        s_2=ch->s_2;
-                        predict_nr=(int)*ch->pCurr;
+                        
+                        ch->iSBPos = 0;
+                        s_1 = ch->s_1;
+                        s_2 = ch->s_2;
+                        predict_nr = (int)*ch->pCurr;
                         ch->pCurr++;
-                        shift_factor=predict_nr&0xf;
+                        shift_factor = predict_nr & 0xf;
                         predict_nr >>= 4;
-                        flags=(int)*ch->pCurr;
+                        flags = (int)*ch->pCurr;
                         ch->pCurr++;
 
-                        for (int i=0;i<28;ch->pCurr++) {
-                            s=((((int)*ch->pCurr)&0xf)<<12);
-                            if(s&0x8000) s|=0xFFFF0000;
-                            fa=(s >> shift_factor);
-                            fa=fa + ((s_1 * f[predict_nr][0])>>6) + ((s_2 * f[predict_nr][1])>>6);
-                            s_2=s_1;s_1=fa;
-                            s=((((int)*ch->pCurr) & 0xf0) << 8);
-                            ch->SB[i++]=fa;
-                            if(s&0x8000) s|=0xFFFF0000;
-                            fa=(s>>shift_factor);
-                            fa=fa + ((s_1 * f[predict_nr][0])>>6) + ((s_2 * f[predict_nr][1])>>6);
-                            s_2=s_1;s_1=fa;
-                            ch->SB[i++]=fa;
+                        for (int i = 0; i < 28; ch->pCurr++) {
+                            s = ((((int)*ch->pCurr) & 0x0f) << 12);
+                            if (s & 0x8000) s |= 0xffff0000;
+                            fa = (s >> shift_factor);
+                            fa = fa + ((s_1 * f[predict_nr][0]) >> 6) + ((s_2 * f[predict_nr][1]) >> 6);
+                            s_2 = s_1;
+                            s_1 = fa;
+                            ch->SB[i++] = fa;
+                            
+                            s = ((((int)*ch->pCurr) & 0xf0) << 8);
+                            if (s & 0x8000) s |= 0xffff0000;
+                            fa = s >> shift_factor;
+                            fa = fa + ((s_1 * f[predict_nr][0]) >> 6) + ((s_2 * f[predict_nr][1]) >> 6);
+                            s_2 = s_1;
+                            s_1 = fa;
+                            ch->SB[i++] = fa;
                         }
 
-                        // flag handler
-                        if ((flags&4) && (!ch->bIgnoreLoop))
+                        if ((flags & 4) && (!ch->bIgnoreLoop)) {
                             ch->pLoop=ch->pCurr-16;
-                        if (flags&1)
-                        {
-                            if(flags!=3 || ch->pLoop==NULL)
-                                ch->pCurr = (ub*)-1;
-                            else
-                                ch->pCurr = ch->pLoop;
                         }
-                        ch->s_1=s_1;
-                        ch->s_2=s_2;
+                        
+                        if (flags & 1) {
+                            if (flags != 3 || ch->pLoop == NULL) {
+                                ch->pCurr = (ub *) - 1;
+                            }
+                            else {
+                                ch->pCurr = ch->pLoop;
+                            }
+                        }
+                        
+                        ch->s_1 = s_1;
+                        ch->s_2 = s_2;
                     }
-                    fa=ch->SB[ch->iSBPos++];
-                    StoreInterpolationVal(ch,fa);
+                    
+                    fa = ch->SB[ch->iSBPos++];
+                    StoreInterpolationVal(ch, fa);
                     ch->spos -= 0x10000;
                 }
-
-                if (ch->bNoise)
+                
+                if (ch->bNoise) {
                     fa = 0;
-                else
-                    fa = ch->SB[29];
-                ch->sval = fa >> 2;
-                //ch->sval = (MixADSR(ch)*fa)>>10;   // mix adsr
-                if (ch->bFMod==2) {
-                    iFMod[ns]=ch->sval;
-                } else {
-                    sbuf[ns*2+0]+=(ch->sval*ch->iLeftVolume)>>14;
-                    sbuf[ns*2+1]+=(ch->sval*ch->iRightVolume)>>14;
                 }
+                else {
+                    fa = ch->SB[29];
+                }
+                
+                //ch->sval = (MixADSR(ch) * fa) >> 10;
+                ch->sval = fa >> 2;
+                
+                if (ch->bFMod == 2) {
+                    iFMod[ns] = ch->sval;
+                } else {
+                    sbuf[(ns * 2) + 0] += (ch->sval * ch->iLeftVolume ) >> 14;
+                    sbuf[(ns * 2) + 1] += (ch->sval * ch->iRightVolume) >> 14;
+                }
+                
                 ch->spos += ch->sinc;
             }
-            ENDX: ;
+            
+            SPU_CHANNEL_END: ;
         }
         
         // OpenAL
@@ -474,7 +521,7 @@ void CstrAudio::decodeStream() {
 
         ALuint buffer;
         alSourceUnqueueBuffers(source, 1, &buffer);
-        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, sampleCount * 4, SPU_SAMPLE_RATE);
+        alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
         stream();
     }
