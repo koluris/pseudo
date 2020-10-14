@@ -4,23 +4,42 @@
 
 CstrAudio audio;
 
-void CstrAudio::SoundOn(int start, int end, uh data) {
-    for (int ch = start; ch < end; ch++, data >>= 1) {
-        if ((data & 1) && spuVoices[ch].pStart) {
-            spuVoices[ch].bIgnoreLoop = 0;
-            spuVoices[ch].bNew = 1;
+void CstrAudio::init() {
+    spuMemC = (ub *)spuMem;
+    
+    for (int i = 0; i < (MAXCHAN + 1); i++) {
+        spuVoices[i].pLoop = spuMemC;
+        spuVoices[i].pStart = spuMemC;
+        spuVoices[i].pCurr = spuMemC;
+    }
+}
+
+void CstrAudio::reset() {
+    spuAddr = 0xffffffff;
+    for (auto &item : spuVoices) {
+        item = { 0 };
+    }
+}
+
+void CstrAudio::voiceOn(uw data) {
+    for (int n = 0; n < (MAXCHAN + 1); n++) {
+        if (data & (1 << n) && spuVoices[n].pStart) {
+            spuVoices[n].bIgnoreLoop = 0;
+            spuVoices[n].bNew = 1;
         }
     }
 }
 
-void CstrAudio::SoundOff(int start,int end, uh data) {
-    for (int ch = start; ch < end; ch++, data >>= 1) {
-        spuVoices[ch].bStop |= (data & 1);
+void CstrAudio::voiceOff(uw data) {
+    for (int n = 0; n < (MAXCHAN + 1); n++) {
+        if (data & (1 << n)) {
+            spuVoices[n].bStop |= data & 1;
+        }
     }
 }
 
-int CstrAudio::calcVolume(sh vol) {
-    return ((vol & 0x7fff) ^ 0x4000) - 0x4000;
+int CstrAudio::setVolume(sh data) {
+    return ((data & 0x7fff) ^ 0x4000) - 0x4000;
 }
 
 void CstrAudio::setPitch(int ch, int val) {
@@ -35,6 +54,33 @@ void CstrAudio::setPitch(int ch, int val) {
     spuVoices[ch].iActFreq = val;
 }
 
+void CstrAudio::StartSound(int n) {
+    auto &chn = spuVoices[n];
+    
+    chn.pCurr = chn.pStart;
+    chn.s_1 = 0;
+    chn.s_2 = 0;
+    chn.iSBPos = 28;
+    chn.bNew = 0;
+    chn.bStop = 0;
+    chn.bOn = 1;
+    chn.SB[29] = 0;
+    chn.SB[30] = 0;
+    chn.spos = 0x10000;
+    chn.SB[31] = 0;
+}
+
+void CstrAudio::VoiceChangeFrequency(int n) {
+    auto &chn = spuVoices[n];
+    
+    chn.iUsedFreq = chn.iActFreq;
+    chn.sinc = chn.iRawPitch << 4;
+    
+    if (!chn.sinc) {
+        chn.sinc = 1;
+    }
+}
+
 void CstrAudio::write(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
         case 0x1c00 ... 0x1d7e: // Channels
@@ -43,11 +89,11 @@ void CstrAudio::write(uw addr, uh data) {
 
                 switch(addr & 0xf) {
                     case 0x0: // Volume L
-                        spuVoices[ch].volumeL = calcVolume(data);
+                        spuVoices[ch].volumeL = setVolume(data);
                         return;
 
                     case 0x2: // Volume R
-                        spuVoices[ch].volumeR = calcVolume(data);
+                        spuVoices[ch].volumeR = setVolume(data);
                         return;
 
                     case 0x4: // Pitch
@@ -76,19 +122,19 @@ void CstrAudio::write(uw addr, uh data) {
             }
 
         case 0x1d88: // Sound On 1
-            SoundOn(0, 16, data);
+            voiceOn(data);
             return;
 
         case 0x1d8a: // Sound On 2
-            SoundOn(16, 24, data);
+            voiceOn(data << 16);
             return;
 
         case 0x1d8c: // Sound Off 1
-            SoundOff(0, 16, data);
+            voiceOff(data);
             return;
 
         case 0x1d8e: // Sound Off 2
-            SoundOff(16, 24, data);
+            voiceOff(data << 16);
             return;
 
         case 0x1da6: // Transfer Address
@@ -193,50 +239,6 @@ uh CstrAudio::read(uw addr) {
 
     printx("/// PSeudo SPU read: 0x%x", addr);
     return 0;
-}
-
-void CstrAudio::StartSound(int n) {
-    auto &chn = spuVoices[n];
-    
-    chn.pCurr = chn.pStart;
-    chn.s_1 = 0;
-    chn.s_2 = 0;
-    chn.iSBPos = 28;
-    chn.bNew = 0;
-    chn.bStop = 0;
-    chn.bOn = 1;
-    chn.SB[29] = 0;
-    chn.SB[30] = 0;
-    chn.spos = 0x10000;
-    chn.SB[31] = 0;
-}
-
-void CstrAudio::VoiceChangeFrequency(int n) {
-    auto &chn = spuVoices[n];
-    
-    chn.iUsedFreq = chn.iActFreq;
-    chn.sinc = chn.iRawPitch << 4;
-    
-    if (!chn.sinc) {
-        chn.sinc = 1;
-    }
-}
-
-void CstrAudio::init() {
-    spuMemC = (ub *)spuMem;
-    
-    for (int i = 0; i < (MAXCHAN + 1); i++) {
-        spuVoices[i].pLoop = spuMemC;
-        spuVoices[i].pStart = spuMemC;
-        spuVoices[i].pCurr = spuMemC;
-    }
-}
-
-void CstrAudio::reset() {
-    spuAddr = 0xffffffff;
-    for (auto &item : spuVoices) {
-        item = { 0 };
-    }
 }
 
 void CstrAudio::stream() {
