@@ -41,6 +41,7 @@ public:
     // Functions
     void init(const char *);
     void reset();
+    void iso(const char *);
     void executable(const char *);
     void console(uw *, uw);
 };

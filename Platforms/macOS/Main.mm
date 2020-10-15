@@ -56,7 +56,7 @@
 
 - (IBAction)menuOpen:(id)sender {
     NSOpenPanel *op = [NSOpenPanel openPanel];
-    [op setAllowedFileKind:@[@"bin", @"exe", @"psx"]];
+    [op setAllowedFileKind:@[@"bin", @"exe", @"iso", @"psx"]];
     
     [op startSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
         if (returnCode == NSModalResponseOK) {
@@ -133,13 +133,6 @@
         [[self.openGLView openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
         [[self.openGLView openGLContext] makeCurrentContext];
         
-#if 0
-        CGLError err = CGLEnable(CGLGetCurrentContext(), kCGLCEMPEnGine);
-        if (err != kCGLNoError) {
-            printf("GL Multithread error: %i\n", err);
-        }
-#endif
-        
         cpu.run();
     }]];
     
@@ -161,12 +154,18 @@
 }
 
 - (void)openPSXfile:(NSURL *)path {
+    const char *file = [[path path] UTF8Chars];
+    
     // Stop current emulation process & reset
     [self emulatorStopAndReset:YES];
-    
-    // Load executable
     [self setWindowCaption:[path lastPathComponent]];
-    psx.executable([[path path] UTF8Chars]);
+    
+    if ([[path pathExtension] isEqualToChars:@"iso"]) { // Better solution: "CD001" or "PSX-EXE"
+        psx.iso(file);
+    }
+    else {
+        psx.executable(file);
+    }
     
     // Start new emulation process
     [self emulatorStart];

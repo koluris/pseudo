@@ -33,6 +33,8 @@ void CstrPSeudo::reset() {
     cache.reset();
        cd.reset();
       cpu.reset();
+     disc.reset();
+     mdec.reset();
       mem.reset();
     rootc.reset();
       sio.reset();
@@ -48,6 +50,13 @@ void CstrPSeudo::reset() {
 #elif  APPLE_IOS
     // TODO
 #endif
+}
+
+void CstrPSeudo::iso(const char *path) {
+    if (disc.open(path)) {
+        // Prerequisite boot
+        cpu.bootstrap();
+    }
 }
 
 void CstrPSeudo::executable(const char *path) {
