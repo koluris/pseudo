@@ -122,6 +122,7 @@ void CstrAudio::decodeStream() {
         alSourceUnqueueBuffers(source, 1, &buffer);
         alBufferData(buffer, AL_FORMAT_STEREO16, sbuf, SPU_SAMPLE_SIZE, SPU_SAMPLE_RATE);
         alSourceQueueBuffers(source, 1, &buffer);
+        freeBuffers();
     }
 }
 

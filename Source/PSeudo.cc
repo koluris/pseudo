@@ -56,6 +56,7 @@ void CstrPSeudo::iso(const char *path) {
     if (disc.open(path)) {
         // Prerequisite boot
         cpu.bootstrap();
+        cpu.setpc(cpu.base[31]);
     }
 }
 

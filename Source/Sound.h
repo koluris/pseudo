@@ -21,7 +21,7 @@ class CstrAudio {
     ALuint source;
     ALuint bfr[SPU_ALC_BUF_AMOUNT];
     
-    struct voices {
+    struct {
         bool isNew, active, repeat;
         sw spos, bpos, freq, sample;
         sh volumeL, volumeR;

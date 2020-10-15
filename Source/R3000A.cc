@@ -77,7 +77,8 @@ void CstrMips::run() {
         
         if (threshold <= opcodeCount) {
             rootc.update(threshold);
-            bus.interruptsUpdate();
+               cd.update();
+              bus.update();
             
             if (data32 & mask32) {
                 if ((copr[12] & 0x401) == 0x401) {

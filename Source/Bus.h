@@ -58,7 +58,7 @@ public:
     
     void reset();
     void interruptSet(ub);
-    void interruptsUpdate();
+    void update();
     void checkDMA(uw, uw);
 };
 
