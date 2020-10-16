@@ -25,8 +25,8 @@
 	#include "al.h"
 	#include "alc.h"
 
-	#define GL_COMBINE		0x8570
-	#define GL_RGB_SCALE	0x8573
+	#define GL_COMBINE      0x8570
+	#define GL_RGB_SCALE    0x8573
     #define MIN(a, b)       (((a) < (b)) ? (a) : (b))
     #define MAX(a, b)       (((a) > (b)) ? (a) : (b))
 #endif

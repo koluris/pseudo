@@ -1,9 +1,6 @@
 #include "Global.h"
 
 
-#define BCD2INT(b) \
-    ((b) / 16 * 10 + (b) % 16)
-
 #define CD_REG(r) \
     *(ub *)&mem.hwr.ptr[0x1800 | r]
 
@@ -31,13 +28,15 @@
 CstrCD cd;
 
 void CstrCD::reset() {
-    ret    = { 0 };
-    param  = { 0 };
-    result = { 0 };
-    sector = { 0 };
+    ret      = { 0 };
+    param    = { 0 };
+    result   = { 0 };
+    sector   = { 0 };
+    transfer = { 0 };
     
     irq = 0;
     interruptSet = 0;
+    interruptReadSet = 0;
     reads = 0;
     
     occupied = false;
@@ -50,6 +49,13 @@ void CstrCD::update() {
         if (interruptSet++ >= 16) {
             interruptSet = 0;
             interrupt();
+        }
+    }
+    
+    if (interruptReadSet) {
+        if (interruptReadSet++ >= 1024) {
+            interruptReadSet = 0;
+            interruptRead();
         }
     }
 }
@@ -65,12 +71,12 @@ void CstrCD::interruptQueue(ub code) {
     }
 }
 
-void readTrack() {
+void CstrCD::trackRead() {
     sector.prev[0] = INT2BCD(sector.data[0]);
     sector.prev[1] = INT2BCD(sector.data[1]);
     sector.prev[2] = INT2BCD(sector.data[2]);
     
-    iso.readTrack(sector.prev);
+    disc.trackRead(sector.prev);
 }
 
 void CstrCD::interrupt() {
@@ -160,7 +166,7 @@ void CstrCD::interrupt() {
             ret.statp |= 0x20;
             ret.status = CD_STAT_ACKNOWLEDGE;
 
-            readTrack();
+            trackRead();
             interruptReadSet = 1;
             break;
             
@@ -172,6 +178,48 @@ void CstrCD::interrupt() {
     if (ret.status != CD_STAT_NO_INTR && ret.re2 != 0x18) {
         bus.interruptSet(CstrBus::INT_CD);
     }
+}
+
+void CstrCD::interruptRead() {
+    if (!reads) {
+        return;
+    }
+    
+    if (ret.status) {
+        interruptReadSet = 1;
+        return;
+    }
+    
+    occupied = true;
+    setResultSize(1);
+    ret.statp |= 0x22;
+    ret.statp &= (~(0x40));
+    result.data[0] = ret.statp;
+    
+    ub *buf = disc.bfr;
+    memcp(transfer.data, buf, CstrDisc::UDF_DATASIZE);
+    ret.status = CD_STAT_DATA_READY;
+    
+    sector.data[2]++;
+    if (sector.data[2] == 75) {
+        sector.data[2] = 0;
+      
+        sector.data[1]++;
+        if (sector.data[1] == 60) {
+            sector.data[1] = 0;
+            sector.data[0]++;
+        }
+    }
+    readed = false;
+    
+    if ((transfer.data[4 + 2] & 0x80) && (ret.mode & 0x02)) {
+        interruptQueue(CdlPause);
+    }
+    else {
+        interruptReadSet = 1;
+    }
+    
+    bus.interruptSet(CstrBus::INT_CD);
 }
 
 void CstrCD::write(uw addr, ub data) {
@@ -226,6 +274,7 @@ void CstrCD::write(uw addr, ub data) {
                     break;
                     
                 case CdlSetmode:
+                    ret.mode = param.data[0];
                     defaultCtrlAndStat();
                     break;
                     
@@ -283,8 +332,15 @@ void CstrCD::write(uw addr, ub data) {
                 return;
             }
             
-            if (data == 0x80 && ((ret.control & 0x1) == false) && readed == 0) {
-                printx("/// PSeudo CD write: %d <- 0x%x", (addr & 0xf), data);
+            if (data == 0x80 && ((ret.control & 0x1) == false) && readed == false) {
+                readed = true;
+                cdr.pTransfer = cdr.Transfer;
+
+                switch (ret.mode & 0x30) {
+                    case 0x10:
+                    case 0x00: cdr.pTransfer+=12; break;
+                    default: break;
+                }
             }
             return;
     }
