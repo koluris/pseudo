@@ -1,4 +1,3 @@
-
 class CstrCD {
     enum {
         CD_STAT_NO_INTR,
@@ -7,8 +6,17 @@ class CstrCD {
     };
     
     enum {
-        CdlNop  = 1,
-        CdlInit = 10
+        READ_ACK = 250
+    };
+    
+    enum {
+        CdlNop     =  1,
+        CdlSetloc  =  2,
+        CdlReadN   =  6,
+        CdlInit    = 10,
+        CdlDemute  = 12,
+        CdlSetmode = 14,
+        CdlSeekL   = 21,
     };
     
     struct {
@@ -16,7 +24,7 @@ class CstrCD {
     } ret;
     
     struct {
-        ub p, c;
+        ub data[8], p, c;
     } param;
     
     struct {
@@ -24,9 +32,14 @@ class CstrCD {
         bool done;
     } result;
     
+    struct {
+      ub data[4];
+    } sector;
+    
     uw irq;
     uw interruptSet;
-    bool occupied, reads, readed;
+    uw reads;
+    bool occupied, readed, seeked;
     
     void interruptQueue(ub);
     void interrupt();
