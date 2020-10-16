@@ -74,16 +74,16 @@ void CstrCD::interrupt() {
             
         case CdlInit:
             setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp = 0x2;
             result.data[0] = ret.statp;
-            ret.status = CD_STAT_ACKNOWLEDGE;
             interruptQueue(CdlInit + 0x20);
             break;
             
         case CdlInit + 0x20:
             setResultSize(1);
-            result.data[0] = ret.statp;
             ret.status = CD_STAT_COMPLETE;
+            result.data[0] = ret.statp;
             break;
             
         default:
@@ -121,9 +121,9 @@ void CstrCD::write(uw addr, ub data) {
                     break;
                     
                 case CdlInit:
-                  stopRead();
-                  defaultCtrlAndStat();
-                  break;
+                    stopRead();
+                    defaultCtrlAndStat();
+                    break;
                     
                 default:
                     printx("/// PSeudo CD write: %d <- 0x%x", (addr & 0xf), data);
@@ -139,10 +139,10 @@ void CstrCD::write(uw addr, ub data) {
             if (ret.control & 0x1) {
                 switch (data) {
                     case 7:
+                        ret.control &= (~(3));
                         param.p = 0;
                         param.c = 0;
                         result.done = true;
-                        ret.control &= (~(3));
                         return;
                         
                     default:
@@ -202,31 +202,31 @@ ub CstrCD::read(uw addr) {
             return CD_REG(0) = ret.control;
             
         case 1:
+            CD_REG(1) = 0;
+            
             if (result.done) {
-                    CD_REG(1) = result.data[result.p++];
-                    
+                CD_REG(1) = result.data[result.p++];
+                
                 if (result.p == result.c) {
                     result.done = false;
                 }
             }
-            else {
-                CD_REG(1) = 0;
-            }
+            
             return CD_REG(1);
             
         case 3:
+            CD_REG(3) = 0;
+            
             if (ret.status) {
                 if (ret.control & 0x1) {
                     CD_REG(3) = ret.status | 0xe0;
                 }
                 else {
-                    printx("/// PSeudo CD read: haha 2", 0);
+                    printx("/// PSeudo CD read: haha %d", 2);
                     CD_REG(3) = 0xff;
                 }
             }
-            else {
-                CD_REG(3) = 0;
-            }
+            
             return CD_REG(3);
     }
     
