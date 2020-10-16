@@ -52,8 +52,8 @@ class CstrCD {
     uw irq;
     uw interruptSet;
     uw interruptReadSet;
-    uw reads;
-    bool occupied, readed, seeked;
+    ub reads, readed;
+    bool occupied, seeked;
     
     void interruptQueue(ub);
     void interrupt();

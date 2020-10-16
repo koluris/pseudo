@@ -37,10 +37,10 @@ void CstrCD::reset() {
     irq = 0;
     interruptSet = 0;
     interruptReadSet = 0;
-    reads = 0;
+    reads  = 0;
+    readed = 0;
     
     occupied = false;
-    readed   = false;
     seeked   = false;
 }
 
@@ -111,7 +111,7 @@ void CstrCD::interrupt() {
         case CdlPause + 0x20:
             setResultSize(1);
             ret.statp &= (~(0x20));
-            ret.statp |= 0x2;
+            ret.statp |= 0x02;
             result.data[0] = ret.statp;
             ret.status = CD_STAT_COMPLETE;
             break;
@@ -119,7 +119,7 @@ void CstrCD::interrupt() {
         case CdlInit:
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
-            ret.statp = 0x2;
+            ret.statp = 0x02;
             result.data[0] = ret.statp;
             interruptQueue(CdlInit + 0x20);
             break;
@@ -133,20 +133,20 @@ void CstrCD::interrupt() {
         case CdlDemute:
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
-            ret.statp |= 0x2;
+            ret.statp |= 0x02;
             result.data[0] = ret.statp;
             break;
             
         case CdlSetmode:
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
-            ret.statp |= 0x2;
+            ret.statp |= 0x02;
             result.data[0] = ret.statp;
             break;
             
         case CdlSeekL:
             setResultSize(1);
-            ret.statp |= 0x2;
+            ret.statp |= 0x02;
             result.data[0] = ret.statp;
             ret.statp |= 0x40;
             ret.status = CD_STAT_ACKNOWLEDGE;
@@ -156,7 +156,7 @@ void CstrCD::interrupt() {
             
         case CdlSeekL + 0x20:
             setResultSize(1);
-            ret.statp |= 0x2;
+            ret.statp |= 0x02;
             ret.statp &= (~(0x40));
             result.data[0] = ret.statp;
             ret.status = CD_STAT_COMPLETE;
@@ -168,7 +168,7 @@ void CstrCD::interrupt() {
             }
 
             setResultSize(1);
-            ret.statp |= 0x2;
+            ret.statp |= 0x02;
             result.data[0] = ret.statp;
             
             if (seeked == false) {
@@ -179,7 +179,7 @@ void CstrCD::interrupt() {
             ret.statp |= 0x20;
             ret.status = CD_STAT_ACKNOWLEDGE;
 
-            trackRead();
+            trackRead(); // ?
             interruptReadSet = 1;
             break;
             
@@ -210,8 +210,7 @@ void CstrCD::interruptRead() {
     result.data[0] = ret.statp;
     
     trackRead();
-    ub *buf = disc.bfr;
-    memcp(transfer.data, buf, CstrDisc::UDF_DATASIZE);
+    memcp(transfer.data, disc.bfr, CstrDisc::UDF_DATASIZE);
     ret.status = CD_STAT_DATA_READY;
     
     sector.data[2]++;
@@ -224,7 +223,7 @@ void CstrCD::interruptRead() {
             sector.data[0]++;
         }
     }
-    readed = false;
+    readed = 0;
     
     if ((transfer.data[4 + 2] & 0x80) && (ret.mode & 0x02)) {
         interruptQueue(CdlPause);
@@ -239,7 +238,7 @@ void CstrCD::interruptRead() {
 void CstrCD::write(uw addr, ub data) {
     switch(addr & 0xf) {
         case 0:
-            ret.control = data | (ret.control & (~(0x3)));
+            ret.control = data | (ret.control & (~(0x03)));
             
             if (!data) {
                 param.p = 0;
@@ -251,7 +250,7 @@ void CstrCD::write(uw addr, ub data) {
         case 1:
             occupied = false;
             
-            if (ret.control & 0x1) {
+            if (ret.control & 0x01) {
                 return;
             }
             
@@ -312,10 +311,10 @@ void CstrCD::write(uw addr, ub data) {
             return;
             
         case 2:
-            if (ret.control & 0x1) {
+            if (ret.control & 0x01) {
                 switch (data) {
                     case 7:
-                        ret.control &= (~(3));
+                        ret.control &= (~(0x03));
                         param.p = 0;
                         param.c = 0;
                         result.done = true;
@@ -326,14 +325,14 @@ void CstrCD::write(uw addr, ub data) {
                         return;
                 }
             }
-            else if (!(ret.control & 0x1) && param.p < 8) {
+            else if (!(ret.control & 0x01) && param.p < 8) {
                 param.data[param.p++] = data;
                 param.c++;
             }
             return;
             
         case 3:
-            if (data == 0x07 && ((ret.control & 0x1) == true)) {
+            if (data == 0x07 && ((ret.control & 0x01) == true)) {
                 ret.status = 0;
                 
                 if (irq == 0xff) {
@@ -351,8 +350,8 @@ void CstrCD::write(uw addr, ub data) {
                 return;
             }
             
-            if (data == 0x80 && ((ret.control & 0x1) == false) && readed == false) {
-                readed = true;
+            if (data == 0x80 && ((ret.control & 0x01) == false) && !readed) {
+                readed = 1;
                 transfer.p = 0;
 
                 switch (ret.mode & 0x30) {
@@ -409,7 +408,7 @@ ub CstrCD::read(uw addr) {
             CD_REG(3) = 0;
             
             if (ret.status) {
-                if (ret.control & 0x1) {
+                if (ret.control & 0x01) {
                     CD_REG(3) = ret.status | 0xe0;
                 }
                 else {
