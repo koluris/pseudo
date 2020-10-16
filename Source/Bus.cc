@@ -42,6 +42,10 @@ void CstrBus::checkDMA(uw addr, uw data) {
                 vs.executeDMA(dma);
                 break;
                 
+            case DMA_CD:
+                cd.executeDMA(dma);
+                break;
+                
             case DMA_SPU:
                 audio.executeDMA(dma);
                 break;

@@ -69,6 +69,8 @@ public:
     
     // Load
     ub read(uw);
+    
+    void executeDMA(CstrBus::castDMA *);
 };
 
 extern CstrCD cd;

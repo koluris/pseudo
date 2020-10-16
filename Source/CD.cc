@@ -63,10 +63,7 @@ void CstrCD::update() {
 void CstrCD::interruptQueue(ub code) {
     irq = code;
     
-    if (ret.status) {
-        printf(":(\n");
-    }
-    else {
+    if (!ret.status) {
         interruptSet = 1;
     }
 }
@@ -101,6 +98,22 @@ void CstrCD::interrupt() {
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x2;
             result.data[0] = ret.statp;
+            break;
+            
+        case CdlPause:
+            setResultSize(1);
+            result.data[0] = ret.statp;
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            interruptQueue(CdlPause + 0x20);
+            ret.control |= 0x80;
+            break;
+            
+        case CdlPause + 0x20:
+            setResultSize(1);
+            ret.statp &= (~(0x20));
+            ret.statp |= 0x2;
+            result.data[0] = ret.statp;
+            ret.status = CD_STAT_COMPLETE;
             break;
             
         case CdlInit:
@@ -196,6 +209,7 @@ void CstrCD::interruptRead() {
     ret.statp &= (~(0x40));
     result.data[0] = ret.statp;
     
+    trackRead();
     ub *buf = disc.bfr;
     memcp(transfer.data, buf, CstrDisc::UDF_DATASIZE);
     ret.status = CD_STAT_DATA_READY;
@@ -264,6 +278,11 @@ void CstrCD::write(uw addr, ub data) {
                     startRead(1);
                     break;
                     
+                case CdlPause:
+                    stopRead();
+                    defaultCtrlAndStat();
+                    break;
+                    
                 case CdlInit:
                     stopRead();
                     defaultCtrlAndStat();
@@ -327,19 +346,26 @@ void CstrCD::write(uw addr, ub data) {
                 }
                 
                 if (reads && !result.done) {
-                    printx("/// PSeudo CD write: %d (reads && !res.ok)", (addr & 0xf));
+                    interruptReadSet = 1;
                 }
                 return;
             }
             
             if (data == 0x80 && ((ret.control & 0x1) == false) && readed == false) {
                 readed = true;
-                cdr.pTransfer = cdr.Transfer;
+                transfer.p = 0;
 
                 switch (ret.mode & 0x30) {
-                    case 0x10:
-                    case 0x00: cdr.pTransfer+=12; break;
-                    default: break;
+                    case 0x00:
+                        transfer.p += 12;
+                        return;
+                        
+                    case 0x20:
+                        return;
+                        
+                    default:
+                        printx("/// PSeudo CD write: %d switch 0x%x", (addr & 0xf), (ret.mode & 0x30));
+                        break;
                 }
             }
             return;
@@ -397,4 +423,26 @@ ub CstrCD::read(uw addr) {
     
     printx("/// PSeudo CD read: %d", (addr & 0xf));
     return 0;
+}
+
+void CstrCD::executeDMA(CstrBus::castDMA *dma) {
+    uw size = (dma->bcr & 0xffff) * 4;
+    
+    switch(dma->chcr) {
+        case 0x11000000:
+            if (!readed) {
+                break;
+            }
+            
+            for (int i = 0; i < size; i++) {
+                mem.ram.ptr[(dma->madr + i) & (mem.ram.size - 1)] = transfer.data[transfer.p + i];
+            }
+            
+            transfer.p += size;
+            return;
+        
+        default:
+            printx("/// PSeudo CD DMA: 0x%08x\n", dma->chcr);
+            return;
+    }
 }
