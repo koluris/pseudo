@@ -6,15 +6,16 @@ class CstrCD {
     };
     
     enum {
-        CdlNop = 1
+        CdlNop  = 1,
+        CdlInit = 10
     };
     
     ub control;
     ub status;
-    ub readed;
     ub re2;
+    ub statP;
     
-    bool occupied;
+    bool occupied, reads, readed;
     
     uw irq;
     uw interruptSet;
@@ -24,7 +25,7 @@ class CstrCD {
     } param;
     
     struct {
-      ub p, c, ok;
+      ub data[8], p, c, ok;
     } res;
     
     void interruptQueue(ub);
