@@ -11,23 +11,22 @@ class CstrCD {
         CdlInit = 10
     };
     
-    ub control;
-    ub status;
-    ub re2;
-    ub statP;
-    
-    bool occupied, reads, readed;
-    
-    uw irq;
-    uw interruptSet;
+    struct {
+        ub control, status, statp, re2;
+    } ret;
     
     struct {
-      ub p, c;
+        ub p, c;
     } param;
     
     struct {
-      ub data[8], p, c, ok;
-    } res;
+        ub data[8], p, c;
+        bool done;
+    } result;
+    
+    uw irq;
+    uw interruptSet;
+    bool occupied, reads, readed;
     
     void interruptQueue(ub);
     void interrupt();
