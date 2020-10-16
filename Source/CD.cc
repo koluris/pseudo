@@ -364,7 +364,7 @@ void CstrCD::write(uw addr, ub data) {
                         
                     default:
                         printx("/// PSeudo CD write: %d switch 0x%x", (addr & 0xf), (ret.mode & 0x30));
-                        break;
+                        return;
                 }
             }
             return;

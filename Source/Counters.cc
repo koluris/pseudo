@@ -87,6 +87,7 @@ void CstrCounters::update(int threshold) {
 template <class T>
 void CstrCounters::write(uw addr, T data) {
     ub p = RTC_PORT(addr);
+    uh cond = 1;
     
     switch(addr & 0xf) {
         case RTC_COUNT:
@@ -94,13 +95,21 @@ void CstrCounters::write(uw addr, T data) {
             return;
             
         case RTC_MODE:
-            mode (p) = data;
-            bound(p) = ((mode(p) & 8) && dst(p)) ? dst(p) : RTC_BOUND;
+            mode(p) = data;
+            
+            if (sizeof(T) == 2) {
+                cond = dst(p);
+            }
+            bound(p) = (cond && (data & 0x08)) ? dst(p) : RTC_BOUND;
             return;
             
         case RTC_TARGET:
-            dst  (p) = data & 0xffff;
-            bound(p) = ((mode(p) & 8) && dst(p)) ? dst(p) : RTC_BOUND;
+            dst(p) = data & 0xffff;
+            
+            if (sizeof(T) == 2) {
+                cond = dst(p);
+            }
+            bound(p) = (cond && (mode(p) & 0x08)) ? dst(p) : RTC_BOUND;
             return;
     }
     
