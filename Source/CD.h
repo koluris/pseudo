@@ -2,6 +2,7 @@
 class CstrCD {
     enum {
         CD_STAT_NO_INTR,
+        CD_STAT_COMPLETE = 2,
         CD_STAT_ACKNOWLEDGE = 3
     };
     

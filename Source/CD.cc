@@ -84,6 +84,12 @@ void CstrCD::interrupt() {
             interruptQueue(CdlInit + 0x20);
             break;
             
+        case CdlInit + 0x20:
+            setResultSize(1);
+            res.data[0] = statP;
+            status = CD_STAT_COMPLETE;
+            break;
+            
         default:
             printx("/// PSeudo CD irqCache: %d", irqCache);
             break;
