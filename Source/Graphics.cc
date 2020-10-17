@@ -223,7 +223,7 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
     while (vrop.v.p < vrop.v.end) {
         while (vrop.h.p < vrop.h.end) {
             if (isVideo24Bit) {
-                printf("/// PSeudo Video is 24 bits\n");
+                //printf("/// PSeudo Video is 24 bits\n");
             }
             else {
                 vrop.raw[count] = cache.pixel2texel(*ptr);

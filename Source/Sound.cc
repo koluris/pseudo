@@ -260,10 +260,14 @@ uh CstrAudio::read(uw addr) {
             return spuAddr >> 3;
             
         /* unused */
+        case 0x1d80: // Volume L ?
+        case 0x1d82: // Volume R ?
         case 0x1d88: // Sound On 1
         case 0x1d8a: // Sound On 2
         case 0x1d8c: // Sound Off 1
         case 0x1d8e: // Sound Off 2
+        case 0x1d90:
+        case 0x1d92:
         case 0x1d94: // Noise Mode On 1
         case 0x1d96: // Noise Mode On 2
         case 0x1d98: // Reverb Mode On 1
@@ -272,6 +276,10 @@ uh CstrAudio::read(uw addr) {
         case 0x1daa: // Control
         case 0x1dac: // ?
         case 0x1dae: // Status
+        case 0x1db0:
+        case 0x1db2:
+        case 0x1db4:
+        case 0x1db6:
         case 0x1db8:
         case 0x1dba:
         case 0x1e00 ... 0x1e0e: // ?

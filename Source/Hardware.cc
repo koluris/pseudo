@@ -85,6 +85,7 @@ void CstrHardware::write(uw addr, T data) {
                     
                 /* unused */
                 case 0x1040: // SIO Data
+                case 0x10f6:
                 case 0x2041: // DIP Switch?
                     accessMem(mem.hwr, ub) = data;
                     return;
@@ -137,6 +138,7 @@ T CstrHardware::read(uw addr) {
                 case 0x1070: // iStatus
                 case 0x1074: // iMask
                 case 0x1100 ... 0x1128: // Rootcounters
+                case 0x1130:
                     return accessMem(mem.hwr, uh);
             }
             break;
@@ -148,6 +150,10 @@ T CstrHardware::read(uw addr) {
                     
                 case 0x1800 ... 0x1803: // CD-ROM
                     return cd.read(addr);
+                    
+                /* unused */
+                case 0x10f6:
+                    return accessMem(mem.hwr, ub);
             }
             break;
     }

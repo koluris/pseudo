@@ -13,10 +13,6 @@ class CstrCD {
     };
     
     enum {
-        READ_ACK = 250
-    };
-    
-    enum {
         CdlNop     =  1,
         CdlSetloc  =  2,
         CdlReadN   =  6,
@@ -24,7 +20,9 @@ class CstrCD {
         CdlInit    = 10,
         CdlDemute  = 12,
         CdlSetmode = 14,
+        CdlGetTN   = 19,
         CdlSeekL   = 21,
+        CdlReadS   = 27,
     };
     
     struct {
@@ -49,7 +47,7 @@ class CstrCD {
         uw p;
     } transfer;
     
-    uw irq;
+    ub irq;
     uw interruptSet;
     uw interruptReadSet;
     ub reads, readed;

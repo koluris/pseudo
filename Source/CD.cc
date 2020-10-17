@@ -17,7 +17,7 @@
 #define startRead(kind) \
     reads = kind; \
     readed = 0xff; \
-    interruptQueue(READ_ACK)
+    interruptQueue(CdlReadN)
 
 #define stopRead() \
     if (reads) { \
@@ -100,20 +100,39 @@ void CstrCD::interrupt() {
             result.data[0] = ret.statp;
             break;
             
+        case CdlReadN:
+            if (!reads) {
+                return;
+            }
+            
+            setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            ret.statp |= 0x20;
+            if (seeked == false) {
+                seeked = true;
+                ret.statp |= 0x40;
+            }
+            
+            trackRead(); // ?
+            interruptReadSet = 1;
+            break;
+            
         case CdlPause:
             setResultSize(1);
-            result.data[0] = ret.statp;
             ret.status = CD_STAT_ACKNOWLEDGE;
-            interruptQueue(CdlPause + 0x20);
             ret.control |= 0x80;
+            result.data[0] = ret.statp;
+            interruptQueue(CdlPause + 0x20);
             break;
             
         case CdlPause + 0x20:
             setResultSize(1);
-            ret.statp &= (~(0x20));
-            ret.statp |= 0x02;
-            result.data[0] = ret.statp;
             ret.status = CD_STAT_COMPLETE;
+            ret.statp |= 0x02;
+            ret.statp &= (~(0x20));
+            result.data[0] = ret.statp;
             break;
             
         case CdlInit:
@@ -146,41 +165,20 @@ void CstrCD::interrupt() {
             
         case CdlSeekL:
             setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             ret.statp |= 0x40;
-            ret.status = CD_STAT_ACKNOWLEDGE;
-            seeked = true;
             interruptQueue(CdlSeekL + 0x20);
+            seeked = true;
             break;
             
         case CdlSeekL + 0x20:
             setResultSize(1);
+            ret.status = CD_STAT_COMPLETE;
             ret.statp |= 0x02;
             ret.statp &= (~(0x40));
             result.data[0] = ret.statp;
-            ret.status = CD_STAT_COMPLETE;
-            break;
-            
-        case READ_ACK:
-            if (!reads) {
-                return;
-            }
-
-            setResultSize(1);
-            ret.statp |= 0x02;
-            result.data[0] = ret.statp;
-            
-            if (seeked == false) {
-                seeked = true;
-                ret.statp |= 0x40;
-            }
-            
-            ret.statp |= 0x20;
-            ret.status = CD_STAT_ACKNOWLEDGE;
-
-            trackRead(); // ?
-            interruptReadSet = 1;
             break;
             
         default:
@@ -261,19 +259,19 @@ void CstrCD::write(uw addr, ub data) {
                     
                 case CdlSetloc:
                     stopRead();
+                    defaultCtrlAndStat();
                     seeked = false;
                     for (int i = 0; i < 3; i++) {
                         sector.data[i] = BCD2INT(param.data[i]);
                     }
                     sector.data[3] = 0;
-                    defaultCtrlAndStat();
                     break;
                     
                 case CdlReadN:
                     irq = 0;
                     stopRead();
-                    ret.control |= 0x80;
                     ret.status = CD_STAT_NO_INTR;
+                    ret.control |= 0x80;
                     startRead(1);
                     break;
                     
@@ -296,8 +294,20 @@ void CstrCD::write(uw addr, ub data) {
                     defaultCtrlAndStat();
                     break;
                     
+                case CdlGetTN:
+                    defaultCtrlAndStat();
+                    break;
+                    
                 case CdlSeekL:
                     defaultCtrlAndStat();
+                    break;
+                    
+                case CdlReadS:
+                    irq = 0;
+                    stopRead();
+                    ret.status = CD_STAT_NO_INTR;
+                    ret.control |= 0x80;
+                    startRead(1);
                     break;
                     
                 default:
@@ -404,6 +414,13 @@ ub CstrCD::read(uw addr) {
             
             return CD_REG(1);
             
+        case 2:
+            if (!readed) {
+                printx("/// PSeudo CD read: %d", 2);
+                return 0;
+            }
+            return transfer.data[transfer.p++];
+            
         case 3:
             CD_REG(3) = 0;
             
@@ -428,7 +445,9 @@ void CstrCD::executeDMA(CstrBus::castDMA *dma) {
     uw size = (dma->bcr & 0xffff) * 4;
     
     switch(dma->chcr) {
+        //case 0x00000000:
         case 0x11000000:
+        case 0x11400100: // ?
             if (!readed) {
                 break;
             }
@@ -439,7 +458,7 @@ void CstrCD::executeDMA(CstrBus::castDMA *dma) {
             
             transfer.p += size;
             return;
-        
+            
         default:
             printx("/// PSeudo CD DMA: 0x%08x\n", dma->chcr);
             return;

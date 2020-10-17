@@ -37,7 +37,7 @@ void CstrCounters::update(int threshold) {
     
     if (temp >= bound(0) && count(0) < bound(0)) { temp = 0;
         if (mode(0) & 0x50) {
-            printx("/// PSeudo RTC timer[%d].count >= timer[%d].bound", 0, 0);
+            bus.interruptSet(CstrBus::INT_RTC0);
         }
     }
     count(0) = temp;
