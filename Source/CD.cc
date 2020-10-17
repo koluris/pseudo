@@ -156,11 +156,37 @@ void CstrCD::interrupt() {
             result.data[0] = ret.statp;
             break;
             
+        case CdlSetfilter:
+            setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            break;
+            
         case CdlSetmode:
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
+            break;
+            
+        case CdlGetlocL:
+            setResultSize(8);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            for (int i = 0; i < 8; i++) {
+                result.data[i] = transfer.data[i];
+            }
+            break;
+            
+        case CdlGetlocP:
+            setResultSize(8);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            result.data[0] = 1;
+            result.data[1] = 1;
+            result.data[2] = sector.prev[0];
+            result.data[3] = INT2BCD((BCD2INT(sector.prev[1])) - 2);
+            result.data[4] = sector.prev[2];
+            memcp(result.data + 5, sector.prev, 3);
             break;
             
         case CdlGetTN:
@@ -310,8 +336,20 @@ void CstrCD::write(uw addr, ub data) {
                     defaultCtrlAndStat();
                     break;
                     
+                case CdlSetfilter:
+                    defaultCtrlAndStat();
+                    break;
+                    
                 case CdlSetmode:
                     ret.mode = param.data[0];
+                    defaultCtrlAndStat();
+                    break;
+                    
+                case CdlGetlocL:
+                    defaultCtrlAndStat();
+                    break;
+                    
+                case CdlGetlocP:
                     defaultCtrlAndStat();
                     break;
                     

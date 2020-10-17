@@ -73,6 +73,9 @@ void CstrHardware::write(uw addr, T data) {
                 /* unused */
                 case 0x1014: // ?
                 case 0x1048 ... 0x104e: // SIO Mode, Control, Baud
+                case 0x1058: // SIO1 ?
+                case 0x105a: // SIO1 ?
+                case 0x105e: // SIO1 ?
                 case 0x1074: // iMask
                     accessMem(mem.hwr, uh) = data;
                     return;
@@ -139,6 +142,7 @@ T CstrHardware::read(uw addr) {
                 case 0x104a: // SIO Control
                 case 0x104e: // SIO Baud
                 case 0x1054: // SIO Status
+                case 0x105a: // SIO1 ?
                 case 0x1070: // iStatus
                 case 0x1074: // iMask
                 case 0x1100 ... 0x1128: // Rootcounters

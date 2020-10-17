@@ -13,17 +13,20 @@ class CstrCD {
     };
     
     enum {
-        CdlNop     =  1,
-        CdlSetloc  =  2,
-        CdlReadN   =  6,
-        CdlPause   =  9,
-        CdlInit    = 10,
-        CdlDemute  = 12,
-        CdlSetmode = 14,
-        CdlGetTN   = 19,
-        CdlGetTD   = 20,
-        CdlSeekL   = 21,
-        CdlReadS   = 27,
+        CdlNop       =  1,
+        CdlSetloc    =  2,
+        CdlReadN     =  6,
+        CdlPause     =  9,
+        CdlInit      = 10,
+        CdlDemute    = 12,
+        CdlSetfilter = 13,
+        CdlSetmode   = 14,
+        CdlGetlocL   = 16,
+        CdlGetlocP   = 17,
+        CdlGetTN     = 19,
+        CdlGetTD     = 20,
+        CdlSeekL     = 21,
+        CdlReadS     = 27,
     };
     
     struct {
