@@ -163,6 +163,27 @@ void CstrCD::interrupt() {
             result.data[0] = ret.statp;
             break;
             
+        case CdlGetTN:
+            setResultSize(3);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            disc.fetchTN(result.tn);
+            result.data[1] = INT2BCD(result.tn[0]);
+            result.data[2] = INT2BCD(result.tn[1]);
+            break;
+            
+        case CdlGetTD:
+            setResultSize(4);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            disc.fetchTD(result.td);
+            result.data[1] = INT2BCD(result.td[2]);
+            result.data[2] = INT2BCD(result.td[1]);
+            result.data[3] = INT2BCD(result.td[0]);
+            break;
+            
         case CdlSeekL:
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
@@ -295,6 +316,10 @@ void CstrCD::write(uw addr, ub data) {
                     break;
                     
                 case CdlGetTN:
+                    defaultCtrlAndStat();
+                    break;
+                    
+                case CdlGetTD:
                     defaultCtrlAndStat();
                     break;
                     
@@ -445,7 +470,7 @@ void CstrCD::executeDMA(CstrBus::castDMA *dma) {
     uw size = (dma->bcr & 0xffff) * 4;
     
     switch(dma->chcr) {
-        //case 0x00000000:
+        case 0x00000000: // ?
         case 0x11000000:
         case 0x11400100: // ?
             if (!readed) {

@@ -21,6 +21,7 @@ class CstrCD {
         CdlDemute  = 12,
         CdlSetmode = 14,
         CdlGetTN   = 19,
+        CdlGetTD   = 20,
         CdlSeekL   = 21,
         CdlReadS   = 27,
     };
@@ -34,7 +35,7 @@ class CstrCD {
     } param;
     
     struct {
-        ub data[8], p, c;
+        ub data[8], tn[6], td[4], p, c;
         bool done;
     } result;
     

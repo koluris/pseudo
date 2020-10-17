@@ -25,6 +25,19 @@ bool CstrDisc::open(const char *path) {
     return true;
 }
 
+void CstrDisc::fetchTN(ub *b) {
+    b[0] = 1;
+    b[1] = 1;
+}
+
+void CstrDisc::fetchTD(ub *b) {
+    memset(b + 1, 0, 3);
+    
+    b[0] = 0;
+    b[1] = 2;
+    b[2] = 0;
+}
+
 bool CstrDisc::trackRead(ub *t) {
     if (!file) {
         memset(&bfr, 0, UDF_DATASIZE);

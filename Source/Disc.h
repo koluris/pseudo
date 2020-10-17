@@ -11,6 +11,8 @@ public:
     
     void reset();
     bool open(const char *);
+    void fetchTN(ub *);
+    void fetchTD(ub *);
     bool trackRead(ub *);
 };
 

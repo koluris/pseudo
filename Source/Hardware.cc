@@ -34,6 +34,10 @@ void CstrHardware::write(uw addr, T data) {
                     vs.write(addr, data);
                     return;
                     
+                case 0x1820 ... 0x1824: // MDEC
+                    mdec.write(addr, data);
+                    return;
+                    
                 /* unused */
                 case 0x1000: // ?
                 case 0x1004: // ?
@@ -47,8 +51,6 @@ void CstrHardware::write(uw addr, T data) {
                 case 0x1060: // RAM Size
                 case 0x1074: // iMask
                 case 0x10f0: // DPCR
-                case 0x1820: // MDEC 0
-                case 0x1824: // MDEC 1
                     accessMem(mem.hwr, uw) = data;
                     return;
             }
@@ -108,16 +110,18 @@ T CstrHardware::read(uw addr) {
                 case 0x1810 ... 0x1814: // Graphics
                     return vs.read(addr);
                     
+                case 0x1820 ... 0x1824: // MDEC
+                    return mdec.read(addr);
+                    
                 /* unused */
                 case 0x1014: // ?
                 case 0x1060: // RAM Size
                 case 0x1070: // iStatus
                 case 0x1074: // iMask
-                case 0x1098 ... 0x10e8: // DMA
+                case 0x1088 ... 0x10e8: // DMA
                 case 0x10f0: // DPCR
                 case 0x10f4: // DICR
                 case 0x1100 ... 0x1110: // Rootcounters
-                case 0x1824: // MDEC 1
                     return accessMem(mem.hwr, uw);
             }
             break;
