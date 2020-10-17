@@ -15,6 +15,7 @@ class CstrCD {
     enum {
         CdlNop       =  1,
         CdlSetloc    =  2,
+        CdlAudio     =  3,
         CdlReadN     =  6,
         CdlPause     =  9,
         CdlInit      = 10,

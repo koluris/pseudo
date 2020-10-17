@@ -100,6 +100,14 @@ void CstrCD::interrupt() {
             result.data[0] = ret.statp;
             break;
             
+        case CdlAudio:
+            setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            ret.statp |= 0x80;
+            break;
+            
         case CdlReadN:
             if (!reads) {
                 return;
@@ -312,6 +320,10 @@ void CstrCD::write(uw addr, ub data) {
                         sector.data[i] = BCD2INT(param.data[i]);
                     }
                     sector.data[3] = 0;
+                    break;
+                    
+                case CdlAudio:
+                    defaultCtrlAndStat();
                     break;
                     
                 case CdlReadN:
