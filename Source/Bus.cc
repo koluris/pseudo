@@ -29,7 +29,7 @@ void CstrBus::update() { // A method to schedule when IRQs should fire
 void CstrBus::checkDMA(uw addr, uw data) {
     ub chan = ((addr >> 4) & 0xf) - 8;
     
-    if (dpcr & (8 << (chan * 4))) { // GPU does not execute sometimes
+    if (dpcr & (8 << (chan * 4))) {
         castDMA *dma = (castDMA *)&mem.hwr.ptr[addr & 0xfff0];
         dma->chcr = data;
         
