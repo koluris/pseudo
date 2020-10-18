@@ -142,7 +142,7 @@
 
 #define gteop (code & 0x1ffffff)
 
-static inline sd BOUNDS(sd n_value, sd n_max, int n_maxflag, sd n_min, int n_minflag) {
+sd BOUNDS(sd n_value, sd n_max, int n_maxflag, sd n_min, int n_minflag) {
 	if (n_value > n_max) {
 		gteFLAG |= n_maxflag;
 	} else if (n_value < n_min) {
@@ -151,7 +151,7 @@ static inline sd BOUNDS(sd n_value, sd n_max, int n_maxflag, sd n_min, int n_min
 	return n_value;
 }
 
-static inline sw LIM(sw value, sw max, sw min, uw flag) {
+sw LIM(sw value, sw max, sw min, uw flag) {
 	sw ret = value;
 	if (value > max) {
 		gteFLAG |= flag;
@@ -174,7 +174,7 @@ static inline sw LIM(sw value, sw max, sw min, uw flag) {
 #define limC3(a) LIM((a), 0x00ff, 0x0000, (1 << 19))
 #define limD(a) LIM((a), 0xffff, 0x0000, (1 << 31) | (1 << 18))
 
-static inline uw limE(uw result) {
+uw limE(uw result) {
 	if (result > 0x1ffff) {
 		gteFLAG |= (1 << 31) | (1 << 17);
 		return 0x1ffff;
@@ -287,54 +287,13 @@ void CTC2(uw value, int reg) {
 	cpu.CP2C.r[reg] = value;
 }
 
-//void gteMFC2() {
-//	if (!rt) return;
-//	cpu.GPR.r[rt] = MFC2(rd);
-//}
-//
-//void gteCFC2() {
-//	if (!rt) return;
-//	cpu.GPR.r[rt] = cpu.CP2C.r[rd];
-//}
-//
-//void gteMTC2() {
-//	MTC2(cpu.GPR.r[rt], rd);
-//}
-//
-//void gteCTC2() {
-//	CTC2(cpu.GPR.r[rt], rd);
-//}
-//
-//#define _oB_ (cpu.GPR.r[rs] + imm)
-//
-//void gteLWC2() {
-//	MTC2(psxMemRead32(_oB_), rt);
-//}
-//
-//void gteSWC2() {
-//	psxMemWrite32(_oB_, MFC2(rt));
-//}
-
-#define DIVIDE DIVIDE_
-static uw DIVIDE_(sh n, uh d) {
+uw DIVIDE(sh n, uh d) {
 	if (n >= 0 && n < d * 2) {
 		sw n_ = n;
 		return ((n_ << 16) + d / 2) / d;
-		//return (uw)((float)(n_ << 16) / (float)d + (float)0.5);
 	}
 	return 0xffffffff;
 }
-
-void (*psxCP2[64])(uw) = {
-    psxNULL, gteRTPS , psxNULL , psxNULL, psxNULL, psxNULL , gteNCLIP, psxNULL, // 00
-    psxNULL , psxNULL , psxNULL , psxNULL, gteOP  , psxNULL , psxNULL , psxNULL, // 08
-    gteDPCS , gteINTPL, gteMVMVA, gteNCDS, gteCDP , psxNULL , gteNCDT , psxNULL, // 10
-    psxNULL , psxNULL , psxNULL , gteNCCS, gteCC  , psxNULL , gteNCS  , psxNULL, // 18
-    gteNCT  , psxNULL , psxNULL , psxNULL, psxNULL, psxNULL , psxNULL , psxNULL, // 20
-    gteSQR  , gteDCPL , gteDPCT , psxNULL, psxNULL, gteAVSZ3, gteAVSZ4, psxNULL, // 28
-    gteRTPT , psxNULL , psxNULL , psxNULL, psxNULL, psxNULL , psxNULL , psxNULL, // 30
-    psxNULL , psxNULL , psxNULL , psxNULL, psxNULL, gteGPF  , gteGPL  , gteNCCT  // 38
-};
 
 void psxNULL(uw code) {
 }
@@ -827,3 +786,14 @@ void gteCDP(uw code) {
 	gteG2 = limC2(gteMAC2 >> 4);
 	gteB2 = limC3(gteMAC3 >> 4);
 }
+
+void (*psxCP2[64])(uw) = {
+    psxNULL, gteRTPS , psxNULL , psxNULL, psxNULL, psxNULL , gteNCLIP, psxNULL, // 00
+    psxNULL , psxNULL , psxNULL , psxNULL, gteOP  , psxNULL , psxNULL , psxNULL, // 08
+    gteDPCS , gteINTPL, gteMVMVA, gteNCDS, gteCDP , psxNULL , gteNCDT , psxNULL, // 10
+    psxNULL , psxNULL , psxNULL , gteNCCS, gteCC  , psxNULL , gteNCS  , psxNULL, // 18
+    gteNCT  , psxNULL , psxNULL , psxNULL, psxNULL, psxNULL , psxNULL , psxNULL, // 20
+    gteSQR  , gteDCPL , gteDPCT , psxNULL, psxNULL, gteAVSZ3, gteAVSZ4, psxNULL, // 28
+    gteRTPT , psxNULL , psxNULL , psxNULL, psxNULL, psxNULL , psxNULL , psxNULL, // 30
+    psxNULL , psxNULL , psxNULL , psxNULL, psxNULL, gteGPF  , gteGPL  , gteNCCT  // 38
+};

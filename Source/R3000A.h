@@ -67,62 +67,12 @@ class CstrMips {
         struct { sh l, h; } isw;
     } PAIR;
     
-    typedef struct {
-        short x, y;
-    } SVector2D;
-
-    typedef struct {
-        short z, pad;
-    } SVector2Dz;
-
-    typedef struct {
-        short x, y, z, pad;
-    } SVector3D;
-
-    typedef struct {
-        short x, y, z, pad;
-    } LVector3D;
-
-    typedef struct {
-        unsigned char r, g, b, c;
-    } CBGR;
-
-    typedef struct {
-        short m11, m12, m13, m21, m22, m23, m31, m32, m33, pad;
-    } SMatrix3D;
-
     typedef union {
-        struct {
-            SVector3D     v0, v1, v2;
-            CBGR          rgb;
-            sw          otz;
-            sw          ir0, ir1, ir2, ir3;
-            SVector2D     sxy0, sxy1, sxy2, sxyp;
-            SVector2Dz    sz0, sz1, sz2, sz3;
-            CBGR          rgb0, rgb1, rgb2;
-            sw          reserved;
-            sw          mac0, mac1, mac2, mac3;
-            uw irgb, orgb;
-            sw          lzcs, lzcr;
-        } n;
         uw r[32];
         PAIR p[32];
     } psxCP2Data;
     
     typedef union {
-        struct {
-            SMatrix3D rMatrix;
-            sw      trX, trY, trZ;
-            SMatrix3D lMatrix;
-            sw      rbk, gbk, bbk;
-            SMatrix3D cMatrix;
-            sw      rfc, gfc, bfc;
-            sw      ofx, ofy;
-            sw      h;
-            sw      dqa, dqb;
-            sw      zsf3, zsf4;
-            sw      flag;
-        } n;
         uw r[32];
         PAIR p[32];
     } psxCP2Ctrl;

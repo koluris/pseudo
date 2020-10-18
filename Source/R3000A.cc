@@ -346,18 +346,12 @@ void CstrMips::step(bool branched) {
                     //readCop2(rd);
                     //base[rt] = cop2d.iuw[rd];
                     
-                    if (!rt) {
-                        return;
-                    }
                     base[rt] = MFC2(rd);
                     return;
                     
                 case CFC:
                     //base[rt] = cop2c.iuw[rd];
                     
-                    if (!rt) {
-                        return;
-                    }
                     base[rt] = cpu.CP2C.r[rd];
                     return;
                     
