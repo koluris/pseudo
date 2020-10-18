@@ -91,6 +91,7 @@ typedef int8_t  sb; // bite
 #include "Disc.h"
 #include "Draw.h"
 #include "Graphics.h"
+#include "GTE.h"
 #include "Hardware.h"
 #include "MDEC.h"
 #include "Mem.h"

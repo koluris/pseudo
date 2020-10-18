@@ -42,8 +42,8 @@ CstrMips cpu;
 void CstrMips::reset() {
     memset(&base, 0, sizeof(base));
     memset(&copr, 0, sizeof(copr));
-    cop2c = { 0 };
-    cop2d = { 0 };
+    //cop2c = { 0 };
+    //cop2d = { 0 };
     
     copr[12] = 0x10900000;
     copr[15] = 0x2; // Co-processor Revision
@@ -343,25 +343,41 @@ void CstrMips::step(bool branched) {
         case 18: // COP2
             switch(rs) {
                 case MFC:
-                    readCop2(rd);
-                    base[rt] = cop2d.iuw[rd];
+                    //readCop2(rd);
+                    //base[rt] = cop2d.iuw[rd];
+                    
+                    if (!rt) {
+                        return;
+                    }
+                    base[rt] = MFC2(rd);
                     return;
                     
                 case CFC:
-                    base[rt] = cop2c.iuw[rd];
+                    //base[rt] = cop2c.iuw[rd];
+                    
+                    if (!rt) {
+                        return;
+                    }
+                    base[rt] = cpu.CP2C.r[rd];
                     return;
                     
                 case MTC:
-                    cop2d.iuw[rd] = base[rt];
-                    writeCop2(rd);
+                    //cop2d.iuw[rd] = base[rt];
+                    //writeCop2(rd);
+                    
+                    MTC2(base[rt], rd);
                     return;
                     
                 case CTC:
-                    cop2c.iuw[rd] = base[rt];
+                    //cop2c.iuw[rd] = base[rt];
+                    
+                    CTC2(base[rt], rd);
                     return;
                     
                 default: // Execute GTE opcode
-                    executeCop2(code);
+                    //executeCop2(code);
+                    
+                    psxCP2[code & 0x3f](code);
                     return;
             }
             return;
@@ -415,13 +431,17 @@ void CstrMips::step(bool branched) {
             return;
             
         case 50: // LWC2
-            cop2d.iuw[rt] = mem.read<uw>(ob);
-            writeCop2(rt);
+            //cop2d.iuw[rt] = mem.read<uw>(ob);
+            //writeCop2(rt);
+            
+            MTC2(mem.read<uw>(ob), rt);
             return;
             
         case 58: // SWC2
-            readCop2(rt);
-            mem.write<uw>(ob, cop2d.iuw[rt]);
+            //readCop2(rt);
+            //mem.write<uw>(ob, cop2d.iuw[rt]);
+            
+            mem.write<uw>(ob, MFC2(rt));
             return;
             
         default:
