@@ -42,6 +42,9 @@ void CstrDraw::reset() {
     GLClear(GL_COLOR_BUFFER_BIT);
     swapBuffers();
     
+    // 24-bit texture
+    cache.createTexture(&fb24tex, FRAME_W, FRAME_H);
+    
     // 16-bit texture
     cache.createTexture(&fb16tex, FRAME_W, FRAME_H);
 }
@@ -136,12 +139,19 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     GLPushMatrix();
     GLID();
     GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
-    
     GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
-    
     GLEnable(GL_TEXTURE_2D);
-    GLBindTexture  (GL_TEXTURE_2D, fb16tex);
-    GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
+    
+    if (vs.isVideo24Bit) {
+        X = (X * 2) / 3;
+        W = (W * 2) / 3;
+        GLBindTexture(GL_TEXTURE_2D, fb24tex);
+        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGB, GL_UNSIGNED_BYTE, raw);
+    }
+    else {
+        GLBindTexture(GL_TEXTURE_2D, fb16tex);
+        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
+    }
     
 #if defined(APPLE_MACOS) || defined(_WIN32)
     GLStart(GL_TRIANGLE_STRIP);

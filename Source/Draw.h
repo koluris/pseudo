@@ -80,6 +80,7 @@ class CstrDraw {
         { GL_SRC_ALPHA, GL_ONE,                  64 },
     };
     
+    GLuint fb24tex = 0;
     GLuint fb16tex = 0;
     ub opaque;
     uw spriteTP;

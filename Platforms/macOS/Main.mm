@@ -56,7 +56,7 @@
 
 - (IBAction)menuOpen:(id)sender {
     NSOpenPanel *op = [NSOpenPanel openPanel];
-    [op setAllowedFileKind:@[@"bin", @"exe", @"iso", @"psx"]];
+    [op setAllowedFileKind:@[@"bin", @"exe", @"img", @"iso", @"psx"]];
     
     [op startSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
         if (returnCode == NSModalResponseOK) {
@@ -129,7 +129,7 @@
     
     // CPU & Graphics
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
-        GLint swapInterval = 0;
+        GLint swapInterval = 1;
         [[self.openGLView openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
         [[self.openGLView openGLContext] makeCurrentContext];
         
@@ -160,7 +160,7 @@
     [self emulatorStopAndReset:YES];
     [self setWindowCaption:[path lastPathComponent]];
     
-    if ([[path pathExtension] isEqualToChars:@"iso"]) { // Better solution: "CD001" or "PSX-EXE"
+    if ([[path pathExtension] isEqualToChars:@"img"] || [[path pathExtension] isEqualToChars:@"iso"]) { // Better solution: "CD001" or "PSX-EXE"
         psx.iso(file);
     }
     else {
