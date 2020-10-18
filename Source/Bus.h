@@ -26,8 +26,8 @@ class CstrBus {
     } interrupts[11] = {
         { INT_VSYNC, 1 },
         { INT_GPU,   1 },
-        { INT_CD,    1 },
-        { INT_DMA,   1 },
+        { INT_CD,    4 },
+        { INT_DMA,   8 },
         { INT_RTC0,  1 },
         { INT_RTC1,  1 },
         { INT_RTC2,  1 },
