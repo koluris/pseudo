@@ -38,7 +38,7 @@ void CstrDraw::reset() {
     
     // Redraw
     resize(window.h, window.v);
-    GLClearColor(0, 0, 0, 0);
+    GLClearColor(0.1, 0.1, 0.1, 0);
     GLClear(GL_COLOR_BUFFER_BIT);
     swapBuffers();
     
@@ -65,14 +65,15 @@ void CstrDraw::resize(sh w, sh h) {
     
     // Not current
     if (res.h != w || res.v != h) {
-#if 0
-        GLViewport((window.h - w) / 2, (window.v - h) / 2, w, h); // Keep PSX aspect ratio
+#if 1
+        GLViewport((window.h * window.multiplier - w * window.multiplier) / 2, (window.v * window.multiplier - h * window.multiplier) / 2, w * window.multiplier, h * window.multiplier); // Keep PSX aspect ratio
 #endif
         GLMatrixMode(GL_PROJECTION);
         GLID();
         
 #ifdef APPLE_MACOS
         GLOrtho (0, w, h, 0, 1, -1);
+        GLClear(GL_COLOR_BUFFER_BIT);
 #elif  APPLE_IOS
         GLOrthof(0, w, h, 0, 1, -1);
 #endif
