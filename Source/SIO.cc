@@ -6,17 +6,17 @@
 //#define data \
 //    *(ub *)&mem.hwr.ptr[0x1040]
 //
-//#define status \
-//    *(uw *)&mem.hwr.ptr[0x1044]
-//
-//#define mode \
-//    *(uh *)&mem.hwr.ptr[0x1048]
-//
-//#define control \
-//    *(uh *)&mem.hwr.ptr[0x104a]
-//
-//#define baud \
-//    *(uh *)&mem.hwr.ptr[0x104e]
+#define status \
+    *(uw *)&mem.hwr.ptr[0x1044]
+
+#define mode \
+    *(uh *)&mem.hwr.ptr[0x1048]
+
+#define control \
+    *(uh *)&mem.hwr.ptr[0x104a]
+
+#define baud \
+    *(uh *)&mem.hwr.ptr[0x104e]
 
 // Check for pushed button
 #define btnCheck(btn) \
@@ -33,13 +33,12 @@ CstrSerial sio;
 void CstrSerial::reset() {
     memset(&bfr, 0, sizeof(bfr));
     btnState = 0xffff;
-    baud      = 0;
-    control   = 0;
-    mode      = 0;
-    status    = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+//    baud      = 0;
+//    control   = 0;
+//    mode      = 0;
+//    status    = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
     padst     = 0;
     parp      = 0;
-    bufcount  = 0;
     
     // Default pad buffer
     bfr[0] = 0x00;
@@ -115,10 +114,6 @@ void CstrSerial::padListener(int code, bool pushed) {
 
 void CstrSerial::write16(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
-        case 0x1048:
-            mode = data;
-            return;
-            
         case 0x104a:
             control = data;
             
@@ -134,8 +129,8 @@ void CstrSerial::write16(uw addr, uh data) {
             }
             return;
             
-        case 0x104e:
-            baud = data;
+        default:
+            accessMem(mem.hwr, uh) = data;
             return;
     }
     
@@ -171,9 +166,7 @@ void CstrSerial::write08(ub data) {
             return;
             
         case 2:
-            parp++;
-            
-            if (parp != bufcount) {
+            if (++parp != 5) {
                 bus.interruptSet(CstrBus::INT_SIO0);
             }
             else {
@@ -189,45 +182,13 @@ void CstrSerial::write08(ub data) {
         parp  = 0;
         
         if (control & SIO_CTRL_DTR) {
-            switch(control) {
-                case 0x1003:
-                    bufcount = 5 - 1; //pad_read(buf, 34) - 1;
-                    break;
-                    
-                case 0x3003:
-                    bufcount = 4;
-                    bfr[0] = 0x00;
-                    bfr[1] = 0x41;
-                    bfr[2] = 0x5a;
-                    break;
-                    
-                default:
-                    printx("/// PSeudo SIO write08 control == 0x%x", control);
-                    break;
-            }
-            
             bus.interruptSet(CstrBus::INT_SIO0);
         }
-    }
-    else if (data == 0x81) {
-        // Memcards
     }
 }
 
 uh CstrSerial::read16(uw addr) {
-    switch(LOW_BITS(addr)) {
-        case 0x1044:
-            return status;
-            
-        case 0x104a:
-            return control;
-            
-        case 0x104e:
-            return baud;
-    }
-    
-    printx("/// PSeudo SIO read16 0x%x", LOW_BITS(addr));
-    return 0;
+    return accessMem(mem.hwr, uh);
 }
 
 ub CstrSerial::read08() {
@@ -237,7 +198,7 @@ ub CstrSerial::read08() {
     
     ub data = bfr[parp];
     
-    if (parp == bufcount) {
+    if (parp == 5) {
         status &= (~(SIO_STAT_RX_READY));
         status |= SIO_STAT_TX_EMPTY;
         

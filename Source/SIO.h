@@ -30,8 +30,8 @@ class CstrSerial {
     };
     
     uh btnState;
-    ub bfr[5], bufcount, padst, parp;
-    uh status, control, baud, mode;
+    ub bfr[5], padst, parp;
+    //uh status, control, baud, mode;
     
 public:
     void reset();
