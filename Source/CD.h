@@ -12,29 +12,6 @@ class CstrCD {
         CD_STAT_ACKNOWLEDGE = 3,
     };
     
-    enum {
-        CdlNop       =  1,
-        CdlSetloc    =  2,
-        CdlAudio     =  3,
-        CdlReadN     =  6,
-        CdlIdle      =  7,
-        CdlStop      =  8,
-        CdlPause     =  9,
-        CdlInit      = 10,
-        CdlMute      = 11,
-        CdlDemute    = 12,
-        CdlSetfilter = 13,
-        CdlSetmode   = 14,
-        CdlGetmode   = 15,
-        CdlGetlocL   = 16,
-        CdlGetlocP   = 17,
-        CdlGetTN     = 19,
-        CdlGetTD     = 20,
-        CdlSeekL     = 21,
-        CdlSeekP     = 22,
-        CdlReadS     = 27,
-    };
-    
     struct {
         ub control, status, statp, re2, mode, file, channel;
     } ret;

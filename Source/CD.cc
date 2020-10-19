@@ -17,7 +17,7 @@
 #define startRead(kind) \
     reads = kind; \
     readed = 0xff; \
-    interruptQueue(CdlReadN)
+    interruptQueue(6)
 
 #define stopRead() \
     if (reads) { \
@@ -88,19 +88,19 @@ void CstrCD::interrupt() {
     ret.control &= (~(0x80));
     
     switch(irqCache) {
-        case CdlNop:
+        case  1: // CdlNop
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             break;
             
-        case CdlSetloc:
+        case  2: // CdlSetloc
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x2;
             result.data[0] = ret.statp;
             break;
             
-        case CdlAudio:
+        case  3: // CdlAudio
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
@@ -108,7 +108,7 @@ void CstrCD::interrupt() {
             ret.statp |= 0x80;
             break;
             
-        case CdlReadN:
+        case  6: // CdlReadN
             if (!reads) {
                 return;
             }
@@ -118,38 +118,37 @@ void CstrCD::interrupt() {
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             ret.statp |= 0x20;
+            
             if (seeked == false) {
                 seeked = true;
                 ret.statp |= 0x40;
             }
-            
-            trackRead(); // ?
             interruptReadSet = 1;
             break;
             
-        case CdlIdle:
+        case  7: // CdlIdle
             setResultSize(1);
             ret.status = CD_STAT_COMPLETE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             break;
             
-        case CdlStop:
+        case  8: // CdlStop
             setResultSize(1);
             ret.status = CD_STAT_COMPLETE;
             ret.statp &= (~(0x2));
             result.data[0] = ret.statp;
             break;
             
-        case CdlPause:
+        case  9: // CdlPause
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.control |= 0x80;
             result.data[0] = ret.statp;
-            interruptQueue(CdlPause + 0x20);
+            interruptQueue(irqCache + 0x20);
             break;
             
-        case CdlPause + 0x20:
+        case  9 + 0x20:
             setResultSize(1);
             ret.status = CD_STAT_COMPLETE;
             ret.statp |= 0x02;
@@ -157,49 +156,49 @@ void CstrCD::interrupt() {
             result.data[0] = ret.statp;
             break;
             
-        case CdlInit:
+        case 10: // CdlInit
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp = 0x02;
             result.data[0] = ret.statp;
-            interruptQueue(CdlInit + 0x20);
+            interruptQueue(irqCache + 0x20);
             break;
             
-        case CdlInit + 0x20:
+        case 10 + 0x20:
             setResultSize(1);
             ret.status = CD_STAT_COMPLETE;
             result.data[0] = ret.statp;
             break;
             
-        case CdlMute:
+        case 11: // CdlMute
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             break;
             
-        case CdlDemute:
+        case 12: // CdlDemute
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             break;
             
-        case CdlSetfilter:
+        case 13: // CdlSetfilter
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             break;
             
-        case CdlSetmode:
+        case 14: // CdlSetmode
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             break;
             
-        case CdlGetmode:
+        case 15: // CdlGetmode
             setResultSize(6);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x2;
@@ -211,7 +210,7 @@ void CstrCD::interrupt() {
             result.data[5] = 0;
             break;
             
-        case CdlGetlocL:
+        case 16: // CdlGetlocL
             setResultSize(8);
             ret.status = CD_STAT_ACKNOWLEDGE;
             for (int i = 0; i < 8; i++) {
@@ -219,7 +218,7 @@ void CstrCD::interrupt() {
             }
             break;
             
-        case CdlGetlocP:
+        case 17: // CdlGetlocP
             setResultSize(8);
             ret.status = CD_STAT_ACKNOWLEDGE;
             result.data[0] = 1;
@@ -230,7 +229,7 @@ void CstrCD::interrupt() {
             memcp(result.data + 5, sector.prev, 3);
             break;
             
-        case CdlGetTN:
+        case 19: // CdlGetTN
             setResultSize(3);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
@@ -240,7 +239,7 @@ void CstrCD::interrupt() {
             result.data[2] = INT2BCD(result.tn[1]);
             break;
             
-        case CdlGetTD:
+        case 20: // CdlGetTD
             setResultSize(4);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
@@ -251,17 +250,17 @@ void CstrCD::interrupt() {
             result.data[3] = INT2BCD(result.td[0]);
             break;
             
-        case CdlSeekL:
+        case 21: // CdlSeekL
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             ret.statp |= 0x40;
-            interruptQueue(CdlSeekL + 0x20);
+            interruptQueue(irqCache + 0x20);
             seeked = true;
             break;
             
-        case CdlSeekL + 0x20:
+        case 21 + 0x20:
             setResultSize(1);
             ret.status = CD_STAT_COMPLETE;
             ret.statp |= 0x02;
@@ -269,16 +268,16 @@ void CstrCD::interrupt() {
             result.data[0] = ret.statp;
             break;
             
-        case CdlSeekP:
+        case 22: // CdlSeekP
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
             ret.statp |= 0x40;
-            interruptQueue(CdlSeekP + 0x20);
+            interruptQueue(irqCache + 0x20);
             break;
             
-        case CdlSeekP + 0x20:
+        case 22 + 0x20:
             setResultSize(1);
             ret.status = CD_STAT_COMPLETE;
             ret.statp |= 0x02;
@@ -329,7 +328,7 @@ void CstrCD::interruptRead() {
     readed = 0;
     
     if ((transfer.data[4 + 2] & 0x80) && (ret.mode & 0x02)) {
-        interruptQueue(CdlPause);
+        interruptQueue(9); // CdlPause
     }
     else {
         interruptReadSet = 1;
@@ -358,11 +357,27 @@ void CstrCD::write(uw addr, ub data) {
             }
             
             switch(data) {
-                case CdlNop: // TODO: More
+                case  7: // CdlIdle
+                case  8: // CdlStop
+                case  9: // CdlPause
+                case 10: // CdlInit
+                    stopRead();
+                    
+                case  1: // CdlNop
+                case  3: // CdlAudio
+                case 11: // CdlMute
+                case 12: // CdlDemute
+                case 15: // CdlGetmode
+                case 16: // CdlGetlocL
+                case 17: // CdlGetlocP
+                case 19: // CdlGetTN
+                case 20: // CdlGetTD
+                case 21: // CdlSeekL
+                case 22: // CdlSeekP
                     defaultCtrlAndStat();
                     break;
                     
-                case CdlSetloc:
+                case  2:  // CdlSetloc
                     stopRead();
                     defaultCtrlAndStat();
                     seeked = false;
@@ -372,91 +387,24 @@ void CstrCD::write(uw addr, ub data) {
                     sector.data[3] = 0;
                     break;
                     
-                case CdlAudio:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlReadN:
-                    irq = 0;
+                case  6: // CdlReadN
+                case 27: // CdlReadS
                     stopRead();
+                    irq = 0;
                     ret.status = CD_STAT_NO_INTR;
                     ret.control |= 0x80;
                     startRead(1);
                     break;
                     
-                case CdlIdle:
-                    stopRead();
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlStop:
-                    stopRead();
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlPause:
-                    stopRead();
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlInit:
-                    stopRead();
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlMute:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlDemute:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlSetfilter:
+                case 13: // CdlSetfilter
                     ret.file    = param.data[0];
                     ret.channel = param.data[1];
                     defaultCtrlAndStat();
                     break;
                     
-                case CdlSetmode:
+                case 14: // CdlSetmode
                     ret.mode = param.data[0];
                     defaultCtrlAndStat();
-                    break;
-                    
-                case CdlGetmode:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlGetlocL:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlGetlocP:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlGetTN:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlGetTD:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlSeekL:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlSeekP:
-                    defaultCtrlAndStat();
-                    break;
-                    
-                case CdlReadS:
-                    irq = 0;
-                    stopRead();
-                    ret.status = CD_STAT_NO_INTR;
-                    ret.control |= 0x80;
-                    startRead(1);
                     break;
                     
                 default:
@@ -594,11 +542,10 @@ void CstrCD::executeDMA(CstrBus::castDMA *dma) {
     uw size = (dma->bcr & 0xffff) * 4;
     
     switch(dma->chcr) {
-        case 0x00000000: // ?
         case 0x11000000:
         case 0x11400100: // ?
             if (!readed) {
-                break;
+                return;
             }
             
             for (int i = 0; i < size; i++) {
@@ -606,6 +553,9 @@ void CstrCD::executeDMA(CstrBus::castDMA *dma) {
             }
             
             transfer.p += size;
+            return;
+            
+        case 0x00000000: // ?
             return;
             
         default:
