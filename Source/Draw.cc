@@ -154,20 +154,20 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     if (vs.isVideo24Bit) {
         X = (X * 2) / 3;
         W = (W * 2) / 3;
-        GLBindTexture(GL_TEXTURE_2D, fb24tex);
-        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGB, GL_UNSIGNED_BYTE, raw);
+        GLBindTexture  (GL_TEXTURE_2D, fb24tex);
+        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGB , GL_UNSIGNED_BYTE, raw);
     }
     else {
-        GLBindTexture(GL_TEXTURE_2D, fb16tex);
+        GLBindTexture  (GL_TEXTURE_2D, fb16tex);
         GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
     }
     
 #if defined(APPLE_MACOS) || defined(_WIN32)
     GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(0, 0); GLVertex2s(X,   Y);
-        GLTexCoord2s(W, 0); GLVertex2s(X+W, Y);
-        GLTexCoord2s(0, H); GLVertex2s(X,   Y+H);
-        GLTexCoord2s(W, H); GLVertex2s(X+W, Y+H);
+        GLTexCoord2s(0, 0); GLVertex2s(X,     Y);
+        GLTexCoord2s(W, 0); GLVertex2s(X + W, Y);
+        GLTexCoord2s(0, H); GLVertex2s(X,     Y + H);
+        GLTexCoord2s(W, H); GLVertex2s(X + W, Y + H);
     GLEnd();
 #elif APPLE_IOS
     // TODO
