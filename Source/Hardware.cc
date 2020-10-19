@@ -58,6 +58,10 @@ void CstrHardware::write(uw addr, T data) {
             
         case HWR_ACCESS_16:
             switch(LOW_BITS(addr)) {
+                case 0x1040 ... 0x104e: // SIO
+                    sio.write16(addr, data);
+                    return;
+                    
                 case 0x1070: // iStatus
                     data16 &= data & mask16;
                     return;
@@ -72,7 +76,6 @@ void CstrHardware::write(uw addr, T data) {
                     
                 /* unused */
                 case 0x1014: // ?
-                case 0x1048 ... 0x104e: // SIO Mode, Control, Baud
                 case 0x1058: // SIO1 ?
                 case 0x105a: // SIO1 ?
                 case 0x105e: // SIO1 ?
@@ -84,12 +87,15 @@ void CstrHardware::write(uw addr, T data) {
             
         case HWR_ACCESS_08:
             switch(LOW_BITS(addr)) {
+                case 0x1040: // SIO Data
+                    sio.write08(data);
+                    return;
+                    
                 case 0x1800 ... 0x1803: // CD-ROM
                     cd.write(addr, data);
                     return;
                     
                 /* unused */
-                case 0x1040: // SIO Data
                 case 0x10f6:
                 case 0x2041: // DIP Switch?
                     accessMem(mem.hwr, ub) = data;
@@ -131,16 +137,14 @@ T CstrHardware::read(uw addr) {
             
         case HWR_ACCESS_16:
             switch(LOW_BITS(addr)) {
-                case 0x1044: // SIO Status
-                    return sio.read16();
+                case 0x1040 ... 0x104e: // SIO
+                    return sio.read16(addr);
                     
                 case 0x1c00 ... 0x1e0e: // Audio
                     return audio.read(addr);
                     
                 /* unused */
                 case 0x1014: // ?
-                case 0x104a: // SIO Control
-                case 0x104e: // SIO Baud
                 case 0x1054: // SIO Status
                 case 0x105a: // SIO1 ?
                 case 0x1070: // iStatus
