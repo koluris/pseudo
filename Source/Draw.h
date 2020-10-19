@@ -86,6 +86,7 @@ class CstrDraw {
     uw spriteTP;
     
     void reset();
+    void keepAspectRatio(sh, sh, int);
     void opaqueClipState(bool);
     ub opaqueFunc(ub);
     void setDrawArea(int, uw);

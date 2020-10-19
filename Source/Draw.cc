@@ -65,9 +65,7 @@ void CstrDraw::resize(sh w, sh h) {
     
     // Not current
     if (res.h != w || res.v != h) {
-#if 1
-        GLViewport((window.h * window.multiplier - w * window.multiplier) / 2, (window.v * window.multiplier - h * window.multiplier) / 2, w * window.multiplier, h * window.multiplier); // Keep PSX aspect ratio
-#endif
+        keepAspectRatio(w, h, window.multiplier);
         GLMatrixMode(GL_PROJECTION);
         GLID();
         
@@ -82,6 +80,16 @@ void CstrDraw::resize(sh w, sh h) {
         res.h = w;
         res.v = h;
     }
+}
+
+void CstrDraw::keepAspectRatio(sh w, sh h, int multiplier) {
+    sh iw = w * multiplier;
+    sh ih = h * multiplier;
+    
+    sh ww = window.h * multiplier;
+    sh wh = window.v * multiplier;
+    
+    GLViewport((ww - iw) / 2, (wh - ih) / 2, iw, ih);
 }
 
 void CstrDraw::opaqueClipState(bool enable) {
