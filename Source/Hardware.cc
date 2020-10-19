@@ -160,7 +160,9 @@ T CstrHardware::read(uw addr) {
                     return cd.read(addr);
                     
                 /* unused */
-                case 0x10f6:
+                case 0x10f6: // ?
+                case 0x1d68: // ?
+                case 0x1d78: // ?
                     return accessMem(mem.hwr, ub);
             }
             break;

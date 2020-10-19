@@ -127,6 +127,20 @@ void CstrCD::interrupt() {
             interruptReadSet = 1;
             break;
             
+        case CdlIdle:
+            setResultSize(1);
+            ret.status = CD_STAT_COMPLETE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            break;
+            
+        case CdlStop:
+            setResultSize(1);
+            ret.status = CD_STAT_COMPLETE;
+            ret.statp &= (~(0x2));
+            result.data[0] = ret.statp;
+            break;
+            
         case CdlPause:
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
@@ -157,6 +171,13 @@ void CstrCD::interrupt() {
             result.data[0] = ret.statp;
             break;
             
+        case CdlMute:
+            setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            break;
+            
         case CdlDemute:
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
@@ -176,6 +197,18 @@ void CstrCD::interrupt() {
             ret.status = CD_STAT_ACKNOWLEDGE;
             ret.statp |= 0x02;
             result.data[0] = ret.statp;
+            break;
+            
+        case CdlGetmode:
+            setResultSize(6);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x2;
+            result.data[0] = ret.statp;
+            result.data[1] = ret.mode;
+            result.data[2] = ret.file;
+            result.data[3] = ret.channel;
+            result.data[4] = 0;
+            result.data[5] = 0;
             break;
             
         case CdlGetlocL:
@@ -229,6 +262,23 @@ void CstrCD::interrupt() {
             break;
             
         case CdlSeekL + 0x20:
+            setResultSize(1);
+            ret.status = CD_STAT_COMPLETE;
+            ret.statp |= 0x02;
+            ret.statp &= (~(0x40));
+            result.data[0] = ret.statp;
+            break;
+            
+        case CdlSeekP:
+            setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            ret.statp |= 0x40;
+            interruptQueue(CdlSeekP + 0x20);
+            break;
+            
+        case CdlSeekP + 0x20:
             setResultSize(1);
             ret.status = CD_STAT_COMPLETE;
             ret.statp |= 0x02;
@@ -334,6 +384,16 @@ void CstrCD::write(uw addr, ub data) {
                     startRead(1);
                     break;
                     
+                case CdlIdle:
+                    stopRead();
+                    defaultCtrlAndStat();
+                    break;
+                    
+                case CdlStop:
+                    stopRead();
+                    defaultCtrlAndStat();
+                    break;
+                    
                 case CdlPause:
                     stopRead();
                     defaultCtrlAndStat();
@@ -344,16 +404,26 @@ void CstrCD::write(uw addr, ub data) {
                     defaultCtrlAndStat();
                     break;
                     
+                case CdlMute:
+                    defaultCtrlAndStat();
+                    break;
+                    
                 case CdlDemute:
                     defaultCtrlAndStat();
                     break;
                     
                 case CdlSetfilter:
+                    ret.file    = param.data[0];
+                    ret.channel = param.data[1];
                     defaultCtrlAndStat();
                     break;
                     
                 case CdlSetmode:
                     ret.mode = param.data[0];
+                    defaultCtrlAndStat();
+                    break;
+                    
+                case CdlGetmode:
                     defaultCtrlAndStat();
                     break;
                     
@@ -374,6 +444,10 @@ void CstrCD::write(uw addr, ub data) {
                     break;
                     
                 case CdlSeekL:
+                    defaultCtrlAndStat();
+                    break;
+                    
+                case CdlSeekP:
                     defaultCtrlAndStat();
                     break;
                     

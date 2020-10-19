@@ -91,6 +91,10 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
                 }
             }
             break;
+            
+        default:
+            printx("/// PSeudo Texture Cache: Unknown %d", ((tp >> 7) & 3));
+            break;
     }
     
     // Attach texture
@@ -99,6 +103,10 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     
     // Advance cache counter
     tc.uid = uid;
+    
+    if ((index + 1) >= TCACHE_MAX) {
+        printf("Cache cow\n");
+    }
     index  = (index + 1) & (TCACHE_MAX - 1);
 }
 
@@ -110,8 +118,8 @@ void CstrCache::invalidate(sh X, sh Y, sh W, sh H) {
             printf("TEXT: %4d %4d %4d %4d\n", tc.pos.w, tc.pos.h, (tc.pos.w + 255), (tc.pos.h + 255));
             printf("-\n");
 #endif
-            reset();
-            return;
+            tc.uid = 0;
+            continue;
         }
     }
 }

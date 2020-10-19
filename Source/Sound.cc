@@ -210,6 +210,7 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1d9e: // Mute 2
         case 0x1daa: // Control
         case 0x1da2: // Reverb Address
+        case 0x1da4: // ?
         case 0x1dac: // ?
         case 0x1db0: // CD Volume L
         case 0x1db2: // CD Volume R

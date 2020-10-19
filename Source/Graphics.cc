@@ -131,7 +131,7 @@ void CstrGraphics::write(uw addr, uw data) {
                             return;
                             
                         default:
-                            printf("Requested GPU info: %d\n", (data & 0xffffff));
+                            //printf("Requested GPU info: %d\n", (data & 0xffffff));
                             return;
                     }
                     return;

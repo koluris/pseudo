@@ -62,6 +62,10 @@ T CstrMem::read(uw addr) {
         return accessMem(rom, T);
     }
     
+    if ((addr) == 0xfffe0130) { // Known: 0x804, 0x800, 0x1e988
+        return 0;
+    }
+    
     printx("/// PSeudo Mem Read(%u): 0x%x", (uw)sizeof(T), addr);
     return 0;
 }

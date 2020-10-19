@@ -6,7 +6,7 @@ class CstrCache {
         TEX_15BIT,
         
         // Maximum texture cache
-        TCACHE_MAX = 64
+        TCACHE_MAX = 384
     };
     
     struct {

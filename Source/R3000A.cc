@@ -241,6 +241,14 @@ void CstrMips::step(bool branched) {
                     }
                     return;
                     
+                case 16: // BLTZAL
+                    base[31] = pc + 4;
+                    
+                    if ((sw)base[rs] < 0) {
+                        branch(baddr);
+                    }
+                    return;
+                    
                 case 17: // BGEZAL
                     base[31] = pc + 4;
                     
