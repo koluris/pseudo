@@ -96,7 +96,7 @@ void CstrCD::interrupt() {
         case  2: // CdlSetloc
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
-            ret.statp |= 0x2;
+            ret.statp |= 0x02;
             result.data[0] = ret.statp;
             break;
             
@@ -201,7 +201,7 @@ void CstrCD::interrupt() {
         case 15: // CdlGetmode
             setResultSize(6);
             ret.status = CD_STAT_ACKNOWLEDGE;
-            ret.statp |= 0x2;
+            ret.statp |= 0x02;
             result.data[0] = ret.statp;
             result.data[1] = ret.mode;
             result.data[2] = ret.file;
