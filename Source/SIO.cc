@@ -75,11 +75,11 @@ void CstrSerial::padListener(int code, bool pushed) {
     }
     
     if (code ==   7) { // X
-        btnCheck(PAD_BTN_CIRCLE);
+        btnCheck(PAD_BTN_CROSS);
     }
     
     if (code ==   6) { // Z
-        btnCheck(PAD_BTN_CROSS);
+        btnCheck(PAD_BTN_CIRCLE);
     }
 #endif
     
