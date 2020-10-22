@@ -46,24 +46,8 @@ class CstrMips {
     void branch(uw);
     void exception(uw, bool);
     
-    // Co-processor 2 (GTE)
-//    void executeCop2(uw);
-//    void   writeCop2(uw);
-//    void    readCop2(uw);
-    
 public:
     uw base[32], copr[16], pc;
-    
-    // Co-processor 2 (GTE)
-    union pair {
-        uw uw__[32 * 1];
-        uh uh__[32 * 2];
-        ub ub__[32 * 4];
-        
-        sw sw__[32 * 1];
-        sh sh__[32 * 2];
-        sb sb__[32 * 4];
-    } cop2c, cop2d;
     
     void reset();
     void setpc(uw);

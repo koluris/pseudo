@@ -32,6 +32,7 @@ void CstrPSeudo::reset() {
       bus.reset();
     cache.reset();
        cd.reset();
+     cop2.reset();
       cpu.reset();
      disc.reset();
      mdec.reset();

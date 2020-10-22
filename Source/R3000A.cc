@@ -42,8 +42,6 @@ CstrMips cpu;
 void CstrMips::reset() {
     memset(&base, 0, sizeof(base));
     memset(&copr, 0, sizeof(copr));
-    cop2c = { 0 };
-    cop2d = { 0 };
     
     copr[12] = 0x10900000;
     copr[15] = 0x2; // Co-processor Revision
@@ -349,39 +347,7 @@ void CstrMips::step(bool branched) {
             return;
             
         case 18: // COP2
-            switch(rs) {
-                case MFC:
-                    //readCop2(rd);
-                    //base[rt] = cop2d.iuw[rd];
-                    
-                    base[rt] = MFC2(rd);
-                    return;
-                    
-                case CFC:
-                    //base[rt] = cop2c.iuw[rd];
-                    
-                    base[rt] = cpu.cop2c.uw__[rd];
-                    return;
-                    
-                case MTC:
-                    //cop2d.iuw[rd] = base[rt];
-                    //writeCop2(rd);
-                    
-                    MTC2(rd, base[rt]);
-                    return;
-                    
-                case CTC:
-                    //cop2c.iuw[rd] = base[rt];
-                    
-                    CTC2(rd, base[rt]);
-                    return;
-                    
-                default: // Execute GTE opcode
-                    //executeCop2(code);
-                    
-                    cop2Table[code & 0x3f](code);
-                    return;
-            }
+            cop2.execute(code);
             return;
             
         case 32: // LB
@@ -433,17 +399,11 @@ void CstrMips::step(bool branched) {
             return;
             
         case 50: // LWC2
-            //cop2d.iuw[rt] = mem.read<uw>(ob);
-            //writeCop2(rt);
-            
-            MTC2(rt, mem.read<uw>(ob));
+            cop2.MTC2(rt, mem.read<uw>(ob));
             return;
             
         case 58: // SWC2
-            //readCop2(rt);
-            //mem.write<uw>(ob, cop2d.iuw[rt]);
-            
-            mem.write<uw>(ob, MFC2(rt));
+            mem.write<uw>(ob, cop2.MFC2(rt));
             return;
             
         default:
