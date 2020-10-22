@@ -331,20 +331,19 @@ void RTPS(uw code) {
 }
 
 void RTPT(uw code) {
-    sw quotient;
-    sw vx, vy, vz;
+    sw quotient = -1;
     
     FLAG = 0;
     
     SZ0 = SZ3;
     for (int v = 0; v < 3; v++) {
-        vx = VX(v);
-        vy = VY(v);
-        vz = VZ(v);
+        sw v1 = VX(v);
+        sw v2 = VY(v);
+        sw v3 = VZ(v);
         
-        MAC1 = A1((((sd)TRX << 12) + (R11 * vx) + (R12 * vy) + (R13 * vz)) >> 12);
-        MAC2 = A2((((sd)TRY << 12) + (R21 * vx) + (R22 * vy) + (R23 * vz)) >> 12);
-        MAC3 = A3((((sd)TRZ << 12) + (R31 * vx) + (R32 * vy) + (R33 * vz)) >> 12);
+        MAC1 = A1((((sd)TRX << 12) + (R11 * v1) + (R12 * v2) + (R13 * v3)) >> 12);
+        MAC2 = A2((((sd)TRY << 12) + (R21 * v1) + (R22 * v2) + (R23 * v3)) >> 12);
+        MAC3 = A3((((sd)TRZ << 12) + (R31 * v1) + (R32 * v2) + (R33 * v3)) >> 12);
         
         MAC2IR(0);
         
@@ -360,20 +359,20 @@ void RTPT(uw code) {
 }
 
 void MVMVA(uw code) {
-    sw shift = 12 * _SF(op);
+    sw sh = _SF(op) * 12;
     sw mx = _MX(op);
-    sw v = _V(op);
     sw cv = _CV(op);
     sw lm = _LM(op);
-    sw vx = VX(v);
-    sw vy = VY(v);
-    sw vz = VZ(v);
+    sw v  = _V(op);
+    sw v1 = VX(v);
+    sw v2 = VY(v);
+    sw v3 = VZ(v);
     
     FLAG = 0;
     
-    MAC1 = A1((((sd)CV1(cv) << 12) + (MX11(mx) * vx) + (MX12(mx) * vy) + (MX13(mx) * vz)) >> shift);
-    MAC2 = A2((((sd)CV2(cv) << 12) + (MX21(mx) * vx) + (MX22(mx) * vy) + (MX23(mx) * vz)) >> shift);
-    MAC3 = A3((((sd)CV3(cv) << 12) + (MX31(mx) * vx) + (MX32(mx) * vy) + (MX33(mx) * vz)) >> shift);
+    MAC1 = A1((((sd)CV1(cv) << 12) + (MX11(mx) * v1) + (MX12(mx) * v2) + (MX13(mx) * v3)) >> sh);
+    MAC2 = A2((((sd)CV2(cv) << 12) + (MX21(mx) * v1) + (MX22(mx) * v2) + (MX23(mx) * v3)) >> sh);
+    MAC3 = A3((((sd)CV3(cv) << 12) + (MX31(mx) * v1) + (MX32(mx) * v2) + (MX33(mx) * v3)) >> sh);
     
     MAC2IR(lm);
 }
@@ -399,14 +398,14 @@ void AVSZ4(uw code) {
 }
 
 void SQR(uw code) {
-    sw shift = 12 * _SF(op);
+    sw sh = _SF(op) * 12;
     sw lm = _LM(op);
     
     FLAG = 0;
     
-    MAC1 = A1((IR1 * IR1) >> shift);
-    MAC2 = A2((IR2 * IR2) >> shift);
-    MAC3 = A3((IR3 * IR3) >> shift);
+    MAC1 = A1((IR1 * IR1) >> sh);
+    MAC2 = A2((IR2 * IR2) >> sh);
+    MAC3 = A3((IR3 * IR3) >> sh);
     
     MAC2IR(lm);
 }
@@ -436,18 +435,16 @@ void NCCS(uw code) {
 }
 
 void NCCT(uw code) {
-    sw vx, vy, vz;
-    
     FLAG = 0;
     
     for (int v = 0; v < 3; v++) {
-        vx = VX(v);
-        vy = VY(v);
-        vz = VZ(v);
+        sw v1 = VX(v);
+        sw v2 = VY(v);
+        sw v3 = VZ(v);
         
-        MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
-        MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
-        MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
+        MAC1 = A1((((sd)L11 * v1) + (L12 * v2) + (L13 * v3)) >> 12);
+        MAC2 = A2((((sd)L21 * v1) + (L22 * v2) + (L23 * v3)) >> 12);
+        MAC3 = A3((((sd)L31 * v1) + (L32 * v2) + (L33 * v3)) >> 12);
         
         MAC2IR(1);
         
@@ -492,18 +489,16 @@ void NCDS(uw code) {
 }
 
 void NCDT(uw code) {
-    sw vx, vy, vz;
-    
     FLAG = 0;
     
     for (int v = 0; v < 3; v++) {
-        vx = VX(v);
-        vy = VY(v);
-        vz = VZ(v);
+        sw v1 = VX(v);
+        sw v2 = VY(v);
+        sw v3 = VZ(v);
         
-        MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
-        MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
-        MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
+        MAC1 = A1((((sd)L11 * v1) + (L12 * v2) + (L13 * v3)) >> 12);
+        MAC2 = A2((((sd)L21 * v1) + (L22 * v2) + (L23 * v3)) >> 12);
+        MAC3 = A3((((sd)L31 * v1) + (L32 * v2) + (L33 * v3)) >> 12);
         
         MAC2IR(1);
         
@@ -524,14 +519,14 @@ void NCDT(uw code) {
 }
 
 void OP(uw code) {
-    sw shift = 12 * _SF(op);
+    sw sh = _SF(op) * 12;
     sw lm = _LM(op);
     
     FLAG = 0;
     
-    MAC1 = A1(((sd)(R22 * IR3) - (R33 * IR2)) >> shift);
-    MAC2 = A2(((sd)(R33 * IR1) - (R11 * IR3)) >> shift);
-    MAC3 = A3(((sd)(R11 * IR2) - (R22 * IR1)) >> shift);
+    MAC1 = A1(((sd)(R22 * IR3) - (R33 * IR2)) >> sh);
+    MAC2 = A2(((sd)(R33 * IR1) - (R11 * IR3)) >> sh);
+    MAC3 = A3(((sd)(R11 * IR2) - (R22 * IR1)) >> sh);
     
     MAC2IR(lm);
 }
@@ -555,13 +550,13 @@ void DCPL(uw code) {
 }
 
 void GPF(uw code) {
-    sw shift = 12 * _SF(op);
+    sw sh = _SF(op) * 12;
     
     FLAG = 0;
     
-    MAC1 = A1(((sd)IR0 * IR1) >> shift);
-    MAC2 = A2(((sd)IR0 * IR2) >> shift);
-    MAC3 = A3(((sd)IR0 * IR3) >> shift);
+    MAC1 = A1(((sd)IR0 * IR1) >> sh);
+    MAC2 = A2(((sd)IR0 * IR2) >> sh);
+    MAC3 = A3(((sd)IR0 * IR3) >> sh);
     
     MAC2IR(0);
     
@@ -569,13 +564,13 @@ void GPF(uw code) {
 }
 
 void GPL(uw code) {
-    sw shift = 12 * _SF(op);
+    sw sh = _SF(op) * 12;
     
     FLAG = 0;
     
-    MAC1 = A1((((sd)MAC1 << shift) + (IR0 * IR1)) >> shift);
-    MAC2 = A2((((sd)MAC2 << shift) + (IR0 * IR2)) >> shift);
-    MAC3 = A3((((sd)MAC3 << shift) + (IR0 * IR3)) >> shift);
+    MAC1 = A1((((sd)MAC1 << sh) + (IR0 * IR1)) >> sh);
+    MAC2 = A2((((sd)MAC2 << sh) + (IR0 * IR2)) >> sh);
+    MAC3 = A3((((sd)MAC3 << sh) + (IR0 * IR3)) >> sh);
     
     MAC2IR(0);
     
@@ -583,13 +578,13 @@ void GPL(uw code) {
 }
 
 void DPCS(uw code) {
-    sw shift = 12 * _SF(op);
+    sw sh = _SF(op) * 12;
     
     FLAG = 0;
     
-    MAC1 = A1(((R << 16) + (IR0 * limB1(A1((sd)RFC - (R << 4)) << (12 - shift), 0))) >> 12);
-    MAC2 = A2(((G << 16) + (IR0 * limB2(A2((sd)GFC - (G << 4)) << (12 - shift), 0))) >> 12);
-    MAC3 = A3(((B << 16) + (IR0 * limB3(A3((sd)BFC - (B << 4)) << (12 - shift), 0))) >> 12);
+    MAC1 = A1(((R << 16) + (IR0 * limB1(A1((sd)RFC - (R << 4)) << (12 - sh), 0))) >> 12);
+    MAC2 = A2(((G << 16) + (IR0 * limB2(A2((sd)GFC - (G << 4)) << (12 - sh), 0))) >> 12);
+    MAC3 = A3(((B << 16) + (IR0 * limB3(A3((sd)BFC - (B << 4)) << (12 - sh), 0))) >> 12);
     
     MAC2IR(0);
     
@@ -629,18 +624,16 @@ void NCS(uw code) {
 }
 
 void NCT(uw code) {
-    sw vx, vy, vz;
-    
     FLAG = 0;
     
     for (int v = 0; v < 3; v++) {
-        vx = VX(v);
-        vy = VY(v);
-        vz = VZ(v);
+        sw v1 = VX(v);
+        sw v2 = VY(v);
+        sw v3 = VZ(v);
         
-        MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
-        MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
-        MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
+        MAC1 = A1((((sd)L11 * v1) + (L12 * v2) + (L13 * v3)) >> 12);
+        MAC2 = A2((((sd)L21 * v1) + (L22 * v2) + (L23 * v3)) >> 12);
+        MAC3 = A3((((sd)L31 * v1) + (L32 * v2) + (L33 * v3)) >> 12);
         
         MAC2IR(1);
         
@@ -673,14 +666,14 @@ void CC(uw code) {
 }
 
 void INTPL(uw code) {
-    sw shift = 12 * _SF(op);
+    sw sh = _SF(op) * 12;
     sw lm = _LM(op);
     
     FLAG = 0;
     
-    MAC1 = A1(((IR1 << 12) + (IR0 * limB1(((sd)RFC - IR1), 0))) >> shift);
-    MAC2 = A2(((IR2 << 12) + (IR0 * limB2(((sd)GFC - IR2), 0))) >> shift);
-    MAC3 = A3(((IR3 << 12) + (IR0 * limB3(((sd)BFC - IR3), 0))) >> shift);
+    MAC1 = A1(((IR1 << 12) + (IR0 * limB1(((sd)RFC - IR1), 0))) >> sh);
+    MAC2 = A2(((IR2 << 12) + (IR0 * limB2(((sd)GFC - IR2), 0))) >> sh);
+    MAC3 = A3(((IR3 << 12) + (IR0 * limB3(((sd)BFC - IR3), 0))) >> sh);
     
     MAC2IR(lm);
     

@@ -203,7 +203,7 @@ ub CstrSerial::read08() {
         status |= SIO_STAT_TX_EMPTY;
         
         if (padst == 2) {
-            printx("/// PSeudo SIO read08 (padst == 2)", 0);
+            printx("/// PSeudo SIO read08 (padst == %d)", 2);
         }
     }
     
