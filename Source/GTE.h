@@ -1,5 +1,5 @@
 extern void (*psxCP2[64])(uw);
 
-uw MFC2(int reg);
-void MTC2(uw value, int reg);
-void CTC2(uw value, int reg);
+uw MFC2(int addr);
+void MTC2(int addr, uw data);
+void CTC2(int addr, uw data);

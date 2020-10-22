@@ -43,6 +43,7 @@ typedef int16_t sh; // halfword
 typedef int8_t  sb; // bite
 
 // Basic
+#define TYPEDEF             typedef
 #define memcp               memcpy
 #define redirect            goto
 
