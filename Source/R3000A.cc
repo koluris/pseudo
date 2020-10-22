@@ -379,7 +379,7 @@ void CstrMips::step(bool branched) {
                 default: // Execute GTE opcode
                     //executeCop2(code);
                     
-                    psxCP2[code & 0x3f](code);
+                    cop2Table[code & 0x3f](code);
                     return;
             }
             return;

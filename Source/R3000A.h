@@ -47,20 +47,15 @@ class CstrMips {
     void exception(uw, bool);
     
     // Co-processor 2 (GTE)
-//    union pair {
-//        uw iuw[32]; uh iuh[32*2]; ub iub[32*4];
-//        sw isw[32]; sh ish[32*2]; sb isb[32*4];
-//    } cop2c, cop2d;
-    
 //    void executeCop2(uw);
 //    void   writeCop2(uw);
 //    void    readCop2(uw);
-//
-//    void opcodeRTPS(ub);
-//    void opcodeNCCS(ub);
-//    void opcodeNCS (ub);
     
-    TYPEDEF union {
+public:
+    uw base[32], copr[16], pc;
+    
+    // Co-processor 2 (GTE)
+    union pair {
         uw uw__[32 * 1];
         uh uh__[32 * 2];
         ub ub__[32 * 4];
@@ -68,29 +63,7 @@ class CstrMips {
         sw sw__[32 * 1];
         sh sh__[32 * 2];
         sb sb__[32 * 4];
-    } cop2union;
-    
-//    typedef union {
-//        struct { ub l, h, h2, h3; } iub;
-//        struct { uh l, h; } iuw;
-//        struct { sb l, h, h2, h3; } isb;
-//        struct { sh l, h; } isw;
-//    } PAIR;
-//
-//    typedef union {
-//        uw r[32];
-//        PAIR p[32];
-//    } psxCP2Data;
-//
-//    typedef union {
-//        uw r[32];
-//        PAIR p[32];
-//    } psxCP2Ctrl;
-    
-public:
-    uw base[32], copr[16], pc;
-    cop2union cop2c;
-    cop2union cop2d;
+    } cop2c, cop2d;
     
     void reset();
     void setpc(uw);

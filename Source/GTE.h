@@ -1,5 +1,5 @@
-extern void (*psxCP2[64])(uw);
+extern void (* cop2Table[64])(uw);
 
-uw MFC2(int addr);
-void MTC2(int addr, uw data);
-void CTC2(int addr, uw data);
+uw MFC2(uw addr);
+void MTC2(uw addr, uw data);
+void CTC2(uw addr, uw data);

@@ -183,624 +183,529 @@
     G2 = limC2(MAC2 >> 4); \
     B2 = limC3(MAC3 >> 4)
 
-#define op (code & 0x1ffffff)
+#define op \
+    (code & 0x1ffffff)
 
-//sd BOUNDS(sd n_value, sd n_max, int n_maxflag, sd n_min, int n_minflag) {
-//	if (n_value > n_max) {
-//		FLAG |= n_maxflag;
-//	} else if (n_value < n_min) {
-//		FLAG |= n_minflag;
-//	}
-//	return n_value;
-//}
+#define F( a) (a)
+#define A1(a) (a)
+#define A2(a) (a)
+#define A3(a) (a)
 
-#define A1(a) (a)//BOUNDS((a), 0x7fffffff, (1 << 30), -(sd)0x80000000, (1 << 31) | (1 << 27))
-#define A2(a) (a)//BOUNDS((a), 0x7fffffff, (1 << 29), -(sd)0x80000000, (1 << 31) | (1 << 26))
-#define A3(a) (a)//BOUNDS((a), 0x7fffffff, (1 << 28), -(sd)0x80000000, (1 << 31) | (1 << 25))
-
-#define F(a) (a)//BOUNDS((a), 0x7fffffff, (1 << 31) | (1 << 16), -(sd)0x80000000, (1 << 31) | (1 << 15))
-
-uw MFC2(int addr) {
-	switch (addr) {
-		case 1:
-		case 3:
-		case 5:
-		case 8:
-		case 9:
-		case 10:
-		case 11:
+uw MFC2(uw addr) {
+    switch (addr) {
+        case 1:
+        case 3:
+        case 5:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
             oooo(cpu.cop2d.sw__, addr) = __oo(cpu.cop2d.sh__, addr, 0);
-			break;
-
-		case 7:
-		case 16:
-		case 17:
-		case 18:
-		case 19:
-			oooo(cpu.cop2d.uw__, addr) = __oo(cpu.cop2d.uh__, addr, 0);
-			break;
-
-		case 15:
+            break;
+            
+        case 7:
+        case 16:
+        case 17:
+        case 18:
+        case 19:
+            oooo(cpu.cop2d.uw__, addr) = __oo(cpu.cop2d.uh__, addr, 0);
+            break;
+            
+        case 15:
             oooo(cpu.cop2d.uw__, addr) = SXY2;
-			break;
-
-		case 28:
-		case 29:
+            break;
+            
+        case 28:
+        case 29:
             oooo(cpu.cop2d.uw__, addr) = LIM(IR1 >> 7, 0, 0x1f, 0) |
-									(LIM(IR2 >> 7, 0, 0x1f, 0) << 5) |
-									(LIM(IR3 >> 7, 0, 0x1f, 0) << 10);
-			break;
-	}
+                                    (LIM(IR2 >> 7, 0, 0x1f, 0) << 5) |
+                                    (LIM(IR3 >> 7, 0, 0x1f, 0) << 10);
+            break;
+    }
+    
     return oooo(cpu.cop2d.uw__, addr);
 }
 
-void MTC2(int addr, uw data) {
-	switch (addr) {
-		case 15:
-			SXY0 = SXY1;
-			SXY1 = SXY2;
-			SXY2 = data;
-			SXYP = data;
-			break;
-
-		case 28:
-			IRGB = data;
-			IR1 = (data & 0x1f) << 7;
-			IR2 = (data & 0x3e0) << 2;
-			IR3 = (data & 0x7c00) >> 3;
-			break;
-
-		case 30:
-			{
-				int a;
-				LZCS = data;
-
-				a = LZCS;
-				if (a > 0) {
-					int i;
-					for (i = 31; (a & (1 << i)) == 0 && i >= 0; i--);
-					LZCR = 31 - i;
-				} else if (a < 0) {
-					int i;
-					a ^= 0xffffffff;
-					for (i = 31; (a & (1 << i)) == 0 && i >= 0; i--);
-					LZCR = 31 - i;
-				} else {
-					LZCR = 32;
-				}
-			}
-			break;
-
-		case 31:
-			return;
-
-		default:
+void MTC2(uw addr, uw data) {
+    switch (addr) {
+        case 15:
+            SXY0 = SXY1;
+            SXY1 = SXY2;
+            SXY2 = data;
+            SXYP = data;
+            break;
+            
+        case 28:
+            IRGB = data;
+            IR1 = (data & 0x1f) << 7;
+            IR2 = (data & 0x3e0) << 2;
+            IR3 = (data & 0x7c00) >> 3;
+            break;
+            
+        case 30:
+            {
+                int a;
+                LZCS = data;
+                
+                a = LZCS;
+                if (a > 0) {
+                    int i;
+                    for (i = 31; (a & (1 << i)) == 0 && i >= 0; i--);
+                    LZCR = 31 - i;
+                } else if (a < 0) {
+                    int i;
+                    a ^= 0xffffffff;
+                    for (i = 31; (a & (1 << i)) == 0 && i >= 0; i--);
+                    LZCR = 31 - i;
+                } else {
+                    LZCR = 32;
+                }
+            }
+            break;
+            
+        case 31:
+            return;
+            
+        default:
             oooo(cpu.cop2d.uw__, addr) = data;
-	}
+    }
 }
 
-void CTC2(int addr, uw data) {
-	switch (addr) {
-		case 4:
-		case 12:
-		case 20:
-		case 26:
-		case 27:
-		case 29:
-		case 30:
+void CTC2(uw addr, uw data) {
+    switch (addr) {
+        case 4:
+        case 12:
+        case 20:
+        case 26:
+        case 27:
+        case 29:
+        case 30:
             data = (sw)(sh)data;
-			break;
-
-		case 31:
+            break;
+            
+        case 31:
             data = data & 0x7ffff000;
-			if (data & 0x7f87e000) data |= 0x80000000;
-			break;
-	}
-
+            if (data & 0x7f87e000) data |= 0x80000000;
+            break;
+    }
+    
     oooo(cpu.cop2c.uw__, addr) = data;
 }
 
 uw DIVIDE(sh n, uh d) {
-	if (n >= 0 && n < d * 2) {
-		sw n_ = n;
-		return ((n_ << 16) + d / 2) / d;
-	}
-	return 0xffffffff;
+    if (n >= 0 && n < d * 2) {
+        sw n_ = n;
+        return ((n_ << 16) + d / 2) / d;
+    }
+    return 0xffffffff;
 }
 
 void psxNULL(uw code) {
 }
 
 void RTPS(uw code) {
-	int quotient;
-
-	FLAG = 0;
-
-	MAC1 = A1((((sd)TRX << 12) + (R11 * VX0) + (R12 * VY0) + (R13 * VZ0)) >> 12);
-	MAC2 = A2((((sd)TRY << 12) + (R21 * VX0) + (R22 * VY0) + (R23 * VZ0)) >> 12);
-	MAC3 = A3((((sd)TRZ << 12) + (R31 * VX0) + (R32 * VY0) + (R33 * VZ0)) >> 12);
-	IR1 = limB1(MAC1, 0);
-	IR2 = limB2(MAC2, 0);
-	IR3 = limB3(MAC3, 0);
-	SZ0 = SZ1;
-	SZ1 = SZ2;
-	SZ2 = SZ3;
-	SZ3 = limD(MAC3);
-	quotient = limE(DIVIDE(H, SZ3));
-	SXY0 = SXY1;
-	SXY1 = SXY2;
-	SX2 = limG1(F((sd)OFX + ((sd)IR1 * quotient)) >> 16);
-	SY2 = limG2(F((sd)OFY + ((sd)IR2 * quotient)) >> 16);
-
-	MAC0 = F((sd)DQB + ((sd)DQA * quotient));
-	IR0 = limH(MAC0 >> 12);
+    sw quotient;
+    
+    FLAG = 0;
+    
+    MAC1 = A1((((sd)TRX << 12) + (R11 * VX0) + (R12 * VY0) + (R13 * VZ0)) >> 12);
+    MAC2 = A2((((sd)TRY << 12) + (R21 * VX0) + (R22 * VY0) + (R23 * VZ0)) >> 12);
+    MAC3 = A3((((sd)TRZ << 12) + (R31 * VX0) + (R32 * VY0) + (R33 * VZ0)) >> 12);
+    
+    MAC2IR(0);
+    
+    SZ0 = SZ1;
+    SZ1 = SZ2;
+    SZ2 = SZ3;
+    SZ3 = limD(MAC3);
+    
+    quotient = limE(DIVIDE(H, SZ3));
+    
+    SXY0 = SXY1;
+    SXY1 = SXY2;
+    SX2  = limG1(F((sd)OFX + ((sd)IR1 * quotient)) >> 16);
+    SY2  = limG2(F((sd)OFY + ((sd)IR2 * quotient)) >> 16);
+    
+    MAC0 = F((sd)DQB + ((sd)DQA * quotient));
+    IR0 = limH(MAC0 >> 12);
 }
 
 void RTPT(uw code) {
-	int quotient;
-	int v;
-	sw vx, vy, vz;
-
-	FLAG = 0;
-
-	SZ0 = SZ3;
-	for (v = 0; v < 3; v++) {
-		vx = VX(v);
-		vy = VY(v);
-		vz = VZ(v);
-		MAC1 = A1((((sd)TRX << 12) + (R11 * vx) + (R12 * vy) + (R13 * vz)) >> 12);
-		MAC2 = A2((((sd)TRY << 12) + (R21 * vx) + (R22 * vy) + (R23 * vz)) >> 12);
-		MAC3 = A3((((sd)TRZ << 12) + (R31 * vx) + (R32 * vy) + (R33 * vz)) >> 12);
-		IR1 = limB1(MAC1, 0);
-		IR2 = limB2(MAC2, 0);
-		IR3 = limB3(MAC3, 0);
-		SZ(v) = limD(MAC3);
-		quotient = limE(DIVIDE(H, SZ(v)));
-		SX(v) = limG1(F((sd)OFX + ((sd)IR1 * quotient)) >> 16);
-		SY(v) = limG2(F((sd)OFY + ((sd)IR2 * quotient)) >> 16);
-	}
-	MAC0 = F((sd)DQB + ((sd)DQA * quotient));
-	IR0 = limH(MAC0 >> 12);
+    sw quotient;
+    sw vx, vy, vz;
+    
+    FLAG = 0;
+    
+    SZ0 = SZ3;
+    for (int v = 0; v < 3; v++) {
+        vx = VX(v);
+        vy = VY(v);
+        vz = VZ(v);
+        
+        MAC1 = A1((((sd)TRX << 12) + (R11 * vx) + (R12 * vy) + (R13 * vz)) >> 12);
+        MAC2 = A2((((sd)TRY << 12) + (R21 * vx) + (R22 * vy) + (R23 * vz)) >> 12);
+        MAC3 = A3((((sd)TRZ << 12) + (R31 * vx) + (R32 * vy) + (R33 * vz)) >> 12);
+        
+        MAC2IR(0);
+        
+        SZ(v) = limD(MAC3);
+        quotient = limE(DIVIDE(H, SZ(v)));
+        
+        SX(v) = limG1(F((sd)OFX + ((sd)IR1 * quotient)) >> 16);
+        SY(v) = limG2(F((sd)OFY + ((sd)IR2 * quotient)) >> 16);
+    }
+    
+    MAC0 = F((sd)DQB + ((sd)DQA * quotient));
+    IR0 = limH(MAC0 >> 12);
 }
 
 void MVMVA(uw code) {
-	int shift = 12 * _SF(op);
-	int mx = _MX(op);
-	int v = _V(op);
-	int cv = _CV(op);
-	int lm = _LM(op);
-	sw vx = VX(v);
-	sw vy = VY(v);
-	sw vz = VZ(v);
-
-	FLAG = 0;
-
-	MAC1 = A1((((sd)CV1(cv) << 12) + (MX11(mx) * vx) + (MX12(mx) * vy) + (MX13(mx) * vz)) >> shift);
-	MAC2 = A2((((sd)CV2(cv) << 12) + (MX21(mx) * vx) + (MX22(mx) * vy) + (MX23(mx) * vz)) >> shift);
-	MAC3 = A3((((sd)CV3(cv) << 12) + (MX31(mx) * vx) + (MX32(mx) * vy) + (MX33(mx) * vz)) >> shift);
-
-	IR1 = limB1(MAC1, lm);
-	IR2 = limB2(MAC2, lm);
-	IR3 = limB3(MAC3, lm);
+    sw shift = 12 * _SF(op);
+    sw mx = _MX(op);
+    sw v = _V(op);
+    sw cv = _CV(op);
+    sw lm = _LM(op);
+    sw vx = VX(v);
+    sw vy = VY(v);
+    sw vz = VZ(v);
+    
+    FLAG = 0;
+    
+    MAC1 = A1((((sd)CV1(cv) << 12) + (MX11(mx) * vx) + (MX12(mx) * vy) + (MX13(mx) * vz)) >> shift);
+    MAC2 = A2((((sd)CV2(cv) << 12) + (MX21(mx) * vx) + (MX22(mx) * vy) + (MX23(mx) * vz)) >> shift);
+    MAC3 = A3((((sd)CV3(cv) << 12) + (MX31(mx) * vx) + (MX32(mx) * vy) + (MX33(mx) * vz)) >> shift);
+    
+    MAC2IR(lm);
 }
 
 void NCLIP(uw code) {
-	FLAG = 0;
-
-	MAC0 = F((sd)SX0 * (SY1 - SY2) +
-				SX1 * (SY2 - SY0) +
-				SX2 * (SY0 - SY1));
+    FLAG = 0;
+    
+    MAC0 = F((sd)SX0 * (SY1 - SY2) + SX1 * (SY2 - SY0) + SX2 * (SY0 - SY1));
 }
 
 void AVSZ3(uw code) {
-	FLAG = 0;
-
-	MAC0 = F((sd)(ZSF3 * SZ1) + (ZSF3 * SZ2) + (ZSF3 * SZ3));
-	OTZ = limD(MAC0 >> 12);
+    FLAG = 0;
+    
+    MAC0 = F((sd)(ZSF3 * SZ1) + (ZSF3 * SZ2) + (ZSF3 * SZ3));
+    OTZ = limD(MAC0 >> 12);
 }
 
 void AVSZ4(uw code) {
-	FLAG = 0;
-
-	MAC0 = F((sd)(ZSF4 * (SZ0 + SZ1 + SZ2 + SZ3)));
-	OTZ = limD(MAC0 >> 12);
+    FLAG = 0;
+    
+    MAC0 = F((sd)(ZSF4 * (SZ0 + SZ1 + SZ2 + SZ3)));
+    OTZ = limD(MAC0 >> 12);
 }
 
 void SQR(uw code) {
-	int shift = 12 * _SF(op);
-	int lm = _LM(op);
-
-	FLAG = 0;
-
-	MAC1 = A1((IR1 * IR1) >> shift);
-	MAC2 = A2((IR2 * IR2) >> shift);
-	MAC3 = A3((IR3 * IR3) >> shift);
-	IR1 = limB1(MAC1, lm);
-	IR2 = limB2(MAC2, lm);
-	IR3 = limB3(MAC3, lm);
+    sw shift = 12 * _SF(op);
+    sw lm = _LM(op);
+    
+    FLAG = 0;
+    
+    MAC1 = A1((IR1 * IR1) >> shift);
+    MAC2 = A2((IR2 * IR2) >> shift);
+    MAC3 = A3((IR3 * IR3) >> shift);
+    
+    MAC2IR(lm);
 }
 
 void NCCS(uw code) {
-	FLAG = 0;
-
-	MAC1 = A1((((sd)L11 * VX0) + (L12 * VY0) + (L13 * VZ0)) >> 12);
-	MAC2 = A2((((sd)L21 * VX0) + (L22 * VY0) + (L23 * VZ0)) >> 12);
-	MAC3 = A3((((sd)L31 * VX0) + (L32 * VY0) + (L33 * VZ0)) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-	MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
-	MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
-	MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-	MAC1 = A1(((sd)R * IR1) >> 8);
-	MAC2 = A2(((sd)G * IR2) >> 8);
-	MAC3 = A3(((sd)B * IR3) >> 8);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    FLAG = 0;
+    
+    MAC1 = A1((((sd)L11 * VX0) + (L12 * VY0) + (L13 * VZ0)) >> 12);
+    MAC2 = A2((((sd)L21 * VX0) + (L22 * VY0) + (L23 * VZ0)) >> 12);
+    MAC3 = A3((((sd)L31 * VX0) + (L32 * VY0) + (L33 * VZ0)) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
+    MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
+    MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC1 = A1(((sd)R * IR1) >> 8);
+    MAC2 = A2(((sd)G * IR2) >> 8);
+    MAC3 = A3(((sd)B * IR3) >> 8);
+    
+    MAC2IR(1);
+    
+    MAC2RGB4();
 }
 
 void NCCT(uw code) {
-	int v;
-	sw vx, vy, vz;
-
-	FLAG = 0;
-
-	for (v = 0; v < 3; v++) {
-		vx = VX(v);
-		vy = VY(v);
-		vz = VZ(v);
-		MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
-		MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
-		MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
-		IR1 = limB1(MAC1, 1);
-		IR2 = limB2(MAC2, 1);
-		IR3 = limB3(MAC3, 1);
-		MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
-		MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
-		MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
-		IR1 = limB1(MAC1, 1);
-		IR2 = limB2(MAC2, 1);
-		IR3 = limB3(MAC3, 1);
-		MAC1 = A1(((sd)R * IR1) >> 8);
-		MAC2 = A2(((sd)G * IR2) >> 8);
-		MAC3 = A3(((sd)B * IR3) >> 8);
-
-		RGB0 = RGB1;
-		RGB1 = RGB2;
-		CODE2 = CODE;
-		R2 = limC1(MAC1 >> 4);
-		G2 = limC2(MAC2 >> 4);
-		B2 = limC3(MAC3 >> 4);
-	}
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
+    sw vx, vy, vz;
+    
+    FLAG = 0;
+    
+    for (int v = 0; v < 3; v++) {
+        vx = VX(v);
+        vy = VY(v);
+        vz = VZ(v);
+        
+        MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
+        MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
+        MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
+        
+        MAC2IR(1);
+        
+        MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
+        MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
+        MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
+        
+        MAC2IR(1);
+        
+        MAC1 = A1(((sd)R * IR1) >> 8);
+        MAC2 = A2(((sd)G * IR2) >> 8);
+        MAC3 = A3(((sd)B * IR3) >> 8);
+        
+        MAC2RGB4();
+    }
+    
+    MAC2IR(1);
 }
 
 void NCDS(uw code) {
-	FLAG = 0;
-
-	MAC1 = A1((((sd)L11 * VX0) + (L12 * VY0) + (L13 * VZ0)) >> 12);
-	MAC2 = A2((((sd)L21 * VX0) + (L22 * VY0) + (L23 * VZ0)) >> 12);
-	MAC3 = A3((((sd)L31 * VX0) + (L32 * VY0) + (L33 * VZ0)) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-	MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
-	MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
-	MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-	MAC1 = A1(((((sd)R << 4) * IR1) + (IR0 * limB1(RFC - ((R * IR1) >> 8), 0))) >> 12);
-	MAC2 = A2(((((sd)G << 4) * IR2) + (IR0 * limB2(GFC - ((G * IR2) >> 8), 0))) >> 12);
-	MAC3 = A3(((((sd)B << 4) * IR3) + (IR0 * limB3(BFC - ((B * IR3) >> 8), 0))) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    FLAG = 0;
+    
+    MAC1 = A1((((sd)L11 * VX0) + (L12 * VY0) + (L13 * VZ0)) >> 12);
+    MAC2 = A2((((sd)L21 * VX0) + (L22 * VY0) + (L23 * VZ0)) >> 12);
+    MAC3 = A3((((sd)L31 * VX0) + (L32 * VY0) + (L33 * VZ0)) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
+    MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
+    MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC1 = A1(((((sd)R << 4) * IR1) + (IR0 * limB1(RFC - ((R * IR1) >> 8), 0))) >> 12);
+    MAC2 = A2(((((sd)G << 4) * IR2) + (IR0 * limB2(GFC - ((G * IR2) >> 8), 0))) >> 12);
+    MAC3 = A3(((((sd)B << 4) * IR3) + (IR0 * limB3(BFC - ((B * IR3) >> 8), 0))) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC2RGB4();
 }
 
 void NCDT(uw code) {
-	int v;
-	sw vx, vy, vz;
-
-	FLAG = 0;
-
-	for (v = 0; v < 3; v++) {
-		vx = VX(v);
-		vy = VY(v);
-		vz = VZ(v);
-		MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
-		MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
-		MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
-		IR1 = limB1(MAC1, 1);
-		IR2 = limB2(MAC2, 1);
-		IR3 = limB3(MAC3, 1);
-		MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
-		MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
-		MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
-		IR1 = limB1(MAC1, 1);
-		IR2 = limB2(MAC2, 1);
-		IR3 = limB3(MAC3, 1);
-		MAC1 = A1(((((sd)R << 4) * IR1) + (IR0 * limB1(RFC - ((R * IR1) >> 8), 0))) >> 12);
-		MAC2 = A2(((((sd)G << 4) * IR2) + (IR0 * limB2(GFC - ((G * IR2) >> 8), 0))) >> 12);
-		MAC3 = A3(((((sd)B << 4) * IR3) + (IR0 * limB3(BFC - ((B * IR3) >> 8), 0))) >> 12);
-
-		RGB0 = RGB1;
-		RGB1 = RGB2;
-		CODE2 = CODE;
-		R2 = limC1(MAC1 >> 4);
-		G2 = limC2(MAC2 >> 4);
-		B2 = limC3(MAC3 >> 4);
-	}
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
+    sw vx, vy, vz;
+    
+    FLAG = 0;
+    
+    for (int v = 0; v < 3; v++) {
+        vx = VX(v);
+        vy = VY(v);
+        vz = VZ(v);
+        
+        MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
+        MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
+        MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
+        
+        MAC2IR(1);
+        
+        MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
+        MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
+        MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
+        
+        MAC2IR(1);
+        
+        MAC1 = A1(((((sd)R << 4) * IR1) + (IR0 * limB1(RFC - ((R * IR1) >> 8), 0))) >> 12);
+        MAC2 = A2(((((sd)G << 4) * IR2) + (IR0 * limB2(GFC - ((G * IR2) >> 8), 0))) >> 12);
+        MAC3 = A3(((((sd)B << 4) * IR3) + (IR0 * limB3(BFC - ((B * IR3) >> 8), 0))) >> 12);
+        
+        MAC2RGB4();
+    }
+    
+    MAC2IR(1);
 }
 
 void OP(uw code) {
-	int shift = 12 * _SF(op);
-	int lm = _LM(op);
-
-	FLAG = 0;
-
-	MAC1 = A1(((sd)(R22 * IR3) - (R33 * IR2)) >> shift);
-	MAC2 = A2(((sd)(R33 * IR1) - (R11 * IR3)) >> shift);
-	MAC3 = A3(((sd)(R11 * IR2) - (R22 * IR1)) >> shift);
-	IR1 = limB1(MAC1, lm);
-	IR2 = limB2(MAC2, lm);
-	IR3 = limB3(MAC3, lm);
+    sw shift = 12 * _SF(op);
+    sw lm = _LM(op);
+    
+    FLAG = 0;
+    
+    MAC1 = A1(((sd)(R22 * IR3) - (R33 * IR2)) >> shift);
+    MAC2 = A2(((sd)(R33 * IR1) - (R11 * IR3)) >> shift);
+    MAC3 = A3(((sd)(R11 * IR2) - (R22 * IR1)) >> shift);
+    
+    MAC2IR(lm);
 }
 
 void DCPL(uw code) {
-	int lm = _LM(op);
-
-	sd RIR1 = ((sd)R * IR1) >> 8;
-	sd GIR2 = ((sd)G * IR2) >> 8;
-	sd BIR3 = ((sd)B * IR3) >> 8;
-
-	FLAG = 0;
-
-	MAC1 = A1(RIR1 + ((IR0 * limB1(RFC - RIR1, 0)) >> 12));
-	MAC2 = A2(GIR2 + ((IR0 * limB1(GFC - GIR2, 0)) >> 12));
-	MAC3 = A3(BIR3 + ((IR0 * limB1(BFC - BIR3, 0)) >> 12));
-
-	IR1 = limB1(MAC1, lm);
-	IR2 = limB2(MAC2, lm);
-	IR3 = limB3(MAC3, lm);
-
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    sw lm = _LM(op);
+    
+    sd RIR1 = ((sd)R * IR1) >> 8;
+    sd GIR2 = ((sd)G * IR2) >> 8;
+    sd BIR3 = ((sd)B * IR3) >> 8;
+    
+    FLAG = 0;
+    
+    MAC1 = A1(RIR1 + ((IR0 * limB1(RFC - RIR1, 0)) >> 12));
+    MAC2 = A2(GIR2 + ((IR0 * limB1(GFC - GIR2, 0)) >> 12));
+    MAC3 = A3(BIR3 + ((IR0 * limB1(BFC - BIR3, 0)) >> 12));
+    
+    MAC2IR(lm);
+    
+    MAC2RGB4();
 }
 
 void GPF(uw code) {
-	int shift = 12 * _SF(op);
-
-	FLAG = 0;
-
-	MAC1 = A1(((sd)IR0 * IR1) >> shift);
-	MAC2 = A2(((sd)IR0 * IR2) >> shift);
-	MAC3 = A3(((sd)IR0 * IR3) >> shift);
-	IR1 = limB1(MAC1, 0);
-	IR2 = limB2(MAC2, 0);
-	IR3 = limB3(MAC3, 0);
-
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    sw shift = 12 * _SF(op);
+    
+    FLAG = 0;
+    
+    MAC1 = A1(((sd)IR0 * IR1) >> shift);
+    MAC2 = A2(((sd)IR0 * IR2) >> shift);
+    MAC3 = A3(((sd)IR0 * IR3) >> shift);
+    
+    MAC2IR(0);
+    
+    MAC2RGB4();
 }
 
 void GPL(uw code) {
-	int shift = 12 * _SF(op);
-
-	FLAG = 0;
-
-	MAC1 = A1((((sd)MAC1 << shift) + (IR0 * IR1)) >> shift);
-	MAC2 = A2((((sd)MAC2 << shift) + (IR0 * IR2)) >> shift);
-	MAC3 = A3((((sd)MAC3 << shift) + (IR0 * IR3)) >> shift);
-	IR1 = limB1(MAC1, 0);
-	IR2 = limB2(MAC2, 0);
-	IR3 = limB3(MAC3, 0);
-
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    sw shift = 12 * _SF(op);
+    
+    FLAG = 0;
+    
+    MAC1 = A1((((sd)MAC1 << shift) + (IR0 * IR1)) >> shift);
+    MAC2 = A2((((sd)MAC2 << shift) + (IR0 * IR2)) >> shift);
+    MAC3 = A3((((sd)MAC3 << shift) + (IR0 * IR3)) >> shift);
+    
+    MAC2IR(0);
+    
+    MAC2RGB4();
 }
 
 void DPCS(uw code) {
-	int shift = 12 * _SF(op);
-
-	FLAG = 0;
-
-	MAC1 = A1(((R << 16) + (IR0 * limB1(A1((sd)RFC - (R << 4)) << (12 - shift), 0))) >> 12);
-	MAC2 = A2(((G << 16) + (IR0 * limB2(A2((sd)GFC - (G << 4)) << (12 - shift), 0))) >> 12);
-	MAC3 = A3(((B << 16) + (IR0 * limB3(A3((sd)BFC - (B << 4)) << (12 - shift), 0))) >> 12);
-
-	IR1 = limB1(MAC1, 0);
-	IR2 = limB2(MAC2, 0);
-	IR3 = limB3(MAC3, 0);
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    sw shift = 12 * _SF(op);
+    
+    FLAG = 0;
+    
+    MAC1 = A1(((R << 16) + (IR0 * limB1(A1((sd)RFC - (R << 4)) << (12 - shift), 0))) >> 12);
+    MAC2 = A2(((G << 16) + (IR0 * limB2(A2((sd)GFC - (G << 4)) << (12 - shift), 0))) >> 12);
+    MAC3 = A3(((B << 16) + (IR0 * limB3(A3((sd)BFC - (B << 4)) << (12 - shift), 0))) >> 12);
+    
+    MAC2IR(0);
+    
+    MAC2RGB4();
 }
 
 void DPCT(uw code) {
-	int v;
-
-	FLAG = 0;
-
-	for (v = 0; v < 3; v++) {
-		MAC1 = A1((((sd)R0 << 16) + ((sd)IR0 * (limB1(RFC - (R0 << 4), 0)))) >> 12);
-		MAC2 = A2((((sd)G0 << 16) + ((sd)IR0 * (limB1(GFC - (G0 << 4), 0)))) >> 12);
-		MAC3 = A3((((sd)B0 << 16) + ((sd)IR0 * (limB1(BFC - (B0 << 4), 0)))) >> 12);
-
-		RGB0 = RGB1;
-		RGB1 = RGB2;
-		CODE2 = CODE;
-		R2 = limC1(MAC1 >> 4);
-		G2 = limC2(MAC2 >> 4);
-		B2 = limC3(MAC3 >> 4);
-	}
-	IR1 = limB1(MAC1, 0);
-	IR2 = limB2(MAC2, 0);
-	IR3 = limB3(MAC3, 0);
+    FLAG = 0;
+    
+    for (int v = 0; v < 3; v++) {
+        MAC1 = A1((((sd)R0 << 16) + ((sd)IR0 * (limB1(RFC - (R0 << 4), 0)))) >> 12);
+        MAC2 = A2((((sd)G0 << 16) + ((sd)IR0 * (limB1(GFC - (G0 << 4), 0)))) >> 12);
+        MAC3 = A3((((sd)B0 << 16) + ((sd)IR0 * (limB1(BFC - (B0 << 4), 0)))) >> 12);
+        
+        MAC2RGB4();
+    }
+    
+    MAC2IR(0);
 }
 
 void NCS(uw code) {
-	FLAG = 0;
-
-	MAC1 = A1((((sd)L11 * VX0) + (L12 * VY0) + (L13 * VZ0)) >> 12);
-	MAC2 = A2((((sd)L21 * VX0) + (L22 * VY0) + (L23 * VZ0)) >> 12);
-	MAC3 = A3((((sd)L31 * VX0) + (L32 * VY0) + (L33 * VZ0)) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-	MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
-	MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
-	MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    FLAG = 0;
+    
+    MAC1 = A1((((sd)L11 * VX0) + (L12 * VY0) + (L13 * VZ0)) >> 12);
+    MAC2 = A2((((sd)L21 * VX0) + (L22 * VY0) + (L23 * VZ0)) >> 12);
+    MAC3 = A3((((sd)L31 * VX0) + (L32 * VY0) + (L33 * VZ0)) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
+    MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
+    MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC2RGB4();
 }
 
 void NCT(uw code) {
-	int v;
-	sw vx, vy, vz;
-
-	FLAG = 0;
-
-	for (v = 0; v < 3; v++) {
-		vx = VX(v);
-		vy = VY(v);
-		vz = VZ(v);
-		MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
-		MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
-		MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
-		IR1 = limB1(MAC1, 1);
-		IR2 = limB2(MAC2, 1);
-		IR3 = limB3(MAC3, 1);
-		MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
-		MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
-		MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
-		RGB0 = RGB1;
-		RGB1 = RGB2;
-		CODE2 = CODE;
-		R2 = limC1(MAC1 >> 4);
-		G2 = limC2(MAC2 >> 4);
-		B2 = limC3(MAC3 >> 4);
-	}
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
+    sw vx, vy, vz;
+    
+    FLAG = 0;
+    
+    for (int v = 0; v < 3; v++) {
+        vx = VX(v);
+        vy = VY(v);
+        vz = VZ(v);
+        
+        MAC1 = A1((((sd)L11 * vx) + (L12 * vy) + (L13 * vz)) >> 12);
+        MAC2 = A2((((sd)L21 * vx) + (L22 * vy) + (L23 * vz)) >> 12);
+        MAC3 = A3((((sd)L31 * vx) + (L32 * vy) + (L33 * vz)) >> 12);
+        
+        MAC2IR(1);
+        
+        MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
+        MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
+        MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
+        
+        MAC2RGB4();
+    }
+    
+    MAC2IR(1);
 }
 
 void CC(uw code) {
-	FLAG = 0;
-
-	MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
-	MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
-	MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-	MAC1 = A1(((sd)R * IR1) >> 8);
-	MAC2 = A2(((sd)G * IR2) >> 8);
-	MAC3 = A3(((sd)B * IR3) >> 8);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    FLAG = 0;
+    
+    MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
+    MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
+    MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC1 = A1(((sd)R * IR1) >> 8);
+    MAC2 = A2(((sd)G * IR2) >> 8);
+    MAC3 = A3(((sd)B * IR3) >> 8);
+    
+    MAC2IR(1);
+    
+    MAC2RGB4();
 }
 
 void INTPL(uw code) {
-	int shift = 12 * _SF(op);
-	int lm = _LM(op);
-
-	FLAG = 0;
-
-	MAC1 = A1(((IR1 << 12) + (IR0 * limB1(((sd)RFC - IR1), 0))) >> shift);
-	MAC2 = A2(((IR2 << 12) + (IR0 * limB2(((sd)GFC - IR2), 0))) >> shift);
-	MAC3 = A3(((IR3 << 12) + (IR0 * limB3(((sd)BFC - IR3), 0))) >> shift);
-	IR1 = limB1(MAC1, lm);
-	IR2 = limB2(MAC2, lm);
-	IR3 = limB3(MAC3, lm);
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    sw shift = 12 * _SF(op);
+    sw lm = _LM(op);
+    
+    FLAG = 0;
+    
+    MAC1 = A1(((IR1 << 12) + (IR0 * limB1(((sd)RFC - IR1), 0))) >> shift);
+    MAC2 = A2(((IR2 << 12) + (IR0 * limB2(((sd)GFC - IR2), 0))) >> shift);
+    MAC3 = A3(((IR3 << 12) + (IR0 * limB3(((sd)BFC - IR3), 0))) >> shift);
+    
+    MAC2IR(lm);
+    
+    MAC2RGB4();
 }
 
 void CDP(uw code) {
-	FLAG = 0;
-
-	MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
-	MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
-	MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-	MAC1 = A1(((((sd)R << 4) * IR1) + (IR0 * limB1(RFC - ((R * IR1) >> 8), 0))) >> 12);
-	MAC2 = A2(((((sd)G << 4) * IR2) + (IR0 * limB2(GFC - ((G * IR2) >> 8), 0))) >> 12);
-	MAC3 = A3(((((sd)B << 4) * IR3) + (IR0 * limB3(BFC - ((B * IR3) >> 8), 0))) >> 12);
-	IR1 = limB1(MAC1, 1);
-	IR2 = limB2(MAC2, 1);
-	IR3 = limB3(MAC3, 1);
-
-	RGB0 = RGB1;
-	RGB1 = RGB2;
-	CODE2 = CODE;
-	R2 = limC1(MAC1 >> 4);
-	G2 = limC2(MAC2 >> 4);
-	B2 = limC3(MAC3 >> 4);
+    FLAG = 0;
+    
+    MAC1 = A1((((sd)RBK << 12) + (LR1 * IR1) + (LR2 * IR2) + (LR3 * IR3)) >> 12);
+    MAC2 = A2((((sd)GBK << 12) + (LG1 * IR1) + (LG2 * IR2) + (LG3 * IR3)) >> 12);
+    MAC3 = A3((((sd)BBK << 12) + (LB1 * IR1) + (LB2 * IR2) + (LB3 * IR3)) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC1 = A1(((((sd)R << 4) * IR1) + (IR0 * limB1(RFC - ((R * IR1) >> 8), 0))) >> 12);
+    MAC2 = A2(((((sd)G << 4) * IR2) + (IR0 * limB2(GFC - ((G * IR2) >> 8), 0))) >> 12);
+    MAC3 = A3(((((sd)B << 4) * IR3) + (IR0 * limB3(BFC - ((B * IR3) >> 8), 0))) >> 12);
+    
+    MAC2IR(1);
+    
+    MAC2RGB4();
 }
 
-void (*psxCP2[64])(uw) = {
+void (* cop2Table[64])(uw) = {
     psxNULL, RTPS , psxNULL , psxNULL, psxNULL, psxNULL , NCLIP, psxNULL, // 00
     psxNULL , psxNULL , psxNULL , psxNULL, OP  , psxNULL , psxNULL , psxNULL, // 08
     DPCS , INTPL, MVMVA, NCDS, CDP , psxNULL , NCDT , psxNULL, // 10
