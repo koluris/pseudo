@@ -186,6 +186,7 @@
 #define op \
     (code & 0x1ffffff)
 
+/* unused for now */
 #define F( a) (a)
 #define A1(a) (a)
 #define A2(a) (a)
