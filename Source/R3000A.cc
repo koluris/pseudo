@@ -74,7 +74,7 @@ void CstrMips::run() {
         step(false);
         
         if (threshold <= opcodeCount) {
-            rootc.update(threshold);
+            rootc.update(64);
                cd.update();
               bus.update();
             
@@ -216,7 +216,7 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 39: // NOR
-                    base[rd] = ~(base[rs] | base[rt]);
+                    base[rd] = (~(base[rs] | base[rt]));
                     return;
                     
                 case 42: // SLT
@@ -345,7 +345,7 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case RFE: // Return from exception
-                    copr[12] = (copr[12] & ~(0xf)) | ((copr[12] >> 2) & 0xf);
+                    copr[12] = (copr[12] & (~(0xf))) | ((copr[12] >> 2) & 0xf);
                     return;
                     
                 default:
@@ -431,7 +431,7 @@ void CstrMips::exception(uw code, bool branched) {
         printx("/// PSeudo Exception %s", "branched");
     }
     
-    copr[12] = (copr[12] & ~(0x3f)) | ((copr[12] << 2) & 0x3f);
+    copr[12] = (copr[12] & (~(0x3f))) | ((copr[12] << 2) & 0x3f);
     copr[13] = code;
     copr[14] = pc;
     
