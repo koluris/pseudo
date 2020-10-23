@@ -199,9 +199,9 @@ void CstrCop2::reset() {
 }
 
 uw CstrCop2::limE(uw result) {
-    if (result > 0x1ffff) {
+    if (result > 131071) {
         FLAG |= (1 << 17);
-        return 0x1ffff;
+        return 131071;
     }
     return result;
 }
