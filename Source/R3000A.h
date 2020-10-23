@@ -37,7 +37,11 @@ class CstrMips {
     };
     
     union { // Product & quotient (lo, hi)
-        sd s64; uw u32[2];
+        ud u64;
+        sd s64;
+        
+        uw u32[2];
+        sw s32[2];
     } res;
     
     uw *instCache, opcodeCount;

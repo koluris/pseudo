@@ -162,13 +162,17 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 25: // MULTU
-                    res.s64 = (sd)base[rs] * base[rt];
+                    res.u64 = (ud)base[rs] * base[rt];
                     return;
                     
                 case 26: // DIV
                     if (base[rt]) {
-                        res.u32[0] = (sw)base[rs] / (sw)base[rt];
-                        res.u32[1] = (sw)base[rs] % (sw)base[rt];
+                        res.s32[0] = (sw)base[rs] / (sw)base[rt];
+                        res.s32[1] = (sw)base[rs] % (sw)base[rt];
+                    }
+                    else {
+                        res.s32[0] = (sw)base[rs] >= 0 ? 0xffffffff : 1;
+                        res.s32[1] = (sw)base[rs];
                     }
                     return;
                     
@@ -176,6 +180,10 @@ void CstrMips::step(bool branched) {
                     if (base[rt]) {
                         res.u32[0] = base[rs] / base[rt];
                         res.u32[1] = base[rs] % base[rt];
+                    }
+                    else {
+                        res.u32[0] = 0xffffffff;
+                        res.u32[1] = base[rs];
                     }
                     return;
                     
