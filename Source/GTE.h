@@ -9,6 +9,7 @@ class CstrCop2 {
         sb sb[32 * 4];
     } cop2c, cop2d;
     
+    uw limE(uw);
     uw divide(sh, uh);
     
 public:

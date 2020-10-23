@@ -158,7 +158,6 @@
 #define limC2(a) LIM((a),       0,    255, 20)
 #define limC3(a) LIM((a),       0,    255, 19)
 #define limD( a) LIM((a),       0,  65535, 18)
-#define limE( a) LIM((a), -131072, 131071, 17)
 #define limG1(a) LIM((a),   -1024,   1023, 14)
 #define limG2(a) LIM((a),   -1024,   1023, 13)
 #define limH( a) LIM((a),       0,   4096, 12)
@@ -197,6 +196,14 @@ CstrCop2 cop2;
 void CstrCop2::reset() {
     cop2c = { 0 };
     cop2d = { 0 };
+}
+
+uw CstrCop2::limE(uw result) {
+    if (result > 0x1ffff) {
+        FLAG |= (1 << 17);
+        return 0x1ffff;
+    }
+    return result;
 }
 
 uw CstrCop2::divide(sh n, uh d) {
