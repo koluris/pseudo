@@ -30,8 +30,12 @@ void CstrHardware::write(uw addr, T data) {
                     rootc.write<uw>(addr, data);
                     return;
                     
-                case 0x1810 ... 0x1814: // Graphics
-                    vs.write(addr, data);
+                case 0x1810: // Data
+                    GPUwriteData(data);
+                    return;
+                    
+                case 0x1814: // Status
+                    GPUwriteStatus(data);
                     return;
                     
                 case 0x1820 ... 0x1824: // MDEC
@@ -116,8 +120,11 @@ T CstrHardware::read(uw addr) {
     switch(sizeof(T)) {
         case HWR_ACCESS_32:
             switch(LOW_BITS(addr)) {
-                case 0x1810 ... 0x1814: // Graphics
-                    return vs.read(addr);
+                case 0x1810: // Data
+                    return GPUreadData();
+                    
+                case 0x1814: // Status
+                    return GPUreadStatus();
                     
                 case 0x1820 ... 0x1824: // MDEC
                     return mdec.read(addr);

@@ -30,7 +30,9 @@ void CstrPSeudo::reset() {
     
     audio.reset();
       bus.reset();
-    cache.reset();
+    //cache.reset();
+    GPUinit();
+    GPUopen();
        cd.reset();
      cop2.reset();
       cpu.reset();
@@ -39,7 +41,7 @@ void CstrPSeudo::reset() {
       mem.reset();
     rootc.reset();
       sio.reset();
-       vs.reset();
+       //vs.reset();
     
     // BIOS version, ex: "ROM Version 4.1 12/16/97 E"
     ub version[0x1b];

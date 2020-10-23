@@ -40,7 +40,7 @@ void CstrBus::checkDMA(uw addr, uw data) {
                 break;
                 
             case DMA_GPU:
-                vs.executeDMA(dma);
+                executeDMA(dma);
                 break;
                 
             case DMA_CD:

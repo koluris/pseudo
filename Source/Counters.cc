@@ -78,9 +78,11 @@ void CstrCounters::update(int threshold) {
     // VBlank
     vbk += threshold * 2;
     
-    if (vbk >= (vs.isVideoPAL ? PSX_VSYNC_PAL : PSX_VSYNC_NTSC)) { vbk = 0;
+    //if (vbk >= (vs.isVideoPAL ? PSX_VSYNC_PAL : PSX_VSYNC_NTSC)) { vbk = 0;
+    if (vbk >= PSX_VSYNC_NTSC) { vbk = 0;
         bus.interruptSet(CstrBus::INT_VSYNC);
-        vs.refresh();
+        //vs.refresh();
+        GPUupdateLace();
     }
 }
 
