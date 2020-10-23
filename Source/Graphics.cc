@@ -150,6 +150,7 @@ void CstrGraphics::write(uw addr, uw data) {
 uw CstrGraphics::read(uw addr) {
     switch(addr & 0xf) {
         case GPU_REG_DATA:
+            dataRead(&ret.data, 1);
             return ret.data;
             
         case GPU_REG_STATUS:
@@ -265,8 +266,69 @@ VRAM_END:
     return count >> 1;
 }
 
+void CstrGraphics::dataRead(uw *ptr, sw size) {
+    if (modeDMA == GPU_DMA_VRAM2MEM) {
+        ret.status &= (~(0x14000000));
+        
+        do {
+            uw data = (uw)vrop.pvram[vrop.h.p];
+            
+            if (++vrop.h.p >= vrop.h.end) {
+                vrop.h.p = vrop.h.start;
+                vrop.pvram += FRAME_W;
+            }
+            
+            data |= (uw)vrop.pvram[vrop.h.p] << 16;
+            *ptr++ = data;
+            
+            if (++vrop.h.p >= vrop.h.end) {
+                vrop.h.p = vrop.h.start;
+                vrop.pvram += FRAME_W;
+                
+                if (++vrop.v.p >= vrop.v.end) {
+                    modeDMA = GPU_DMA_NONE;
+                    ret.status &= (~(GPU_STAT_READYFORVRAM));
+                    break;
+                }
+            }
+        } while (--size);
+        
+        ret.status = (ret.status | 0x14000000) & (~(GPU_STAT_DMABITS));
+    }
+}
+
 void CstrGraphics::photoMove(uw *packets) {
-    //uh *p = (uh *)packets;
+    uh h_0 = (packets[1]    )&0x03ff,
+       v_0 = (packets[1]>>16)&0x01ff,
+       h_1 = (packets[2]    )&0x03ff,
+       v_1 = (packets[2]>>16)&0x01ff,
+       h_t = (packets[3]    )&0xffff,
+       v_t = (packets[3]>>16)&0xffff;
+    
+    if ((h_0+h_t) > FRAME_W) h_t = FRAME_W - h_0;
+    if ((h_1+h_t) > FRAME_W) h_t = FRAME_W - h_1;
+    if ((v_0+v_t) > FRAME_H) v_t = FRAME_H - v_0;
+    if ((v_1+v_t) > FRAME_H) v_t = FRAME_H - v_1;
+    
+    for (sw v=0; v<v_t; v++) {
+        for (sw h=0; h<h_t; h++) {
+            vram.ptr[(FRAME_W*(v_1+v))+(h_1+h)] = vram.ptr[(FRAME_W*(v_0+v))+(h_0+h)];
+        }
+    }
+}
+
+void CstrGraphics::photoWrite(uw *packets) {
+    uh *p = (uh *)packets;
+    
+    vrop.h.start = vrop.h.p = p[2];
+    vrop.v.start = vrop.v.p = p[3];
+    vrop.h.end   = vrop.h.p + p[4];
+    vrop.v.end   = vrop.v.p + p[5];
+    vrop.pvram   = &vram.ptr[vrop.v.p * FRAME_W];
+    
+    modeDMA = GPU_DMA_VRAM2MEM;
+    
+    ret.status |= GPU_STAT_READYFORVRAM;
 }
 
 void CstrGraphics::photoRead(uw *packets) {
@@ -279,6 +341,7 @@ void CstrGraphics::photoRead(uw *packets) {
     vrop.v.start = vrop.v.p = p[3];
     vrop.h.end   = vrop.h.p + p[4];
     vrop.v.end   = vrop.v.p + p[5];
+    vrop.pvram   = &vram.ptr[vrop.v.p * FRAME_W];
     
     modeDMA = GPU_DMA_MEM2VRAM;
     
@@ -292,7 +355,7 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
     
     switch(dma->chcr) {
         case 0x01000200:
-            //dataRead(p, size);
+            dataRead(p, size);
             return;
             
         case 0x01000201:

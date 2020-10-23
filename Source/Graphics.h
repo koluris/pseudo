@@ -69,6 +69,7 @@ class CstrGraphics {
     struct {
         bool enabled;
         uw *raw;
+        uh *pvram;
         
         struct {
             sw start, end, p;
@@ -109,6 +110,7 @@ public:
     void write(uw, uw);
     uw read(uw);
     void photoMove(uw *);
+    void photoWrite(uw *);
     void photoRead(uw *);
     void executeDMA(CstrBus::castDMA *);
 };

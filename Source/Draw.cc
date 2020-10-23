@@ -403,6 +403,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             return;
             
         case GPU_TYPE_IMG_COPY:
+            vs.photoWrite(packets);
             return;
             
         case GPU_TYPE_ENV:
