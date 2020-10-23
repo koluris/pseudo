@@ -31,15 +31,10 @@ class CstrSerial {
     
     uh btnState;
     ub bfr[5], padst, parp;
-    //uh status, control, baud, mode;
     
 public:
     void reset();
     void padListener(int, bool);
-    
-    // Load
-    //uh read16();
-    //ub read08();
     
     void write16(uw, uh);
     void write08(ub);

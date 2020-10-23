@@ -3,9 +3,6 @@
 #include "Global.h"
 
 
-//#define data \
-//    *(ub *)&mem.hwr.ptr[0x1040]
-//
 #define status \
     *(uw *)&mem.hwr.ptr[0x1044]
 
@@ -33,12 +30,9 @@ CstrSerial sio;
 void CstrSerial::reset() {
     memset(&bfr, 0, sizeof(bfr));
     btnState = 0xffff;
-//    baud      = 0;
-//    control   = 0;
-//    mode      = 0;
-//    status    = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
-    padst     = 0;
-    parp      = 0;
+    status   = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+    padst    = 0;
+    parp     = 0;
     
     // Default pad buffer
     bfr[0] = 0x00;
@@ -86,31 +80,6 @@ void CstrSerial::padListener(int code, bool pushed) {
     bfr[3] = (ub)(btnState);
     bfr[4] = (ub)(btnState >> 8);
 }
-
-//uh CstrSerial::read16() {
-//    bus.interruptSet(CstrBus::INT_SIO0);
-//    return 0xffff;
-//}
-//
-//ub CstrSerial::read08() {
-//    if ((control & 0xffef) == 0x1003) { // SIO0
-//        if (data == 0x42 /*|| data == 0x43 || data == 0x45*/) {
-//            cnt = 1;
-//        }
-//
-//        if (cnt) {
-//            ub ret = bfr[cnt];
-//
-//            if (++cnt == sizeof(bfr)) {
-//                cnt = 0;
-//            }
-//            return ret;
-//        }
-//    }
-//    return 0;
-//}
-
-
 
 void CstrSerial::write16(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
