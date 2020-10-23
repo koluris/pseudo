@@ -208,8 +208,7 @@ uw CstrCop2::limE(uw result) {
 
 uw CstrCop2::divide(sh n, uh d) {
     if (n >= 0 && n < d * 2) {
-        sw n_ = n;
-        return ((n_ << 16) + d / 2) / d;
+        return ((((sw)n) << 16) + d / 2) / d;
     }
     return 0xffffffff;
 }
