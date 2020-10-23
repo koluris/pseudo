@@ -213,22 +213,18 @@ void CstrCop2::execute(uw code) {
             switch(rs & 7) {
                 case 0: // MFC2
                     cpu.base[rt] = MFC2(rd);
-                    //cpu.setbase(rt, cop2.opcodeMFC2(rd));
                     return;
 
                 case 2: // CFC2
                     cpu.base[rt] = oooo(cop2c.uw__, rd);
-                    //cpu.setbase(rt, oooo(cop2c.uw, rd));
                     return;
 
                 case 4: // MTC2
                     MTC2(rd, cpu.base[rt]);
-                    //cop2.opcodeMTC2(rd, cpu.readbase(rt));
                     return;
 
                 case 6: // CTC2
                     CTC2(rd, cpu.base[rt]);
-                    //cop2.opcodeCTC2(rd, cpu.readbase(rt));
                     return;
             }
 
