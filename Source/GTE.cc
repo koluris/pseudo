@@ -369,8 +369,8 @@ void CstrCop2::execute(uw code) {
         case 18: // MVMVA
             {
                 sw sh = _SF(op) * 12;
-                sw mx = _MX(op);
                 sw cv = _CV(op);
+                sw mx = _MX(op);
                 sw lm = _LM(op);
                 sw v  = _V(op);
                 sw v1 = VX(v);
@@ -726,10 +726,10 @@ void CstrCop2::MTC2(uw addr, uw data) { // Cop2d write
             return;
             
         case 28: // IRGB
-            IRGB = data;
-            IR1 = (data & 0x1f) << 7;
-            IR2 = (data & 0x3e0) << 2;
-            IR3 = (data & 0x7c00) >> 3;
+            IRGB = (data);
+            IR1  = (data & 0x1f) << 7;
+            IR2  = (data & 0x3e0) << 2;
+            IR3  = (data & 0x7c00) >> 3;
             return;
             
         case 30: // LZCS
