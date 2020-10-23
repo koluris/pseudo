@@ -271,17 +271,9 @@ void CstrGraphics::dataRead(uw *ptr, sw size) {
         ret.status &= (~(0x14000000));
         
         do {
-            uw data = (uw)vrop.pvram[vrop.h.p];
+            *ptr++ = *(uw *)&vrop.pvram[vrop.h.p];
             
-            if (++vrop.h.p >= vrop.h.end) {
-                vrop.h.p = vrop.h.start;
-                vrop.pvram += FRAME_W;
-            }
-            
-            data |= (uw)vrop.pvram[vrop.h.p] << 16;
-            *ptr++ = data;
-            
-            if (++vrop.h.p >= vrop.h.end) {
+            if ((vrop.h.p += 2) >= vrop.h.end) {
                 vrop.h.p = vrop.h.start;
                 vrop.pvram += FRAME_W;
                 
@@ -319,15 +311,15 @@ void CstrGraphics::photoMove(uw *packets) {
 
 void CstrGraphics::photoWrite(uw *packets) {
     uh *p = (uh *)packets;
-    
+
     vrop.h.start = vrop.h.p = p[2];
     vrop.v.start = vrop.v.p = p[3];
     vrop.h.end   = vrop.h.p + p[4];
     vrop.v.end   = vrop.v.p + p[5];
     vrop.pvram   = &vram.ptr[vrop.v.p * FRAME_W];
-    
+
     modeDMA = GPU_DMA_VRAM2MEM;
-    
+
     ret.status |= GPU_STAT_READYFORVRAM;
 }
 
@@ -341,7 +333,7 @@ void CstrGraphics::photoRead(uw *packets) {
     vrop.v.start = vrop.v.p = p[3];
     vrop.h.end   = vrop.h.p + p[4];
     vrop.v.end   = vrop.v.p + p[5];
-    vrop.pvram   = &vram.ptr[vrop.v.p * FRAME_W];
+    //vrop.pvram   = &vram.ptr[vrop.v.p * FRAME_W];
     
     modeDMA = GPU_DMA_MEM2VRAM;
     
