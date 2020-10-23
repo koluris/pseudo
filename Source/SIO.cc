@@ -156,11 +156,14 @@ void CstrSerial::write08(ub data) {
                     bus.interruptSet(CstrBus::INT_SIO0);
                     break;
                     
+                case 0x3003:
+                    break;
+                    
                 default:
-//#ifdef DEBUG
-//                    printf("/// PSeudo : [-] SIO control -> 0x%08x\n", control);
-//                    exit(0);
-//#endif
+#ifdef DEBUG
+                    printf("/// PSeudo : [-] SIO control -> 0x%08x\n", control);
+                    exit(0);
+#endif
                     break;
             }
         }

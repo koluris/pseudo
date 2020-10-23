@@ -298,21 +298,21 @@ void CstrGraphics::dataRead(uw *ptr, sw size) {
 }
 
 void CstrGraphics::photoMove(uw *packets) {
-    uh h_0 = (packets[1]    )&0x03ff,
-       v_0 = (packets[1]>>16)&0x01ff,
-       h_1 = (packets[2]    )&0x03ff,
-       v_1 = (packets[2]>>16)&0x01ff,
-       h_t = (packets[3]    )&0xffff,
-       v_t = (packets[3]>>16)&0xffff;
+    uh h_0 = (packets[1]) & 0x03ff;
+    uh v_0 = (packets[1] >> 16) & 0x01ff;
+    uh h_1 = (packets[2]) & 0x03ff;
+    uh v_1 = (packets[2] >> 16) & 0x01ff;
+    uh h_t = (packets[3]) & 0xffff;
+    uh v_t = (packets[3] >> 16) & 0xffff;
     
-    if ((h_0+h_t) > FRAME_W) h_t = FRAME_W - h_0;
-    if ((h_1+h_t) > FRAME_W) h_t = FRAME_W - h_1;
-    if ((v_0+v_t) > FRAME_H) v_t = FRAME_H - v_0;
-    if ((v_1+v_t) > FRAME_H) v_t = FRAME_H - v_1;
+    if ((h_0 + h_t) > FRAME_W) h_t = FRAME_W - h_0;
+    if ((h_1 + h_t) > FRAME_W) h_t = FRAME_W - h_1;
+    if ((v_0 + v_t) > FRAME_H) v_t = FRAME_H - v_0;
+    if ((v_1 + v_t) > FRAME_H) v_t = FRAME_H - v_1;
     
-    for (sw v=0; v<v_t; v++) {
-        for (sw h=0; h<h_t; h++) {
-            vram.ptr[(FRAME_W*(v_1+v))+(h_1+h)] = vram.ptr[(FRAME_W*(v_0+v))+(h_0+h)];
+    for (int v = 0; v < v_t; v++) {
+        for (int h = 0; h < h_t; h++) {
+            vram.ptr[(FRAME_W * (v_1 + v)) + (h_1 + h)] = vram.ptr[(FRAME_W * (v_0 + v)) + (h_0 + h)];
         }
     }
 }
