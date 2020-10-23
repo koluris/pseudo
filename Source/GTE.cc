@@ -148,19 +148,22 @@
 #define SZ(n) __oo(cop2d.uh, (n + 17), 0)
 
 #define LIM(a, min, max, bit) \
-    (((sw)(a) < min) ? (FLAG |= (1 << bit), min) : \
-    (((sw)(a) > max) ? (FLAG |= (1 << bit), max) : ((sw)(a))))
+    (((sw)(a) < min) ? (FLAG |= (bit), min) : \
+    (((sw)(a) > max) ? (FLAG |= (bit), max) : ((sw)(a))))
 
-#define limB1(a, l) LIM((a), !l * -32768, 32767, 24)
-#define limB2(a, l) LIM((a), !l * -32768, 32767, 23)
-#define limB3(a, l) LIM((a), !l * -32768, 32767, 22)
-#define limC1(a) LIM((a),       0,    255, 21)
-#define limC2(a) LIM((a),       0,    255, 20)
-#define limC3(a) LIM((a),       0,    255, 19)
-#define limD( a) LIM((a),       0,  65535, 18)
-#define limG1(a) LIM((a),   -1024,   1023, 14)
-#define limG2(a) LIM((a),   -1024,   1023, 13)
-#define limH( a) LIM((a),       0,   4096, 12)
+#define SETF(n) \
+    (1 << n)
+
+#define limB1(a, l) LIM((a), !l * -32768, 32767, SETF(24) | SETF(31))
+#define limB2(a, l) LIM((a), !l * -32768, 32767, SETF(23) | SETF(31))
+#define limB3(a, l) LIM((a), !l * -32768, 32767, SETF(22))
+#define limC1(a) LIM((a),     0,   255, SETF(21))
+#define limC2(a) LIM((a),     0,   255, SETF(20))
+#define limC3(a) LIM((a),     0,   255, SETF(19))
+#define limD( a) LIM((a),     0, 65535, SETF(18) | SETF(31))
+#define limG1(a) LIM((a), -1024,  1023, SETF(14) | SETF(31))
+#define limG2(a) LIM((a), -1024,  1023, SETF(13) | SETF(31))
+#define limH( a) LIM((a),     0,  4096, SETF(12))
 
 #define _SF(op) ((op >> 19) & 1)
 #define _MX(op) ((op >> 17) & 3)
@@ -200,7 +203,7 @@ void CstrCop2::reset() {
 
 uw CstrCop2::limE(uw result) {
     if (result > 131071) {
-        FLAG |= (1 << 17);
+        FLAG |= SETF(17) | SETF(31);
         return 131071;
     }
     return result;
