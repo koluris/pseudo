@@ -14,138 +14,138 @@
     base[(index << 2) + offset]
 
 // Cop2c
-#define R11R12 oooo(cop2c.sw__,  0)    /* Rotation matrix */
-#define R11    __oo(cop2c.sh__,  0, 0) /* Rotation matrix */
-#define R12    __oo(cop2c.sh__,  0, 1) /* Rotation matrix */
-#define R13    __oo(cop2c.sh__,  1, 0) /* Rotation matrix */
-#define R21    __oo(cop2c.sh__,  1, 1) /* Rotation matrix */
-#define R22R23 oooo(cop2c.sw__,  2)    /* Rotation matrix */
-#define R22    __oo(cop2c.sh__,  2, 0) /* Rotation matrix */
-#define R23    __oo(cop2c.sh__,  2, 1) /* Rotation matrix */
-#define R31    __oo(cop2c.sh__,  3, 0) /* Rotation matrix */
-#define R32    __oo(cop2c.sh__,  3, 1) /* Rotation matrix */
-#define R33    __oo(cop2c.sh__,  4, 0) /* Rotation matrix */
-#define TRX    oooo(cop2c.sw__,  5)    /* Translation vector (X) */
-#define TRY    oooo(cop2c.sw__,  6)    /* Translation vector (Y) */
-#define TRZ    oooo(cop2c.sw__,  7)    /* Translation vector (Z) */
-#define L11    __oo(cop2c.sh__,  8, 0) /* Lite source direction vector X 3 */
-#define L12    __oo(cop2c.sh__,  8, 1) /* Lite source direction vector X 3 */
-#define L13    __oo(cop2c.sh__,  9, 0) /* Lite source direction vector X 3 */
-#define L21    __oo(cop2c.sh__,  9, 1) /* Lite source direction vector X 3 */
-#define L22    __oo(cop2c.sh__, 10, 0) /* Lite source direction vector X 3 */
-#define L23    __oo(cop2c.sh__, 10, 1) /* Lite source direction vector X 3 */
-#define L31    __oo(cop2c.sh__, 11, 0) /* Lite source direction vector X 3 */
-#define L32    __oo(cop2c.sh__, 11, 1) /* Lite source direction vector X 3 */
-#define L33    __oo(cop2c.sh__, 12, 0) /* Lite source direction vector X 3 */
-#define RBK    oooo(cop2c.sw__, 13)    /* Peripheral color (R) */
-#define GBK    oooo(cop2c.sw__, 14)    /* Peripheral color (G) */
-#define BBK    oooo(cop2c.sw__, 15)    /* Peripheral color (B) */
-#define LR1    __oo(cop2c.sh__, 16, 0) /* Lite source color X 3 */
-#define LR2    __oo(cop2c.sh__, 16, 1) /* Lite source color X 3 */
-#define LR3    __oo(cop2c.sh__, 17, 0) /* Lite source color X 3 */
-#define LG1    __oo(cop2c.sh__, 17, 1) /* Lite source color X 3 */
-#define LG2    __oo(cop2c.sh__, 18, 0) /* Lite source color X 3 */
-#define LG3    __oo(cop2c.sh__, 18, 1) /* Lite source color X 3 */
-#define LB1    __oo(cop2c.sh__, 19, 0) /* Lite source color X 3 */
-#define LB2    __oo(cop2c.sh__, 19, 1) /* Lite source color X 3 */
-#define LB3    __oo(cop2c.sh__, 20, 0) /* Lite source color X 3 */
-#define RFC    oooo(cop2c.sw__, 21)    /* Far color (R) */
-#define GFC    oooo(cop2c.sw__, 22)    /* Far color (G) */
-#define BFC    oooo(cop2c.sw__, 23)    /* Far color (B) */
-#define OFX    oooo(cop2c.sw__, 24)    /* Screen offset (X) */
-#define OFY    oooo(cop2c.sw__, 25)    /* Screen offset (Y) */
-#define H      __oo(cop2c.sh__, 26, 0) /* Screen position */
-#define DQA    __oo(cop2c.sh__, 27, 0) /* Depth parameter A (coefficient) */
-#define DQB    oooo(cop2c.sw__, 28)    /* Depth parameter B (offset) */
-#define ZSF3   __oo(cop2c.sh__, 29, 0) /* Z scale factor */
-#define ZSF4   __oo(cop2c.sh__, 30, 0) /* Z scale factor */
-#define FLAG   oooo(cop2c.uw__, 31)    /* ! */
+#define R11R12 oooo(cop2c.sw,  0)    /* Rotation matrix */
+#define R11    __oo(cop2c.sh,  0, 0) /* Rotation matrix */
+#define R12    __oo(cop2c.sh,  0, 1) /* Rotation matrix */
+#define R13    __oo(cop2c.sh,  1, 0) /* Rotation matrix */
+#define R21    __oo(cop2c.sh,  1, 1) /* Rotation matrix */
+#define R22R23 oooo(cop2c.sw,  2)    /* Rotation matrix */
+#define R22    __oo(cop2c.sh,  2, 0) /* Rotation matrix */
+#define R23    __oo(cop2c.sh,  2, 1) /* Rotation matrix */
+#define R31    __oo(cop2c.sh,  3, 0) /* Rotation matrix */
+#define R32    __oo(cop2c.sh,  3, 1) /* Rotation matrix */
+#define R33    __oo(cop2c.sh,  4, 0) /* Rotation matrix */
+#define TRX    oooo(cop2c.sw,  5)    /* Translation vector (X) */
+#define TRY    oooo(cop2c.sw,  6)    /* Translation vector (Y) */
+#define TRZ    oooo(cop2c.sw,  7)    /* Translation vector (Z) */
+#define L11    __oo(cop2c.sh,  8, 0) /* Lite source direction vector X 3 */
+#define L12    __oo(cop2c.sh,  8, 1) /* Lite source direction vector X 3 */
+#define L13    __oo(cop2c.sh,  9, 0) /* Lite source direction vector X 3 */
+#define L21    __oo(cop2c.sh,  9, 1) /* Lite source direction vector X 3 */
+#define L22    __oo(cop2c.sh, 10, 0) /* Lite source direction vector X 3 */
+#define L23    __oo(cop2c.sh, 10, 1) /* Lite source direction vector X 3 */
+#define L31    __oo(cop2c.sh, 11, 0) /* Lite source direction vector X 3 */
+#define L32    __oo(cop2c.sh, 11, 1) /* Lite source direction vector X 3 */
+#define L33    __oo(cop2c.sh, 12, 0) /* Lite source direction vector X 3 */
+#define RBK    oooo(cop2c.sw, 13)    /* Peripheral color (R) */
+#define GBK    oooo(cop2c.sw, 14)    /* Peripheral color (G) */
+#define BBK    oooo(cop2c.sw, 15)    /* Peripheral color (B) */
+#define LR1    __oo(cop2c.sh, 16, 0) /* Lite source color X 3 */
+#define LR2    __oo(cop2c.sh, 16, 1) /* Lite source color X 3 */
+#define LR3    __oo(cop2c.sh, 17, 0) /* Lite source color X 3 */
+#define LG1    __oo(cop2c.sh, 17, 1) /* Lite source color X 3 */
+#define LG2    __oo(cop2c.sh, 18, 0) /* Lite source color X 3 */
+#define LG3    __oo(cop2c.sh, 18, 1) /* Lite source color X 3 */
+#define LB1    __oo(cop2c.sh, 19, 0) /* Lite source color X 3 */
+#define LB2    __oo(cop2c.sh, 19, 1) /* Lite source color X 3 */
+#define LB3    __oo(cop2c.sh, 20, 0) /* Lite source color X 3 */
+#define RFC    oooo(cop2c.sw, 21)    /* Far color (R) */
+#define GFC    oooo(cop2c.sw, 22)    /* Far color (G) */
+#define BFC    oooo(cop2c.sw, 23)    /* Far color (B) */
+#define OFX    oooo(cop2c.sw, 24)    /* Screen offset (X) */
+#define OFY    oooo(cop2c.sw, 25)    /* Screen offset (Y) */
+#define H      __oo(cop2c.sh, 26, 0) /* Screen position */
+#define DQA    __oo(cop2c.sh, 27, 0) /* Depth parameter A (coefficient) */
+#define DQB    oooo(cop2c.sw, 28)    /* Depth parameter B (offset) */
+#define ZSF3   __oo(cop2c.sh, 29, 0) /* Z scale factor */
+#define ZSF4   __oo(cop2c.sh, 30, 0) /* Z scale factor */
+#define FLAG   oooo(cop2c.uw, 31)    /* ! */
 
 // Cop2d
-#define VXY0   oooo(cop2d.uw__,  0)    /* Vector #0 (X/Y) */
-#define VX0    __oo(cop2d.sh__,  0, 0) /* Vector #0 (X) */
-#define VY0    __oo(cop2d.sh__,  0, 1) /* Vector #0 (Y) */
-#define VZ0    __oo(cop2d.sh__,  1, 0) /* Vector #0 (Z) */
-#define VXY1   oooo(cop2d.uw__,  2)    /* Vector #1 (X/Y) */
-#define VX1    __oo(cop2d.sh__,  2, 0) /* Vector #1 (X) */
-#define VY1    __oo(cop2d.sh__,  2, 1) /* Vector #1 (Y) */
-#define VZ1    __oo(cop2d.sh__,  3, 0) /* Vector #1 (Z) */
-#define VXY2   oooo(cop2d.uw__,  4)    /* Vector #2 (X/Y) */
-#define VX2    __oo(cop2d.sh__,  4, 0) /* Vector #2 (X) */
-#define VY2    __oo(cop2d.sh__,  4, 1) /* Vector #2 (Y) */
-#define VZ2    __oo(cop2d.sh__,  5, 0) /* Vector #2 (Z) */
-#define RGB    oooo(cop2d.uw__,  6)    /* Color data +  instruction */
-#define R      ___o(cop2d.ub__,  6, 0) /* Color (R) */
-#define G      ___o(cop2d.ub__,  6, 1) /* Color (G) */
-#define B      ___o(cop2d.ub__,  6, 2) /* Color (B) */
-#define CODE   ___o(cop2d.ub__,  6, 3) /*  instruction */
-#define OTZ    __oo(cop2d.uh__,  7, 0) /* Z-component value */
-#define IR0    __oo(cop2d.sh__,  8, 0) /* Intermediate value #0 */
-#define IR1    __oo(cop2d.sh__,  9, 0) /* Intermediate value #1 */
-#define IR2    __oo(cop2d.sh__, 10, 0) /* Intermediate value #2 */
-#define IR3    __oo(cop2d.sh__, 11, 0) /* Intermediate value #3 */
-#define SXY0   oooo(cop2d.uw__, 12)    /* Calc. result record #0 (X/Y) */
-#define SX0    __oo(cop2d.sh__, 12, 0) /* Calc. result record #0 (X) */
-#define SY0    __oo(cop2d.sh__, 12, 1) /* Calc. result record #0 (Y) */
-#define SXY1   oooo(cop2d.uw__, 13)    /* Calc. result record #1 (X/Y) */
-#define SX1    __oo(cop2d.sh__, 13, 0) /* Calc. result record #1 (X) */
-#define SY1    __oo(cop2d.sh__, 13, 1) /* Calc. result record #1 (Y) */
-#define SXY2   oooo(cop2d.uw__, 14)    /* Calc. result record #2 (X/Y) */
-#define SX2    __oo(cop2d.sh__, 14, 0) /* Calc. result record #2 (X) */
-#define SY2    __oo(cop2d.sh__, 14, 1) /* Calc. result record #2 (Y) */
-#define SXYP   oooo(cop2d.uw__, 15)    /* Calc. result set (X/Y) */
-#define SXP    __oo(cop2d.sh__, 15, 0) /* Calc. result set (X) */
-#define SYP    __oo(cop2d.sh__, 15, 1) /* Calc. result set (Y) */
-#define SZ0    __oo(cop2d.uh__, 16, 0) /* Calc. result record #0 (Z) */
-#define SZ1    __oo(cop2d.uh__, 17, 0) /* Calc. result record #1 (Z) */
-#define SZ2    __oo(cop2d.uh__, 18, 0) /* Calc. result record #2 (Z) */
-#define SZ3    __oo(cop2d.uh__, 19, 0) /* Calc. result record #3 (Z) */
-#define RGB0   oooo(cop2d.uw__, 20)    /* Calc. result record #0 (R/G/B) */
-#define R0     ___o(cop2d.ub__, 20, 0) /* Calc. result record #0 (R) */
-#define G0     ___o(cop2d.ub__, 20, 1) /* Calc. result record #0 (G) */
-#define B0     ___o(cop2d.ub__, 20, 2) /* Calc. result record #0 (B) */
-#define CODE0  ___o(cop2d.ub__, 20, 3) /* Calc. result record #0 (?) */
-#define RGB1   oooo(cop2d.uw__, 21)    /* Calc. result record #1 (R/G/B) */
-#define R1     ___o(cop2d.ub__, 21, 0) /* Calc. result record #1 (R) */
-#define G1     ___o(cop2d.ub__, 21, 1) /* Calc. result record #1 (G) */
-#define B1     ___o(cop2d.ub__, 21, 2) /* Calc. result record #1 (B) */
-#define CODE1  ___o(cop2d.ub__, 21, 3) /* Calc. result record #1 (?) */
-#define RGB2   oooo(cop2d.uw__, 22)    /* Calc. result record #2 (R/G/B) */
-#define R2     ___o(cop2d.ub__, 22, 0) /* Calc. result record #2 (R) */
-#define G2     ___o(cop2d.ub__, 22, 1) /* Calc. result record #2 (G) */
-#define B2     ___o(cop2d.ub__, 22, 2) /* Calc. result record #2 (B) */
-#define CODE2  ___o(cop2d.ub__, 22, 3) /* Calc. result record #2 (?) */
-#define RES1   oooo(cop2d.uw__, 23)    /* Reserved (access prohibited) */
-#define MAC0   oooo(cop2d.sw__, 24)    /* Sum of products #0 */
-#define MAC1   oooo(cop2d.sw__, 25)    /* Sum of products #1 */
-#define MAC2   oooo(cop2d.sw__, 26)    /* Sum of products #2 */
-#define MAC3   oooo(cop2d.sw__, 27)    /* Sum of products #3 */
-#define IRGB   oooo(cop2d.uw__, 28)    /* Color data input */
-#define ORGB   oooo(cop2d.uw__, 29)    /* Color data output */
-#define LZCS   oooo(cop2d.uw__, 30)    /* Lead zero/one count source data */
-#define LZCR   oooo(cop2d.uw__, 31)    /* Lead zero/one count process result */
+#define VXY0   oooo(cop2d.uw,  0)    /* Vector #0 (X/Y) */
+#define VX0    __oo(cop2d.sh,  0, 0) /* Vector #0 (X) */
+#define VY0    __oo(cop2d.sh,  0, 1) /* Vector #0 (Y) */
+#define VZ0    __oo(cop2d.sh,  1, 0) /* Vector #0 (Z) */
+#define VXY1   oooo(cop2d.uw,  2)    /* Vector #1 (X/Y) */
+#define VX1    __oo(cop2d.sh,  2, 0) /* Vector #1 (X) */
+#define VY1    __oo(cop2d.sh,  2, 1) /* Vector #1 (Y) */
+#define VZ1    __oo(cop2d.sh,  3, 0) /* Vector #1 (Z) */
+#define VXY2   oooo(cop2d.uw,  4)    /* Vector #2 (X/Y) */
+#define VX2    __oo(cop2d.sh,  4, 0) /* Vector #2 (X) */
+#define VY2    __oo(cop2d.sh,  4, 1) /* Vector #2 (Y) */
+#define VZ2    __oo(cop2d.sh,  5, 0) /* Vector #2 (Z) */
+#define RGB    oooo(cop2d.uw,  6)    /* Color data +  instruction */
+#define R      ___o(cop2d.ub,  6, 0) /* Color (R) */
+#define G      ___o(cop2d.ub,  6, 1) /* Color (G) */
+#define B      ___o(cop2d.ub,  6, 2) /* Color (B) */
+#define CODE   ___o(cop2d.ub,  6, 3) /*  instruction */
+#define OTZ    __oo(cop2d.uh,  7, 0) /* Z-component value */
+#define IR0    __oo(cop2d.sh,  8, 0) /* Intermediate value #0 */
+#define IR1    __oo(cop2d.sh,  9, 0) /* Intermediate value #1 */
+#define IR2    __oo(cop2d.sh, 10, 0) /* Intermediate value #2 */
+#define IR3    __oo(cop2d.sh, 11, 0) /* Intermediate value #3 */
+#define SXY0   oooo(cop2d.uw, 12)    /* Calc. result record #0 (X/Y) */
+#define SX0    __oo(cop2d.sh, 12, 0) /* Calc. result record #0 (X) */
+#define SY0    __oo(cop2d.sh, 12, 1) /* Calc. result record #0 (Y) */
+#define SXY1   oooo(cop2d.uw, 13)    /* Calc. result record #1 (X/Y) */
+#define SX1    __oo(cop2d.sh, 13, 0) /* Calc. result record #1 (X) */
+#define SY1    __oo(cop2d.sh, 13, 1) /* Calc. result record #1 (Y) */
+#define SXY2   oooo(cop2d.uw, 14)    /* Calc. result record #2 (X/Y) */
+#define SX2    __oo(cop2d.sh, 14, 0) /* Calc. result record #2 (X) */
+#define SY2    __oo(cop2d.sh, 14, 1) /* Calc. result record #2 (Y) */
+#define SXYP   oooo(cop2d.uw, 15)    /* Calc. result set (X/Y) */
+#define SXP    __oo(cop2d.sh, 15, 0) /* Calc. result set (X) */
+#define SYP    __oo(cop2d.sh, 15, 1) /* Calc. result set (Y) */
+#define SZ0    __oo(cop2d.uh, 16, 0) /* Calc. result record #0 (Z) */
+#define SZ1    __oo(cop2d.uh, 17, 0) /* Calc. result record #1 (Z) */
+#define SZ2    __oo(cop2d.uh, 18, 0) /* Calc. result record #2 (Z) */
+#define SZ3    __oo(cop2d.uh, 19, 0) /* Calc. result record #3 (Z) */
+#define RGB0   oooo(cop2d.uw, 20)    /* Calc. result record #0 (R/G/B) */
+#define R0     ___o(cop2d.ub, 20, 0) /* Calc. result record #0 (R) */
+#define G0     ___o(cop2d.ub, 20, 1) /* Calc. result record #0 (G) */
+#define B0     ___o(cop2d.ub, 20, 2) /* Calc. result record #0 (B) */
+#define CODE0  ___o(cop2d.ub, 20, 3) /* Calc. result record #0 (?) */
+#define RGB1   oooo(cop2d.uw, 21)    /* Calc. result record #1 (R/G/B) */
+#define R1     ___o(cop2d.ub, 21, 0) /* Calc. result record #1 (R) */
+#define G1     ___o(cop2d.ub, 21, 1) /* Calc. result record #1 (G) */
+#define B1     ___o(cop2d.ub, 21, 2) /* Calc. result record #1 (B) */
+#define CODE1  ___o(cop2d.ub, 21, 3) /* Calc. result record #1 (?) */
+#define RGB2   oooo(cop2d.uw, 22)    /* Calc. result record #2 (R/G/B) */
+#define R2     ___o(cop2d.ub, 22, 0) /* Calc. result record #2 (R) */
+#define G2     ___o(cop2d.ub, 22, 1) /* Calc. result record #2 (G) */
+#define B2     ___o(cop2d.ub, 22, 2) /* Calc. result record #2 (B) */
+#define CODE2  ___o(cop2d.ub, 22, 3) /* Calc. result record #2 (?) */
+#define RES1   oooo(cop2d.uw, 23)    /* Reserved (access prohibited) */
+#define MAC0   oooo(cop2d.sw, 24)    /* Sum of products #0 */
+#define MAC1   oooo(cop2d.sw, 25)    /* Sum of products #1 */
+#define MAC2   oooo(cop2d.sw, 26)    /* Sum of products #2 */
+#define MAC3   oooo(cop2d.sw, 27)    /* Sum of products #3 */
+#define IRGB   oooo(cop2d.uw, 28)    /* Color data input */
+#define ORGB   oooo(cop2d.uw, 29)    /* Color data output */
+#define LZCS   oooo(cop2d.uw, 30)    /* Lead zero/one count source data */
+#define LZCR   oooo(cop2d.uw, 31)    /* Lead zero/one count process result */
 
-#define MX11(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 0), 0) : 0)
-#define MX12(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 0), 1) : 0)
-#define MX13(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 1), 0) : 0)
-#define MX21(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 1), 1) : 0)
-#define MX22(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 2), 0) : 0)
-#define MX23(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 2), 1) : 0)
-#define MX31(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 3), 0) : 0)
-#define MX32(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 3), 1) : 0)
-#define MX33(n) (n < 3 ? __oo(cop2c.sh__, ((n << 3) + 4), 0) : 0)
+#define MX11(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 0), 0) : 0)
+#define MX12(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 0), 1) : 0)
+#define MX13(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 1), 0) : 0)
+#define MX21(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 1), 1) : 0)
+#define MX22(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 2), 0) : 0)
+#define MX23(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 2), 1) : 0)
+#define MX31(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 3), 0) : 0)
+#define MX32(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 3), 1) : 0)
+#define MX33(n) (n < 3 ? __oo(cop2c.sh, ((n << 3) + 4), 0) : 0)
 
-#define CV1( n) (n < 3 ? oooo(cop2c.sw__, ((n << 3) + 5)) : 0)
-#define CV2( n) (n < 3 ? oooo(cop2c.sw__, ((n << 3) + 6)) : 0)
-#define CV3( n) (n < 3 ? oooo(cop2c.sw__, ((n << 3) + 7)) : 0)
+#define CV1( n) (n < 3 ? oooo(cop2c.sw, ((n << 3) + 5)) : 0)
+#define CV2( n) (n < 3 ? oooo(cop2c.sw, ((n << 3) + 6)) : 0)
+#define CV3( n) (n < 3 ? oooo(cop2c.sw, ((n << 3) + 7)) : 0)
 
-#define VX(  n) (n < 3 ? __oo(cop2d.sh__, ((n << 1) + 0), 0) : __oo(cop2d.sh__,  9, 0))
-#define VY(  n) (n < 3 ? __oo(cop2d.sh__, ((n << 1) + 0), 1) : __oo(cop2d.sh__, 10, 0))
-#define VZ(  n) (n < 3 ? __oo(cop2d.sh__, ((n << 1) + 1), 0) : __oo(cop2d.sh__, 11, 0))
+#define VX(  n) (n < 3 ? __oo(cop2d.sh, ((n << 1) + 0), 0) : __oo(cop2d.sh,  9, 0))
+#define VY(  n) (n < 3 ? __oo(cop2d.sh, ((n << 1) + 0), 1) : __oo(cop2d.sh, 10, 0))
+#define VZ(  n) (n < 3 ? __oo(cop2d.sh, ((n << 1) + 1), 0) : __oo(cop2d.sh, 11, 0))
 
-#define SX(n) __oo(cop2d.sh__, (n + 12), 0)
-#define SY(n) __oo(cop2d.sh__, (n + 12), 1)
-#define SZ(n) __oo(cop2d.uh__, (n + 17), 0)
+#define SX(n) __oo(cop2d.sh, (n + 12), 0)
+#define SY(n) __oo(cop2d.sh, (n + 12), 1)
+#define SZ(n) __oo(cop2d.uh, (n + 17), 0)
 
 #define LIM(a, min, max, bit) \
     (((sw)(a) < min) ? (FLAG |= (1 << bit), min) : \
@@ -216,7 +216,7 @@ void CstrCop2::execute(uw code) {
                     return;
 
                 case 2: // CFC2
-                    cpu.base[rt] = oooo(cop2c.uw__, rd);
+                    cpu.base[rt] = oooo(cop2c.uw, rd);
                     return;
 
                 case 4: // MTC2
@@ -228,7 +228,7 @@ void CstrCop2::execute(uw code) {
                     return;
             }
 
-            //psx.error('COP2 Basic ' + (rs & 7));
+            printx("COP2 Basic %d", (rs & 7));
             return;
             
         /* pdx-068, ff9, va */
@@ -680,61 +680,59 @@ void CstrCop2::execute(uw code) {
             return;
     }
     
-    //console.info('COP2 Execute ' + (code & 0x3f));
+    printx("COP2 Execute %d", (code & 0x3f));
 }
 
-uw CstrCop2::MFC2(uw addr) {
-    switch (addr) {
-        case 1:
-        case 3:
-        case 5:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-            oooo(cop2d.sw__, addr) = __oo(cop2d.sh__, addr, 0);
+uw CstrCop2::MFC2(uw addr) { // Cop2d read
+    switch(addr) {
+        case  1: // V0(z)
+        case  3: // V1(z)
+        case  5: // V2(z)
+        case  8: // IR0
+        case  9: // IR1
+        case 10: // IR2
+        case 11: // IR3
+            oooo(cop2d.sw, addr) = __oo(cop2d.sh, addr, 0);
             break;
             
-        case 7:
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-            oooo(cop2d.uw__, addr) = __oo(cop2d.uh__, addr, 0);
+        case  7: // OTZ
+        case 16: // SZ0
+        case 17: // SZ1
+        case 18: // SZ2
+        case 19: // SZ3
+            oooo(cop2d.uw, addr) = __oo(cop2d.uh, addr, 0);
             break;
             
-        case 15:
-            oooo(cop2d.uw__, addr) = SXY2;
+        case 15: // SXY3
+            printx("GTE SXY3 %d", 0);
             break;
             
-        case 28:
-        case 29:
-            oooo(cop2d.uw__, addr) = LIM(IR1 >> 7, 0, 0x1f, 0) |
-                                    (LIM(IR2 >> 7, 0, 0x1f, 0) << 5) |
-                                    (LIM(IR3 >> 7, 0, 0x1f, 0) << 10);
+        case 28: // IRGB
+        case 29: // ORGB
+            oooo(cop2d.uw, addr) = LIM(IR1 >> 7, 0, 0x1f, 0) | (LIM(IR2 >> 7, 0, 0x1f, 0) << 5) | (LIM(IR3 >> 7, 0, 0x1f, 0) << 10);
             break;
     }
     
-    return oooo(cop2d.uw__, addr);
+    return oooo(cop2d.uw, addr);
 }
 
-void CstrCop2::MTC2(uw addr, uw data) {
-    switch (addr) {
-        case 15:
+void CstrCop2::MTC2(uw addr, uw data) { // Cop2d write
+    switch(addr) {
+        case 15: // SXY3
             SXY0 = SXY1;
             SXY1 = SXY2;
             SXY2 = data;
             SXYP = data;
-            break;
+            return;
             
-        case 28:
+        case 28: // IRGB
             IRGB = data;
             IR1 = (data & 0x1f) << 7;
             IR2 = (data & 0x3e0) << 2;
             IR3 = (data & 0x7c00) >> 3;
-            break;
+            return;
             
-        case 30:
+        case 30: // LZCS
             {
                 int a;
                 LZCS = data;
@@ -753,33 +751,33 @@ void CstrCop2::MTC2(uw addr, uw data) {
                     LZCR = 32;
                 }
             }
-            break;
-            
-        case 31:
             return;
             
-        default:
-            oooo(cop2d.uw__, addr) = data;
+        case 29: // ORGB
+        case 31: // LZCR
+            return;
     }
+    
+    oooo(cop2d.uw, addr) = data;
 }
 
-void CstrCop2::CTC2(uw addr, uw data) {
-    switch (addr) {
-        case 4:
-        case 12:
-        case 20:
-        case 26:
-        case 27:
-        case 29:
-        case 30:
+void CstrCop2::CTC2(uw addr, uw data) { // Cop2c write
+    switch(addr) {
+        case  4: // RT33
+        case 12: // L33
+        case 20: // LR33
+        case 26: // H
+        case 27: // DQA
+        case 29: // ZSF3
+        case 30: // ZSF4
             data = (sw)(sh)data;
             break;
             
-        case 31:
-            data = data & 0x7ffff000;
-            if (data & 0x7f87e000) data |= 0x80000000;
+        /* unused */
+        case 31: // FLAG
+            printx("GTE FLAG %d", 0);
             break;
     }
     
-    oooo(cop2c.uw__, addr) = data;
+    oooo(cop2c.uw, addr) = data;
 }

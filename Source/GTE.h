@@ -1,12 +1,12 @@
 class CstrCop2 {
     union pair {
-        uw uw__[32 * 1];
-        uh uh__[32 * 2];
-        ub ub__[32 * 4];
+        uw uw[32 * 1];
+        uh uh[32 * 2];
+        ub ub[32 * 4];
         
-        sw sw__[32 * 1];
-        sh sh__[32 * 2];
-        sb sb__[32 * 4];
+        sw sw[32 * 1];
+        sh sh[32 * 2];
+        sb sb[32 * 4];
     } cop2c, cop2d;
     
     uw divide(sh, uh);
