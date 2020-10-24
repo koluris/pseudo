@@ -144,12 +144,13 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     // Disable state
     opaqueClipState(false);
     
+    // Accommodate VRAM's texture size
     GLMatrixMode(GL_TEXTURE);
-    GLPushMatrix();
     GLID();
     GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
-    GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
+    
     GLEnable(GL_TEXTURE_2D);
+    GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
     
     if (vs.isVideo24Bit) {
         X = (X * 2) / 3;
@@ -174,7 +175,10 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
 #endif
     
     GLDisable(GL_TEXTURE_2D);
-    GLPopMatrix();
+    
+    // Revert to normal texture mode
+    GLID();
+    GLScalef(1.0 / 256, 1.0 / 256, 1.0);
     
     // Enable state
     opaqueClipState(true);

@@ -57,14 +57,11 @@ typedef int8_t  sb; // bite
 #define GLDisable           glDisable
 #define GLEnable            glEnable
 #define GLEnd               glEnd
-#define GLFlush             glFlush
 #define GLGenTextures       glGenTextures
 #define GLID                glLoadIdentity
 #define GLLineWidth         glLineWidth
 #define GLMatrixMode        glMatrixMode
 #define GLOrtho             glOrtho
-#define GLPopMatrix         glPopMatrix
-#define GLPushMatrix        glPushMatrix
 #define GLRecti             glRecti
 #define GLScalef            glScalef
 #define GLStart             glBegin
