@@ -316,8 +316,8 @@ void CstrGraphics::photoWrite(uw *packets) {
     vrop.v.start = vrop.v.p = p[3];
     vrop.h.end   = vrop.h.p + p[4];
     vrop.v.end   = vrop.v.p + p[5];
-    vrop.pvram   = &vram.ptr[vrop.v.p * FRAME_W];
     
+    vrop.pvram = &vram.ptr[vrop.v.p * FRAME_W];
     modeDMA = GPU_DMA_VRAM2MEM;
     
     ret.status |= GPU_STAT_READYFORVRAM;
@@ -326,15 +326,13 @@ void CstrGraphics::photoWrite(uw *packets) {
 void CstrGraphics::photoRead(uw *packets) {
     uh *p = (uh *)packets;
     
-    vrop.enabled = true;
-    vrop.raw     = new uw[p[4] * p[5]];
-    
     vrop.h.start = vrop.h.p = p[2];
     vrop.v.start = vrop.v.p = p[3];
     vrop.h.end   = vrop.h.p + p[4];
     vrop.v.end   = vrop.v.p + p[5];
-    //vrop.pvram   = &vram.ptr[vrop.v.p * FRAME_W];
     
+    vrop.enabled = true;
+    vrop.raw = new uw[p[4] * p[5]];
     modeDMA = GPU_DMA_MEM2VRAM;
     
     // Cache invalidation
