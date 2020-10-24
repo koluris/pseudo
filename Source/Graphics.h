@@ -85,7 +85,7 @@ class CstrGraphics {
     
 public:
     CstrGraphics() {
-        vram.ptr = new uh[vram.size = FRAME_W * FRAME_H * 2]; // 2?
+        vram.ptr = new uh[vram.size = FRAME_W * FRAME_H * 2];
     }
     
     ~CstrGraphics() {

@@ -93,7 +93,7 @@ class CstrDraw {
     
 public:
     void init(sh, sh, int);
-    void swapBuffers();
+    void swapBuffers(bool);
     void resize(sh, sh);
     void outputVRAM(uw *, sh, sh, sh, sh);
     void primitive(uw, uw *);

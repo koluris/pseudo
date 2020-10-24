@@ -39,8 +39,7 @@ void CstrDraw::reset() {
     // Redraw
     resize(window.h, window.v);
     GLClearColor(0.1, 0.1, 0.1, 0);
-    GLClear(GL_COLOR_BUFFER_BIT);
-    swapBuffers();
+    swapBuffers(true);
     
     // 24-bit texture
     cache.createTexture(&fb24tex, FRAME_W, FRAME_H);
@@ -49,7 +48,11 @@ void CstrDraw::reset() {
     cache.createTexture(&fb16tex, FRAME_W, FRAME_H);
 }
 
-void CstrDraw::swapBuffers() {
+void CstrDraw::swapBuffers(bool clear) {
+    if (clear) {
+        GLClear(GL_COLOR_BUFFER_BIT);
+    }
+    
 #ifdef APPLE_MACOS
     [[app.openGLView openGLContext] flushBuffer];
 #elif  APPLE_IOS
@@ -221,7 +224,6 @@ void CstrDraw::primitive(uw addr, uw *packets) {
 #elif APPLE_IOS
                         // TODO
 #endif
-                        
                         opaqueClipState(true);
                     }
                     return;

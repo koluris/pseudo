@@ -25,41 +25,9 @@ void CstrGraphics::reset() {
     isVideo24Bit = false;
 }
 
-#define NTSC \
-    (CLOCKS_PER_SEC / 59.94)
-
-#define PAL \
-    (CLOCKS_PER_SEC / 50.00)
-
-// Function "mach_absolute_time()" returns Nanoseconds
-
-// 1,000,000,000 Nano
-// 1,000,000     Micro
-// 1,000         Milli
-// 1             Base unit, 1 second
-
-double then = 1.0;
-
 void CstrGraphics::refresh() {
     ret.status ^= GPU_STAT_ODDLINES;
-    
-    if (ret.disabled) {
-        GLClear(GL_COLOR_BUFFER_BIT);
-        draw.swapBuffers();
-    }
-    
-    // FPS throttle
-#if 0
-    double now = mach_absolute_time() / 1000.0;
-    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
-    
-    if (then > now) {
-        usleep(then - now);
-    }
-#endif
-    
-    // Draw
-    draw.swapBuffers();
+    draw.swapBuffers(ret.disabled);
 }
 
 void CstrGraphics::write(uw addr, uw data) {
