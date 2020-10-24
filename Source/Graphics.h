@@ -69,7 +69,7 @@ class CstrGraphics {
     struct {
         bool enabled;
         uw *raw;
-        uh *pvram;
+        uw *pvram;
         
         struct {
             sw start, end, p;

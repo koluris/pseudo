@@ -4,7 +4,7 @@ class CstrCache {
         TEX_04BIT,
         TEX_08BIT,
         TEX_15BIT,
-        TEX_15BIT_2
+        TEX_15BIT_2,
         
         // Maximum texture cache
         TCACHE_MAX = 384
