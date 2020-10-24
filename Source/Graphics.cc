@@ -271,11 +271,11 @@ void CstrGraphics::dataRead(uw *ptr, sw size) {
         ret.status &= (~(0x14000000));
         
         do {
-            *ptr++ = vrop.pvram[vrop.h.p >> 1];
+            *ptr++ = *(uw *)&vram.ptr[vrop.pvram + vrop.h.p];
             
             if ((vrop.h.p += 2) >= vrop.h.end) {
                 vrop.h.p = vrop.h.start;
-                vrop.pvram += FRAME_W / 2;
+                vrop.pvram += FRAME_W;
                 
                 if (++vrop.v.p >= vrop.v.end) {
                     modeDMA = GPU_DMA_NONE;
@@ -317,7 +317,7 @@ void CstrGraphics::photoWrite(uw *packets) {
     vrop.h.end   = vrop.h.p + p[4];
     vrop.v.end   = vrop.v.p + p[5];
     
-    vrop.pvram = (uw *)&vram.ptr[vrop.v.p * FRAME_W];
+    vrop.pvram = p[3] * FRAME_W;
     modeDMA = GPU_DMA_VRAM2MEM;
     
     ret.status |= GPU_STAT_READYFORVRAM;

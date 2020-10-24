@@ -68,8 +68,8 @@ class CstrGraphics {
     // VRAM operations
     struct {
         bool enabled;
+        uw pvram;
         uw *raw;
-        uw *pvram;
         
         struct {
             sw start, end, p;
