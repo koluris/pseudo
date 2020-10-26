@@ -29,7 +29,6 @@ class CstrMotionDecoder {
     //void macroBlock(sw *, sw, sw, sw);
     void idct(sw *, sw);
     void uv15(sw *, uh *);
-    void uv24(sw *, ub *);
     
 public:
     void reset();
