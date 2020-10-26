@@ -13,19 +13,21 @@
 #define    MULF(A) (((sw)0xFFFFFD25 * (A)) >> 10)
 
 #define    RUNOF(a) ((a)>>10)
-#define    VALOF(a) ((sw)(((a)<<22)>>22))
+
+#define VALOF(a) \
+    ((sw)(((a) << 22) >> 22))
 
 
 CstrMotionDecoder mdec;
 
 void CstrMotionDecoder::reset() {
-    rlp = (uh *)&mem.ram.ptr[0x100000];
-    status = cmd = 0;
+    cmd    = 0;
+    status = 0;
     
-    for (sw k=0; k<256; k++) {
-        rtbl[k+0x000] = 0;
-        rtbl[k+0x100] = k;
-        rtbl[k+0x200] = 255;
+    for (int k = 0; k < 256; k++) {
+        rtbl[k + 0x000] = 0;
+        rtbl[k + 0x100] = k;
+        rtbl[k + 0x200] = 255;
     }
 }
 
@@ -33,10 +35,6 @@ void CstrMotionDecoder::write(uw addr, uw data) {
     switch(addr & 0xf) {
         case 0:
             cmd = data;
-            
-//            if ((data&0xf5ff0000) == 0x30000000) {
-//                len = data&0xffff;
-//            }
             return;
             
         case 4:
@@ -62,9 +60,7 @@ uw CstrMotionDecoder::read(uw addr) {
     return 0;
 }
 
-sw iq_y[64], iq_uv[64];
-
-void CstrMotionDecoder::MacroBlock(sw *block, sw kh, sw sh) {
+void CstrMotionDecoder::macroBlock(sw *block, sw kh, sw sh) {
     sw index = 0;
     for (sw k=0; k<8; k++, (sh) ? block+=8 : block++) {
         if((block[index + kh*1]|
@@ -119,52 +115,19 @@ void CstrMotionDecoder::MacroBlock(sw *block, sw kh, sw sh) {
 
 void CstrMotionDecoder::idct(sw *block, sw k) {
     if (k == 0) {
-        sw val = block[0]>>5;
+        sw val = block[0] >> 5;
 
-        for (sw i=0; i<64; i++) {
+        for (int i = 0; i < 64; i++) {
             block[i] = val;
         }
         return;
     }
-    MacroBlock(block, 8, 0);
-    MacroBlock(block, 1, 5);
+    
+    macroBlock(block, 8, 0);
+    macroBlock(block, 1, 5);
 }
 
-void CstrMotionDecoder::TabInit(sw *iqtab, ub *iq_y) {
-//    for (sw i=0; i<64; i++) {
-//        iqtab[i] = iq_y[i]*aanscales[zscan[i]]>>12;
-//    }
-}
-
-uh *CstrMotionDecoder::rl2blk(sw *blk, uh *mdec_rl) {
-//    sw k,q_scale,rl;
-//    sw *iqtab;
-//
-//    memset(blk, 0, 6*64*4);
-//    iqtab = iq_uv;
-//
-//    for (sw i=0; i<6; i++) {
-//
-//        if (i>1) iqtab = iq_y;
-//
-//        rl = *mdec_rl++;
-//        q_scale = rl>>10;
-//        blk[0] = iqtab[0]*VALOF(rl);
-//        k = 0;
-//
-//        for(;;) {
-//            rl = *mdec_rl++; if (rl==0xfe00) break;
-//            k += (rl>>10)+1;if (k >  63) break;
-//            blk[zscan[k]] = (iqtab[k] * q_scale * VALOF(rl)) >> 3;
-//        }
-//        idct(blk, k+1);
-//
-//        blk+=64;
-//    }
-    return mdec_rl;
-}
-
-void CstrMotionDecoder::Yuv15(sw *Block, uh *IMAGE) {
+void CstrMotionDecoder::uv15(sw *Block, uh *IMAGE) {
 //    sw GETY;
 //    sw CB,CR,R,G,B;
 //
@@ -205,7 +168,7 @@ void CstrMotionDecoder::Yuv15(sw *Block, uh *IMAGE) {
 //    }
 }
 
-void CstrMotionDecoder::Yuv24(sw *Block, ub *IMAGE) {
+void CstrMotionDecoder::uv24(sw *Block, ub *IMAGE) {
     sw GETY;
     sw CB, CR, R, G, B;
     
@@ -247,10 +210,11 @@ void CstrMotionDecoder::Yuv24(sw *Block, ub *IMAGE) {
 }
 
 void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
-    ub *p = &mem.ram.ptr[dma->madr&(mem.ram.size-1)];
-    sw size = (dma->bcr>>16)*(dma->bcr&0xffff);
+    //ub *p = &mem.ram.ptr[dma->madr&(mem.ram.size-1)];
+    sw size = (dma->bcr >> 16) * (dma->bcr & 0xffff);
+    static uw maddr = 0;
     
-    switch (dma->chcr&0xfff) {
+    switch (dma->chcr & 0xfff) {
         case 0x200:
         {
             if (cmd & 0x8000000) { // YUV15
@@ -260,24 +224,25 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                 uh *im = (uh *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
                 
                 for (; size > 0; size -= 384 / 2, im += 384) {
-                    memset(&blk, 0, 6 * 64 * 4);
+                    memset(&blk, 0, sizeof(blk));
                     sw *iqtab = iq_uv;
                     
                     for (sw i = 0, blkindex = 0; i < 6; i++, blkindex += 64) {
-                        
                         if (i > 1) {
                             iqtab = iq_y;
                         }
                         
-                        sw rl = *rlp;
-                        rlp++;
+                        sw rl = *(uh *)&mem.ram.ptr[maddr & (mem.ram.size - 1)];
+                        maddr += 2;
+                        
                         sw q_scale = rl >> 10;
                         blk[blkindex + 0] = iqtab[0] * VALOF(rl);
-                        sw k = 0;
                         
+                        sw k = 0;
                         for(;;) {
-                            rl = *rlp;
-                            rlp++;
+                            sw rl = *(uh *)&mem.ram.ptr[maddr & (mem.ram.size - 1)];
+                            maddr += 2;
+                            
                             if (rl == 0xfe00) {
                                 break;
                             }
@@ -290,27 +255,28 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                         idct(&blk[blkindex], k + 1);
                     }
                     
-                    Yuv24(blk, (ub *)im);
+                    uv24(blk, (ub *)im);
                 }
             }
-            break;
+            return;
         }
             
         case 0x201:
             if (cmd == 0x40000001) {
                 ub *ramp = (ub *)&mem.ram.ptr[(dma->madr) & (mem.ram.size - 1)];
-                for (sw i=0; i<64; i++) {
+                for (int i = 0; i < 64; i++) {
                     iq_y[i] = (ramp[i] * aanscales[zscan[i]]) >> 12;
                 }
                 
                 ramp = (ub *)&mem.ram.ptr[(dma->madr + 64) & (mem.ram.size - 1)];
-                for (sw i=0; i<64; i++) {
+                for (int i = 0; i < 64; i++) {
                     iq_uv[i] = (ramp[i] * aanscales[zscan[i]]) >> 12;
                 }
             }
-            if ((cmd&0xf5ff0000) == 0x30000000) {
-                rlp = (uh *)&mem.ram.ptr[dma->madr&(mem.ram.size-1)];
+            
+            if ((cmd & 0xf5ff0000) == 0x30000000) {
+                maddr = dma->madr;
             }
-            break;
+            return;
     }
 }
