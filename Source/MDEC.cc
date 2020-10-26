@@ -240,7 +240,7 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                         
                         sw k = 0;
                         for(;;) {
-                            sw rl = *(uh *)&mem.ram.ptr[maddr & (mem.ram.size - 1)];
+                            rl = *(uh *)&mem.ram.ptr[maddr & (mem.ram.size - 1)];
                             maddr += 2;
                             
                             if (rl == 0xfe00) {
