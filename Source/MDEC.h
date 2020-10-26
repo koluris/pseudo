@@ -30,7 +30,7 @@ class CstrMotionDecoder {
     
 public:
     sw len;
-    uh *rl;
+    uh *rlp;
     uw cmd, status;
     ub rtbl[0x300];
     

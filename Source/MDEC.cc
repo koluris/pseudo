@@ -19,7 +19,7 @@
 CstrMotionDecoder mdec;
 
 void CstrMotionDecoder::reset() {
-    rl = (uh *)&mem.ram.ptr[0x100000];
+    rlp = (uh *)&mem.ram.ptr[0x100000];
     status = cmd = 0;
     
     for (sw k=0; k<256; k++) {
@@ -247,28 +247,46 @@ void CstrMotionDecoder::Yuv24(sw *Block, ub *IMAGE) {
 
 void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
     ub *p = &mem.ram.ptr[dma->madr&(mem.ram.size-1)];
-    sw z = (dma->bcr>>16)*(dma->bcr&0xffff);
+    sw size = (dma->bcr>>16)*(dma->bcr&0xffff);
     
     switch (dma->chcr&0xfff) {
         case 0x200:
         {
-            sw blocksize, blk[384];
-            uh *im = (uh *)p;
-            
-            if (cmd&0x08000000) {
-                blocksize = 256;
+            if (cmd & 0x8000000) { // YUV15
             }
-            else {
-                blocksize = 384;
-            }
-            
-            for (; z>0; z-=blocksize/2, im+=blocksize) {
-                rl = rl2blk(blk, rl);
+            else { // YUV24
+                sw blk[384];
+                uh *im = (uh *)p;
                 
-                if (cmd&0x8000000) {
-                    Yuv15(blk, im);
-                }
-                else {
+                for (; size > 0; size -= 384 / 2, im += 384) {
+                    memset(&blk, 0, 6 * 64 * 4);
+                    sw *iqtab = iq_uv;
+                    
+                    for (int i = 0, blkindex = 0; i < 6; i++, blkindex += 64) {
+                        
+                        if (i > 1) {
+                            iqtab = iq_y;
+                        }
+                        
+                        sw rl = *rlp++;
+                        sw q_scale = rl >> 10;
+                        blk[blkindex + 0] = iqtab[0] * VALOF(rl);
+                        sw k = 0;
+                        
+                        for(;;) {
+                            rl = *rlp++;
+                            if (rl == 0xfe00) {
+                                break;
+                            }
+                            k += (rl >> 10) + 1;
+                            if (k > 63) {
+                                break;
+                            }
+                            blk[blkindex + zscan[k]] = (iqtab[k] * q_scale * VALOF(rl)) >> 3;
+                        }
+                        idct(&blk[blkindex], k + 1);
+                    }
+                    
                     Yuv24(blk, (ub *)im);
                 }
             }
@@ -281,7 +299,7 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                 TabInit(iq_uv, p+64);
             }
             if ((cmd&0xf5ff0000) == 0x30000000) {
-                rl = (uh *)p;
+                rlp = (uh *)p;
             }
             break;
     }
