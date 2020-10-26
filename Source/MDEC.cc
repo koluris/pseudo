@@ -268,7 +268,7 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                             for (int i = 0; i < 64; i++) {
                                 blk[blkindex + i] = val;
                             }
-                            return;
+                            continue;
                         }
                         
                         macroBlock(blk, blkindex, 8, 0);
