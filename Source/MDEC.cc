@@ -1,8 +1,5 @@
 #include "Global.h"
 
-//#define MAKERGB15(R, G, B) ((((R)>>3)<<10)|(((G)>>3)<<5)|((B)>>3))
-//#define RGB15CL(N) IMAGE[N] = MAKERGB15(ROUND(GETY + R), ROUND(GETY + G), ROUND(GETY + B));
-
 #define VALOF(a) \
     ((sw)(((a) << 22) >> 22))
 
@@ -22,10 +19,9 @@
     rtbl[(a) + 128 + 256]
 
 #define RGB24CL(a) \
-    tex[a + 0] = ROUND(getY + B); \
-    tex[a + 1] = ROUND(getY + G); \
-    tex[a + 2] = ROUND(getY + R); \
-
+    tex[a + 0] = ROUND(data + iB); \
+    tex[a + 1] = ROUND(data + iG); \
+    tex[a + 2] = ROUND(data + iR); \
 
 CstrMotionDecoder mdec;
 
@@ -125,51 +121,9 @@ uw CstrMotionDecoder::read(uw addr) {
     } \
 }
 
-void CstrMotionDecoder::uv15(sw *Block, uh *IMAGE) {
-//    sw GETY;
-//    sw CB,CR,R,G,B;
-//
-//    sw *YYBLK = Block + 64 * 2;
-//    sw *CBBLK = Block;
-//    sw *CRBLK = Block + 64;
-//
-//    for (sw Y=0; Y<16; Y+=2, CRBLK+=4, CBBLK+=4, YYBLK+=8, IMAGE+=24) {
-//        if (Y == 8) {
-//            YYBLK = YYBLK + 64;
-//        }
-//
-//        for (sw X=0; X<4; X++, IMAGE+=2, CRBLK++, CBBLK++, YYBLK+=2) {
-//            CR = *CRBLK;
-//            CB = *CBBLK;
-//
-//            R = MULR(CR);
-//            G = MULG(CB) + MULF(CR);
-//            B = MULB(CB);
-//
-//            GETY = YYBLK[0]; RGB15CL(0x00);
-//            GETY = YYBLK[1]; RGB15CL(0x01);
-//            GETY = YYBLK[8]; RGB15CL(0x10);
-//            GETY = YYBLK[9]; RGB15CL(0x11);
-//
-//            CR = *(CRBLK + 4);
-//            CB = *(CBBLK + 4);
-//
-//            R = MULR(CR);
-//            G = MULG(CB) + MULF(CR);
-//            B = MULB(CB);
-//
-//            GETY = YYBLK[64 + 0]; RGB15CL(0x08);
-//            GETY = YYBLK[64 + 1]; RGB15CL(0x09);
-//            GETY = YYBLK[64 + 8]; RGB15CL(0x18);
-//            GETY = YYBLK[64 + 9]; RGB15CL(0x19);
-//        }
-//    }
-}
-
 void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
-    //ub *p = &mem.ram.ptr[dma->madr&(mem.ram.size-1)];
     sw size = (dma->bcr >> 16) * (dma->bcr & 0xffff);
-    static uw maddr = 0;
+    static uw maddr = 0; // Needs to be class variable
     
     switch (dma->chcr & 0xfff) {
         case 0x200:
@@ -178,14 +132,15 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                 printf("Yesh\n");
             }
             else { // YUV24
-                sw blk[384];
+                sw blk[384]; // Needs to be class variable
                 uw im = dma->madr;
                 
                 for (; size > 0; size -= 384 / 2, im += 384 * 2) {
                     memset(&blk, 0, sizeof(blk));
                     sw *iqtab = iq_uv;
+                    sw blkindex = 0;
                     
-                    for (sw i = 0, blkindex = 0; i < 6; i++, blkindex += 64) {
+                    for (int i = 0; i < 6; i++) {
                         if (i > 1) {
                             iqtab = iq_y;
                         }
@@ -194,7 +149,7 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                         maddr += 2;
                         
                         sw q_scale = rl >> 10;
-                        blk[blkindex + 0] = iqtab[0] * VALOF(rl);
+                        blk[blkindex] = iqtab[0] * VALOF(rl);
                         
                         sw k = 0;
                         for(;;) {
@@ -212,56 +167,69 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                         }
                         
                         if ((k + 1) == 0) {
-                            sw val = blk[blkindex + 0] >> 5;
-
                             for (int i = 0; i < 64; i++) {
-                                blk[blkindex + i] = val;
+                                blk[blkindex + i] = blk[blkindex] >> 5;
                             }
                             continue;
                         }
                         
+                        // Macro blocks
                         macroBlock(blk, blkindex, 8, 0);
                         macroBlock(blk, blkindex, 1, 5);
+                        
+                        blkindex += 64;
                     }
                     
-                    uw kaka = im;
+                    // YUV24
+                    uw immmm = im;
                     
-                    sw CBBLK = 0;
-                    sw CRBLK = 64;
-                    sw YYBLK = 64 * 2;
+                    sw indexCb = 0;
+                    sw indexCr = 64;
+                    sw indexY  = 64 * 2;
                     
-                    for (int h = 0; h < 16; h += 2, CBBLK += 4, CRBLK += 4, YYBLK += 8, kaka += 24 * 3) {
+                    for (int h = 0; h < 16; h += 2) {
                         if (h == 8) {
-                            YYBLK = YYBLK + 64;
+                            indexY += 64;
                         }
                         
-                        for (sw w = 0; w < 4; w++, CBBLK++, CRBLK++, YYBLK += 2, kaka += 2 * 3) {
-                            sw CB = blk[CBBLK];
-                            sw CR = blk[CRBLK];
+                        for (int w = 0; w < 4; w++) {
+                            ub *tex = (ub *)&mem.ram.ptr[immmm & (mem.ram.size - 1)];
+                            sw data;
                             
-                            sw B = MULB(CB);
-                            sw G = MULG(CB) + MULF(CR);
-                            sw R = MULR(CR);
+                            sw CB = blk[indexCb];
+                            sw CR = blk[indexCr];
                             
-                            ub *tex = (ub *)&mem.ram.ptr[kaka & (mem.ram.size - 1)];
-                            sw getY;
-                            getY = blk[YYBLK + 0]; RGB24CL(0x00 * 3);
-                            getY = blk[YYBLK + 1]; RGB24CL(0x01 * 3);
-                            getY = blk[YYBLK + 8]; RGB24CL(0x10 * 3);
-                            getY = blk[YYBLK + 9]; RGB24CL(0x11 * 3);
+                            sw iB = MULB(CB);
+                            sw iG = MULG(CB) + MULF(CR);
+                            sw iR = MULR(CR);
                             
-                            CB = blk[CBBLK + 4];
-                            CR = blk[CRBLK + 4];
+                            data = blk[indexY + 0]; RGB24CL(0x00 * 3);
+                            data = blk[indexY + 1]; RGB24CL(0x01 * 3);
+                            data = blk[indexY + 8]; RGB24CL(0x10 * 3);
+                            data = blk[indexY + 9]; RGB24CL(0x11 * 3);
                             
-                            B = MULB(CB);
-                            G = MULG(CB) + MULF(CR);
-                            R = MULR(CR);
+                            CB = blk[indexCb + 4];
+                            CR = blk[indexCr + 4];
                             
-                            getY = blk[YYBLK + 64 + 0]; RGB24CL(0x08 * 3);
-                            getY = blk[YYBLK + 64 + 1]; RGB24CL(0x09 * 3);
-                            getY = blk[YYBLK + 64 + 8]; RGB24CL(0x18 * 3);
-                            getY = blk[YYBLK + 64 + 9]; RGB24CL(0x19 * 3);
+                            iB = MULB(CB);
+                            iG = MULG(CB) + MULF(CR);
+                            iR = MULR(CR);
+                            
+                            data = blk[indexY + 64 + 0]; RGB24CL(0x08 * 3);
+                            data = blk[indexY + 64 + 1]; RGB24CL(0x09 * 3);
+                            data = blk[indexY + 64 + 8]; RGB24CL(0x18 * 3);
+                            data = blk[indexY + 64 + 9]; RGB24CL(0x19 * 3);
+                            
+                            indexCb += 1;
+                            indexCr += 1;
+                            indexY  += 2;
+                            immmm   += 2 * 3;
                         }
+                        
+                        indexCb += 4;
+                        indexCr += 4;
+                        indexY  += 8;
+                        immmm   += 24 * 3;
                     }
                 }
             }
