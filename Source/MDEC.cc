@@ -71,7 +71,7 @@ uw CstrMotionDecoder::read(uw addr) {
 
 void CstrMotionDecoder::macroBlock(sw *block, sw kh, sw sh) {
     sw index = 0;
-    for (sw k=0; k<8; k++, (sh) ? block+=8 : block++) {
+    for (int k = 0; k < 8; k++, block += (sh) ? 8 : 1) {
         if((block[index + kh*1]|
             block[index + kh*2]|
             block[index + kh*3]|
@@ -182,7 +182,7 @@ void CstrMotionDecoder::uv24(sw *blk, ub *tex) {
     sw *CRBLK = blk + 64;
     sw *YYBLK = blk + 64 * 2;
     
-    for (sw h = 0; h < 16; h += 2, CBBLK += 4, CRBLK += 4, YYBLK += 8, tex += 24 * 3) {
+    for (int h = 0; h < 16; h += 2, CBBLK += 4, CRBLK += 4, YYBLK += 8, tex += 24 * 3) {
         if (h == 8) {
             YYBLK = YYBLK + 64;
         }
@@ -253,8 +253,8 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                             if (rl == 0xfe00) {
                                 break;
                             }
-                            k += (rl >> 10) + 1;
-                            if (k > 63) {
+                            
+                            if ((k += (rl >> 10) + 1) > 63) {
                                 break;
                             }
                             blk[blkindex + zscan[k]] = (iqtab[k] * q_scale * VALOF(rl)) >> 3;
