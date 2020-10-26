@@ -309,7 +309,7 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                 }
             }
             if ((cmd&0xf5ff0000) == 0x30000000) {
-                rlp = (uh *)p;
+                rlp = (uh *)&mem.ram.ptr[dma->madr&(mem.ram.size-1)];
             }
             break;
     }
