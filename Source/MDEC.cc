@@ -69,9 +69,8 @@ uw CstrMotionDecoder::read(uw addr) {
     return 0;
 }
 
-void CstrMotionDecoder::macroBlock(sw *block, sw kh, sw sh) {
-    sw index = 0;
-    for (int k = 0; k < 8; k++, block += (sh) ? 8 : 1) {
+void CstrMotionDecoder::macroBlock(sw *block, sw index, sw kh, sw sh) {
+    for (int k = 0; k < 8; k++, index += (sh) ? 8 : 1) {
         if((block[index + kh * 1] |
             block[index + kh * 2] |
             block[index + kh * 3] |
@@ -126,17 +125,17 @@ void CstrMotionDecoder::macroBlock(sw *block, sw kh, sw sh) {
 }
 
 void CstrMotionDecoder::idct(sw *block, sw k) {
-    if (k == 0) {
-        sw val = block[0] >> 5;
-
-        for (int i = 0; i < 64; i++) {
-            block[i] = val;
-        }
-        return;
-    }
-    
-    macroBlock(block, 8, 0);
-    macroBlock(block, 1, 5);
+//    if (k == 0) {
+//        sw val = block[0] >> 5;
+//
+//        for (int i = 0; i < 64; i++) {
+//            block[i] = val;
+//        }
+//        return;
+//    }
+//
+//    macroBlock(block, 8, 0);
+//    macroBlock(block, 1, 5);
 }
 
 void CstrMotionDecoder::uv15(sw *Block, uh *IMAGE) {
@@ -262,7 +261,18 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                             }
                             blk[blkindex + zscan[k]] = (iqtab[k] * q_scale * VALOF(rl)) >> 3;
                         }
-                        idct(&blk[blkindex], k + 1);
+                        
+                        if ((k + 1) == 0) {
+                            sw val = blk[blkindex + 0] >> 5;
+
+                            for (int i = 0; i < 64; i++) {
+                                blk[blkindex + i] = val;
+                            }
+                            return;
+                        }
+                        
+                        macroBlock(blk, blkindex, 8, 0);
+                        macroBlock(blk, blkindex, 1, 5);
                     }
                     
                     uv24(blk, (ub *)&mem.ram.ptr[im & (mem.ram.size - 1)]);
