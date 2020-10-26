@@ -1,21 +1,30 @@
 #include "Global.h"
 
-
-#define    MAKERGB15(R, G, B) ((((R)>>3)<<10)|(((G)>>3)<<5)|((B)>>3))
-#define    ROUND(c) rtbl[(c) + 128 + 256]
-
-#define RGB15CL(N) IMAGE[N] = MAKERGB15(ROUND(GETY + R), ROUND(GETY + G), ROUND(GETY + B));
-#define RGB24CL(N) IMAGE[N+ 2] = ROUND(GETY + R); IMAGE[N+ 1] = ROUND(GETY + G); IMAGE[N+ 0] = ROUND(GETY + B);
-
-#define    MULR(A) (((sw)0x0000059B * (A)) >> 10)
-#define    MULG(A) (((sw)0xFFFFFEA1 * (A)) >> 10)
-#define    MULB(A) (((sw)0x00000716 * (A)) >> 10)
-#define    MULF(A) (((sw)0xFFFFFD25 * (A)) >> 10)
-
-#define    RUNOF(a) ((a)>>10)
+//#define MAKERGB15(R, G, B) ((((R)>>3)<<10)|(((G)>>3)<<5)|((B)>>3))
+//#define RGB15CL(N) IMAGE[N] = MAKERGB15(ROUND(GETY + R), ROUND(GETY + G), ROUND(GETY + B));
 
 #define VALOF(a) \
     ((sw)(((a) << 22) >> 22))
+
+#define MULR(a) \
+    (((sw)0x0000059b * (a)) >> 10)
+
+#define MULG(a) \
+    (((sw)0xfffffea1 * (a)) >> 10)
+
+#define MULB(a) \
+    (((sw)0x00000716 * (a)) >> 10)
+
+#define MULF(a) \
+    (((sw)0xfffffd25 * (a)) >> 10)
+
+#define ROUND(a) \
+    rtbl[(a) + 128 + 256]
+
+#define RGB24CL(a) \
+    tex[a + 0] = ROUND(getY + B); \
+    tex[a + 1] = ROUND(getY + G); \
+    tex[a + 2] = ROUND(getY + R); \
 
 
 CstrMotionDecoder mdec;
@@ -168,43 +177,41 @@ void CstrMotionDecoder::uv15(sw *Block, uh *IMAGE) {
 //    }
 }
 
-void CstrMotionDecoder::uv24(sw *Block, ub *IMAGE) {
-    sw GETY;
-    sw CB, CR, R, G, B;
+void CstrMotionDecoder::uv24(sw *blk, ub *tex) {
+    sw *CBBLK = blk;
+    sw *CRBLK = blk + 64;
+    sw *YYBLK = blk + 64 * 2;
     
-    sw *YYBLK = Block + 64 * 2;
-    sw *CBBLK = Block;
-    sw *CRBLK = Block + 64;
-    
-    for (sw Y = 0; Y < 16; Y += 2, CRBLK += 4, CBBLK += 4, YYBLK += 8, IMAGE += 24 * 3) {
-        if (Y == 8) {
+    for (sw h = 0; h < 16; h += 2, CBBLK += 4, CRBLK += 4, YYBLK += 8, tex += 24 * 3) {
+        if (h == 8) {
             YYBLK = YYBLK + 64;
         }
         
-        for (sw X = 0; X < 4; X++, CRBLK++, CBBLK++, YYBLK += 2, IMAGE += 2 * 3) {
-            CR = *CRBLK;
-            CB = *CBBLK;
+        for (sw w = 0; w < 4; w++, CBBLK++, CRBLK++, YYBLK += 2, tex += 2 * 3) {
+            sw CB = *CBBLK;
+            sw CR = *CRBLK;
             
-            R = MULR(CR);
-            G = MULG(CB) + MULF(CR);
-            B = MULB(CB);
+            sw B = MULB(CB);
+            sw G = MULG(CB) + MULF(CR);
+            sw R = MULR(CR);
             
-            GETY = YYBLK[0]; RGB24CL(0x00 * 3);
-            GETY = YYBLK[1]; RGB24CL(0x01 * 3);
-            GETY = YYBLK[8]; RGB24CL(0x10 * 3);
-            GETY = YYBLK[9]; RGB24CL(0x11 * 3);
+            sw getY;
+            getY = YYBLK[0]; RGB24CL(0x00 * 3);
+            getY = YYBLK[1]; RGB24CL(0x01 * 3);
+            getY = YYBLK[8]; RGB24CL(0x10 * 3);
+            getY = YYBLK[9]; RGB24CL(0x11 * 3);
             
-            CR = *(CRBLK + 4);
             CB = *(CBBLK + 4);
+            CR = *(CRBLK + 4);
             
-            R = MULR(CR);
-            G = MULG(CB) + MULF(CR);
             B = MULB(CB);
+            G = MULG(CB) + MULF(CR);
+            R = MULR(CR);
             
-            GETY = YYBLK[64 + 0]; RGB24CL(0x08 * 3);
-            GETY = YYBLK[64 + 1]; RGB24CL(0x09 * 3);
-            GETY = YYBLK[64 + 8]; RGB24CL(0x18 * 3);
-            GETY = YYBLK[64 + 9]; RGB24CL(0x19 * 3);
+            getY = YYBLK[64 + 0]; RGB24CL(0x08 * 3);
+            getY = YYBLK[64 + 1]; RGB24CL(0x09 * 3);
+            getY = YYBLK[64 + 8]; RGB24CL(0x18 * 3);
+            getY = YYBLK[64 + 9]; RGB24CL(0x19 * 3);
         }
     }
 }
