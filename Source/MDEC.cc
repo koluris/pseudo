@@ -65,61 +65,62 @@ uw CstrMotionDecoder::read(uw addr) {
 sw iq_y[64], iq_uv[64];
 
 void CstrMotionDecoder::MacroBlock(sw *block, sw kh, sw sh) {
+    sw index = 0;
     for (sw k=0; k<8; k++, (sh) ? block+=8 : block++) {
-        if((block[kh*1]|
-            block[kh*2]|
-            block[kh*3]|
-            block[kh*4]|
-            block[kh*5]|
-            block[kh*6]|
-            block[kh*7]) == 0) {
-            block[kh*0]=
-            block[kh*1]=
-            block[kh*2]=
-            block[kh*3]=
-            block[kh*4]=
-            block[kh*5]=
-            block[kh*6]=
-            block[kh*7]=
-            block[kh*0]>>sh;
+        if((block[index + kh*1]|
+            block[index + kh*2]|
+            block[index + kh*3]|
+            block[index + kh*4]|
+            block[index + kh*5]|
+            block[index + kh*6]|
+            block[index + kh*7]) == 0) {
+            block[index + kh*0]=
+            block[index + kh*1]=
+            block[index + kh*2]=
+            block[index + kh*3]=
+            block[index + kh*4]=
+            block[index + kh*5]=
+            block[index + kh*6]=
+            block[index + kh*7]=
+            block[index + kh*0]>>sh;
             
             continue;
         }
-        sw z10 = block[kh*0]+block[kh*4];
-        sw z11 = block[kh*0]-block[kh*4];
-        sw z13 = block[kh*2]+block[kh*6];
-        sw z12 = block[kh*2]-block[kh*6]; z12 = ((z12*362)>>8)-z13;
+        sw z10 = block[index + kh*0]+block[index + kh*4];
+        sw z11 = block[index + kh*0]-block[index + kh*4];
+        sw z13 = block[index + kh*2]+block[index + kh*6];
+        sw z12 = block[index + kh*2]-block[index + kh*6]; z12 = ((z12*362)>>8)-z13;
         
         sw tmp0 = z10+z13;
         sw tmp3 = z10-z13;
         sw tmp1 = z11+z12;
         sw tmp2 = z11-z12;
         
-        z13 = block[kh*3]+block[kh*5];
-        z10 = block[kh*3]-block[kh*5];
-        z11 = block[kh*1]+block[kh*7];
-        z12 = block[kh*1]-block[kh*7]; sw z5 = (((z12-z10)*473)>>8);
+        z13 = block[index + kh*3]+block[index + kh*5];
+        z10 = block[index + kh*3]-block[index + kh*5];
+        z11 = block[index + kh*1]+block[index + kh*7];
+        z12 = block[index + kh*1]-block[index + kh*7]; sw z5 = (((z12-z10)*473)>>8);
         
         sw tmp7 = z11+z13;
         sw tmp6 = (((z10)*669)>>8)+z5 -tmp7;
         sw tmp5 = (((z11-z13)*362)>>8)-tmp6;
         sw tmp4 = (((z12)*277)>>8)-z5 +tmp5;
         
-        block[kh*0] = (tmp0+tmp7)>>sh;
-        block[kh*7] = (tmp0-tmp7)>>sh;
-        block[kh*1] = (tmp1+tmp6)>>sh;
-        block[kh*6] = (tmp1-tmp6)>>sh;
-        block[kh*2] = (tmp2+tmp5)>>sh;
-        block[kh*5] = (tmp2-tmp5)>>sh;
-        block[kh*4] = (tmp3+tmp4)>>sh;
-        block[kh*3] = (tmp3-tmp4)>>sh;
+        block[index + kh*0] = (tmp0+tmp7)>>sh;
+        block[index + kh*7] = (tmp0-tmp7)>>sh;
+        block[index + kh*1] = (tmp1+tmp6)>>sh;
+        block[index + kh*6] = (tmp1-tmp6)>>sh;
+        block[index + kh*2] = (tmp2+tmp5)>>sh;
+        block[index + kh*5] = (tmp2-tmp5)>>sh;
+        block[index + kh*4] = (tmp3+tmp4)>>sh;
+        block[index + kh*3] = (tmp3-tmp4)>>sh;
     }
 }
 
 void CstrMotionDecoder::idct(sw *block, sw k) {
     if (k == 0) {
         sw val = block[0]>>5;
-        
+
         for (sw i=0; i<64; i++) {
             block[i] = val;
         }
@@ -136,30 +137,30 @@ void CstrMotionDecoder::TabInit(sw *iqtab, ub *iq_y) {
 }
 
 uh *CstrMotionDecoder::rl2blk(sw *blk, uh *mdec_rl) {
-    sw k,q_scale,rl;
-    sw *iqtab;
-    
-    memset(blk, 0, 6*64*4);
-    iqtab = iq_uv;
-    
-    for (sw i=0; i<6; i++) {
-        
-        if (i>1) iqtab = iq_y;
-        
-        rl = *mdec_rl++;
-        q_scale = rl>>10;
-        blk[0] = iqtab[0]*VALOF(rl);
-        k = 0;
-        
-        for(;;) {
-            rl = *mdec_rl++; if (rl==0xfe00) break;
-            k += (rl>>10)+1;if (k >  63) break;
-            blk[zscan[k]] = (iqtab[k] * q_scale * VALOF(rl)) >> 3;
-        }
-        idct(blk, k+1);
-        
-        blk+=64;
-    }
+//    sw k,q_scale,rl;
+//    sw *iqtab;
+//
+//    memset(blk, 0, 6*64*4);
+//    iqtab = iq_uv;
+//
+//    for (sw i=0; i<6; i++) {
+//
+//        if (i>1) iqtab = iq_y;
+//
+//        rl = *mdec_rl++;
+//        q_scale = rl>>10;
+//        blk[0] = iqtab[0]*VALOF(rl);
+//        k = 0;
+//
+//        for(;;) {
+//            rl = *mdec_rl++; if (rl==0xfe00) break;
+//            k += (rl>>10)+1;if (k >  63) break;
+//            blk[zscan[k]] = (iqtab[k] * q_scale * VALOF(rl)) >> 3;
+//        }
+//        idct(blk, k+1);
+//
+//        blk+=64;
+//    }
     return mdec_rl;
 }
 
@@ -212,12 +213,12 @@ void CstrMotionDecoder::Yuv24(sw *Block, ub *IMAGE) {
     sw *CBBLK = Block;
     sw *CRBLK = Block + 64;
     
-    for (sw Y=0; Y<16; Y+=2, CRBLK+=4, CBBLK+=4, YYBLK+=8, IMAGE+=24*3) {
+    for (sw Y = 0; Y < 16; Y += 2, CRBLK += 4, CBBLK += 4, YYBLK += 8, IMAGE += 24 * 3) {
         if (Y == 8) {
             YYBLK = YYBLK + 64;
         }
         
-        for (sw X=0; X<4; X++, IMAGE+=2*3, CRBLK++, CBBLK++, YYBLK+=2) {
+        for (sw X = 0; X < 4; X++, CRBLK++, CBBLK++, YYBLK += 2, IMAGE += 2 * 3) {
             CR = *CRBLK;
             CB = *CBBLK;
             
@@ -256,13 +257,13 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
             }
             else { // YUV24
                 sw blk[384];
-                uh *im = (uh *)p;
+                uh *im = (uh *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
                 
                 for (; size > 0; size -= 384 / 2, im += 384) {
                     memset(&blk, 0, 6 * 64 * 4);
                     sw *iqtab = iq_uv;
                     
-                    for (int i = 0, blkindex = 0; i < 6; i++, blkindex += 64) {
+                    for (sw i = 0, blkindex = 0; i < 6; i++, blkindex += 64) {
                         
                         if (i > 1) {
                             iqtab = iq_y;
