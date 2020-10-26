@@ -221,9 +221,9 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
             }
             else { // YUV24
                 sw blk[384];
-                uh *im = (uh *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
+                uw im = dma->madr;
                 
-                for (; size > 0; size -= 384 / 2, im += 384) {
+                for (; size > 0; size -= 384 / 2, im += 384 * 2) {
                     memset(&blk, 0, sizeof(blk));
                     sw *iqtab = iq_uv;
                     
@@ -255,7 +255,7 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                         idct(&blk[blkindex], k + 1);
                     }
                     
-                    uv24(blk, (ub *)im);
+                    uv24(blk, (ub *)&mem.ram.ptr[im & (mem.ram.size - 1)]);
                 }
             }
             return;
