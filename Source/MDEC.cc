@@ -72,53 +72,56 @@ uw CstrMotionDecoder::read(uw addr) {
 void CstrMotionDecoder::macroBlock(sw *block, sw kh, sw sh) {
     sw index = 0;
     for (int k = 0; k < 8; k++, block += (sh) ? 8 : 1) {
-        if((block[index + kh*1]|
-            block[index + kh*2]|
-            block[index + kh*3]|
-            block[index + kh*4]|
-            block[index + kh*5]|
-            block[index + kh*6]|
-            block[index + kh*7]) == 0) {
-            block[index + kh*0]=
-            block[index + kh*1]=
-            block[index + kh*2]=
-            block[index + kh*3]=
-            block[index + kh*4]=
-            block[index + kh*5]=
-            block[index + kh*6]=
-            block[index + kh*7]=
-            block[index + kh*0]>>sh;
-            
-            continue;
+        if((block[index + kh * 1] |
+            block[index + kh * 2] |
+            block[index + kh * 3] |
+            block[index + kh * 4] |
+            block[index + kh * 5] |
+            block[index + kh * 6] |
+            block[index + kh * 7]) == 0) {
+                block[index + kh * 0] =
+                block[index + kh * 1] =
+                block[index + kh * 2] =
+                block[index + kh * 3] =
+                block[index + kh * 4] =
+                block[index + kh * 5] =
+                block[index + kh * 6] =
+                block[index + kh * 7] =
+                block[index + kh * 0] >> sh;
+                
+                continue;
         }
-        sw z10 = block[index + kh*0]+block[index + kh*4];
-        sw z11 = block[index + kh*0]-block[index + kh*4];
-        sw z13 = block[index + kh*2]+block[index + kh*6];
-        sw z12 = block[index + kh*2]-block[index + kh*6]; z12 = ((z12*362)>>8)-z13;
+        sw z10 = block[index + kh * 0] + block[index + kh * 4];
+        sw z11 = block[index + kh * 0] - block[index + kh * 4];
+        sw z13 = block[index + kh * 2] + block[index + kh * 6];
+        sw z12 = block[index + kh * 2] - block[index + kh * 6];
+        z12 = ((z12 * 362) >> 8) - z13;
         
-        sw tmp0 = z10+z13;
-        sw tmp3 = z10-z13;
-        sw tmp1 = z11+z12;
-        sw tmp2 = z11-z12;
+        sw tmp0 = z10 + z13;
+        sw tmp3 = z10 - z13;
+        sw tmp1 = z11 + z12;
+        sw tmp2 = z11 - z12;
         
-        z13 = block[index + kh*3]+block[index + kh*5];
-        z10 = block[index + kh*3]-block[index + kh*5];
-        z11 = block[index + kh*1]+block[index + kh*7];
-        z12 = block[index + kh*1]-block[index + kh*7]; sw z5 = (((z12-z10)*473)>>8);
+        z13 = block[index + kh * 3] + block[index + kh * 5];
+        z10 = block[index + kh * 3] - block[index + kh * 5];
+        z11 = block[index + kh * 1] + block[index + kh * 7];
+        z12 = block[index + kh * 1] - block[index + kh * 7];
         
-        sw tmp7 = z11+z13;
-        sw tmp6 = (((z10)*669)>>8)+z5 -tmp7;
-        sw tmp5 = (((z11-z13)*362)>>8)-tmp6;
-        sw tmp4 = (((z12)*277)>>8)-z5 +tmp5;
+        sw z5 = ((z12 - z10) * 473) >> 8;
         
-        block[index + kh*0] = (tmp0+tmp7)>>sh;
-        block[index + kh*7] = (tmp0-tmp7)>>sh;
-        block[index + kh*1] = (tmp1+tmp6)>>sh;
-        block[index + kh*6] = (tmp1-tmp6)>>sh;
-        block[index + kh*2] = (tmp2+tmp5)>>sh;
-        block[index + kh*5] = (tmp2-tmp5)>>sh;
-        block[index + kh*4] = (tmp3+tmp4)>>sh;
-        block[index + kh*3] = (tmp3-tmp4)>>sh;
+        sw tmp7 = z11 + z13;
+        sw tmp6 = ((z10 * 669) >> 8) + z5 - tmp7;
+        sw tmp5 = (((z11 - z13) * 362) >> 8) - tmp6;
+        sw tmp4 = ((z12 * 277) >> 8) - z5 + tmp5;
+        
+        block[index + kh * 0] = (tmp0 + tmp7) >> sh;
+        block[index + kh * 7] = (tmp0 - tmp7) >> sh;
+        block[index + kh * 1] = (tmp1 + tmp6) >> sh;
+        block[index + kh * 6] = (tmp1 - tmp6) >> sh;
+        block[index + kh * 2] = (tmp2 + tmp5) >> sh;
+        block[index + kh * 5] = (tmp2 - tmp5) >> sh;
+        block[index + kh * 4] = (tmp3 + tmp4) >> sh;
+        block[index + kh * 3] = (tmp3 - tmp4) >> sh;
     }
 }
 
