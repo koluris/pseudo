@@ -34,9 +34,9 @@ void CstrMotionDecoder::write(uw addr, uw data) {
         case 0:
             cmd = data;
             
-            if ((data&0xf5ff0000) == 0x30000000) {
-                len = data&0xffff;
-            }
+//            if ((data&0xf5ff0000) == 0x30000000) {
+//                len = data&0xffff;
+//            }
             return;
             
         case 4:
@@ -131,9 +131,9 @@ void CstrMotionDecoder::idct(sw *block, sw k) {
 }
 
 void CstrMotionDecoder::TabInit(sw *iqtab, ub *iq_y) {
-    for (sw i=0; i<64; i++) {
-        iqtab[i] = iq_y[i]*aanscales[zscan[i]]>>12;
-    }
+//    for (sw i=0; i<64; i++) {
+//        iqtab[i] = iq_y[i]*aanscales[zscan[i]]>>12;
+//    }
 }
 
 uh *CstrMotionDecoder::rl2blk(sw *blk, uh *mdec_rl) {
@@ -165,44 +165,44 @@ uh *CstrMotionDecoder::rl2blk(sw *blk, uh *mdec_rl) {
 }
 
 void CstrMotionDecoder::Yuv15(sw *Block, uh *IMAGE) {
-    sw GETY;
-    sw CB,CR,R,G,B;
-    
-    sw *YYBLK = Block + 64 * 2;
-    sw *CBBLK = Block;
-    sw *CRBLK = Block + 64;
-    
-    for (sw Y=0; Y<16; Y+=2, CRBLK+=4, CBBLK+=4, YYBLK+=8, IMAGE+=24) {
-        if (Y == 8) {
-            YYBLK = YYBLK + 64;
-        }
-        
-        for (sw X=0; X<4; X++, IMAGE+=2, CRBLK++, CBBLK++, YYBLK+=2) {
-            CR = *CRBLK;
-            CB = *CBBLK;
-            
-            R = MULR(CR);
-            G = MULG(CB) + MULF(CR);
-            B = MULB(CB);
-            
-            GETY = YYBLK[0]; RGB15CL(0x00);
-            GETY = YYBLK[1]; RGB15CL(0x01);
-            GETY = YYBLK[8]; RGB15CL(0x10);
-            GETY = YYBLK[9]; RGB15CL(0x11);
-            
-            CR = *(CRBLK + 4);
-            CB = *(CBBLK + 4);
-            
-            R = MULR(CR);
-            G = MULG(CB) + MULF(CR);
-            B = MULB(CB);
-            
-            GETY = YYBLK[64 + 0]; RGB15CL(0x08);
-            GETY = YYBLK[64 + 1]; RGB15CL(0x09);
-            GETY = YYBLK[64 + 8]; RGB15CL(0x18);
-            GETY = YYBLK[64 + 9]; RGB15CL(0x19);
-        }
-    }
+//    sw GETY;
+//    sw CB,CR,R,G,B;
+//
+//    sw *YYBLK = Block + 64 * 2;
+//    sw *CBBLK = Block;
+//    sw *CRBLK = Block + 64;
+//
+//    for (sw Y=0; Y<16; Y+=2, CRBLK+=4, CBBLK+=4, YYBLK+=8, IMAGE+=24) {
+//        if (Y == 8) {
+//            YYBLK = YYBLK + 64;
+//        }
+//
+//        for (sw X=0; X<4; X++, IMAGE+=2, CRBLK++, CBBLK++, YYBLK+=2) {
+//            CR = *CRBLK;
+//            CB = *CBBLK;
+//
+//            R = MULR(CR);
+//            G = MULG(CB) + MULF(CR);
+//            B = MULB(CB);
+//
+//            GETY = YYBLK[0]; RGB15CL(0x00);
+//            GETY = YYBLK[1]; RGB15CL(0x01);
+//            GETY = YYBLK[8]; RGB15CL(0x10);
+//            GETY = YYBLK[9]; RGB15CL(0x11);
+//
+//            CR = *(CRBLK + 4);
+//            CB = *(CBBLK + 4);
+//
+//            R = MULR(CR);
+//            G = MULG(CB) + MULF(CR);
+//            B = MULB(CB);
+//
+//            GETY = YYBLK[64 + 0]; RGB15CL(0x08);
+//            GETY = YYBLK[64 + 1]; RGB15CL(0x09);
+//            GETY = YYBLK[64 + 8]; RGB15CL(0x18);
+//            GETY = YYBLK[64 + 9]; RGB15CL(0x19);
+//        }
+//    }
 }
 
 void CstrMotionDecoder::Yuv24(sw *Block, ub *IMAGE) {
@@ -269,13 +269,15 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
                             iqtab = iq_y;
                         }
                         
-                        sw rl = *rlp++;
+                        sw rl = *rlp;
+                        rlp++;
                         sw q_scale = rl >> 10;
                         blk[blkindex + 0] = iqtab[0] * VALOF(rl);
                         sw k = 0;
                         
                         for(;;) {
-                            rl = *rlp++;
+                            rl = *rlp;
+                            rlp++;
                             if (rl == 0xfe00) {
                                 break;
                             }
@@ -296,8 +298,15 @@ void CstrMotionDecoder::executeDMA(CstrBus::castDMA *dma) {
             
         case 0x201:
             if (cmd == 0x40000001) {
-                TabInit(iq_y, p);
-                TabInit(iq_uv, p+64);
+                ub *ramp = (ub *)&mem.ram.ptr[(dma->madr) & (mem.ram.size - 1)];
+                for (sw i=0; i<64; i++) {
+                    iq_y[i] = (ramp[i] * aanscales[zscan[i]]) >> 12;
+                }
+                
+                ramp = (ub *)&mem.ram.ptr[(dma->madr + 64) & (mem.ram.size - 1)];
+                for (sw i=0; i<64; i++) {
+                    iq_uv[i] = (ramp[i] * aanscales[zscan[i]]) >> 12;
+                }
             }
             if ((cmd&0xf5ff0000) == 0x30000000) {
                 rlp = (uh *)p;
