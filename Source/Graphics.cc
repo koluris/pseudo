@@ -323,7 +323,7 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
         case 0x01000401:
             do {
                 uw hdr = *(uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
-                p = (uw *)&mem.ram.ptr[(dma->madr + 4) & 0x1ffffc];
+                p = (uw *)&mem.ram.ptr[(dma->madr + 4) & 0x1fffff];
                 dataWrite(p, hdr >> 24);
                 dma->madr = hdr & 0xffffff;
             }

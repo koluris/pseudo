@@ -89,6 +89,10 @@ void CstrMips::run() {
     }
 }
 
+constexpr bool AddOverflow(uw old_value, uw add_value, uw new_value) {
+    return (((new_value ^ old_value) & (new_value ^ add_value)) & 0x80000000) != 0;
+}
+
 void CstrMips::step(bool branched) {
     uw code = *instCache++; pc += 4;
     base[0] = 0;
@@ -166,13 +170,20 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 26: // DIV
+                    // Special case
+                    if ((sw)base[rt] == -1 && base[rs] == 0x80000000) {
+                        res.u32[0] = 0x80000000;
+                        res.u32[1] = 0;
+                        return;
+                    }
+                    
                     if (base[rt]) {
                         res.s32[0] = (sw)base[rs] / (sw)base[rt];
                         res.s32[1] = (sw)base[rs] % (sw)base[rt];
                     }
                     else {
-                        res.s32[0] = (sw)base[rs] >= 0 ? 0xffffffff : 1;
-                        res.s32[1] = (sw)base[rs];
+                        res.u32[0] = (sw)base[rs] >= 0 ? 0xffffffff : 1;
+                        res.u32[1] = (sw)base[rs];
                     }
                     return;
                     
@@ -188,7 +199,19 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 32: // ADD
-                    base[rd] = base[rs] + base[rt];
+                    {
+                        const uw old_value = base[rs];
+                        const uw add_value = base[rt];
+                        const uw new_value = old_value + add_value;
+                        
+                        if (AddOverflow(old_value, add_value, new_value)) {
+                            printx("/// PSeudo CPU exception on %s instruction\n", "ADD");
+                            return;
+                        }
+                        
+                        base[rd] = new_value;
+                    }
+                    //base[rd] = base[rs] + base[rt];
                     return;
                     
                 case 33: // ADDU
