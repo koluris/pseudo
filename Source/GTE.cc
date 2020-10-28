@@ -243,8 +243,6 @@ void CstrCop2::execute(uw code) {
         /* pdx-068, ff9, va */
         case 1: // RTPS
             {
-                sw quotient;
-                
                 FLAG = 0;
                 
                 MAC1 = A1((((sd)TRX << 12) + (R11 * VX0) + (R12 * VY0) + (R13 * VZ0)) >> 12);
@@ -258,7 +256,7 @@ void CstrCop2::execute(uw code) {
                 SZ2 = SZ3;
                 SZ3 = limD(MAC3);
                 
-                quotient = limE(divide(H, SZ3));
+                sw quotient = limE(divide(H, SZ3));
                 
                 SXY0 = SXY1;
                 SXY1 = SXY2;

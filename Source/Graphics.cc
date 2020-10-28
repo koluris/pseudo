@@ -40,17 +40,9 @@ void CstrGraphics::reset() {
 
 double then = 1.0;
 
-//#include <chrono>
-//#include <cstdint>
-//#include <iostream>
-//#include <thread>
-//
-//std::chrono::system_clock::time_point a = std::chrono::system_clock::now();
-//std::chrono::system_clock::time_point b = std::chrono::system_clock::now();
-
 void CstrGraphics::refresh() {
     // FPS throttle
-#if 0
+#if 1
         double now = mach_absolute_time() / 1000.0;
         then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
 
@@ -61,21 +53,6 @@ void CstrGraphics::refresh() {
     
     ret.status ^= GPU_STAT_ODDLINES;
     draw.swapBuffers(ret.disabled);
-    
-//    a = std::chrono::system_clock::now();
-//    std::chrono::duration<double, std::milli> work_time = a - b;
-//
-//    if (work_time.count() < 16.67)
-//    {
-//        std::chrono::duration<double, std::milli> delta_ms(16.67 - work_time.count());
-//        auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(delta_ms);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(delta_ms_duration.count()));
-//    }
-//
-//    b = std::chrono::system_clock::now();
-//    std::chrono::duration<double, std::milli> sleep_time = b - a;
-//
-//    printf("Time: %f \n", (work_time + sleep_time).count());
 }
 
 void CstrGraphics::write(uw addr, uw data) {
@@ -371,7 +348,7 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
         case 0x01000401:
             do {
                 uw hdr = *(uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
-                p = (uw *)&mem.ram.ptr[(dma->madr + 4) & 0x1fffff];
+                p = (uw *)&mem.ram.ptr[(dma->madr + 4) & (mem.ram.size - 1)];
                 dataWrite(p, hdr >> 24);
                 dma->madr = hdr & 0xffffff;
             }

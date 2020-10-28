@@ -34,26 +34,12 @@ void CstrBus::checkDMA(uw addr, uw data) {
         dma->chcr = data;
         
         switch(chan) {
-            case DMA_MDEC_IN:
-            case DMA_MDEC_OUT:
-                mdec.executeDMA(dma);
-                break;
-                
-            case DMA_GPU:
-                vs.executeDMA(dma);
-                break;
-                
-            case DMA_CD:
-                cd.executeDMA(dma);
-                break;
-                
-            case DMA_SPU:
-                audio.executeDMA(dma);
-                break;
-                
-            case DMA_CLEAR_OT:
-                mem.executeDMA(dma);
-                break;
+            case 0:  mdec.executeDMA(dma); break; // MDEC in
+            case 1:  mdec.executeDMA(dma); break; // MDEC out
+            case 2:    vs.executeDMA(dma); break; // Graphics
+            case 3:    cd.executeDMA(dma); break; // CD-ROM
+            case 4: audio.executeDMA(dma); break; // Audio
+            case 6:   mem.executeDMA(dma); break; // Clear OT
                 
             default:
                 printx("/// PSeudo DMA Channel: %d", chan);

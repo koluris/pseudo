@@ -25,19 +25,13 @@
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
 #define opcodeSWx(o, d) \
-    mem.write<uw>(ob & ~3, (base[rt] o shift[d][ob & 3]) | (mem.read<uw>(ob & ~3) & mask[d][ob & 3]))
+    mem.write<uw>(ob & (~(3)), (base[rt] o shift[d][ob & 3]) | (mem.read<uw>(ob & (~(3))) & mask[d][ob & 3]))
 
 #define opcodeLWx(o, d) \
-    base[rt] = (base[rt] & mask[d][ob & 3]) | (mem.read<uw>(ob & ~3) o shift[d][ob & 3])
+    base[rt] = (base[rt] & mask[d][ob & 3]) | (mem.read<uw>(ob & (~(3))) o shift[d][ob & 3])
 
 
 CstrMips cpu;
-
-// SLLV
-//
-// 32 | 16 |  8 |  4 |  2 |  1 |
-// ---|----|----|----|----|----| -> 4
-//  0 |  0 |  0 |  1 |  0 |  0 |
 
 void CstrMips::reset() {
     memset(&base, 0, sizeof(base));
@@ -89,14 +83,12 @@ void CstrMips::run() {
     }
 }
 
-constexpr bool AddOverflow(uw old_value, uw add_value, uw new_value) {
-    return (((new_value ^ old_value) & (new_value ^ add_value)) & 0x80000000) != 0;
-}
-
 void CstrMips::step(bool branched) {
-    uw code = *instCache++; pc += 4;
     base[0] = 0;
+    
+    uw code = *instCache++;
     opcodeCount++;
+    pc += 4;
     
     switch(opcode) {
         case 0: // SPECIAL
@@ -127,14 +119,12 @@ void CstrMips::step(bool branched) {
                     base[rd] = (sw)base[rt] >> (base[rs] & 31);
                     return;
                     
+                case 9: // JALR
+                    base[rd] = pc + 4;
+                    
                 case 8: // JR
                     branch(base[rs]);
                     psx.console(base, pc);
-                    return;
-                    
-                case 9: // JALR
-                    base[rd] = pc + 4;
-                    branch(base[rs]);
                     return;
                     
                 case 12: // SYSCALL
@@ -170,13 +160,6 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 26: // DIV
-                    // Special case
-                    if ((sw)base[rt] == -1 && base[rs] == 0x80000000) {
-                        res.u32[0] = 0x80000000;
-                        res.u32[1] = 0;
-                        return;
-                    }
-                    
                     if (base[rt]) {
                         res.s32[0] = (sw)base[rs] / (sw)base[rt];
                         res.s32[1] = (sw)base[rs] % (sw)base[rt];
@@ -199,19 +182,7 @@ void CstrMips::step(bool branched) {
                     return;
                     
                 case 32: // ADD
-                    {
-                        const uw old_value = base[rs];
-                        const uw add_value = base[rt];
-                        const uw new_value = old_value + add_value;
-                        
-                        if (AddOverflow(old_value, add_value, new_value)) {
-                            printx("/// PSeudo CPU exception on %s instruction\n", "ADD");
-                            return;
-                        }
-                        
-                        base[rd] = new_value;
-                    }
-                    //base[rd] = base[rs] + base[rt];
+                    base[rd] = base[rs] + base[rt];
                     return;
                     
                 case 33: // ADDU
@@ -258,21 +229,10 @@ void CstrMips::step(bool branched) {
             
         case 1: // REGIMM
             switch(rt) {
-                case 0: // BLTZ
-                    if ((sw)base[rs] < 0) {
-                        branch(baddr);
-                    }
-                    return;
-                    
-                case 1: // BGEZ
-                    if ((sw)base[rs] >= 0) {
-                        branch(baddr);
-                    }
-                    return;
-                    
                 case 16: // BLTZAL
                     base[31] = pc + 4;
                     
+                case 0: // BLTZ
                     if ((sw)base[rs] < 0) {
                         branch(baddr);
                     }
@@ -281,6 +241,7 @@ void CstrMips::step(bool branched) {
                 case 17: // BGEZAL
                     base[31] = pc + 4;
                     
+                case 1: // BGEZ
                     if ((sw)base[rs] >= 0) {
                         branch(baddr);
                     }
@@ -292,12 +253,10 @@ void CstrMips::step(bool branched) {
             }
             return;
             
-        case 2: // J
-            branch(saddr);
-            return;
-            
         case 3: // JAL
             base[31] = pc + 4;
+            
+        case 2: // J
             branch(saddr);
             return;
             
@@ -445,7 +404,7 @@ void CstrMips::step(bool branched) {
 
 void CstrMips::branch(uw addr) {
     // Execute instruction in slot
-    step (true);
+     step(true);
     setpc(addr);
 }
 
@@ -453,7 +412,7 @@ void CstrMips::exception(uw code, bool branched) {
     if (branched) {
         printx("/// PSeudo Exception %s", "branched");
     }
-    
+               
     copr[12] = (copr[12] & (~(0x3f))) | ((copr[12] << 2) & 0x3f);
     copr[13] = code;
     copr[14] = pc;

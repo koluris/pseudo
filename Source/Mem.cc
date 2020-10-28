@@ -9,8 +9,6 @@ void CstrMem::reset() {
     // Leave ROM intact, it contains BIOS
     memset(ram.ptr, 0, ram.size);
     memset(hwr.ptr, 0, hwr.size);
-    
-    //bus.interruptSet(CstrBus::INT_SPU);
 }
 
 template <class T>
