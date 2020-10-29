@@ -84,8 +84,9 @@ bool CstrGraphics::tick(uw cycles) {
         in_hblank = true;
         scanline++;
         
-        if (!is_480)
+        if (!is_480) {
             statusodd_lines = scanline % 2 != 0;
+        }
         
         if (scanline > scanlines_per_frame) {
             scanline = 0;
@@ -232,6 +233,11 @@ uw CstrGraphics::read(uw addr) {
             return ret.data;
             
         case GPU_REG_STATUS:
+//            if (statusodd_lines) {
+//                ret.status |= GPU_STAT_ODDLINES;
+//            } else {
+//                ret.status &= ~GPU_STAT_ODDLINES;
+//            }
             return ret.status | GPU_STAT_READYFORVRAM;
     }
     printx("/// PSeudo GPU Read: 0x%x", (addr & 0xf));

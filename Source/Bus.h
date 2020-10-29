@@ -14,7 +14,7 @@ class CstrBus {
     struct interrupt {
         const uw code, dest; ub queued;
     } interrupts[11] = {
-        { INT_VSYNC, 1 },
+        { INT_VSYNC, 8 },
         { INT_GPU,   1 },
         { INT_CD,    4 },
         { INT_DMA,   8 },

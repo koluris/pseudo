@@ -62,7 +62,8 @@ void CstrMips::bootstrap() {
 }
 
 void CstrMips::run() {
-    const int threshold = 100;
+    const int threshold  = 100;
+    const int multiplier = 3;
     
     while(!psx.suspended) {
         
@@ -77,7 +78,7 @@ void CstrMips::run() {
         /* NOTE: The function returns a bool indicating */
         /* if it is Vblank or not. So anything in the brackets */
         /* will only be executed in Vblank. */
-        if (vs.tick(threshold * 3)) {
+        if (vs.tick(threshold * multiplier)) {
             vs.refresh();
             bus.interruptSet(CstrBus::INT_VSYNC);
         }
@@ -87,12 +88,12 @@ void CstrMips::run() {
         
         /* Tick timers. */
         for (int i = 0; i < 2; i++) {
-            rootc.tick(threshold * 3, i);
+            rootc.tick(threshold * multiplier, i);
             rootc.gpu_sync(sync);
         }
 
         /* NOTE: Timer 2 does not sync with the GPU! */
-        rootc.tick(threshold * 3, 2);
+        rootc.tick(threshold * multiplier, 2);
         
         if (data32 & mask32) {
             if ((copr[12] & 0x401) == 0x401) {
