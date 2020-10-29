@@ -116,6 +116,9 @@ T CstrHardware::read(uw addr) {
     switch(sizeof(T)) {
         case HWR_ACCESS_32:
             switch(LOW_BITS(addr)) {
+                case 0x1100 ... 0x1110: // Rootcounters
+                    return rootc.read<uw>(addr);
+                    
                 case 0x1810 ... 0x1814: // Graphics
                     return vs.read(addr);
                     
@@ -130,7 +133,6 @@ T CstrHardware::read(uw addr) {
                 case 0x1088 ... 0x10e8: // DMA
                 case 0x10f0: // DPCR
                 case 0x10f4: // DICR
-                case 0x1100 ... 0x1110: // Rootcounters
                     return accessMem(mem.hwr, uw);
             }
             break;
@@ -139,6 +141,9 @@ T CstrHardware::read(uw addr) {
             switch(LOW_BITS(addr)) {
                 case 0x1040 ... 0x104e: // SIO
                     return sio.read16(addr);
+                    
+                case 0x1100 ... 0x1128: // Rootcounters
+                    return rootc.read<uh>(addr);
                     
                 case 0x1c00 ... 0x1e0e: // Audio
                     return audio.read(addr);
@@ -149,7 +154,6 @@ T CstrHardware::read(uw addr) {
                 case 0x105a: // SIO1 ?
                 case 0x1070: // iStatus
                 case 0x1074: // iMask
-                case 0x1100 ... 0x1128: // Rootcounters
                 case 0x1130:
                     return accessMem(mem.hwr, uh);
             }

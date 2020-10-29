@@ -106,6 +106,19 @@ public:
     bool isVideo24Bit;
     
     void reset();
+    const uw dotClockDiv[5] = { 10, 8, 5, 4, 7 };
+    bool in_vblank, in_hblank;
+    uw gpu_clock, scanline;
+    uw statushres2;
+    uw statushres1;
+    uw statusvideo_mode;
+    uw statusvres;
+    uw statusodd_lines;
+    uw statusvertical_interlace;
+    GPUSync get_blanks_and_dot();
+    uh hblank_timings();
+    uh lines_per_frame();
+    bool tick(uw);
     void refresh();
     void write(uw, uw);
     uw read(uw);
