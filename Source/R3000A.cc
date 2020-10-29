@@ -85,15 +85,15 @@ void CstrMips::run() {
         
         /* Sync the timers with the GPU */
         GPUSync sync = vs.get_blanks_and_dot();
+        rootc.gpu_sync(sync);
         
         /* Tick timers. */
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             rootc.tick(threshold * multiplier, i);
-            rootc.gpu_sync(sync);
         }
 
         /* NOTE: Timer 2 does not sync with the GPU! */
-        rootc.tick(threshold * multiplier, 2);
+        //rootc.tick(threshold * multiplier, 2);
         
         if (data32 & mask32) {
             if ((copr[12] & 0x401) == 0x401) {

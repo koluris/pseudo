@@ -68,7 +68,7 @@ void CstrDraw::resize(sh w, sh h) {
     
     // Not current
     if (res.h != w || res.v != h) {
-        keepAspectRatio(w, h, window.multiplier);
+        //keepAspectRatio(w, h, window.multiplier);
         GLMatrixMode(GL_PROJECTION);
         GLID();
         

@@ -150,7 +150,7 @@ T CstrCounters::read(uw addr)
     case 0x8: /* Write to Counter target. */
         return timers[p].target.target;
     default:
-        exit(0);
+            return 0;
     }
 }
 
