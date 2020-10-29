@@ -185,20 +185,14 @@ void CstrGraphics::write(uw addr, uw data) {
                         uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];
                         uh h = (data & 4) ? 480 : 240;
                         
-                        if ((data >> 5) & 1) { // No distinction for interlaced
+                        if (((data >> 5) & 1) || h == vdiff) { // No distinction for interlaced or normal mode
                             draw.resize(w, h);
                             //printf("1 %d / %d\n", w, h);
                         }
-                        else { // Normal modes
-                            if (h == vdiff) {
-                                draw.resize(w, h);
-                                //printf("2 %d / %d\n", w, h);
-                            }
-                            else {
-                                vdiff = vdiff == 226 ? 240 : vdiff; // paradox-059
-                                draw.resize(w, vpos ? vpos : vdiff);
-                                //printf("3 %d / %d\n", w, (vpos ? vpos : vdiff));
-                            }
+                        else { // Special case
+                            vdiff = vdiff == 226 ? 240 : vdiff; // pdx-059, wurst2k
+                            draw.resize(w, vpos ? vpos : vdiff);
+                            //printf("2 %d / %d\n", w, (vpos ? vpos : vdiff));
                         }
                     }
                     return;
@@ -233,11 +227,6 @@ uw CstrGraphics::read(uw addr) {
             return ret.data;
             
         case GPU_REG_STATUS:
-//            if (statusodd_lines) {
-//                ret.status |= GPU_STAT_ODDLINES;
-//            } else {
-//                ret.status &= ~GPU_STAT_ODDLINES;
-//            }
             return ret.status | GPU_STAT_READYFORVRAM;
     }
     printx("/// PSeudo GPU Read: 0x%x", (addr & 0xf));
