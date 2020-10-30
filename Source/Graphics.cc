@@ -30,7 +30,7 @@ void CstrGraphics::reset() {
 
 void CstrGraphics::tick(uw c) {
     clock += c;
-
+    
     uw newLines = clock / 3413;
     if (!newLines) {
         return;
@@ -74,10 +74,6 @@ void CstrGraphics::refresh() {
     
     ret.status ^= GPU_STAT_ODDLINES;
     draw.swapBuffers(ret.disabled);
-}
-
-static inline bool get_bit(uw num, int b) {
-    return num & (1 << b);
 }
 
 void CstrGraphics::write(uw addr, uw data) {

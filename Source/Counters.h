@@ -1,23 +1,4 @@
 class CstrCounters {
-    enum class SyncMode0: uh {
-        pauseDuringHblank = 0,
-        resetAtHblank = 1,
-        resetAtHblankAndPauseOutside = 2,
-        pauseUntilHblankAndFreerun = 3
-    };
-    enum class SyncMode1: uh {
-        pauseDuringVblank = 0,
-        resetAtVblank = 1,
-        resetAtVblankAndPauseOutside = 2,
-        pauseUntilVblankAndFreerun = 3
-    };
-    enum class SyncMode2: uh {
-        stopCounter = 0,
-        freeRun = 1,
-        freeRun_ = 2,
-        stopCounter_ = 3
-    };
-
     enum class ResetToZero: uh { whenFFFF = 0, whenTarget = 1 };
     enum class IrqRepeatMode: uh { oneShot = 0, repeatedly = 1 };
     enum class IrqPulseMode: uh { shortPulse = 0, toggle = 1 };
@@ -25,7 +6,7 @@ class CstrCounters {
     enum class ClockSource1: uh { systemClock = 0, hblank = 1 };
     enum class ClockSource2: uh { systemClock = 0, systemClock_8 = 1 };
     
-    bool oneShotIrqOccured = false;
+    bool oneShotIrqOccured;
     
 public:
     struct {
@@ -46,15 +27,14 @@ public:
                 uh : 3;
             };
             
-            uh _reg;
+            uh data;
         } mode;
         uh target;
-        bool paused;
         uw cnt;
     } timer[3];
     
     void reset();
-    void step(int, int);
+    void step(ub, uw);
     uh read(uw);
     void write(uw, uh);
 };
