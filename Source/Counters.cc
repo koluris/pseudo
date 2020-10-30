@@ -1,22 +1,22 @@
 #include "Global.h"
 
-#define BIAS \
-    1.5f
-
-#define TMR_FIRE_IRQ(limit, on, when) \
+#define RTC_FIRE_IRQ(limit, on, when) \
     if (tval >= tmr->limit) { \
         if (tmr->mode.resetZero == ResetToZero::on) tval = 0; \
         if (tmr->mode.when) bus.interruptSet(CstrBus::INT_RTC0 + p); \
     }
+
+#define RTC_PORT \
+    (addr >> 4) & 3
 
 CstrCounters rootc;
 
 void CstrCounters::reset() {
     for (auto &tmr : timer) {
         tmr.current = 0;
-        tmr.destination = 0;
-        tmr.temp = 0;
-        tmr.bounds = 0xffff;
+        tmr.bounds  = 0xffff;
+        tmr.dest    = 0;
+        tmr.temp    = 0;
     }
 }
 
@@ -26,44 +26,40 @@ void CstrCounters::update(uw frames) {
         
         uw tval   = tmr->current;
         uw source = tmr->mode.clockSource >> ((p == 2) ? 1 : 0);
-        float divisor = BIAS;
         
+        float rate = 1.5f;
         if ((source & 1) == 1) {
-            switch(p) {
-                case 0: divisor = 6; break;
-                case 1: divisor = 3413; break;
-                case 2: divisor = 8 * BIAS; break;
-            }
+            rate = table[p];
         }
         
-        tval += (tmr->temp += frames) / divisor;
-        tmr->temp %= (uw)divisor;
+        tval += (tmr->temp += frames) / rate;
+        tmr->temp %= (uw)rate;
         
-        TMR_FIRE_IRQ(destination, onDest  , irqWhenDest);
-        TMR_FIRE_IRQ(     bounds, onBounds, irqWhenBounds);
+        RTC_FIRE_IRQ(  dest, onDest  , irqWhenDest);
+        RTC_FIRE_IRQ(bounds, onBounds, irqWhenBounds);
         
         tmr->current = (uh)tval;
     }
 }
 
+void CstrCounters::write(uw addr, uh data) {
+    auto tmr = &timer[RTC_PORT];
+    
+    switch(addr & 0xf) {
+        case 0: tmr->current   = data; return;
+        case 4: tmr->mode.data = data; return;
+        case 8: tmr->dest      = data; return;
+    }
+}
+
 uh CstrCounters::read(uw addr) {
-    auto tmr = &timer[(addr >> 4) & 3];
+    auto tmr = &timer[RTC_PORT];
     
     switch(addr & 0xf) {
         case 0: return tmr->current;
         case 4: return tmr->mode.data;
-        case 8: return tmr->destination;
+        case 8: return tmr->dest;
     }
     
     return 0;
-}
-
-void CstrCounters::write(uw addr, uh data) {
-    auto tmr = &timer[(addr >> 4) & 3];
-    
-    switch(addr & 0xf) {
-        case 0: tmr->current     = data; return;
-        case 4: tmr->mode.data   = data; return;
-        case 8: tmr->destination = data; return;
-    }
 }

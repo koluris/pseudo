@@ -4,8 +4,8 @@ class CstrCounters {
         onBounds = 0,
     };
     
-public:
     struct {
+        // Mode breakdown
         union {
             struct {
                 uh                    : 3;
@@ -21,15 +21,21 @@ public:
         } mode;
         
         uh current;
-        uh destination;
-        uw temp;
         uh bounds;
+        uh dest;
+        uw temp;
     } timer[3];
     
+    // Counters rate
+    const uh table[3] = {
+        6, 3413, 8 * 1.5f
+    };
+    
+public:
     void reset();
     void update(uw);
-    uh read(uw);
     void write(uw, uh);
+    uh read(uw);
 };
 
 extern CstrCounters rootc;
