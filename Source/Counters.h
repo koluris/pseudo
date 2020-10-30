@@ -1,100 +1,62 @@
-struct GPUSync {
-    int dotDiv;
-    bool hblank;
-    bool vblank;
-};
-
 class CstrCounters {
-    enum class ResetWhen: uw {
-        Overflow    = 0,
-        Destination = 1,
+    enum class SyncMode0: uh {
+        pauseDuringHblank = 0,
+        resetAtHblank = 1,
+        resetAtHblankAndPauseOutside = 2,
+        pauseUntilHblankAndFreerun = 3
     };
-    
-    enum class IRQRepeat: uw {
-        OneShot = 0,
-        Repeat  = 1,
+    enum class SyncMode1: uh {
+        pauseDuringVblank = 0,
+        resetAtVblank = 1,
+        resetAtVblankAndPauseOutside = 2,
+        pauseUntilVblankAndFreerun = 3
     };
-    
-    enum class IRQAlternate: uw {
-        Pulse     = 0,
-        Alternate = 1,
+    enum class SyncMode2: uh {
+        stopCounter = 0,
+        freeRun = 1,
+        freeRun_ = 2,
+        stopCounter_ = 3
     };
+
+    enum class ResetToZero: uh { whenFFFF = 0, whenTarget = 1 };
+    enum class IrqRepeatMode: uh { oneShot = 0, repeatedly = 1 };
+    enum class IrqPulseMode: uh { shortPulse = 0, toggle = 1 };
+    enum class ClockSource0: uh { systemClock = 0, dotClock = 1 };
+    enum class ClockSource1: uh { systemClock = 0, hblank = 1 };
+    enum class ClockSource2: uh { systemClock = 0, systemClock_8 = 1 };
     
-    bool in_hblank, in_vblank;
-    bool prev_hblank, prev_vblank;
-    uw dot_div = 0;
+    bool oneShotIrqOccured = false;
     
 public:
-    enum class SyncMode : uw {
-        Pause,
-        Reset,
-        ResetPause,
-        PauseFreeRun,
-        FreeRun,
-        Stop
-    };
-    
-    enum class ClockSrc: uw {
-        System,
-        SystemDiv8,
-        Dotclock,
-        Hblank
-    };
+    struct {
+        uh current;
+        union {
+            struct {
+                uh : 1;
+                uh : 2;
+                ResetToZero resetToZero : 1;
+                uh irqWhenTarget : 1;
+                uh irqWhenFFFF : 1;
+                IrqRepeatMode irqRepeatMode : 1;
+                IrqPulseMode irqPulseMode : 1;
+                uh clockSource : 2;
+                uh interruptRequest : 1;
+                uh reachedTarget : 1;
+                uh reachedFFFF : 1;
+                uh : 3;
+            };
+            
+            uh _reg;
+        } mode;
+        uh target;
+        bool paused;
+        uw cnt;
+    } timer[3];
     
     void reset();
-    void tick(uw, int);
-    void gpu_sync(GPUSync);
-    ClockSrc get_clock_source(int);
-    SyncMode get_sync_mode(int);
-    
-    template <class T>
-    T read(uw);
-    
-    template <class T>
-    void write(uw, T);
-    
-    struct {
-        union {
-            uw raw;
-            
-            struct {
-                uw value : 16;
-                uw       : 16;
-            };
-        } current;
-        
-        union {
-            uw raw;
-            
-            struct {
-                uw sync_enable : 1;
-                uw sync_mode : 2;
-                ResetWhen reset : 1;
-                uw irq_when_target : 1;
-                uw irq_when_overflow : 1;
-                IRQRepeat irq_repeat_mode : 1;
-                IRQAlternate irq_pulse_mode : 1;
-                uw clock_source : 2;
-                uw irq_request : 1;
-                uw reached_destination : 1;
-                uw reached_overflow : 1;
-                uw : 19;
-            };
-        } mode;
-        
-        union {
-            uw raw;
-            
-            struct {
-                uw destination : 16;
-                uw             : 16;
-            };
-        } destination;
-        
-        bool paused, already_fired_irq;
-        
-        uw count;
-    } timer[3];
+    void step(int, int);
+    uh read(uw);
+    void write(uw, uh);
 };
 
 extern CstrCounters rootc;

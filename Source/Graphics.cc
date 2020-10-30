@@ -24,81 +24,26 @@ void CstrGraphics::reset() {
     isVideoPAL   = false;
     isVideo24Bit = false;
     
-    in_vblank = false;
-    in_hblank = false;
-    
-    gpu_clock = 0;
+    clock = 0;
     scanline = 0;
-    
-    statushres2 = 0;
-    statushres1 = 0;
-    statusvideo_mode = 0;
-    statusvres = 0;
-    statusodd_lines = 0;
-    statusvertical_interlace = 0;
 }
 
-GPUSync CstrGraphics::get_blanks_and_dot() {
-    GPUSync sync;
-    sync.dotDiv = dotClockDiv[statushres2 << 2 | statushres1];
-    sync.hblank = in_hblank;
-    sync.vblank = in_vblank;
-    
-    return sync;
-}
+void CstrGraphics::tick(uw c) {
+    clock += c;
 
-enum VideoMode: uw {
-    NTSC = 0,
-    PAL = 1
-};
-
-uh CstrGraphics::hblank_timings() {
-    if (statusvideo_mode == VideoMode::NTSC)
-        return 3412;
-    else
-        return 3404;
-}
-
-uh CstrGraphics::lines_per_frame() {
-    if (statusvideo_mode == VideoMode::NTSC)
-        return 263;
-    else
-        return 314;
-}
-
-bool CstrGraphics::tick(uw cycles) {
-    in_vblank = false;
-    in_hblank = false;
-    
-    uw cycles_per_scanline = hblank_timings();
-    uw scanlines_per_frame = lines_per_frame();
-    bool is_480 = (statusvres == 1);
-    
-    /* Add the cycles to GPU pixel clock (this is in pixels). */
-    /* NOTE: The GPU clock is the cpu clock * 11/7 */
-    gpu_clock += cycles * 11 / 7;
-    
-    /* Finished a scanline. */
-    if (gpu_clock > cycles_per_scanline) {
-        gpu_clock -= cycles_per_scanline;
-        in_hblank = true;
-        scanline++;
-        
-        if (!is_480) {
-            statusodd_lines = scanline % 2 != 0;
-        }
-        
-        if (scanline > scanlines_per_frame) {
-            scanline = 0;
-            
-            if (statusvertical_interlace && is_480)
-                statusodd_lines = !statusodd_lines;
-            
-            in_vblank = true;
-        }
+    uw newLines = clock / 3413;
+    if (!newLines) {
+        return;
     }
     
-    return in_vblank;
+    clock %= 3413;
+    scanline += newLines;
+    
+    if (scanline == 262) {
+        scanline = 0;
+        vs.refresh();
+        bus.interruptSet(CstrBus::INT_VSYNC);
+    }
 }
 
 #define NTSC \
@@ -173,12 +118,6 @@ void CstrGraphics::write(uw addr, uw data) {
                 case 0x08:
                     isVideoPAL   = (data) & 8;
                     isVideo24Bit = (data >> 4) & 1;
-                    
-                    statushres2 = (data >> 6) & 1;
-                    statushres1 = data & 0x3;
-                    statusvres = get_bit(data, 2);
-                    statusvideo_mode = get_bit(data, 3);
-                    statusvertical_interlace = (data >> 5) & 1;
                     
                     {
                         // Basic info

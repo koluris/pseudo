@@ -27,7 +27,7 @@ void CstrHardware::write(uw addr, T data) {
                     return;
                     
                 case 0x1104 ... 0x1124: // Rootcounters
-                    rootc.write<uw>(addr, data);
+                    rootc.write(addr, data);
                     return;
                     
                 case 0x1810 ... 0x1814: // Graphics
@@ -67,7 +67,7 @@ void CstrHardware::write(uw addr, T data) {
                     return;
                     
                 case 0x1100 ... 0x1128: // Rootcounters
-                    rootc.write<uh>(addr, data);
+                    rootc.write(addr, data);
                     return;
                     
                 case 0x1c00 ... 0x1dfe: // Audio
@@ -117,7 +117,7 @@ T CstrHardware::read(uw addr) {
         case HWR_ACCESS_32:
             switch(LOW_BITS(addr)) {
                 case 0x1100 ... 0x1110: // Rootcounters
-                    return rootc.read<uw>(addr);
+                    return rootc.read(addr);
                     
                 case 0x1810 ... 0x1814: // Graphics
                     return vs.read(addr);
@@ -143,7 +143,7 @@ T CstrHardware::read(uw addr) {
                     return sio.read16(addr);
                     
                 case 0x1100 ... 0x1128: // Rootcounters
-                    return rootc.read<uh>(addr);
+                    return rootc.read(addr);
                     
                 case 0x1c00 ... 0x1e0e: // Audio
                     return audio.read(addr);
