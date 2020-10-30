@@ -9,18 +9,13 @@ public:
         uh current;
         union {
             struct {
-                uh : 1;
-                uh : 2;
+                uh : 3;
                 ResetToZero resetToZero : 1;
                 uh irqWhenTarget : 1;
                 uh irqWhenFFFF : 1;
-                uh : 1;
-                uh : 1;
+                uh : 2;
                 uh clockSource : 2;
-                uh : 1;
-                uh : 1;
-                uh : 1;
-                uh : 3;
+                uh : 6;
             };
             
             uh data;

@@ -4,7 +4,7 @@ CstrCounters rootc;
 
 void CstrCounters::reset() {
     for (auto &tmr : timer) {
-        tmr->cnt = 0;
+        tmr.cnt = 0;
     }
 }
 
@@ -84,7 +84,6 @@ void CstrCounters::write(uw addr, uh data) {
             return;
             
         case 4:
-            timer[i].current = 0;
             timer[i].mode.data = data;
             return;
             

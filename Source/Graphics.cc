@@ -63,7 +63,7 @@ double then = 1.0;
 
 void CstrGraphics::refresh() {
     // FPS throttle
-#if 1
+#if 0
     double now = mach_absolute_time() / 1000.0;
     then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
     
