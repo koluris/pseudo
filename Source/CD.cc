@@ -53,7 +53,7 @@ void CstrCD::update() {
     }
     
     if (interruptReadSet) {
-        if (interruptReadSet++ >= 768) {
+        if (interruptReadSet++ >= 1024) {
             interruptReadSet = 0;
             interruptRead();
         }
