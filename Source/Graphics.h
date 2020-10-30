@@ -78,6 +78,7 @@ class CstrGraphics {
     
     uw modeDMA;
     uh vpos, vdiff;
+    uw clock, scanline;
     
     void dataWrite(uw *, sw);
     void dataRead (uw *, sw);
@@ -106,8 +107,7 @@ public:
     bool isVideo24Bit;
     
     void reset();
-    uw clock, scanline;
-    void tick(uw);
+    void update(uw);
     void refresh();
     void write(uw, uw);
     uw read(uw);

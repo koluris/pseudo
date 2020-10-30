@@ -1,94 +1,69 @@
 #include "Global.h"
 
+#define BIAS \
+    1.5f
+
+#define TMR_FIRE_IRQ(limit, on, when) \
+    if (tval >= tmr->limit) { \
+        if (tmr->mode.resetZero == ResetToZero::on) tval = 0; \
+        if (tmr->mode.when) bus.interruptSet(CstrBus::INT_RTC0 + p); \
+    }
+
 CstrCounters rootc;
 
 void CstrCounters::reset() {
     for (auto &tmr : timer) {
-        tmr.cnt = 0;
+        tmr.current = 0;
+        tmr.destination = 0;
+        tmr.temp = 0;
+        tmr.bounds = 0xffff;
     }
 }
 
-void CstrCounters::step(ub p, uw c) {
-    auto tmr = &timer[p];
-    tmr->cnt += c;
-    uw tval = tmr->current;
-    
-    switch(p) {
-        case 0:
-            if ((tmr->mode.clockSource & 1) == 1) {
-                tval += tmr->cnt / 6;
-                tmr->cnt %= 6;
-            } else {
-                tval += (int)(tmr->cnt / 1.5f);
-                tmr->cnt %= (int)1.5f;
+void CstrCounters::update(uw frames) {
+    for (int p = 0; p < 3; p++) {
+        auto tmr = &timer[p];
+        
+        uw tval   = tmr->current;
+        uw source = tmr->mode.clockSource >> ((p == 2) ? 1 : 0);
+        float divisor = BIAS;
+        
+        if ((source & 1) == 1) {
+            switch(p) {
+                case 0: divisor = 6; break;
+                case 1: divisor = 3413; break;
+                case 2: divisor = 8 * BIAS; break;
             }
-            break;
-            
-        case 1:
-            if ((tmr->mode.clockSource & 1) == 1) {
-                tval += tmr->cnt / 3413;
-                tmr->cnt %= 3413;
-            } else {
-                tval += (int)(tmr->cnt / 1.5f);
-                tmr->cnt %= (int)1.5f;
-            }
-            break;
-            
-        case 2:
-            if (((tmr->mode.clockSource >> 1) & 1) == 1) {
-                tval += (int)(tmr->cnt / (8 * 1.5f));
-                tmr->cnt %= (int)(8 * 1.5f);
-            } else {
-                tval += (int)(tmr->cnt * 1.5f);
-                tmr->cnt %= (int)1.5f;
-            }
-            break;
+        }
+        
+        tval += (tmr->temp += frames) / divisor;
+        tmr->temp %= (uw)divisor;
+        
+        TMR_FIRE_IRQ(destination, onDest  , irqWhenDest);
+        TMR_FIRE_IRQ(     bounds, onBounds, irqWhenBounds);
+        
+        tmr->current = (uh)tval;
     }
-    
-    if (tval >= tmr->target) {
-        if (tmr->mode.resetToZero == ResetToZero::whenTarget) tval = 0;
-        if (tmr->mode.irqWhenTarget) bus.interruptSet(CstrBus::INT_RTC0 + p);
-    }
-    
-    if (tval >= 0xffff) {
-        if (tmr->mode.resetToZero == ResetToZero::whenFFFF) tval = 0;
-        if (tmr->mode.irqWhenFFFF) bus.interruptSet(CstrBus::INT_RTC0 + p);
-    }
-    
-    tmr->current = (uh)tval;
 }
 
 uh CstrCounters::read(uw addr) {
-    ub i = (addr >> 4) & 3;
+    auto tmr = &timer[(addr >> 4) & 3];
     
     switch(addr & 0xf) {
-        case 0:
-            return timer[i].current;
-            
-        case 4:
-            return timer[i].mode.data;
-            
-        case 8:
-            return timer[i].target;
+        case 0: return tmr->current;
+        case 4: return tmr->mode.data;
+        case 8: return tmr->destination;
     }
     
     return 0;
 }
 
 void CstrCounters::write(uw addr, uh data) {
-    ub i = (addr >> 4) & 3;
+    auto tmr = &timer[(addr >> 4) & 3];
     
     switch(addr & 0xf) {
-        case 0:
-            timer[i].current = data;
-            return;
-            
-        case 4:
-            timer[i].mode.data = data;
-            return;
-            
-        case 8:
-            timer[i].target = data;
-            return;
+        case 0: tmr->current     = data; return;
+        case 4: tmr->mode.data   = data; return;
+        case 8: tmr->destination = data; return;
     }
 }

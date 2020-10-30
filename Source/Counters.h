@@ -1,31 +1,33 @@
 class CstrCounters {
     enum class ResetToZero: uh {
-        whenFFFF = 0,
-        whenTarget = 1
+        onDest   = 1,
+        onBounds = 0,
     };
     
 public:
     struct {
-        uh current;
         union {
             struct {
-                uh : 3;
-                ResetToZero resetToZero : 1;
-                uh irqWhenTarget : 1;
-                uh irqWhenFFFF : 1;
-                uh : 2;
-                uh clockSource : 2;
-                uh : 6;
+                uh                    : 3;
+                ResetToZero resetZero : 1;
+                uh irqWhenDest        : 1;
+                uh irqWhenBounds      : 1;
+                uh                    : 2;
+                uh clockSource        : 2;
+                uh                    : 6;
             };
             
             uh data;
         } mode;
-        uh target;
-        uw cnt;
+        
+        uh current;
+        uh destination;
+        uw temp;
+        uh bounds;
     } timer[3];
     
     void reset();
-    void step(ub, uw);
+    void update(uw);
     uh read(uw);
     void write(uw, uh);
 };

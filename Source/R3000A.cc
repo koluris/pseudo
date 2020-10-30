@@ -65,18 +65,14 @@ void CstrMips::run() {
     const int threshold = 100;
     
     while(!psx.suspended) {
-        
         for (int i = 0; i < threshold; i++) {
             step(false);
         }
         
-        cd.update();
-        bus.update();
-        vs.tick(threshold * 3);
-        
-        for (int i = 0; i < 3; i++) {
-            rootc.step(i, threshold * 3);
-        }
+           cd.update();
+        rootc.update(threshold * 3);
+           vs.update(threshold * 3);
+          bus.update();
         
         if (data32 & mask32) {
             if ((copr[12] & 0x401) == 0x401) {
@@ -88,7 +84,6 @@ void CstrMips::run() {
 
 void CstrMips::step(bool branched) {
     base[0] = 0;
-    
     uw code = *instCache++;
     pc += 4;
     

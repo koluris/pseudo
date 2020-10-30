@@ -21,26 +21,17 @@ void CstrGraphics::reset() {
     modeDMA      = GPU_DMA_NONE;
     vpos         = 0;
     vdiff        = 0;
+    clock        = 0;
+    scanline     = 0;
     isVideoPAL   = false;
     isVideo24Bit = false;
-    
-    clock = 0;
-    scanline = 0;
 }
 
-void CstrGraphics::tick(uw c) {
-    clock += c;
-    
-    uw newLines = clock / 3413;
-    if (!newLines) {
-        return;
-    }
-    
+void CstrGraphics::update(uw frames) {
+    uw lines = (clock += frames) / 3413;
     clock %= 3413;
-    scanline += newLines;
     
-    if (scanline == 262) {
-        scanline = 0;
+    if ((scanline += lines) >= 262) { scanline = 0;
         vs.refresh();
         bus.interruptSet(CstrBus::INT_VSYNC);
     }
@@ -63,7 +54,7 @@ double then = 1.0;
 
 void CstrGraphics::refresh() {
     // FPS throttle
-#if 0
+#if 1
     double now = mach_absolute_time() / 1000.0;
     then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
     
