@@ -129,7 +129,7 @@
     
     // CPU & Graphics
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
-        GLint swapInterval = 1;
+        GLint swapInterval = 0;
         [[self.openGLView openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
         [[self.openGLView openGLContext] makeCurrentContext];
         

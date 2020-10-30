@@ -118,13 +118,13 @@ double then = 1.0;
 
 void CstrGraphics::refresh() {
     // FPS throttle
-#if 0
-        double now = mach_absolute_time() / 1000.0;
-        then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
-
-        if (then > now) {
-            usleep(then - now);
-        }
+#if 1
+    double now = mach_absolute_time() / 1000.0;
+    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
+    
+    if (then > now) {
+        usleep(then - now);
+    }
 #endif
     
     ret.status ^= GPU_STAT_ODDLINES;
