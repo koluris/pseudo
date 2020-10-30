@@ -7,11 +7,6 @@
 class CstrGraphics {
     // Constant enumerations
     enum {
-        GPU_REG_DATA,
-        GPU_REG_STATUS = 4
-    };
-    
-    enum {
         GPU_STAT_ODDLINES         = 0x80000000,
         GPU_STAT_DMABITS          = 0x60000000,
         GPU_STAT_READYFORCOMMANDS = 0x10000000,

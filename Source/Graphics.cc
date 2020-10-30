@@ -69,11 +69,11 @@ void CstrGraphics::refresh() {
 
 void CstrGraphics::write(uw addr, uw data) {
     switch(addr & 0xf) {
-        case GPU_REG_DATA:
+        case 0: // Data
             dataWrite(&data, 1);
             return;
             
-        case GPU_REG_STATUS:
+        case 4: // Status
             switch(GPU_COMMAND(data)) {
                 case 0x00:
                     ret.status   = 0x14802000;
@@ -148,11 +148,11 @@ void CstrGraphics::write(uw addr, uw data) {
 
 uw CstrGraphics::read(uw addr) {
     switch(addr & 0xf) {
-        case GPU_REG_DATA:
+        case 0: // Data
             dataRead(&ret.data, 1);
             return ret.data;
             
-        case GPU_REG_STATUS:
+        case 4: // Status
             return ret.status | GPU_STAT_READYFORVRAM;
     }
     printx("/// PSeudo GPU Read: 0x%x", (addr & 0xf));
