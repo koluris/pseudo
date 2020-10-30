@@ -3,7 +3,9 @@
 CstrCounters rootc;
 
 void CstrCounters::reset() {
-    oneShotIrqOccured = false;
+    for (auto &tmr : timer) {
+        tmr->cnt = 0;
+    }
 }
 
 void CstrCounters::step(ub p, uw c) {
@@ -13,7 +15,7 @@ void CstrCounters::step(ub p, uw c) {
     
     switch(p) {
         case 0:
-            if ((ClockSource0)(tmr->mode.clockSource & 1) == ClockSource0::dotClock) {
+            if ((tmr->mode.clockSource & 1) == 1) {
                 tval += tmr->cnt / 6;
                 tmr->cnt %= 6;
             } else {
@@ -23,7 +25,7 @@ void CstrCounters::step(ub p, uw c) {
             break;
             
         case 1:
-            if ((ClockSource1)(tmr->mode.clockSource & 1) == ClockSource1::hblank) {
+            if ((tmr->mode.clockSource & 1) == 1) {
                 tval += tmr->cnt / 3413;
                 tmr->cnt %= 3413;
             } else {
@@ -33,7 +35,7 @@ void CstrCounters::step(ub p, uw c) {
             break;
             
         case 2:
-            if ((ClockSource2)((tmr->mode.clockSource >> 1) & 1) == ClockSource2::systemClock_8) {
+            if (((tmr->mode.clockSource >> 1) & 1) == 1) {
                 tval += (int)(tmr->cnt / (8 * 1.5f));
                 tmr->cnt %= (int)(8 * 1.5f);
             } else {
@@ -43,36 +45,14 @@ void CstrCounters::step(ub p, uw c) {
             break;
     }
     
-    bool possibleIrq = false;
-    
     if (tval >= tmr->target) {
-        tmr->mode.reachedTarget = true;
         if (tmr->mode.resetToZero == ResetToZero::whenTarget) tval = 0;
-        if (tmr->mode.irqWhenTarget) possibleIrq = true;
+        if (tmr->mode.irqWhenTarget) bus.interruptSet(CstrBus::INT_RTC0 + p);
     }
     
     if (tval >= 0xffff) {
-        tmr->mode.reachedFFFF = true;
         if (tmr->mode.resetToZero == ResetToZero::whenFFFF) tval = 0;
-        if (tmr->mode.irqWhenFFFF) possibleIrq = true;
-    }
-    
-    if (possibleIrq) {
-        if (tmr->mode.irqPulseMode == IrqPulseMode::toggle) {
-            tmr->mode.interruptRequest = !tmr->mode.interruptRequest;
-        } else {
-            tmr->mode.interruptRequest = false;
-        }
-        
-        if (tmr->mode.irqRepeatMode == IrqRepeatMode::oneShot && oneShotIrqOccured) {
-            return;
-        }
-        
-        if (tmr->mode.interruptRequest == false) {
-            bus.interruptSet(CstrBus::INT_RTC0 + p);
-            oneShotIrqOccured = true;
-        }
-        tmr->mode.interruptRequest = true;
+        if (tmr->mode.irqWhenFFFF) bus.interruptSet(CstrBus::INT_RTC0 + p);
     }
     
     tmr->current = (uh)tval;
