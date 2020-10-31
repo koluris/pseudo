@@ -428,7 +428,7 @@ void CstrCD::write(uw addr, ub data) {
                 case  9: // CdlPause
                 case 10: // CdlInit
                     stopRead();
-                
+                    
                 case  0: // CdlSinc
                 case  1: // CdlNop
                 case  3: // CdlAudio

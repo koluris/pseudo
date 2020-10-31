@@ -194,6 +194,7 @@
 #define A2(a) (a)
 #define A3(a) (a)
 
+
 CstrCop2 cop2;
 
 void CstrCop2::reset() {

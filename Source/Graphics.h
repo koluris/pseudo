@@ -4,6 +4,7 @@
 #define FRAME_H \
     512
 
+
 class CstrGraphics {
     // Constant enumerations
     enum {

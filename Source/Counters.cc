@@ -1,5 +1,6 @@
 #include "Global.h"
 
+
 #define RTC_FIRE_IRQ(limit, on, when) \
     if (tval >= tmr->limit) { \
         if (tmr->mode.resetZero == ResetToZero::on) tval = 0; \
@@ -8,6 +9,7 @@
 
 #define RTC_PORT \
     (addr >> 4) & 3
+
 
 CstrCounters rootc;
 

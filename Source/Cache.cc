@@ -3,6 +3,10 @@
 #include "Global.h"
 
 
+#define COLOR_32BIT(a, b, c, r) \
+    (((ub)(a))<<24) | (((ub)(b))<<16) | (((ub)(c))<<8) | ((ub)(r))
+
+
 CstrCache cache;
 
 void CstrCache::reset() {
@@ -15,9 +19,6 @@ void CstrCache::reset() {
     
     index = 0;
 }
-
-#define COLOR_32BIT(a, b, c, r) \
-    (((ub)(a))<<24) | (((ub)(b))<<16) | (((ub)(c))<<8) | ((ub)(r))
 
 uw CstrCache::pixel2texel(uh p) {
     return COLOR_32BIT(p ? 255 : 0, (p >> 10) << 3, (p >> 5) << 3, p << 3);
