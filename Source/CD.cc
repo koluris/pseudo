@@ -88,6 +88,13 @@ void CstrCD::interrupt() {
     ret.control &= (~(0x80));
     
     switch(irqCache) {
+        case  0: // CdlSinc
+            setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            break;
+            
         case  1: // CdlNop
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
@@ -421,7 +428,8 @@ void CstrCD::write(uw addr, ub data) {
                 case  9: // CdlPause
                 case 10: // CdlInit
                     stopRead();
-                    
+                
+                case  0: // CdlSinc
                 case  1: // CdlNop
                 case  3: // CdlAudio
                 case 11: // CdlMute
