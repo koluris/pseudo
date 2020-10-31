@@ -227,11 +227,10 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                         opaqueClipState(true);
                     }
                     return;
-                    
-                default:
-                    printx("/// PSeudo GPU_TYPE_CMD unknown: 0x%x", addr);
-                    return;
             }
+#ifdef DEBUG
+            printx("/// PSeudo GPU_TYPE_CMD: 0x%x", addr);
+#endif
             return;
             
         case GPU_TYPE_POLYGON:
@@ -299,7 +298,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 LINE *setup = (LINE *)&addr;
                 
                 // Options
-                int points = setup->multiline ? 256 : 2; // eurasia-001, fuzzion, mups-016, paradox-030, paradox-074, pop-n-pop
+                int points = setup->multiline ? 256 : 2; // eurasia-001, fuzzion, mups-016, pdx-030, pdx-074, pop-n-pop
                 
                 // Basic packet components
                 Chromatic *hue[points];
@@ -425,6 +424,9 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     //TWY = (((packets[0] >> 15) & 0x1f) << 3);
                     //TWW = 255 - (((packets[0] >> 0) & 0x1f) << 3);
                     //TWH = 255 - (((packets[0] >> 5) & 0x1f) << 3);
+#ifdef DEBUG
+                    printx("/// PSeudo GPU Texture Window: 0x%x", packets[0]);
+#endif
                     return;
                     
                 case 0xe3: // Draw Area Start
@@ -441,14 +443,18 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     return;
                     
                 case 0xe6: // TODO: STP
-                    return;
-                    
-                default:
-                    printx("/// PSeudo GPU_TYPE_ENV unknown: 0x%x", addr);
+#ifdef DEBUG
+                    printx("/// PSeudo GPU STP: 0x%x", packets[0]);
+#endif
                     return;
             }
+#ifdef DEBUG
+            printx("/// PSeudo GPU_TYPE_ENV: 0x%x", addr);
+#endif
             return;
     }
     
-    printx("/// PSeudo GPU command unknown: 0x%08x / %d", packets[0], ((addr >> 5) & 7));
+#ifdef DEBUG
+    printx("/// PSeudo GPU Primitive: 0x%x / %d", packets[0], ((addr >> 5) & 7));
+#endif
 }

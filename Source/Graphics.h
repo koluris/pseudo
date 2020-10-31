@@ -63,18 +63,16 @@ class CstrGraphics {
     // VRAM operations
     struct {
         bool enabled;
-        uw pvram;
-        uw *raw;
+        uw *raw, pvram;
         
         struct {
             sw start, end, p;
         } h, v;
     } vrop;
     
-    uw modeDMA;
+    uw modeDMA, clock, scanline;
     uh vpos, vdiff;
-    uw clock, scanline;
-    
+
     void dataWrite(uw *, sw);
     void dataRead (uw *, sw);
     int fetchMem(uh *, sw);

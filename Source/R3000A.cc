@@ -217,11 +217,11 @@ void CstrMips::step(bool branched) {
                 case 43: // SLTU
                     base[rd] = base[rs] < base[rt];
                     return;
-                    
-                default:
-                    printx("/// PSeudo 0x%08x | Unknown special opcode 0x%08x | %d\n", pc, code, (code & 63));
-                    return;
             }
+            
+#ifdef DEBUG
+            printx("/// PSeudo 0x%08x | Special opcode 0x%08x | %d", pc, code, (code & 63));
+#endif
             return;
             
         case 1: // REGIMM
@@ -243,11 +243,11 @@ void CstrMips::step(bool branched) {
                         branch(baddr);
                     }
                     return;
-                    
-                default:
-                    printx("/// PSeudo 0x%08x | Unknown bcond opcode 0x%08x | %d\n", pc, code, rt);
-                    return;
             }
+            
+#ifdef DEBUG
+            printx("/// PSeudo 0x%08x | Bcond opcode 0x%08x | %d", pc, code, rt);
+#endif
             return;
             
         case 3: // JAL
@@ -326,11 +326,11 @@ void CstrMips::step(bool branched) {
                 case RFE: // Return from exception
                     copr[12] = (copr[12] & (~(0xf))) | ((copr[12] >> 2) & 0xf);
                     return;
-                    
-                default:
-                    printx("/// PSeudo 0x%08x | Unknown cop0 opcode 0x%08x | %d\n", pc, code, rs);
-                    return;
             }
+            
+#ifdef DEBUG
+            printx("/// PSeudo 0x%08x | Cop0 opcode 0x%08x | %d", pc, code, rs);
+#endif
             return;
             
         case 18: // COP2
@@ -392,11 +392,11 @@ void CstrMips::step(bool branched) {
         case 58: // SWC2
             mem.write<uw>(ob, cop2.MFC2(rt));
             return;
-            
-        default:
-            printx("/// PSeudo 0x%08x | Unknown basic opcode 0x%08x | %d\n", pc, code, opcode);
-            return;
     }
+    
+#ifdef DEBUG
+    printx("/// PSeudo 0x%08x | Basic opcode 0x%08x | %d", pc, code, opcode);
+#endif
 }
 
 void CstrMips::branch(uw addr) {
@@ -407,9 +407,11 @@ void CstrMips::branch(uw addr) {
 
 void CstrMips::exception(uw code, bool branched) {
     if (branched) {
-        printx("/// PSeudo Exception %s", "branched");
+#ifdef DEBUG
+        printx("/// PSeudo Exception is branched", 0);
+#endif
     }
-               
+    
     copr[12] = (copr[12] & (~(0x3f))) | ((copr[12] << 2) & 0x3f);
     copr[13] = code;
     copr[14] = pc;

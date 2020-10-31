@@ -54,7 +54,7 @@ double then = 1.0;
 
 void CstrGraphics::refresh() {
     // FPS throttle
-#if 1
+#if 0
     double now = mach_absolute_time() / 1000.0;
     then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
     
@@ -130,7 +130,9 @@ void CstrGraphics::write(uw addr, uw data) {
                             return;
                             
                         default:
-                            //printf("Requested GPU info: %d\n", (data & 0xffffff));
+#ifdef DEBUG
+                            printx("/// PSeudo GPU info: %d", (data & 0xffffff));
+#endif
                             return;
                     }
                     return;
@@ -140,10 +142,16 @@ void CstrGraphics::write(uw addr, uw data) {
                 case 0x06:
                     return;
             }
+            
+#ifdef DEBUG
             printx("/// PSeudo GPU Write Status: 0x%x", (GPU_COMMAND(data)));
+#endif
             return;
     }
-    printx("/// PSeudo GPU Write: 0x%x <- 0x%x", (addr & 0xf), data);
+    
+#ifdef DEBUG
+    printx("/// PSeudo GPU Write: %d <- 0x%x", (addr & 0xf), data);
+#endif
 }
 
 uw CstrGraphics::read(uw addr) {
@@ -155,8 +163,10 @@ uw CstrGraphics::read(uw addr) {
         case 4: // Status
             return ret.status | GPU_STAT_READYFORVRAM;
     }
-    printx("/// PSeudo GPU Read: 0x%x", (addr & 0xf));
     
+#ifdef DEBUG
+    printx("/// PSeudo GPU Read: %d", (addr & 0xf));
+#endif
     return 0;
 }
 
@@ -366,5 +376,7 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
             return;
     }
     
+#ifdef DEBUG
     printx("/// PSeudo GPU DMA: 0x%x", dma->chcr);
+#endif
 }

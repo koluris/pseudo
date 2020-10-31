@@ -171,7 +171,9 @@ void CstrAudio::write(uw addr, uh data) {
                         return;
                 }
                 
-                printx("/// PSeudo SPU write phase: 0x%x <- 0x%x", (addr & 0xf), data);
+#ifdef DEBUG
+                printx("/// PSeudo SPU Write Channel: 0x%x <- 0x%x", (addr & 0xf), data);
+#endif
                 return;
             }
             
@@ -221,7 +223,9 @@ void CstrAudio::write(uw addr, uh data) {
             return;
     }
     
-    printx("/// PSeudo SPU write: 0x%x <- 0x%x", addr, data);
+#ifdef DEBUG
+    printx("/// PSeudo SPU Write: 0x%x <- 0x%x", addr, data);
+#endif
 }
 
 uh CstrAudio::read(uw addr) {
@@ -253,7 +257,9 @@ uh CstrAudio::read(uw addr) {
                         return accessMem(mem.hwr, uh);
                 }
                 
-                printx("/// PSeudo SPU read phase: 0x%x", (addr & 0xf));
+#ifdef DEBUG
+                printx("/// PSeudo SPU Read Channel: 0x%x", (addr & 0xf));
+#endif
                 return 0;
             }
             
@@ -287,7 +293,9 @@ uh CstrAudio::read(uw addr) {
             return accessMem(mem.hwr, uh);
     }
     
-    printx("/// PSeudo SPU read: 0x%x", addr);
+#ifdef DEBUG
+    printx("/// PSeudo SPU Read: 0x%x", addr);
+#endif
     return 0;
 }
 
@@ -313,5 +321,7 @@ void CstrAudio::executeDMA(CstrBus::castDMA *dma) {
             return;
     }
     
+#ifdef DEBUG
     printx("/// PSeudo SPU DMA: 0x%x", dma->chcr);
+#endif
 }

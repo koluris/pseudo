@@ -15,13 +15,17 @@ void CstrPSeudo::init(const char *path) {
             reset();
         }
         else {
-            // TODO: Incorrect file size
+#ifdef DEBUG
+            printx("/// PSeudo BIOS incorrect file size: %d", fileSize(fp));
+#endif
         }
         
         fclose(fp);
     }
     else {
-        // TODO: File not found
+#ifdef DEBUG
+        printx("/// PSeudo BIOS file not found", 0);
+#endif
     }
 }
 
@@ -47,7 +51,7 @@ void CstrPSeudo::reset() {
     
 #ifdef APPLE_MACOS
     [app consoleClear];
-    [app consolePrint:[NSChars charsWithFormat:@"%s\n\nPSeudo™ : Alpha 0.83\n-> reset complete\n", version]];
+    [app consolePrint:[NSChars charsWithFormat:@"%s\n\nPSeudo™ : Alpha 0.84\n-> reset complete\n", version]];
 #elif  APPLE_IOS
     // TODO
 #endif
@@ -82,20 +86,24 @@ void CstrPSeudo::executable(const char *path) {
             cpu.base[29] = header.s_addr;
         }
         else {
-            // TODO: Incorrect file size
+#ifdef DEBUG
+            printx("/// PSeudo EXE incorrect file size: %d", fileSize(fp));
+#endif
         }
         
         fclose(fp);
     }
     else {
-        // TODO: File not found
+#ifdef DEBUG
+        printx("/// PSeudo EXE file not found", 0);
+#endif
     }
 }
 
-void CstrPSeudo::console(uw *r, uw addr) {
+void CstrPSeudo::console(uw *base, uw addr) {
     if (addr == 0xb0) {
-        if (r[9] == 59 || r[9] == 61) {
-            char put = toupper(r[4] & 0xff);
+        if (base[9] == 59 || base[9] == 61) {
+            char put = toupper(base[4] & 0xff);
 #ifdef APPLE_MACOS
             [app consolePrint:[NSChars charsWithFormat:@"%c", put]];
 #elif  APPLE_IOS

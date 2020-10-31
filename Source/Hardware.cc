@@ -104,7 +104,9 @@ void CstrHardware::write(uw addr, T data) {
             break;
     }
     
+#ifdef DEBUG
     printx("/// PSeudo HW Write(%u): 0x%x <- 0x%x", (uw)sizeof(T), addr, data);
+#endif
 }
 
 template void CstrHardware::write<uw>(uw, uw);
@@ -176,7 +178,9 @@ T CstrHardware::read(uw addr) {
             break;
     }
     
+#ifdef DEBUG
     printx("/// PSeudo HW Read(%u): 0x%x", (uw)sizeof(T), addr);
+#endif
     return 0;
 }
 

@@ -94,7 +94,9 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             break;
             
         default:
-            printx("/// PSeudo Texture Cache: Unknown %d", ((tp >> 7) & 3));
+#ifdef DEBUG
+            printx("/// PSeudo Texture Cache: %d", ((tp >> 7) & 3));
+#endif
             break;
     }
     
@@ -102,13 +104,15 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     GLBindTexture  (GL_TEXTURE_2D, tc.tex);
     GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, tex.bfr);
     
+    if ((index + 1) >= TCACHE_MAX) {
+#ifdef DEBUG
+        printx("/// PSeudo Texture Cache Full: %d", (index + 1));
+#endif
+    }
+    
     // Advance cache counter
     tc.uid = uid;
-    
-    if ((index + 1) >= TCACHE_MAX) {
-        printf("Cache cow\n");
-    }
-    index  = (index + 1) & (TCACHE_MAX - 1);
+    index = (index + 1) & (TCACHE_MAX - 1);
 }
 
 void CstrCache::invalidate(sh X, sh Y, sh W, sh H) {

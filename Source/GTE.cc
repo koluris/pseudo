@@ -236,8 +236,10 @@ void CstrCop2::execute(uw code) {
                     CTC2(rd, cpu.base[rt]);
                     return;
             }
-
-            printx("COP2 Basic %d", (rs & 7));
+            
+#ifdef DEBUG
+            printx("/// PSeudo GTE Basic %d", (rs & 7));
+#endif
             return;
             
         /* pdx-068, ff9, va */
@@ -687,7 +689,9 @@ void CstrCop2::execute(uw code) {
             return;
     }
     
-    printx("COP2 Execute %d", (code & 0x3f));
+#ifdef DEBUG
+    printx("/// PSeudo GTE Execute %d", (code & 0x3f));
+#endif
 }
 
 uw CstrCop2::MFC2(uw addr) { // Cop2d read
@@ -711,7 +715,9 @@ uw CstrCop2::MFC2(uw addr) { // Cop2d read
             break;
             
         case 15: // SXY3
-            printx("GTE SXY3 %d", 0);
+#ifdef DEBUG
+            printx("/// PSeudo GTE SXY3", 0);
+#endif
             break;
             
         case 28: // IRGB
@@ -782,7 +788,9 @@ void CstrCop2::CTC2(uw addr, uw data) { // Cop2c write
             
         /* unused */
         case 31: // FLAG
-            printx("GTE FLAG %d", 0);
+#ifdef DEBUG
+            printx("/// PSeudo GTE FLAG", 0);
+#endif
             break;
     }
     
