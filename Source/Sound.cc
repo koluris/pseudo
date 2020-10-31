@@ -210,14 +210,20 @@ void CstrAudio::write(uw addr, uh data) {
         case 0x1d9a: // Reverb Mode On 2
         case 0x1d9c: // Mute 1
         case 0x1d9e: // Mute 2
+        case 0x1da0: // ?
         case 0x1daa: // Control
         case 0x1da2: // Reverb Address
         case 0x1da4: // ?
         case 0x1dac: // ?
+        case 0x1dae: // ?
         case 0x1db0: // CD Volume L
         case 0x1db2: // CD Volume R
-        case 0x1db4:
-        case 0x1db6:
+        case 0x1db4: // ?
+        case 0x1db6: // ?
+        case 0x1db8: // ?
+        case 0x1dba: // ?
+        case 0x1dbc: // ?
+        case 0x1dbe: // ?
         case 0x1dc0 ... 0x1dfe: // Reverb
             accessMem(mem.hwr, uh) = data;
             return;
@@ -273,8 +279,8 @@ uh CstrAudio::read(uw addr) {
         case 0x1d8a: // Sound On 2
         case 0x1d8c: // Sound Off 1
         case 0x1d8e: // Sound Off 2
-        case 0x1d90:
-        case 0x1d92:
+        case 0x1d90: // ?
+        case 0x1d92: // ?
         case 0x1d94: // Noise Mode On 1
         case 0x1d96: // Noise Mode On 2
         case 0x1d98: // Reverb Mode On 1
@@ -283,12 +289,12 @@ uh CstrAudio::read(uw addr) {
         case 0x1daa: // Control
         case 0x1dac: // ?
         case 0x1dae: // Status
-        case 0x1db0:
-        case 0x1db2:
-        case 0x1db4:
-        case 0x1db6:
-        case 0x1db8:
-        case 0x1dba:
+        case 0x1db0: // ?
+        case 0x1db2: // ?
+        case 0x1db4: // ?
+        case 0x1db6: // ?
+        case 0x1db8: // ?
+        case 0x1dba: // ?
         case 0x1e00 ... 0x1e0e: // ?
             return accessMem(mem.hwr, uh);
     }

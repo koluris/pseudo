@@ -289,6 +289,10 @@ void CstrCD::interrupt() {
         case 25: // CdlTest
             ret.status = CD_STAT_ACKNOWLEDGE;
             switch(param.data[0]) {
+                case 0x04:
+                case 0x05:
+                    break;
+                    
                 case 0x20:
                     {
                         setResultSize(4);
