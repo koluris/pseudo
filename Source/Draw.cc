@@ -122,8 +122,8 @@ ub CstrDraw::opaqueFunc(ub a) {
 }
 
 void CstrDraw::setDrawArea(int plane, uw data) {
-    double e1[] = { 1, 0, 0, (data) & 0x3ff };
-    double e2[] = { 0, 1, 0, (data >> 10) & 0x1ff };
+    double e1[] = { 1, 0, 0, (double)((data) & 0x3ff) };
+    double e2[] = { 0, 1, 0, (double)((data >> 10) & 0x1ff) };
     
     if (plane) {
         e1[0] = -e1[0]; e1[3]++; // ?

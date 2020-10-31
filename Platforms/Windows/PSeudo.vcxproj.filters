@@ -49,6 +49,12 @@
     <Filter Include="GUI\Window">
       <UniqueIdentifier>{f1f56d4e-3318-4aca-a5b1-78af8b3b6753}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\MDEC">
+      <UniqueIdentifier>{f546aaec-220b-48f1-a8bc-403c5c2e9c93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Disc">
+      <UniqueIdentifier>{68f57551-b771-4aac-aa4e-982778a91b13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Bus.cc">
@@ -93,6 +99,12 @@
     <ClCompile Include="Window.cpp">
       <Filter>GUI\Window</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Disc.cc">
+      <Filter>Source\Disc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\MDEC.cc">
+      <Filter>Source\MDEC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Bus.h">
@@ -136,6 +148,12 @@
     </ClInclude>
     <ClInclude Include="Global.h">
       <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Disc.h">
+      <Filter>Source\Disc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\MDEC.h">
+      <Filter>Source\MDEC</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
