@@ -21,7 +21,7 @@ public:
     heap ram, rom, hwr;
     
     CstrMem() {
-        ram.ptr = new ub[ram.size = 0x200000];
+        ram.ptr = new ub[ram.size = 0x800000];
         rom.ptr = new ub[rom.size = 0x80000];
         hwr.ptr = new ub[hwr.size = 0x4000];
     }

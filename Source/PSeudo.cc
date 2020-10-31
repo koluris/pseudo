@@ -24,7 +24,7 @@ void CstrPSeudo::init(const char *path) {
     }
     else {
 #ifdef DEBUG
-        printx("/// PSeudo BIOS file not found", 0);
+        printx("/// PSeudo BIOS %s", "file not found");
 #endif
     }
 }
@@ -61,7 +61,10 @@ void CstrPSeudo::iso(const char *path) {
     if (disc.open(path)) {
         // Prerequisite boot
         cpu.bootstrap();
-        cpu.setpc(cpu.base[31]);
+        
+        if (0) { // Enable to skip BIOS boot
+            cpu.setpc(cpu.base[31]);
+        }
     }
 }
 
@@ -95,7 +98,7 @@ void CstrPSeudo::executable(const char *path) {
     }
     else {
 #ifdef DEBUG
-        printx("/// PSeudo EXE file not found", 0);
+        printx("/// PSeudo EXE file %s", "not found");
 #endif
     }
 }

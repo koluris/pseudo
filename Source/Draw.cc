@@ -425,7 +425,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     //TWW = 255 - (((packets[0] >> 0) & 0x1f) << 3);
                     //TWH = 255 - (((packets[0] >> 5) & 0x1f) << 3);
 #ifdef DEBUG
-                    printx("/// PSeudo GPU Texture Window: 0x%x", packets[0]);
+                    printf("/// PSeudo GPU Texture Window: 0x%x\n", packets[0]);
 #endif
                     return;
                     
@@ -444,7 +444,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     
                 case 0xe6: // TODO: STP
 #ifdef DEBUG
-                    printx("/// PSeudo GPU STP: 0x%x", packets[0]);
+                    printf("/// PSeudo GPU STP: 0x%x\n", packets[0]);
 #endif
                     return;
             }

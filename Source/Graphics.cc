@@ -128,13 +128,11 @@ void CstrGraphics::write(uw addr, uw data) {
                         case 7:
                             ret.data = 2;
                             return;
-                            
-                        default:
-#ifdef DEBUG
-                            printx("/// PSeudo GPU info: %d", (data & 0xffffff));
-#endif
-                            return;
                     }
+                    
+#ifdef DEBUG
+                    printf("/// PSeudo GPU info: %d\n", (data & 0xffffff));
+#endif
                     return;
                     
                 /* unused */

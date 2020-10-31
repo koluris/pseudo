@@ -716,7 +716,7 @@ uw CstrCop2::MFC2(uw addr) { // Cop2d read
             
         case 15: // SXY3
 #ifdef DEBUG
-            printx("/// PSeudo GTE SXY3", 0);
+            printx("/// PSeudo GTE %s", "SXY3");
 #endif
             break;
             
@@ -789,7 +789,7 @@ void CstrCop2::CTC2(uw addr, uw data) { // Cop2c write
         /* unused */
         case 31: // FLAG
 #ifdef DEBUG
-            printx("/// PSeudo GTE FLAG", 0);
+            printx("/// PSeudo GTE %s", "FLAG");
 #endif
             break;
     }

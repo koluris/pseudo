@@ -91,6 +91,7 @@ void CstrCD::interrupt() {
         case  1: // CdlNop
             setResultSize(1);
             ret.status = CD_STAT_ACKNOWLEDGE;
+            result.data[0] = ret.statp;
             break;
             
         case  2: // CdlSetloc
@@ -285,6 +286,58 @@ void CstrCD::interrupt() {
             result.data[0] = ret.statp;
             break;
             
+        case 25: // CdlTest
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            switch(param.data[0]) {
+                case 0x20:
+                    {
+                        setResultSize(4);
+                        ub test20[] = { 0x98, 0x06, 0x10, 0xc3 };
+                        memcp(result.data, test20, 4);
+                    }
+                    break;
+                    
+                default:
+#ifdef DEBUG
+                    printx("/// PSeudo CD CdlTest 0x%x", param.data[0]);
+#endif
+                    break;
+            }
+            break;
+            
+        case 26: // CdlID
+            setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            interruptQueue(irqCache + 0x20);
+            break;
+            
+        case 26 + 0x20:
+            setResultSize(8);
+            ret.status = CD_STAT_COMPLETE;
+            result.data[0] = 0x00;
+            result.data[1] = disc.exists() ? 0x00 : 0x80;
+            result.data[2] = 0x00;
+            result.data[3] = 0x00;
+            memcp(&result.data[4], "SCEA", 4); // Ehm...
+            break;
+            
+        case 30: // CdlReadToc
+            setResultSize(1);
+            ret.status = CD_STAT_ACKNOWLEDGE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            interruptQueue(irqCache + 0x20);
+            break;
+            
+        case 30 + 0x20:
+            setResultSize(1);
+            ret.status = CD_STAT_COMPLETE;
+            ret.statp |= 0x02;
+            result.data[0] = ret.statp;
+            break;
+            
         default:
 #ifdef DEBUG
             printx("/// PSeudo CD irqCache: %d", irqCache);
@@ -376,6 +429,9 @@ void CstrCD::write(uw addr, ub data) {
                 case 20: // CdlGetTD
                 case 21: // CdlSeekL
                 case 22: // CdlSeekP
+                case 25: // CdlTest
+                case 26: // CdlID
+                case 30: // CdlReadToc
                     defaultCtrlAndStat();
                     break;
                     
@@ -534,7 +590,6 @@ ub CstrCD::read(uw addr) {
                     CD_REG(3) = ret.status | 0xe0;
                 }
                 else {
-                    printx("/// PSeudo CD read: haha %d", 2);
                     CD_REG(3) = 0xff;
                 }
             }

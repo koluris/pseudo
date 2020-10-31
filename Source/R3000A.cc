@@ -408,7 +408,7 @@ void CstrMips::branch(uw addr) {
 void CstrMips::exception(uw code, bool branched) {
     if (branched) {
 #ifdef DEBUG
-        printx("/// PSeudo Exception is branched", 0);
+        printx("/// PSeudo Exception is %s", "branched");
 #endif
     }
     

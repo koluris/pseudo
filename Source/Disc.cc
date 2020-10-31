@@ -25,6 +25,14 @@ bool CstrDisc::open(const char *path) {
     return true;
 }
 
+bool CstrDisc::exists() {
+    if (!file) {
+        return false;
+    }
+    
+    return true;
+}
+
 void CstrDisc::fetchTN(ub *b) {
     b[0] = 1;
     b[1] = 1;
