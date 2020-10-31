@@ -28,7 +28,7 @@ class CstrCounters {
     
     // Counters rate
     const uh table[3] = {
-        6, 3413, 8 * 1.5f
+        6, 3413, (uh)(8 * 1.5f)
     };
     
 public:
