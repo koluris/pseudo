@@ -19,18 +19,19 @@
 <h2>Completion</h2>
 
 Here's a list with the overall progress of the emulator, broken down in distinct parts. Components with 0% progress are not listed.
-* `95% -> PSX-EXE Loader`
-* `90% -> CPU Mips R3000A`
-* `90% -> Interrupts`
-* `85% -> GPU Primitives & Commands`
-* `80% -> Mem IO`
-* `75% -> GPU Textures`
-* `70% -> Audio`
-* `60% -> Rootcounters`
-* `60% -> DMA`
-* `50% -> Serial IO`
-* `20% -> GTE (Co-processor 2)`
-* `15% -> CD-ROM Decoder`
+* `95% -> CPU Mips R3000A`
+* `90% -> DMA`
+* `85% -> Mem IO`
+* `85% -> Movie Decoder`
+* `80% -> Interrupts`
+* `75% -> CD Decoder`
+* `70% -> GPU Primitives & Commands`
+* `65% -> GPU Textures`
+* `60% -> Audio`
+* `60% -> GTE`
+* `55% -> Rootcounters`
+* `25% -> Serial IO`
+* `10% -> XA Audio`
 
 **PSeudo** can load some initial game screens, but nothing more for now. Also, for quite some time I will keep working on it with the provided slow CPU Interpreter.
 
