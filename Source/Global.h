@@ -6,27 +6,27 @@
 #include <limits.h>
 
 #ifdef APPLE_MACOS
-	#include <mach/mach_time.h>
+    #include <mach/mach_time.h>
     #include <OpenGL/gl.h>
     #include <OpenAL/al.h>
     #include <OpenAL/alc.h>
 
     #include "../Platforms/macOS/Global.h"
 #elif  APPLE_IOS
-	#include <mach/mach_time.h>
+    #include <mach/mach_time.h>
     #include <OpenGLES/ES1/gl.h>
     #include <OpenAL/al.h>
     #include <OpenAL/alc.h>
 
     #include "../Platforms/iOS/Global.h"
 #elif  _WIN32
-	#include <Windows.h>
-	#include <gl/GL.h>
-	#include "al.h"
-	#include "alc.h"
+    #include <Windows.h>
+    #include <gl/GL.h>
+    #include "al.h"
+    #include "alc.h"
 
-	#define GL_COMBINE      0x8570
-	#define GL_RGB_SCALE    0x8573
+    #define GL_COMBINE      0x8570
+    #define GL_RGB_SCALE    0x8573
     #define MIN(a, b)       (((a) < (b)) ? (a) : (b))
     #define MAX(a, b)       (((a) > (b)) ? (a) : (b))
 #endif
