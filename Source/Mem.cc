@@ -78,13 +78,18 @@ template ub CstrMem::read<ub>(uw);
 
 // OTC
 void CstrMem::executeDMA(CstrBus::castDMA *dma) {
-    uw *p = (uw *)&ram.ptr[dma->madr & (ram.size - 1)];
-    
     if (dma->chcr == 0x11000002) {
-        while(dma->bcr--) {
-            *p-- = (dma->madr - 4) & 0xffffff;
-            dma->madr -= 4;
+        uw addr = dma->madr;
+        
+        if (!addr) {
+#ifdef DEBUG
+            printx("/// PSeudo DMA OTC -> %d", 0);
+#endif
+            return;
         }
-        p++; *p = 0xffffff;
+        
+        for (int i = dma->bcr - 1; i >= 0; i--, addr -= 4) {
+            mem.write<uw>(addr, (i == 0) ? 0xffffff : (addr - 4) & 0xffffff);
+        }
     }
 }
