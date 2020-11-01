@@ -7,19 +7,32 @@ HINSTANCE hInst;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
     switch(mes) {
         case WM_CREATE:
-            printf("WM_CREATE\n");
+            OutputDebugString("WM_CREATE\n");
             return 0;
             
         case WM_COMMAND:
-            printf("WM_COMMAND\n");
+            OutputDebugString("WM_COMMAND\n");
+            switch (LOWORD(wParam)) {
+            case ID_ACTION_OPEN:
+                break;
+
+            case ID_ACTION_BIOSSHELL:
+                break;
+
+            case ID_ACTION_EXIT:
+                break;
+
+            case ID_HELP_ABOUTPSEUDO:
+                break;
+            }
             return 0;
             
         case WM_CLOSE:
-            printf("WM_CLOSE\n");
+            OutputDebugString("WM_CLOSE\n");
             return 0;
             
         case WM_DESTROY:
-            printf("WM_DESTROY\n");
+            OutputDebugString("WM_DESTROY\n");
             return 0;
     }
     
@@ -28,7 +41,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     WNDCLASS wc = {
-        0, WndProc, 0, 0, hInst, LoadIcon(hInst, (LPCSTR)0), LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_WINDOW+1), 0, "wc"
+        0, WndProc, 0, 0, hInst, LoadIcon(hInst, (LPCSTR)0), LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_WINDOW + 1), MAKEINTRESOURCE(IDR_PSEUDO_MENU), "wc"
     };
     
     if (!MakeClass(&wc)) {
@@ -39,7 +52,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     
     hInst = hInstance;
     
-    HWND hWnd = CreateWindow("wc", "PSeudoU+2122 : Alpha", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 500, 100, 0, 0, hInstance, 0);
+    HWND hWnd = CreateWindow("wc", "PSeudo : Alpha", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, 0, 0, hInstance, 0);
     
     if (!hWnd) {
 		MesBox(0, "CreateWindow failed", "PSeudo", 0);

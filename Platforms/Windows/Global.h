@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <windows.h>
 
+#define DispatchMes		DispatchMessage
+#define GetMes			GetMessage
 #define MakeClass		RegisterClass
 #define MesBox			MessageBox
-#define GetMes			GetMessage
 #define TranslateMes	TranslateMessage
-#define DispatchMes		DispatchMessage
+
+#include "Resource.h"
