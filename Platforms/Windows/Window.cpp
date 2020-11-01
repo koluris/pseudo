@@ -7,11 +7,10 @@ HINSTANCE hInst;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
     switch(mes) {
         case WM_CREATE:
-            OutputDebugString("WM_CREATE\n");
+            ConsoleOutput("WM_CREATE\n");
             return 0;
             
         case WM_COMMAND:
-            OutputDebugString("WM_COMMAND\n");
             switch (LOWORD(wParam)) {
             case ID_ACTION_OPEN:
                 break;
@@ -28,11 +27,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
             return 0;
             
         case WM_CLOSE:
-            OutputDebugString("WM_CLOSE\n");
+            ConsoleOutput("WM_CLOSE\n");
             return 0;
             
         case WM_DESTROY:
-            OutputDebugString("WM_DESTROY\n");
+            ConsoleOutput("WM_DESTROY\n");
             return 0;
     }
     
@@ -41,13 +40,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT mes, WPARAM wParam, LPARAM lParam) {
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     WNDCLASS wc = {
-        0, WndProc, 0, 0, hInst, LoadIcon(hInst, (LPCSTR)0), LoadCursor(NULL, IDC_ARROW), (HBRUSH)(COLOR_WINDOW + 1), MAKEINTRESOURCE(IDR_PSEUDO_MENU), "wc"
+        0,
+        WndProc,
+        0,
+        0,
+        hInst,
+        LoadIcon(hInst, (LPCSTR)0),
+        LoadCursor(NULL, IDC_ARROW),
+        (HBRUSH)(COLOR_WINDOW + 1),
+        MAKEINTRESOURCE(IDR_PSEUDO_MENU),
+        "wc"
     };
     
     if (!MakeClass(&wc)) {
 		MesBox(0, "MakeClass failed", "PSeudo", 0);
-        
-        return 1;
+        return 0;
     }
     
     hInst = hInstance;
@@ -56,8 +63,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     
     if (!hWnd) {
 		MesBox(0, "CreateWindow failed", "PSeudo", 0);
-        
-        return 1;
+        return 0;
     }
     
     ShowWindow(hWnd, nCmdShow);
@@ -69,5 +75,5 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		 DispatchMes(&mes);
     }
     
-    return (int)mes.wParam;
+    return mes.wParam;
 }
