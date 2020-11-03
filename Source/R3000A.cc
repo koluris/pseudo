@@ -70,8 +70,8 @@ void CstrMips::run() {
         }
         
            cd.update();
-        rootc.update(threshold * 2);
-           vs.update(threshold * 2);
+        rootc.update(threshold * 3);
+           vs.update(threshold * 3);
           bus.update();
         
         if (data32 & mask32) {

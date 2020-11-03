@@ -32,7 +32,7 @@ void CstrGraphics::update(uw frames) {
     clock %= 3413;
     
     if ((scanline += lines) >= 262) { scanline = 0;
-        vs.refresh();
+         vs.redraw();
         bus.interruptSet(CstrBus::INT_VSYNC);
     }
 }
@@ -52,7 +52,7 @@ void CstrGraphics::update(uw frames) {
 
 double then = 1.0;
 
-void CstrGraphics::refresh() {
+void CstrGraphics::redraw() {
     // FPS throttle
 #if 0
     double now = mach_absolute_time() / 1000.0;
