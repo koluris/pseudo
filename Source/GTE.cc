@@ -1,6 +1,8 @@
 #include "Global.h"
 
 
+#undef RGB
+
 // 32-bit accessor
 #define oooo(base, index) \
     base[(index)]

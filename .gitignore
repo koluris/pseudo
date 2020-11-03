@@ -6,3 +6,5 @@ Platforms/Windows/Debug/
 Platforms/Windows/Release/
 Platforms/Windows/PSeudo.VC.db
 Platforms/Windows/PSeudo.VC.VC.opendb
+Platforms/Windows/x64
+Platforms/Windows/Libraries

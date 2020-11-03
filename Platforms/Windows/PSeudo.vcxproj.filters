@@ -155,5 +155,13 @@
     <ClInclude Include="..\..\Source\MDEC.h">
       <Filter>Source\MDEC</Filter>
     </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>GUI\Window</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>GUI\Window</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
