@@ -17,7 +17,6 @@ class CstrAudio {
     
     // OpenAL
     ALCdevice *device;
-    ALCcontext *ctx;
     ALuint source;
     ALuint bfr[SPU_ALC_BUF_AMOUNT];
     
@@ -40,19 +39,9 @@ class CstrAudio {
 public:
     CstrAudio() {
         // OpenAL
-        device = alcOpenDevice(NULL);
-        
-        if (!device) {
-            printf("ALC Device error\n");
-        }
-        
-        ctx = alcCreateContext(device, NULL);
+        device = alcOpenDevice(0);
+        ALCcontext *ctx = alcCreateContext(device, 0);
         alcMakeContextCurrent(ctx);
-        
-        if (!ctx) {
-            printf("ALC Context error\n");
-        }
-        
         alGenSources(1, &source);
         alGenBuffers(SPU_ALC_BUF_AMOUNT, bfr);
         
@@ -66,8 +55,6 @@ public:
     ~CstrAudio() {
         alDeleteSources(1, &source);
         alDeleteBuffers(SPU_ALC_BUF_AMOUNT, bfr);
-        ALCdevice *device = alcGetContextsDevice(ctx);
-        alcMakeContextCurrent(NULL);
         alcCloseDevice(device);
     }
     

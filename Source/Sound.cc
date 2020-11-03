@@ -90,7 +90,7 @@ void CstrAudio::decodeStream() {
                         }
                         
                         if ((op & 1)) {
-                            ch.paddr = (op != 3 || ch.raddr == 0) ? -2 : ch.raddr;
+                            ch.paddr = (op != 3 || ch.raddr == 0) ? -1 : ch.raddr;
                         }
                     }
                     
