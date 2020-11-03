@@ -158,7 +158,7 @@
     
     // Stop current emulation process & reset
     [self emulatorStopAndReset:YES];
-    [self setWindowCaption:[path lastPathComponent]];
+    [self setWindowCaption:[[path lastPathComponent] charsDeletePathExtension]];
     
     if ([[path pathExtension] isEqualToChars:@"img"] || [[path pathExtension] isEqualToChars:@"iso"]) { // Better solution: "CD001" or "PSX-EXE"
         psx.iso(file);

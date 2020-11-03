@@ -37,6 +37,7 @@
 #define addLocalMonitorForEventsMask    addLocalMonitorForEventsMatchingMask
 #define NSDownMask                      NSEventMaskKeyDown
 #define NSUpMask                        NSEventMaskKeyUp
+#define charsDeletePathExtension        stringByDeletingPathExtension
 
 #import "OpenGLView.h"
 #import "Options.h"
