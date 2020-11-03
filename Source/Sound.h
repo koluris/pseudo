@@ -39,12 +39,6 @@ class CstrAudio {
     
 public:
     CstrAudio() {
-        for (int i = 0; i < SPU_MAX_CHAN; i++) {
-            spuVoices[i].saddr = 0;
-            spuVoices[i].raddr = 0;
-            spuVoices[i].paddr = 0;
-        }
-        
         // OpenAL
         device = alcOpenDevice(NULL);
         

@@ -3,6 +3,17 @@
 #include "Global.h"
 
 
+#define spuMemC(addr) \
+    ((ub *)spuMem)[addr]
+
+#define audioSet(a, b) \
+    rest = (spuMemC(ch.paddr) & a) << b; \
+    if (rest & 0x8000) rest |= 0xffff0000; \
+    rest = (rest >> shift) + ((ch.s[0] * f[predict][0] + ch.s[1] * f[predict][1] + 32) >> 6); \
+    ch.s[1] = ch.s[0]; \
+    ch.s[0] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX); \
+    ch.bfr[i++] = ch.s[0]
+
 #define SPU_CHANNEL(addr) \
     (addr >> 4) & 0x1f
 
@@ -32,17 +43,6 @@ void CstrAudio::voiceOn(uw data) {
         }
     }
 }
-
-#define spuMemC(addr) \
-    ((ub *)spuMem)[addr]
-
-#define audioSet(a, b) \
-    rest = (spuMemC(ch.paddr) & a) << b; \
-    if (rest & 0x8000) rest |= 0xffff0000; \
-    rest = (rest >> shift) + ((ch.s[0] * f[predict][0] + ch.s[1] * f[predict][1] + 32) >> 6); \
-    ch.s[1] = ch.s[0]; \
-    ch.s[0] = MIN(MAX(rest, SHRT_MIN), SHRT_MAX); \
-    ch.bfr[i++] = ch.s[0]
 
 void CstrAudio::decodeStream() {
     while(!psx.suspended) {
@@ -90,7 +90,7 @@ void CstrAudio::decodeStream() {
                         }
                         
                         if ((op & 1)) {
-                            ch.paddr = (op != 3 || ch.raddr == 0) ? -1 : ch.raddr;
+                            ch.paddr = (op != 3 || ch.raddr == 0) ? -2 : ch.raddr;
                         }
                     }
                     
@@ -158,11 +158,11 @@ void CstrAudio::write(uw addr, uh data) {
                         return;
                         
                     case 0x6: // Sound Address
-                        spuVoices[ch].saddr  = data << 3;
+                        spuVoices[ch].saddr = data << 3;
                         return;
                         
                     case 0xe: // Return Address
-                        spuVoices[ch].raddr  = data << 3;
+                        spuVoices[ch].raddr = data << 3;
                         spuVoices[ch].repeat = true;
                         return;
                         
