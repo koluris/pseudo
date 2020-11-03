@@ -33,8 +33,11 @@ void CstrAudio::voiceOn(uw data) {
     }
 }
 
+#define spuMemC(addr) \
+    ((ub *)spuMem)[addr]
+
 #define audioSet(a, b) \
-    rest = (*ch.paddr & a) << b; \
+    rest = (spuMemC(ch.paddr) & a) << b; \
     if (rest & 0x8000) rest |= 0xffff0000; \
     rest = (rest >> shift) + ((ch.s[0] * f[predict][0] + ch.s[1] * f[predict][1] + 32) >> 6); \
     ch.s[1] = ch.s[0]; \
@@ -67,15 +70,15 @@ void CstrAudio::decodeStream() {
             for (int ns = 0; ns < SPU_SAMPLE_COUNT; ns++) {
                 for (; ch.spos >= 0x10000; ch.spos -= 0x10000) {
                     if (ch.bpos == 28) {
-                        if (ch.paddr == (ub *)-1) {
+                        if (ch.paddr == -1) {
                             ch.active = false;
                             redirect SPU_NEXT_CHANNEL;
                         }
                         
                         ch.bpos = 0;
-                        ub shift   = *ch.paddr & 0xf;
-                        ub predict = *ch.paddr++ >> 4;
-                        ub op      = *ch.paddr++;
+                        ub shift   = spuMemC(ch.paddr) & 0xf;
+                        ub predict = spuMemC(ch.paddr++) >> 4;
+                        ub op      = spuMemC(ch.paddr++);
                         
                         for (int i = 0, rest; i < 28; ch.paddr++) {
                             audioSet(0x0f, 0xc);
@@ -87,7 +90,7 @@ void CstrAudio::decodeStream() {
                         }
                         
                         if ((op & 1)) {
-                            ch.paddr = (op != 3 || ch.raddr == NULL) ? (ub *)-1 : ch.raddr;
+                            ch.paddr = (op != 3 || ch.raddr == 0) ? -1 : ch.raddr;
                         }
                     }
                     
@@ -155,11 +158,11 @@ void CstrAudio::write(uw addr, uh data) {
                         return;
                         
                     case 0x6: // Sound Address
-                        spuVoices[ch].saddr = spuMemC + (data << 3);
+                        spuVoices[ch].saddr  = data << 3;
                         return;
                         
                     case 0xe: // Return Address
-                        spuVoices[ch].raddr = spuMemC + (data << 3);
+                        spuVoices[ch].raddr  = data << 3;
                         spuVoices[ch].repeat = true;
                         return;
                         
@@ -249,7 +252,7 @@ uh CstrAudio::read(uw addr) {
                         
                     case 0xe: // Madman
                         if (spuVoices[ch].raddr) {
-                            return (spuVoices[ch].raddr - spuMemC) >> 3;
+                            return spuVoices[ch].raddr >> 3;
                         }
                         return 0;
                         

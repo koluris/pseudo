@@ -11,7 +11,7 @@ class CstrAudio {
         { 0, 0 }, { 60, 0 }, { 115, -52 }, { 98, -55 }, { 122, -60 }
     };
     
-    uh spuMem[256 * 1024]; ub *spuMemC;
+    uh spuMem[256 * 1024];
     uh sbuf[SPU_SAMPLE_SIZE];
     uw spuAddr;
     
@@ -28,9 +28,9 @@ class CstrAudio {
         sw bfr[28], s[2];
         
         // Address
-        ub *saddr; // Start
-        ub *paddr; // Current
-        ub *raddr; // Return
+        sw saddr; // Start
+        sw paddr; // Current
+        sw raddr; // Return
     } spuVoices[SPU_MAX_CHAN];
     
     sh setVolume(sh);
@@ -39,12 +39,10 @@ class CstrAudio {
     
 public:
     CstrAudio() {
-        spuMemC = (ub *)spuMem;
-        
         for (int i = 0; i < SPU_MAX_CHAN; i++) {
-            spuVoices[i].saddr = spuMemC;
-            spuVoices[i].raddr = spuMemC;
-            spuVoices[i].paddr = spuMemC;
+            spuVoices[i].saddr = 0;
+            spuVoices[i].raddr = 0;
+            spuVoices[i].paddr = 0;
         }
         
         // OpenAL
