@@ -1,7 +1,7 @@
 class CstrAudio {
     enum {
         SPU_SAMPLE_RATE    = 44100,
-        SPU_SAMPLE_SIZE    = 512,
+        SPU_SAMPLE_SIZE    = 1024,
         SPU_SAMPLE_COUNT   = SPU_SAMPLE_SIZE / 4,
         SPU_MAX_CHAN       = 24 + 1,
         SPU_ALC_BUF_AMOUNT = 16
