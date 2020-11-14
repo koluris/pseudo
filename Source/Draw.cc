@@ -264,11 +264,11 @@ void primTileS(ub *baseAddr) {
         glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
     }
 
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
       glVertex2s(x,     y);
       glVertex2s(x + w, y);
-      glVertex2s(x + w, y + h);
       glVertex2s(x,     y + h);
+      glVertex2s(x + w, y + h);
     glEnd();
 }
 
@@ -286,11 +286,11 @@ void primBlkFill(ub *baseAddr) {
     glDisable(GL_CLIP_PLANE3);
 
     glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
       glVertex2s(x,     y);
       glVertex2s(x + w, y);
-      glVertex2s(x + w, y + h);
       glVertex2s(x,     y + h);
+      glVertex2s(x + w, y + h);
     glEnd();
 
     glEnable(GL_CLIP_PLANE0);
@@ -535,7 +535,7 @@ void primPolyF3(ub *baseAddr) {
         glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
     }
     
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
         glVertex2s(x1,y1);
         glVertex2s(x2,y2);
         glVertex2s(x3,y3);
@@ -579,11 +579,11 @@ void primPolyF4(ub *baseAddr) {
         glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
     }
     
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
         glVertex2s(x1,y1);
         glVertex2s(x2,y2);
-        glVertex2s(x4,y4);
         glVertex2s(x3,y3);
+        glVertex2s(x4,y4);
     glEnd();
 }
 
@@ -620,7 +620,7 @@ void primPolyG3(ub *baseAddr) {
         alpha = 255;
     }
     
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
         glColor4ub(baseAddr[ 0], baseAddr[ 1], baseAddr[ 2], alpha);
         glVertex2s(x1,y1);
         glColor4ub(baseAddr[ 8], baseAddr[ 9], baseAddr[10], alpha);
@@ -667,15 +667,15 @@ void primPolyG4(ub *baseAddr) {
         alpha = 255;
     }
     
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
         glColor4ub(baseAddr[ 0], baseAddr[ 1], baseAddr[ 2], alpha);
         glVertex2s(x1,y1);
         glColor4ub(baseAddr[ 8], baseAddr[ 9], baseAddr[10], alpha);
         glVertex2s(x2,y2);
-        glColor4ub(baseAddr[24], baseAddr[25], baseAddr[26], alpha);
-        glVertex2s(x4,y4);
         glColor4ub(baseAddr[16], baseAddr[17], baseAddr[18], alpha);
         glVertex2s(x3,y3);
+        glColor4ub(baseAddr[24], baseAddr[25], baseAddr[26], alpha);
+        glVertex2s(x4,y4);
     glEnd();
 }
 
@@ -766,7 +766,7 @@ void primPolyFT3(ub *baseAddr) {
         glTranslatef(0, 1.0f, 0);
     }
 
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2s(tx0,ty0);
         glVertex2s(x1,y1);
         glTexCoord2s(tx1,ty1);
@@ -869,15 +869,15 @@ void primPolyFT4(ub *baseAddr) {
         glTranslatef(0, 1.0f, 0);
     }
 
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
         glTexCoord2s(tx0,ty0);
         glVertex2s(x1,y1);
         glTexCoord2s(tx1,ty1);
         glVertex2s(x2,y2);
-        glTexCoord2s(tx3,ty3);
-        glVertex2s(x4,y4);
         glTexCoord2s(tx2,ty2);
         glVertex2s(x3,y3);
+        glTexCoord2s(tx3,ty3);
+        glVertex2s(x4,y4);
     glEnd();
 
     glPopMatrix();
@@ -955,7 +955,7 @@ void primPolyGT3(ub *baseAddr) {
         glTranslatef(0, 1.0f, 0);
     }
 
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
         glColor4ub(vs.texshade[baseAddr[ 0]], vs.texshade[baseAddr[ 1]], vs.texshade[baseAddr[ 2]],alpha);
         glTexCoord2s(tx0, ty0);
         glVertex2s(x1, y1);
@@ -1047,19 +1047,19 @@ void primPolyGT4(ub *baseAddr) {
         glTranslatef(0, 1.0f, 0);
     }
 
-    glBegin(GL_POLYGON);
+    glBegin(GL_TRIANGLE_STRIP);
         glColor4ub(vs.texshade[baseAddr[ 0]], vs.texshade[baseAddr[ 1]], vs.texshade[baseAddr[ 2]],alpha);
         glTexCoord2s(tx0, ty0);
         glVertex2s(x1, y1);
         glColor4ub(vs.texshade[baseAddr[12]], vs.texshade[baseAddr[13]], vs.texshade[baseAddr[14]],alpha);
         glTexCoord2s(tx1, ty1);
         glVertex2s(x2, y2);
-        glColor4ub(vs.texshade[baseAddr[36]], vs.texshade[baseAddr[37]], vs.texshade[baseAddr[38]],alpha);
-        glTexCoord2s(tx3, ty3);
-        glVertex2s(x4, y4);
         glColor4ub(vs.texshade[baseAddr[24]], vs.texshade[baseAddr[25]], vs.texshade[baseAddr[26]],alpha);
         glTexCoord2s(tx2, ty2);
         glVertex2s(x3, y3);
+        glColor4ub(vs.texshade[baseAddr[36]], vs.texshade[baseAddr[37]], vs.texshade[baseAddr[38]],alpha);
+        glTexCoord2s(tx3, ty3);
+        glVertex2s(x4, y4);
     glEnd();
 
     glPopMatrix();
