@@ -431,86 +431,6 @@ void setSpriteBlendMode(sw command) {
     }
 }
 
-void primSprt8(ub * data) {
-    sh *p16 = (sh *)data;
-    uw *p32 = (uw *)data;
-    
-    sh x = ((p16[2] << 21) >> 21) + vs.psxDraw.offsetX;
-    sh y = ((p16[3] << 21) >> 21) + vs.psxDraw.offsetY;
-    
-    sh tx = (p32[2] >> 0) & 0xff;
-    sh ty = (p32[2] >> 8) & 0xff;
-    
-    setupTexture((p32[2] >> 12) & 0x7fff0);
-    setSpriteBlendMode(*p32);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(tx,     ty);     GLVertex2s(x,     y);
-        GLTexCoord2s(tx + 8, ty);     GLVertex2s(x + 8, y);
-        GLTexCoord2s(tx,     ty + 8); GLVertex2s(x,     y + 8);
-        GLTexCoord2s(tx + 8, ty + 8); GLVertex2s(x + 8, y + 8);
-    GLEnd();
-    
-    GLBindTexture(GL_TEXTURE_2D, vs.nullid);
-}
-
-void primSprt16(ub *data) {
-    sh *p16 = (sh *)data;
-    uw *p32 = (uw *)data;
-    
-    sh x = ((p16[2] << 21) >> 21) + vs.psxDraw.offsetX;
-    sh y = ((p16[3] << 21) >> 21) + vs.psxDraw.offsetY;
-    
-    sh tx = (p32[2] >> 0) & 0xff;
-    sh ty = (p32[2] >> 8) & 0xff;
-    
-    setupTexture((p32[2] >> 12) & 0x7fff0);
-    setSpriteBlendMode(*p32);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(tx,      ty);      GLVertex2s(x,      y);
-        GLTexCoord2s(tx + 16, ty);      GLVertex2s(x + 16, y);
-        GLTexCoord2s(tx,      ty + 16); GLVertex2s(x,      y + 16);
-        GLTexCoord2s(tx + 16, ty + 16); GLVertex2s(x + 16, y + 16);
-    GLEnd();
-    
-    GLBindTexture(GL_TEXTURE_2D, vs.nullid);
-}
-
-void primSprtS(ub *data) {
-    sh *p16 = (sh *)data;
-    uw *p32 = (uw *)data;
-    
-    sh x = ((p16[2] << 21) >> 21) + vs.psxDraw.offsetX;
-    sh y = ((p16[3] << 21) >> 21) + vs.psxDraw.offsetY;
-    
-    sh tx = (p32[2] >> 0) & 0xff;
-    sh ty = (p32[2] >> 8) & 0xff;
-    
-    sh sprtW = (p32[3] >>  0) & 0x3ff;
-    sh sprtH = (p32[3] >> 16) & 0x1ff;
-    
-    sh minw = MIN(vs.psxDraw.texwinX2, sprtW);
-    sh minh = MIN(vs.psxDraw.texwinY2, sprtH);
-    
-    sh tx1 = tx + vs.psxDraw.texwinX1;
-    sh tx2 = tx1 + minw;
-    sh ty1 = ty + vs.psxDraw.texwinY1;
-    sh ty2 = ty1 + minh;
-    
-    setupTexture((p32[2] >> 12) & 0x7fff0);
-    setSpriteBlendMode(*p32);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(tx1, ty1); GLVertex2s(x,         y);
-        GLTexCoord2s(tx2, ty1); GLVertex2s(x + sprtW, y);
-        GLTexCoord2s(tx1, ty2); GLVertex2s(x,         y + sprtH);
-        GLTexCoord2s(tx2, ty2); GLVertex2s(x + sprtW, y + sprtH);
-    GLEnd();
-    
-    GLBindTexture(GL_TEXTURE_2D, vs.nullid);
-}
-
 void primLineF2(ub *baseAddr) {
     sh *gpuPoint = (sh *)baseAddr;
     
@@ -1144,6 +1064,105 @@ void primPolyGT4(ub *baseAddr) {
 
     glPopMatrix();
     glBindTexture(GL_TEXTURE_2D, vs.nullid);
+}
+
+/*
+    Sprites
+*/
+
+void sprite(ub * data, int size) {
+    sh *p16 = (sh *)data;
+    uw *p32 = (uw *)data;
+    
+    sh x = ((p16[2] << 21) >> 21) + vs.psxDraw.offsetX;
+    sh y = ((p16[3] << 21) >> 21) + vs.psxDraw.offsetY;
+    
+    sh tx = (p32[2] >> 0) & 0xff;
+    sh ty = (p32[2] >> 8) & 0xff;
+    
+    setupTexture((p32[2] >> 12) & 0x7fff0);
+    setSpriteBlendMode(*p32);
+    
+    GLStart(GL_TRIANGLE_STRIP);
+        GLTexCoord2s(tx,        ty);        GLVertex2s(x,        y);
+        GLTexCoord2s(tx + size, ty);        GLVertex2s(x + size, y);
+        GLTexCoord2s(tx,        ty + size); GLVertex2s(x,        y + size);
+        GLTexCoord2s(tx + size, ty + size); GLVertex2s(x + size, y + size);
+    GLEnd();
+    
+    if (data[3] & 2) {
+        GLEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_EQUAL, 1);
+        glColor3ub(255, 255, 255);
+        GLDisable(GL_BLEND);
+        GLStart(GL_TRIANGLE_STRIP);
+            GLTexCoord2s(tx,        ty);        GLVertex2s(x,        y);
+            GLTexCoord2s(tx + size, ty);        GLVertex2s(x + size, y);
+            GLTexCoord2s(tx,        ty + size); GLVertex2s(x,        y + size);
+            GLTexCoord2s(tx + size, ty + size); GLVertex2s(x + size, y + size);
+        GLEnd();
+        GLEnable(GL_BLEND);
+        GLDisable(GL_ALPHA_TEST);
+    }
+    
+    GLBindTexture(GL_TEXTURE_2D, vs.nullid);
+}
+
+void primSprt8(ub * data) {
+    sprite(data, 8);
+}
+
+void primSprt16(ub *data) {
+    sprite(data, 16);
+}
+
+void primSprtS(ub *data) {
+    sh *p16 = (sh *)data;
+    uw *p32 = (uw *)data;
+    
+    sh x = ((p16[2] << 21) >> 21) + vs.psxDraw.offsetX;
+    sh y = ((p16[3] << 21) >> 21) + vs.psxDraw.offsetY;
+    
+    sh tx = (p32[2] >> 0) & 0xff;
+    sh ty = (p32[2] >> 8) & 0xff;
+    
+    sh sprtW = (p32[3] >>  0) & 0x3ff;
+    sh sprtH = (p32[3] >> 16) & 0x1ff;
+    
+    sh minw = MIN(vs.psxDraw.texwinX2, sprtW);
+    sh minh = MIN(vs.psxDraw.texwinY2, sprtH);
+    
+    sh tx1 = tx + vs.psxDraw.texwinX1;
+    sh tx2 = tx1 + minw;
+    sh ty1 = ty + vs.psxDraw.texwinY1;
+    sh ty2 = ty1 + minh;
+    
+    setupTexture((p32[2] >> 12) & 0x7fff0);
+    setSpriteBlendMode(*p32);
+    
+    GLStart(GL_TRIANGLE_STRIP);
+        GLTexCoord2s(tx1, ty1); GLVertex2s(x,         y);
+        GLTexCoord2s(tx2, ty1); GLVertex2s(x + sprtW, y);
+        GLTexCoord2s(tx1, ty2); GLVertex2s(x,         y + sprtH);
+        GLTexCoord2s(tx2, ty2); GLVertex2s(x + sprtW, y + sprtH);
+    GLEnd();
+    
+    if (data[3] & 2) {
+        GLEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_EQUAL, 1);
+        glColor3ub(255, 255, 255);
+        GLDisable(GL_BLEND);
+        GLStart(GL_TRIANGLE_STRIP);
+            GLTexCoord2s(tx1, ty1); GLVertex2s(x,         y);
+            GLTexCoord2s(tx2, ty1); GLVertex2s(x + sprtW, y);
+            GLTexCoord2s(tx1, ty2); GLVertex2s(x,         y + sprtH);
+            GLTexCoord2s(tx2, ty2); GLVertex2s(x + sprtW, y + sprtH);
+        GLEnd();
+        GLEnable(GL_BLEND);
+        GLDisable(GL_ALPHA_TEST);
+    }
+    
+    GLBindTexture(GL_TEXTURE_2D, vs.nullid);
 }
 
 void primNI(ub *bA) {
