@@ -53,12 +53,12 @@ class CstrGraphics {
     };
     
     struct texturecache {
-        sw textAddrX;
-        sw textAddrY;
-        sw textTP;
-        sw clutP;
+        sw x;
+        sw y;
+        sw tp;
+        sw clut;
         GLuint id;
-        bool Update;
+        bool update;
     };
     
     typedef struct {
@@ -73,15 +73,14 @@ class CstrGraphics {
         sw src;
         sw dst;
         ub alpha;
-        bool change;
     };
     
 public:
     struct TransparencySettings TransRate[4] = {
-        { GL_FUNC_ADD, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 128, TRUE},
-        { GL_FUNC_ADD, GL_ONE,       GL_ONE_MINUS_SRC_ALPHA,   0, TRUE},
-        { GL_FUNC_ADD, GL_ZERO,      GL_ONE_MINUS_SRC_COLOR,   0, TRUE},
-        { GL_FUNC_ADD, GL_SRC_ALPHA, GL_ONE,                  64, TRUE},
+        { GL_FUNC_ADD, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 128},
+        { GL_FUNC_ADD, GL_ONE,       GL_ONE_MINUS_SRC_ALPHA,   0},
+        { GL_FUNC_ADD, GL_ZERO,      GL_ONE_MINUS_SRC_COLOR,   0},
+        { GL_FUNC_ADD, GL_SRC_ALPHA, GL_ONE,                  64},
     };
     
     ub psxVub[1024 * 520 * 2];

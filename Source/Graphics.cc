@@ -27,11 +27,11 @@ void CstrGraphics::reset() {
 
     glEnable(GL_TEXTURE_2D);
     for (int i = 0; i < 384; i++) {
-        texture[i].textAddrX = 0;
-        texture[i].textAddrY = 0;
-        texture[i].textTP = 0;
-        texture[i].clutP = nullclutP;
-        texture[i].Update = FALSE;
+        texture[i].x = 0;
+        texture[i].y = 0;
+        texture[i].tp = 0;
+        texture[i].clut = nullclutP;
+        texture[i].update = false;
         glGenTextures  (1, &texture[i].id);
         glBindTexture  (GL_TEXTURE_2D, texture[i].id);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
