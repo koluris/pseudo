@@ -31,8 +31,8 @@ void CstrPSeudo::reset() {
     audio.reset();
       bus.reset();
     //cache.reset();
-    GPUinit();
-    GPUopen();
+    vs.init();
+    vs.reset();
        cd.reset();
      cop2.reset();
       cpu.reset();

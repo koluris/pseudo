@@ -1,49 +1,16 @@
 #include "Global.h"
 
-struct PSXDraw_t psxDraw;
+CstrGraphics vs;
 
-ub psxVub[1024 * 520 * 2];
-uh *psxVuw;
-uw *psxVul;
-
-int flip;
-sw GPUdataRet;
-sw GPUstatusRet;
-sw GPUInfoVals[16];
-
-uw gpuData[100];
-ub gpuCommand = 0;
-sw gpuDataC = 0;
-sw gpuDataP = 0;
-
-sw drawingLines;
-
-VRAMLoad_t vramWrite;
-struct PSXDisplay_t psxDisp, oldpsxDisp;
-
-sh dispWidths[8] = {256,320,512,640,368,384,512,640};
-
-sw dispLace = 0;
-sw dispLaceNew;
-sw imageTransfer;
-
-sh imTYc,imTXc,imTY,imTX;
-sw imSize;
-sh imageX0,imageX1;
-sh imageY0,imageY1;
-
-GLuint xferTexture16 = 0;
-GLuint xferTexture24 = 0;
-
-void GPUinit() {
+void CstrGraphics::init() {
     psxVuw = (uh *)psxVub;
     psxVul = (uw *)psxVub;
 
-    GPUstatusRet = 0x74000000;
-    memset(GPUInfoVals, 0x00, 16 * sizeof(uw));
+    statusRet = 0x74000000;
+    memset(infoVals, 0x00, 16 * sizeof(uw));
 }
 
-void GPUopen() {
+void CstrGraphics::reset() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -67,11 +34,9 @@ void GPUopen() {
         texture[i].Update = FALSE;
         glGenTextures  (1, &texture[i].id);
         glBindTexture  (GL_TEXTURE_2D, texture[i].id);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexEnvi      (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        //glTexEnvi      (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         glTexImage2D   (GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
     }
     
@@ -110,7 +75,7 @@ void GPUopen() {
     }
 }
 
-void updateScreenMode() {
+void CstrGraphics::updateScreenMode() {
     if (psxDisp.modeX > 0 && psxDisp.modeY > 0) {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -119,25 +84,25 @@ void updateScreenMode() {
     }
 }
 
-void GPUupdateLace(void) {
+void CstrGraphics::updateLace() {
     drawingLines ^= 1;
     [[app.openGLView openGLContext] flushBuffer];
 }
 
-uw GPUreadStatus(void) {
+uw CstrGraphics::readStatus() {
     if (drawingLines == 1) {
-        return GPUstatusRet;
+        return statusRet;
     }
     else {
-        return GPUstatusRet | 0x80000000;
+        return statusRet | 0x80000000;
     }
 }
 
-void GPUwriteStatus(uw gdata) {
+void CstrGraphics::writeStatus(uw gdata) {
     switch((gdata >> 24) & 0xff) {
         case 0x00:
-            memset(GPUInfoVals, 0x00, 16 * sizeof(uw));
-            GPUstatusRet=0x14802000;
+            memset(infoVals, 0x00, 16 * sizeof(uw));
+            statusRet=0x14802000;
             psxDisp.disabled = 1;
             psxDraw.offsetX = psxDraw.offsetY = psxDraw.clipX1 = psxDraw.clipX2 = psxDraw.clipY1 = psxDraw.clipY2 = 0;
             texinfo.mirror=0;
@@ -150,18 +115,18 @@ void GPUwriteStatus(uw gdata) {
         case 0x03:
             psxDisp.disabled = gdata & 1;
             if (psxDisp.disabled) {
-                GPUstatusRet |= GPUSTATUS_DISPLAYDISABLED;
+                statusRet |= GPUSTATUS_DISPLAYDISABLED;
             }
             else {
-                GPUstatusRet &=~GPUSTATUS_DISPLAYDISABLED;
+                statusRet &=~GPUSTATUS_DISPLAYDISABLED;
             }
             return;
         
         case 0x04:
             if ((gdata & 0xffffff) == 0) imageTransfer = 0;
             if ((gdata & 0xffffff) == 2) imageTransfer = 3;
-            GPUstatusRet &=~GPUSTATUS_DMABITS;
-            GPUstatusRet |= gdata << 29;
+            statusRet &=~GPUSTATUS_DMABITS;
+            statusRet |= gdata << 29;
             return;
    
         case 0x05:
@@ -190,19 +155,19 @@ void GPUwriteStatus(uw gdata) {
             psxDisp.colordepth24 = (gdata >> 4) & 0x1;
             
             if (psxDisp.colordepth24) {
-                GPUstatusRet |= GPUSTATUS_RGB24;
+                statusRet |= GPUSTATUS_RGB24;
             }
             else {
-                GPUstatusRet &=~GPUSTATUS_RGB24;
+                statusRet &=~GPUSTATUS_RGB24;
             }
             
             psxDisp.pal = (gdata & 0x08) ? TRUE : FALSE;
             
             if (psxDisp.pal) {
-                GPUstatusRet |= GPUSTATUS_PAL;
+                statusRet |= GPUSTATUS_PAL;
             }
             else {
-                GPUstatusRet &=~GPUSTATUS_PAL;
+                statusRet &=~GPUSTATUS_PAL;
             }
             
             psxDisp.changed = 1;
@@ -213,20 +178,20 @@ void GPUwriteStatus(uw gdata) {
             
             switch(gdata) {
                 case 0x02:
-                    GPUdataRet = GPUInfoVals[INFO_TW];
+                    GPUdataRet = infoVals[INFO_TW];
                     return;
                 
                 case 0x03:
-                    GPUdataRet = GPUInfoVals[INFO_DRAWSTART];
+                    GPUdataRet = infoVals[INFO_DRAWSTART];
                     return;
                 
                 case 0x04:
-                    GPUdataRet = GPUInfoVals[INFO_DRAWEND];
+                    GPUdataRet = infoVals[INFO_DRAWEND];
                     return;
                 
                 case 0x05:
                 case 0x06:
-                    GPUdataRet = GPUInfoVals[INFO_DRAWOFF];
+                    GPUdataRet = infoVals[INFO_DRAWOFF];
                     return;
                 
                 case 0x07:
@@ -249,7 +214,7 @@ void GPUwriteStatus(uw gdata) {
     }
 }
 
-uw GPUreadData() {
+uw CstrGraphics::readData() {
     if (imageTransfer == 2) {
         if ((imTY >= 0) && (imTY < 512) && (imTX >= 0) && (imTX < 1024)) {
             GPUdataRet = psxVul[imTY * 512 + imTX / 2];
@@ -268,20 +233,20 @@ uw GPUreadData() {
         imSize--;
         
         if(imSize <= 0) {
-            GPUstatusRet &= 0xf7ffffff;
+            statusRet &= 0xf7ffffff;
             imageTransfer = 0;
         }
     }
     return GPUdataRet;
 }
 
-void GPUreadDataMem(uw *pMem, int iSize) {
+void CstrGraphics::readDataMem(uw *pMem, int iSize) {
     for(int i = 0; i < iSize; i++) {
-        pMem[i] = GPUreadData();
+        pMem[i] = readData();
     }
 }
 
-sw PullFromPsxRam(uw *pMem, sw size) {
+sw CstrGraphics::pullFromPsxRam(uw *pMem, sw size) {
     sw count = 0;
     uh *input = (uh *)pMem;
     uw *t = vramWrite.extratarget;
@@ -403,16 +368,17 @@ NOMOREIMAGEDATA:
     return count >> 1;
 }
 
-void GPUwriteDataMem(uw * pMem, sw iSize) {
+void CstrGraphics::writeDataMem(uw * pMem, sw iSize) {
     ub command;
     uw gdata;
+    int i = 0;
     
-    GPUstatusRet &= ~GPUSTATUS_IDLE;
-    GPUstatusRet &= ~GPUSTATUS_READYFORCOMMANDS;
+    statusRet &= ~GPUSTATUS_IDLE;
+    statusRet &= ~GPUSTATUS_READYFORCOMMANDS;
 
-    for(int i = 0; i < iSize;) {
+    for (; i < iSize;) {
         if ((imageTransfer & 1) == 1) {
-            i += PullFromPsxRam(pMem, iSize - i);
+            i += pullFromPsxRam(pMem, iSize - i);
             if (i >= iSize) {
                 continue;
             }
@@ -457,32 +423,32 @@ void GPUwriteDataMem(uw * pMem, sw iSize) {
 
     GPUdataRet = gdata;
 
-    GPUstatusRet |= GPUSTATUS_READYFORCOMMANDS;
-    GPUstatusRet |= GPUSTATUS_IDLE;
+    statusRet |= GPUSTATUS_READYFORCOMMANDS;
+    statusRet |= GPUSTATUS_IDLE;
 }
 
-void GPUwriteData(uw gdata) {
-    GPUwriteDataMem(&gdata, 1);
+void CstrGraphics::writeData(uw gdata) {
+    writeDataMem(&gdata, 1);
 }
 
-void executeDMA(CstrBus::castDMA *dma) {
+void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
     uw *p   = (uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
     uw size = (dma->bcr >> 16) * (dma->bcr & 0xffff);
     
     switch(dma->chcr) {
             case 0x01000200:
-                GPUreadDataMem(p, size);
+                readDataMem(p, size);
                 return;
                 
             case 0x01000201:
-                GPUwriteDataMem(p, size);
+                writeDataMem(p, size);
                 return;
                 
             case 0x01000401:
                 do {
                     uw hdr = *(uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
                     p = (uw *)&mem.ram.ptr[(dma->madr + 4) & 0x1ffffc];
-                    GPUwriteDataMem(p, hdr >> 24);
+                    writeDataMem(p, hdr >> 24);
                     dma->madr = hdr & 0xffffff;
                 }
                 while(dma->madr != 0xffffff);

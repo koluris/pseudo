@@ -203,7 +203,7 @@
         
         // Set emulator dimensions
         //draw.init(w, h, multiplier);
-        GPUopen();
+        vs.reset();
     }
 }
 

@@ -31,11 +31,11 @@ void CstrHardware::write(uw addr, T data) {
                     return;
                     
                 case 0x1810: // Data
-                    GPUwriteData(data);
+                    vs.writeData(data);
                     return;
                     
                 case 0x1814: // Status
-                    GPUwriteStatus(data);
+                    vs.writeStatus(data);
                     return;
                     
                 case 0x1820 ... 0x1824: // MDEC
@@ -121,10 +121,10 @@ T CstrHardware::read(uw addr) {
         case HWR_ACCESS_32:
             switch(LOW_BITS(addr)) {
                 case 0x1810: // Data
-                    return GPUreadData();
+                    return vs.readData();
                     
                 case 0x1814: // Status
-                    return GPUreadStatus();
+                    return vs.readStatus();
                     
                 case 0x1820 ... 0x1824: // MDEC
                     return mdec.read(addr);
