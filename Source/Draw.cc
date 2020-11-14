@@ -3,7 +3,7 @@
 ub texshade[256];
 uw torgba[65536];
 uw image[65536];
-sb curText = 0;
+uh curText = 0;
 TextureState_t texinfo;
 struct texturecache texture[384];
 GLuint nullid;
@@ -225,97 +225,84 @@ void primStoreImage(ub * baseAddr) {
     GPUstatusRet |= 0x08000000;
 }
 
-void primMoveImage(unsigned char * baseAddr)
-{
-    uint32_t *gpuData = ((uint32_t *) baseAddr);
-
-    unsigned short imageX0,imageY0,imageX1,imageY1,imageSX,imageSY,i,j;
-
-    imageX0 = (short)(gpuData[1] & 0x3ff);
-    imageY0 = (short)(gpuData[1]>>16) & 0x1ff;
+void primMoveImage(ub *baseAddr) {
+    uw *gpuData = (uw *)baseAddr;
     
-    imageX1 = (short)(gpuData[2] & 0x3ff);
-    imageY1 = (short)((gpuData[2]>>16) & 0x1ff);
-    
-    imageSY = (short)((gpuData[3]>>16) & 0xffff);
-    imageSX = (short)(gpuData[3] & 0xffff);
+    uh imageX0 = (sh)((gpuData[1] & 0x03ff));
+    uh imageY0 = (sh)((gpuData[1] >> 16) & 0x01ff);
+    uh imageX1 = (sh)((gpuData[2] & 0x3ff));
+    uh imageY1 = (sh)((gpuData[2] >> 16) & 0x01ff);
+    uh imageSY = (sh)((gpuData[3] >> 16) & 0xffff);
+    uh imageSX = (sh)((gpuData[3] & 0xffff));
 
-    for(i=0;i<384;i++){
-        if(((texture[i].textAddrX+255)>=imageX1)
-          &&((texture[i].textAddrY+255)>=imageY1)
-          &&(texture[i].textAddrX<=(imageX1+imageSX))
-          &&(texture[i].textAddrY<=(imageY1+imageSY))){
-            texture[i].Update=TRUE;
+    for (int i = 0; i < 384; i++) {
+        if(((texture[i].textAddrX + 255) >= imageX1) && ((texture[i].textAddrY + 255) >= imageY1) && (texture[i].textAddrX <= (imageX1 + imageSX)) && (texture[i].textAddrY <= (imageY1 + imageSY))) {
+            texture[i].Update = TRUE;
         }
     }
 
-    if((imageY0+imageSY)>512) imageSY=512-imageY0;
-    if((imageY1+imageSY)>512) imageSY=512-imageY1;
-    if((imageX0+imageSX)>1024) imageSX=1024-imageX0;
-    if((imageX1+imageSX)>1024) imageSX=1024-imageX1;
-    for(j=0;j<imageSY;j++)
-        for(i=0;i<imageSX;i++)
-            psxVuw[((imageY1+j)<<10)+imageX1+i]=psxVuw[((imageY0+j)<<10)+imageX0+i];
+    if ((imageY0 + imageSY) >  512) imageSY =  512 - imageY0;
+    if ((imageY1 + imageSY) >  512) imageSY =  512 - imageY1;
+    if ((imageX0 + imageSX) > 1024) imageSX = 1024 - imageX0;
+    if ((imageX1 + imageSX) > 1024) imageSX = 1024 - imageX1;
+    
+    for (int j = 0; j < imageSY; j++) {
+        for (int i = 0; i < imageSX; i++) {
+            psxVuw[((imageY1 + j) << 10) + imageX1 + i] = psxVuw[((imageY0 + j) << 10) + imageX0 + i];
+        }
+    }
 }
 
+void primTileS(ub *baseAddr) {
+    uh *gpuPoint = (uh *)baseAddr;
 
-
-
-void primTileS(unsigned char * baseAddr)
-{
-    unsigned short *gpuPoint = (unsigned short*) baseAddr;
-
-    short x = (gpuPoint[2]<<21)>>21;
-    short y = (gpuPoint[3]<<21)>>21;
-    short w = (gpuPoint[4]<<21)>>21;
-    short h = (gpuPoint[5]<<21)>>21;
+    sh x = (gpuPoint[2]<<21)>>21;
+    sh y = (gpuPoint[3]<<21)>>21;
+    sh w = (gpuPoint[4]<<21)>>21;
+    sh h = (gpuPoint[5]<<21)>>21;
 
     x += psxDraw.offsetX;
     y += psxDraw.offsetY;
 
-    if(baseAddr[3]&2){
-            glBlendFunc(TransRate[texinfo.abr].src,TransRate[texinfo.abr].dst);
-            gAlpha=TransRate[texinfo.abr].alpha;
-            transparent=TRUE;
-        glColor4ub(baseAddr[0],baseAddr[1],baseAddr[2],gAlpha);
-    }else{
-            glBlendFunc(TransRate[0].src,TransRate[0].dst);
-            transparent=FALSE;
-        
-            glColor3ub(baseAddr[0],baseAddr[1],baseAddr[2]);
+    if (baseAddr[3] & 2) {
+        glBlendFunc(TransRate[texinfo.abr].src, TransRate[texinfo.abr].dst);
+        gAlpha = TransRate[texinfo.abr].alpha;
+        transparent = TRUE;
+        glColor4ub(baseAddr[0], baseAddr[1], baseAddr[2], gAlpha);
+    }
+    else {
+        glBlendFunc(TransRate[0].src,TransRate[0].dst);
+        transparent = FALSE;
+        glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
     }
 
     glBegin(GL_POLYGON);
-      glVertex2s(x,y);
-      glVertex2s(x+w,y);
-      glVertex2s(x+w,y+h);
-      glVertex2s(x,y+h);
+      glVertex2s(x,     y);
+      glVertex2s(x + w, y);
+      glVertex2s(x + w, y + h);
+      glVertex2s(x,     y + h);
     glEnd();
-
-
-    return;
 }
 
-void primBlkFill(unsigned char * baseAddr)
-{
-    short * gpuPoint = (short*) baseAddr;
+void primBlkFill(ub * baseAddr) {
+    sh *gpuPoint = (sh *)baseAddr;
     
-    short x = (gpuPoint[2]<<21)>>21;
-    short y = (gpuPoint[3]<<21)>>21;
-    short w = (gpuPoint[4]<<21)>>21;
-    short h = (gpuPoint[5]<<21)>>21;
+    sh x = (gpuPoint[2] << 21) >> 21;
+    sh y = (gpuPoint[3] << 21) >> 21;
+    sh w = (gpuPoint[4] << 21) >> 21;
+    sh h = (gpuPoint[5] << 21) >> 21;
 
     glDisable(GL_CLIP_PLANE0);
     glDisable(GL_CLIP_PLANE1);
     glDisable(GL_CLIP_PLANE2);
     glDisable(GL_CLIP_PLANE3);
 
-    glColor3ub(baseAddr[0],baseAddr[1],baseAddr[2]);
+    glColor3ub(baseAddr[0], baseAddr[1], baseAddr[2]);
     glBegin(GL_POLYGON);
-      glVertex2s(x,y);
-      glVertex2s(x+w,y);
-      glVertex2s(x+w,y+h);
-      glVertex2s(x,y+h);
+      glVertex2s(x,     y);
+      glVertex2s(x + w, y);
+      glVertex2s(x + w, y + h);
+      glVertex2s(x,     y + h);
     glEnd();
 
     glEnable(GL_CLIP_PLANE0);
@@ -324,102 +311,106 @@ void primBlkFill(unsigned char * baseAddr)
     glEnable(GL_CLIP_PLANE3);
 }
 
-void setupTexture(int32_t clutP){
-    int i;
-    int32_t sprCY,sprCX,tbw;
-    short color,tC;
-    int ctext;
+void setupTexture(sw clutP) {
+    sh tC;
     union uPointers psxVOffset, psxVOffset2;
 
-    if( (texinfo.colormode&2) == 2 )
-        clutP=nullclutP;
+    if ((texinfo.colormode & 2) == 2) {
+        clutP = nullclutP;
+    }
 
-    ctext=curText;
-    for(i=0;i<384;i++){
-        if(texture[i].textAddrX==texinfo.x && texture[i].textAddrY==texinfo.y && clutP==texture[i].clutP)
-        {
-            if(texture[i].Update==TRUE || texinfo.colormode!=texture[i].textTP)
-            {
-                ctext=i;
+    sw ctext = curText;
+    for (int i = 0; i < 384; i++) {
+        if (texture[i].textAddrX == texinfo.x && texture[i].textAddrY == texinfo.y && clutP == texture[i].clutP) {
+            if (texture[i].Update == TRUE || texinfo.colormode != texture[i].textTP) {
+                ctext = i;
                 break;
             }
-            glBindTexture(GL_TEXTURE_2D,texture[i].id);
+            glBindTexture(GL_TEXTURE_2D, texture[i].id);
             return;
         }
     }
 
-    texture[ctext].textAddrX=texinfo.x;
-    texture[ctext].textAddrY=texinfo.y;
-    texture[ctext].textTP=texinfo.colormode;
-    texture[ctext].clutP=clutP;
-    texture[ctext].Update=FALSE;
-    glBindTexture(GL_TEXTURE_2D,texture[ctext].id);
-    if(ctext==curText){
+    texture[ctext].textAddrX = texinfo.x;
+    texture[ctext].textAddrY = texinfo.y;
+    texture[ctext].textTP = texinfo.colormode;
+    texture[ctext].clutP = clutP;
+    texture[ctext].Update = FALSE;
+    glBindTexture(GL_TEXTURE_2D, texture[ctext].id);
+    if (ctext == curText) {
         curText++;
-        if(curText>=384)curText=0;
+        if (curText >= 384) {
+            curText = 0;
+        }
     }
 
+    sw tbw = 256;
+    psxVOffset.w = psxVuw + (texinfo.y << 10) + texinfo.x;
 
-    tbw=256;
-    psxVOffset.w=psxVuw+(texinfo.y<<10)+texinfo.x;
+    uw *pimage = image;
 
-    uint32_t *pimage = image;
+    switch(texinfo.colormode) {
+        // 4bit clut
+        case 0:
+            for (sw sprCY = 0; sprCY < 256; sprCY++) {
+                psxVOffset2.b = psxVOffset.b;
+                for (sw sprCX = 0; sprCX < 256; sprCX += 2) {
+                    tC = (* psxVOffset2.b) & 0x0f;
+                    *pimage = torgba[psxVuw[clutP + tC]];
+                    pimage++;
 
-    switch(texinfo.colormode)
-    {
-    //4bit clut
-    case 0:
-        for (sprCY=0;sprCY<256;sprCY++){
-            psxVOffset2.b=psxVOffset.b;
-            for (sprCX=0;sprCX<256;sprCX+=2){
-                tC = (*psxVOffset2.b)&0x0f;
-                *pimage = torgba[psxVuw[clutP+tC]];
-                pimage++;
+                    tC = (* psxVOffset2.b >> 4) & 0x0f;
+                    *pimage = torgba[psxVuw[clutP + tC]];
+                    pimage++;
 
-                tC = (*psxVOffset2.b>>4)&0x0f;
-                *pimage = torgba[psxVuw[clutP+tC]];
-                pimage++;
-
-                psxVOffset2.b++;
+                    psxVOffset2.b++;
+                }
+                psxVOffset.w += 1024;
             }
-            psxVOffset.w+=1024;
-        }
-        break;
+            break;
 
-    //8bit clut
-    case 1:
-        if(texinfo.x==960)tbw=128;
-        for (sprCY=0;sprCY<256;sprCY++){
-            psxVOffset2.b=psxVOffset.b;
-            for (sprCX=0;sprCX<tbw;sprCX++){
-                tC = *psxVOffset2.b;
-                image[(sprCY<<8)+sprCX] = torgba[psxVuw[clutP+tC]];
-                psxVOffset2.b++;
+        // 8bit clut
+        case 1:
+            if (texinfo.x == 960) {
+                tbw = 128;
             }
-            psxVOffset.w+=1024;
-        }
-        break;
-
-    //15bit direct
-    case 2:
-        if(texinfo.x==960)tbw=64;
-        else if(texinfo.x==896)tbw=128;
-        else if(texinfo.x==832)tbw=192;
-
-        for (sprCY=0;sprCY<256;sprCY++){
-            psxVOffset2.w=psxVOffset.w;
-            for (sprCX=0;sprCX<tbw;sprCX++){
-                color = *psxVOffset2.w;
-                image[(sprCY<<8)+sprCX] = torgba[color];
-                psxVOffset2.w++;
+            
+            for (sw sprCY = 0; sprCY < 256; sprCY++) {
+                psxVOffset2.b = psxVOffset.b;
+                for (sw sprCX = 0; sprCX < tbw; sprCX++) {
+                    tC = *psxVOffset2.b;
+                    image[(sprCY << 8) + sprCX] = torgba[psxVuw[clutP + tC]];
+                    psxVOffset2.b++;
+                }
+                psxVOffset.w += 1024;
             }
-            psxVOffset.w+=1024;
-        }
-        break;
+            break;
+
+        // 15bit direct
+        case 2:
+            if (texinfo.x == 960) {
+                tbw = 64;
+            }
+            else if (texinfo.x == 896) {
+                tbw = 128;
+            }
+            else if (texinfo.x == 832) {
+                tbw = 192;
+            }
+
+            for (sw sprCY = 0; sprCY < 256; sprCY++) {
+                psxVOffset2.w = psxVOffset.w;
+                for (sw sprCX = 0; sprCX < tbw; sprCX++) {
+                    sh color = *psxVOffset2.w;
+                    image[(sprCY << 8) + sprCX] = torgba[color];
+                    psxVOffset2.w++;
+                }
+                psxVOffset.w += 1024;
+            }
+            break;
     }
-    glTexSubImage2D(GL_TEXTURE_2D,0,0,0,256,256,GL_RGBA,GL_UNSIGNED_BYTE,image);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, image);
 }
-
 
 void setSpriteBlendMode(int32_t command){
     unsigned char *baseAddr = (unsigned char *)&command;
