@@ -36,7 +36,7 @@ void CstrBus::checkDMA(uw addr, uw data) {
         switch(chan) {
             case 0:  mdec.executeDMA(dma); break; // MDEC in
             case 1:  mdec.executeDMA(dma); break; // MDEC out
-            case 2:    vs.executeDMA(dma); break; // Graphics
+            case 2:    executeDMA(dma); break; // Graphics
             case 3:    cd.executeDMA(dma); break; // CD-ROM
             case 4: audio.executeDMA(dma); break; // Audio
             case 6:   mem.executeDMA(dma); break; // Clear OT

@@ -19,6 +19,9 @@
 		429C3EC120650CB400915293 /* PSeudo.cc in Sources */ = {isa = PBXBuildFile; fileRef = 429C3EBF20650CB400915293 /* PSeudo.cc */; };
 		429C3EC62065189C00915293 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 429C3EC52065189C00915293 /* AppKit.framework */; };
 		42A88BC320BF1D6B00CCF660 /* SIO.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42A88BC120BF1D6B00CCF660 /* SIO.cc */; };
+		42AAD7012561968800E15D25 /* gpu.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42AAD6FE2561968800E15D25 /* gpu.cc */; };
+		42AAD7022561968800E15D25 /* gpu_gl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42AAD6FF2561968800E15D25 /* gpu_gl.cc */; };
+		42AAD7032561968800E15D25 /* gpu_prim.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42AAD7002561968800E15D25 /* gpu_prim.cc */; };
 		42B6B61A20B57D5700D70027 /* Sound.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42B6B61820B57D5700D70027 /* Sound.cc */; };
 		42B9957B20626481009B67BE /* R3000A.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42B9957920626481009B67BE /* R3000A.cc */; };
 		42BCBD2920EDFC8C00AC4CB1 /* CD.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42BCBD2720EDFC8C00AC4CB1 /* CD.cc */; };
@@ -59,6 +62,10 @@
 		429C3EC52065189C00915293 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		42A88BC120BF1D6B00CCF660 /* SIO.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = SIO.cc; sourceTree = "<group>"; };
 		42A88BC220BF1D6B00CCF660 /* SIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SIO.h; sourceTree = "<group>"; };
+		42AAD6FD2561968800E15D25 /* gpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gpu.h; sourceTree = "<group>"; };
+		42AAD6FE2561968800E15D25 /* gpu.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = gpu.cc; sourceTree = "<group>"; };
+		42AAD6FF2561968800E15D25 /* gpu_gl.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = gpu_gl.cc; sourceTree = "<group>"; };
+		42AAD7002561968800E15D25 /* gpu_prim.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = gpu_prim.cc; sourceTree = "<group>"; };
 		42B6B61820B57D5700D70027 /* Sound.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Sound.cc; sourceTree = "<group>"; };
 		42B6B61920B57D5700D70027 /* Sound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
 		42B9957920626481009B67BE /* R3000A.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = R3000A.cc; sourceTree = "<group>"; };
@@ -297,6 +304,10 @@
 			children = (
 				425720CF20BB4FE00081114F /* Cache */,
 				42032C1920B483E300B032A8 /* Draw */,
+				42AAD6FF2561968800E15D25 /* gpu_gl.cc */,
+				42AAD7002561968800E15D25 /* gpu_prim.cc */,
+				42AAD6FE2561968800E15D25 /* gpu.cc */,
+				42AAD6FD2561968800E15D25 /* gpu.h */,
 				42DB696E2070DF0800000D08 /* Graphics.cc */,
 				42DB696F2070DF0800000D08 /* Graphics.h */,
 			);
@@ -407,6 +418,7 @@
 				427C2EB5253C54DA00D04064 /* GTE.cc in Sources */,
 				429C3EBD206500B500915293 /* Mem.cc in Sources */,
 				425720D220BB4FF00081114F /* Cache.cc in Sources */,
+				42AAD7012561968800E15D25 /* gpu.cc in Sources */,
 				42B6B61A20B57D5700D70027 /* Sound.cc in Sources */,
 				428EAF2F207376EF003BC141 /* Bus.cc in Sources */,
 				42EBBCD32062482200824B95 /* Main.mm in Sources */,
@@ -418,8 +430,10 @@
 				42CB1D6E206E34680023337A /* Counters.cc in Sources */,
 				42E4FF6E20D3F2F200CC105A /* Hardware.cc in Sources */,
 				42DB69702070DF0800000D08 /* Graphics.cc in Sources */,
+				42AAD7032561968800E15D25 /* gpu_prim.cc in Sources */,
 				429C3EC120650CB400915293 /* PSeudo.cc in Sources */,
 				42032C1820B483DD00B032A8 /* Draw.cc in Sources */,
+				42AAD7022561968800E15D25 /* gpu_gl.cc in Sources */,
 				42BCBD2920EDFC8C00AC4CB1 /* CD.cc in Sources */,
 				42A88BC320BF1D6B00CCF660 /* SIO.cc in Sources */,
 			);

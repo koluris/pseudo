@@ -8,6 +8,8 @@ CstrPSeudo psx;
 void CstrPSeudo::init(const char *path) {
     FILE *fp = fopen(path, "rb");
     
+    GPU_init();
+    
     // Available
     if (fp) {
         if (fileSize(fp) == mem.rom.size) {
@@ -43,7 +45,8 @@ void CstrPSeudo::reset() {
       mem.reset();
     rootc.reset();
       sio.reset();
-       vs.reset();
+    
+    GPU_reset();
     
     // BIOS version, ex: "ROM Version 4.1 12/16/97 E"
     ub version[0x1b];

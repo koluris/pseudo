@@ -30,8 +30,16 @@ void CstrHardware::write(uw addr, T data) {
                     rootc.write(addr, data);
                     return;
                     
-                case 0x1810 ... 0x1814: // Graphics
-                    vs.write(addr, data);
+//                case 0x1810 ... 0x1814: // Graphics
+//                    //vs.write(addr, data);
+//                    return;
+                    
+                case 0x1810:
+                    GPU_writeData(data);
+                    return;
+                    
+                case 0x1814:
+                    GPU_writeStatus(data);
                     return;
                     
                 case 0x1820 ... 0x1824: // MDEC
@@ -121,8 +129,14 @@ T CstrHardware::read(uw addr) {
                 case 0x1100 ... 0x1110: // Rootcounters
                     return rootc.read(addr);
                     
-                case 0x1810 ... 0x1814: // Graphics
-                    return vs.read(addr);
+//                case 0x1810 ... 0x1814: // Graphics
+//                    return 0;//vs.read(addr);
+                    
+                case 0x1810:
+                    return GPU_readData();
+                    
+                case 0x1814:
+                    return GPU_readStatus();
                     
                 case 0x1820 ... 0x1824: // MDEC
                     return mdec.read(addr);

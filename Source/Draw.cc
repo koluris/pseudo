@@ -159,16 +159,16 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     GLEnable(GL_TEXTURE_2D);
     GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
     
-    if (vs.isVideo24Bit) {
-        X = (X * 2) / 3;
-        W = (W * 2) / 3;
-        GLBindTexture  (GL_TEXTURE_2D, fb24tex);
-        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGB , GL_UNSIGNED_BYTE, raw);
-    }
-    else {
-        GLBindTexture  (GL_TEXTURE_2D, fb16tex);
-        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
-    }
+//    if (vs.isVideo24Bit) {
+//        X = (X * 2) / 3;
+//        W = (W * 2) / 3;
+//        GLBindTexture  (GL_TEXTURE_2D, fb24tex);
+//        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGB , GL_UNSIGNED_BYTE, raw);
+//    }
+//    else {
+//        GLBindTexture  (GL_TEXTURE_2D, fb16tex);
+//        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
+//    }
     
 #if defined(APPLE_MACOS) || defined(_WIN32)
     GLStart(GL_TRIANGLE_STRIP);
@@ -199,11 +199,12 @@ void parse(T *components, uw *packets, int points, int step) {
 }
 
 void CstrDraw::primitive(uw addr, uw *packets) {
+    //printf("0x%x\n", ((addr >> 24) & 0xff));
     switch((addr >> 5) & 7) {
         case GPU_TYPE_CMD:
             switch(addr) {
                 case 0x01: // Reset
-                    vs.write(0x1f801814, 0x01000000);
+                    //vs.write(0x1f801814, 0x01000000);
                     return;
                     
                 case 0x02: // Rect
@@ -420,15 +421,17 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             return;
             
         case GPU_TYPE_IMG_MOVE:
-            vs.photoMove(packets);
+            //vs.photoMove(packets);
             return;
             
         case GPU_TYPE_IMG_SEND:
-            vs.photoRead(packets);
+            gpu_loadImage();
+            //vs.photoRead(packets);
             return;
             
         case GPU_TYPE_IMG_COPY:
-            vs.photoWrite(packets);
+            gpu_storeImage();
+            //vs.photoWrite(packets);
             return;
             
         case GPU_TYPE_ENV:
