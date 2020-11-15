@@ -10,6 +10,35 @@ union uPointers{
     sw *l;
 };
 
+// Basic
+typedef struct { ub c, m, k, n; } COLOR;
+typedef struct { sh w, h; } POINTF;
+typedef struct { sh w, h; ub u, v; uh clut; } POINTFT;
+typedef struct { COLOR co; sh w, h; } POINTG;
+typedef struct { COLOR co; sh w, h; ub u, v; uh clut; } POINTGT;
+
+// VertexF & LineF
+typedef struct { COLOR co; POINTF v[2]; } F2;
+typedef struct { COLOR co; POINTF v[3]; } F3;
+typedef struct { COLOR co; POINTF v[4]; } F4;
+
+// VertexFT
+typedef struct { COLOR co; POINTFT v[3]; } FT3;
+typedef struct { COLOR co; POINTFT v[4]; } FT4;
+
+// VertexG & LineG
+typedef struct { POINTG v[2]; } G2;
+typedef struct { POINTG v[3]; } G3;
+typedef struct { POINTG v[4]; } G4;
+
+// VertexGT
+typedef struct { POINTGT v[3]; } GT3;
+typedef struct { POINTGT v[4]; } GT4;
+
+// BlockFill & Sprites
+typedef struct { COLOR co; POINTF  v[1]; sh w, h; } BLK;
+typedef struct { COLOR co; POINTFT v[1]; sh w, h; } SPRT;
+
 void cmdSTP(ub *baseAddr) {
     uw gdata = ((uw *)baseAddr)[0];
     
@@ -972,37 +1001,28 @@ void primPolyGT3(ub *baseAddr) {
 }
 
 void primPolyGT4(ub *baseAddr) {
-    uw *gpuData  = (uw *)baseAddr;
+    GT4 *hi = (GT4 *)baseAddr;
     sh *gpuPoint = (sh *)baseAddr;
-    ub alpha;
+    
+    sh x1 = ((hi->v[0].w << 21) >> 21) + vs.psxDraw.offsetX; //(gpuPoint[ 2] << 21) >> 21;
+    sh y1 = ((hi->v[0].h << 21) >> 21) + vs.psxDraw.offsetY; //(gpuPoint[ 3] << 21) >> 21;
+    sh x2 = ((hi->v[1].w << 21) >> 21) + vs.psxDraw.offsetX; //(gpuPoint[ 8] << 21) >> 21;
+    sh y2 = ((hi->v[1].h << 21) >> 21) + vs.psxDraw.offsetY; //(gpuPoint[ 9] << 21) >> 21;
+    sh x3 = ((hi->v[2].w << 21) >> 21) + vs.psxDraw.offsetX; //(gpuPoint[14] << 21) >> 21;
+    sh y3 = ((hi->v[2].h << 21) >> 21) + vs.psxDraw.offsetY; //(gpuPoint[15] << 21) >> 21;
+    sh x4 = ((hi->v[3].w << 21) >> 21) + vs.psxDraw.offsetX; //(gpuPoint[20] << 21) >> 21;
+    sh y4 = ((hi->v[3].h << 21) >> 21) + vs.psxDraw.offsetY; //(gpuPoint[21] << 21) >> 21;
+    
+    sh tx0 = hi->v[0].u; //(sh)((gpuData[2] & 0xff));
+    sh ty0 = hi->v[0].v; //(sh)((gpuData[2] >> 8) & 0xff);
+    sh tx1 = hi->v[1].u; //(sh)((gpuData[5] & 0xff));
+    sh ty1 = hi->v[1].v; //(sh)((gpuData[5] >> 8) & 0xff);
+    sh tx2 = hi->v[2].u; //(sh)((gpuData[8] & 0xff));
+    sh ty2 = hi->v[2].v; //(sh)((gpuData[8] >> 8) & 0xff);
+    sh tx3 = hi->v[3].u; //(sh)((gpuData[11] & 0xff));
+    sh ty3 = hi->v[3].v; //(sh)((gpuData[11] >> 8) & 0xff);
 
-    sh x1 = (gpuPoint[ 2] << 21) >> 21;
-    sh y1 = (gpuPoint[ 3] << 21) >> 21;
-    sh x2 = (gpuPoint[ 8] << 21) >> 21;
-    sh y2 = (gpuPoint[ 9] << 21) >> 21;
-    sh x3 = (gpuPoint[14] << 21) >> 21;
-    sh y3 = (gpuPoint[15] << 21) >> 21;
-    sh x4 = (gpuPoint[20] << 21) >> 21;
-    sh y4 = (gpuPoint[21] << 21) >> 21;
-
-    x1 += vs.psxDraw.offsetX;
-    y1 += vs.psxDraw.offsetY;
-    x2 += vs.psxDraw.offsetX;
-    y2 += vs.psxDraw.offsetY;
-    x3 += vs.psxDraw.offsetX;
-    y3 += vs.psxDraw.offsetY;
-    x4 += vs.psxDraw.offsetX;
-    y4 += vs.psxDraw.offsetY;
-
-    sh tx0 = (sh)((gpuData[2] & 0xff));
-    sh ty0 = (sh)((gpuData[2] >> 8) & 0xff);
-    sh tx1 = (sh)((gpuData[5] & 0xff));
-    sh ty1 = (sh)((gpuData[5] >> 8) & 0xff);
-    sh tx2 = (sh)((gpuData[8] & 0xff));
-    sh ty2 = (sh)((gpuData[8] >> 8) & 0xff);
-    sh tx3 = (sh)((gpuData[11] & 0xff));
-    sh ty3 = (sh)((gpuData[11] >> 8) & 0xff);
-
+    uw *gpuData  = (uw *)baseAddr;
     uh gpuDataX = (uh)(gpuData[5] >> 16);
     sw tempABR = (gpuDataX >> 5) & 0x3;
     
@@ -1017,6 +1037,7 @@ void primPolyGT4(ub *baseAddr) {
     sw clutP = (gpuData[2] >> 12) & 0x7fff0;
     setupTexture(clutP);
     
+    ub alpha;
     if (baseAddr[3] & 2) {
         glBlendFunc(vs.TransRate[vs.texinfo.abr].src, vs.TransRate[vs.texinfo.abr].dst);
         vs.transparent = TRUE;
@@ -1071,23 +1092,40 @@ void primPolyGT4(ub *baseAddr) {
 */
 
 void sprite(ub * data, int size) {
-    sh *p16 = (sh *)data;
+    SPRT *hi = (SPRT *)data;
+    
+    sh x = hi->v[0].w + vs.psxDraw.offsetX;
+    sh y = hi->v[0].h + vs.psxDraw.offsetX;
+    
+    sh tx = hi->v[0].u;
+    sh ty = hi->v[0].v;
+    
+    sh tsz_w = size;
+    sh tsz_h = size;
+    
+    sh vsz_w = size;
+    sh vsz_h = size;
+    
+    if (size > 16) {
+        tx += vs.psxDraw.texwinX1;
+        ty += vs.psxDraw.texwinY1;
+        
+        vsz_w = hi->w;
+        vsz_h = hi->h;
+        
+        tsz_w = MIN(vs.psxDraw.texwinX2, vsz_w);
+        tsz_h = MIN(vs.psxDraw.texwinY2, vsz_h);
+    }
+    
     uw *p32 = (uw *)data;
-    
-    sh x = ((p16[2] << 21) >> 21) + vs.psxDraw.offsetX;
-    sh y = ((p16[3] << 21) >> 21) + vs.psxDraw.offsetY;
-    
-    sh tx = (p32[2] >> 0) & 0xff;
-    sh ty = (p32[2] >> 8) & 0xff;
-    
     setupTexture((p32[2] >> 12) & 0x7fff0);
     setSpriteBlendMode(*p32);
     
     GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(tx,        ty);        GLVertex2s(x,        y);
-        GLTexCoord2s(tx + size, ty);        GLVertex2s(x + size, y);
-        GLTexCoord2s(tx,        ty + size); GLVertex2s(x,        y + size);
-        GLTexCoord2s(tx + size, ty + size); GLVertex2s(x + size, y + size);
+        GLTexCoord2s(tx,         ty);         GLVertex2s(x,         y);
+        GLTexCoord2s(tx + tsz_w, ty);         GLVertex2s(x + vsz_w, y);
+        GLTexCoord2s(tx,         ty + tsz_h); GLVertex2s(x,         y + vsz_h);
+        GLTexCoord2s(tx + tsz_w, ty + tsz_h); GLVertex2s(x + vsz_w, y + vsz_h);
     GLEnd();
     
     if (data[3] & 2) {
@@ -1096,10 +1134,10 @@ void sprite(ub * data, int size) {
         glColor3ub(255, 255, 255);
         GLDisable(GL_BLEND);
         GLStart(GL_TRIANGLE_STRIP);
-            GLTexCoord2s(tx,        ty);        GLVertex2s(x,        y);
-            GLTexCoord2s(tx + size, ty);        GLVertex2s(x + size, y);
-            GLTexCoord2s(tx,        ty + size); GLVertex2s(x,        y + size);
-            GLTexCoord2s(tx + size, ty + size); GLVertex2s(x + size, y + size);
+            GLTexCoord2s(tx,         ty);         GLVertex2s(x,         y);
+            GLTexCoord2s(tx + tsz_w, ty);         GLVertex2s(x + vsz_w, y);
+            GLTexCoord2s(tx,         ty + tsz_h); GLVertex2s(x,         y + vsz_h);
+            GLTexCoord2s(tx + tsz_w, ty + tsz_h); GLVertex2s(x + vsz_w, y + vsz_h);
         GLEnd();
         GLEnable(GL_BLEND);
         GLDisable(GL_ALPHA_TEST);
@@ -1117,52 +1155,7 @@ void primSprt16(ub *data) {
 }
 
 void primSprtS(ub *data) {
-    sh *p16 = (sh *)data;
-    uw *p32 = (uw *)data;
-    
-    sh x = ((p16[2] << 21) >> 21) + vs.psxDraw.offsetX;
-    sh y = ((p16[3] << 21) >> 21) + vs.psxDraw.offsetY;
-    
-    sh tx = (p32[2] >> 0) & 0xff;
-    sh ty = (p32[2] >> 8) & 0xff;
-    
-    sh sprtW = (p32[3] >>  0) & 0x3ff;
-    sh sprtH = (p32[3] >> 16) & 0x1ff;
-    
-    sh minw = MIN(vs.psxDraw.texwinX2, sprtW);
-    sh minh = MIN(vs.psxDraw.texwinY2, sprtH);
-    
-    sh tx1 = tx + vs.psxDraw.texwinX1;
-    sh tx2 = tx1 + minw;
-    sh ty1 = ty + vs.psxDraw.texwinY1;
-    sh ty2 = ty1 + minh;
-    
-    setupTexture((p32[2] >> 12) & 0x7fff0);
-    setSpriteBlendMode(*p32);
-    
-    GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(tx1, ty1); GLVertex2s(x,         y);
-        GLTexCoord2s(tx2, ty1); GLVertex2s(x + sprtW, y);
-        GLTexCoord2s(tx1, ty2); GLVertex2s(x,         y + sprtH);
-        GLTexCoord2s(tx2, ty2); GLVertex2s(x + sprtW, y + sprtH);
-    GLEnd();
-    
-    if (data[3] & 2) {
-        GLEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_EQUAL, 1);
-        glColor3ub(255, 255, 255);
-        GLDisable(GL_BLEND);
-        GLStart(GL_TRIANGLE_STRIP);
-            GLTexCoord2s(tx1, ty1); GLVertex2s(x,         y);
-            GLTexCoord2s(tx2, ty1); GLVertex2s(x + sprtW, y);
-            GLTexCoord2s(tx1, ty2); GLVertex2s(x,         y + sprtH);
-            GLTexCoord2s(tx2, ty2); GLVertex2s(x + sprtW, y + sprtH);
-        GLEnd();
-        GLEnable(GL_BLEND);
-        GLDisable(GL_ALPHA_TEST);
-    }
-    
-    GLBindTexture(GL_TEXTURE_2D, vs.nullid);
+    sprite(data, 32);
 }
 
 void primNI(ub *bA) {
