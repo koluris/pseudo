@@ -84,7 +84,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             }
             break;
             
-        case TEX_15BIT: // No color palette
+        case TEX_15BIT:   // No color palette
         case TEX_15BIT_2: // Seen on some rare cases
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < 256; w++) {

@@ -76,9 +76,9 @@ void CstrHardware::write(uw addr, T data) {
                     
                 /* unused */
                 case 0x1014: // ?
-                case 0x1058: // SIO1 ?
-                case 0x105a: // SIO1 ?
-                case 0x105e: // SIO1 ?
+                case 0x1058: // SIO 1 ?
+                case 0x105a: // SIO 1 Control
+                case 0x105e: // SIO 1 Baud
                 case 0x1074: // iMask
                     accessMem(mem.hwr, uh) = data;
                     return;
