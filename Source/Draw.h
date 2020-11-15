@@ -70,6 +70,12 @@ class CstrDraw {
         sh h, v;
     } res, offset;
     
+    // Texture Window
+    struct {
+        sh startX, endX;
+        sh startY, endY;
+    } texWindow;
+    
     // Setup opaque values
     const struct {
         sw src, dst; ub trans;

@@ -362,9 +362,25 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 // Square size
                 int size = spriteSize[setup->size];
                 
-                if (size) {
-                    sz[0]->w = size;
-                    sz[0]->h = size;
+                struct {
+                    sh txw, txh, vxw, vxh;
+                } pos;
+                
+                if (size) { // Fixed size
+                    pos.vxw = size;
+                    pos.vxh = size;
+                    pos.txw = size;
+                    pos.txh = size;
+                }
+                else { // Freeform & Texture Window
+                    pos.vxw = sz[0]->w;
+                    pos.vxh = sz[0]->h;
+                    
+                    tex[0]->u += texWindow.startX;
+                    tex[0]->v += texWindow.startY;
+                    
+                    pos.txw = MIN(texWindow.endX, pos.vxw);
+                    pos.txh = MIN(texWindow.endY, pos.vxh);
                 }
                 
                 if (setup->texture) {
@@ -387,14 +403,14 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     vx[0]->w = NORMALIZE_PT(vx[0]->w) + offset.h;
                     vx[0]->h = NORMALIZE_PT(vx[0]->h) + offset.v;
                     
-                    GLTexCoord2s(tex[0]->u,            tex[0]->v);
-                    GLVertex2s  (vx [0]->w,            vx [0]->h);
-                    GLTexCoord2s(tex[0]->u + sz[0]->w, tex[0]->v);
-                    GLVertex2s  (vx [0]->w + sz[0]->w, vx [0]->h);
-                    GLTexCoord2s(tex[0]->u,            tex[0]->v + sz[0]->h);
-                    GLVertex2s  (vx [0]->w,            vx [0]->h + sz[0]->h);
-                    GLTexCoord2s(tex[0]->u + sz[0]->w, tex[0]->v + sz[0]->h);
-                    GLVertex2s  (vx [0]->w + sz[0]->w, vx [0]->h + sz[0]->h);
+                    GLTexCoord2s(tex[0]->u,           tex[0]->v);
+                    GLVertex2s  (vx [0]->w,           vx [0]->h);
+                    GLTexCoord2s(tex[0]->u + pos.txw, tex[0]->v);
+                    GLVertex2s  (vx [0]->w + pos.vxw, vx [0]->h);
+                    GLTexCoord2s(tex[0]->u,           tex[0]->v + pos.txh);
+                    GLVertex2s  (vx [0]->w,           vx [0]->h + pos.vxh);
+                    GLTexCoord2s(tex[0]->u + pos.txw, tex[0]->v + pos.txh);
+                    GLVertex2s  (vx [0]->w + pos.vxw, vx [0]->h + pos.vxh);
                 GLEnd();
 #elif APPLE_IOS
                 // TODO
@@ -424,13 +440,10 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     return;
                     
                 case 0xe2: // Texture Window
-                    //TWX = (((packets[0] >> 10) & 0x1f) << 3);
-                    //TWY = (((packets[0] >> 15) & 0x1f) << 3);
-                    //TWW = 255 - (((packets[0] >> 0) & 0x1f) << 3);
-                    //TWH = 255 - (((packets[0] >> 5) & 0x1f) << 3);
-#ifdef DEBUG
-                    printf("/// PSeudo GPU Texture Window: 0x%x\n", packets[0]);
-#endif
+                    texWindow.startX = ((packets[0] >> 10) & 0x1f) << 3;
+                    texWindow.startY = ((packets[0] >> 15) & 0x1f) << 3;
+                    texWindow.  endX = 255 - (((packets[0] >> 0) & 0x1f) << 3);
+                    texWindow.  endY = 255 - (((packets[0] >> 5) & 0x1f) << 3);
                     return;
                     
                 case 0xe3: // Draw Area Start
