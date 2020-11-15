@@ -3,6 +3,10 @@
 #include "Global.h"
 
 
+#define NORMALIZE_PT(a) \
+    (((a) << 21) >> 21)
+
+
 CstrDraw draw;
 
 void CstrDraw::init(sh w, sh h, int multiplier) {
@@ -217,10 +221,10 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                         GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, COLOR_MAX);
                         
 #if defined(APPLE_MACOS) || defined(_WIN32)
-                        GLRecti(vx[0]->w,
-                                vx[0]->h,
-                                vx[0]->w + sz[0]->w,
-                                vx[0]->h + sz[0]->h);
+                        GLRecti(NORMALIZE_PT(vx[0]->w),
+                                NORMALIZE_PT(vx[0]->h),
+                                NORMALIZE_PT(vx[0]->w) + sz[0]->w,
+                                NORMALIZE_PT(vx[0]->h) + sz[0]->h);
 #elif APPLE_IOS
                         // TODO
 #endif
@@ -278,8 +282,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     }
                     
                     // Cast offset
-                    vx[i]->w += offset.h;
-                    vx[i]->h += offset.v;
+                    vx[i]->w = NORMALIZE_PT(vx[i]->w) + offset.h;
+                    vx[i]->h = NORMALIZE_PT(vx[i]->h) + offset.v;
                     
                     GLColor4ub  (hue[i]->r, hue[i]->c, hue[i]->b, b);
                     GLTexCoord2s(tex[i]->u, tex[i]->v);
@@ -327,8 +331,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     }
                     
                     // Cast offset
-                    vx[i]->w += offset.h;
-                    vx[i]->h += offset.v;
+                    vx[i]->w = NORMALIZE_PT(vx[i]->w) + offset.h;
+                    vx[i]->h = NORMALIZE_PT(vx[i]->h) + offset.v;
                     
                     GLColor4ub(hue[i]->r, hue[i]->c, hue[i]->b, b);
                     GLVertex2s(vx [i]->w, vx [i]->h);
@@ -380,8 +384,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
 #if defined(APPLE_MACOS) || defined(_WIN32)
                 GLStart(GL_TRIANGLE_STRIP);
                     // Cast offset
-                    vx[0]->w += offset.h;
-                    vx[0]->h += offset.v;
+                    vx[0]->w = NORMALIZE_PT(vx[0]->w) + offset.h;
+                    vx[0]->h = NORMALIZE_PT(vx[0]->h) + offset.v;
                     
                     GLTexCoord2s(tex[0]->u,            tex[0]->v);
                     GLVertex2s  (vx [0]->w,            vx [0]->h);

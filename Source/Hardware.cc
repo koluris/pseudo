@@ -152,11 +152,12 @@ T CstrHardware::read(uw addr) {
                     
                 /* unused */
                 case 0x1014: // ?
-                case 0x1054: // SIO Status
-                case 0x105a: // SIO1 ?
+                case 0x1054: // SIO 1 Status
+                case 0x105a: // SIO 1 Control
+                case 0x105e: // SIO 1 Baud
                 case 0x1070: // iStatus
                 case 0x1074: // iMask
-                case 0x1130:
+                case 0x1130: // ?
                     return accessMem(mem.hwr, uh);
             }
             break;
@@ -171,8 +172,7 @@ T CstrHardware::read(uw addr) {
                     
                 /* unused */
                 case 0x10f6: // ?
-                case 0x1d68: // ?
-                case 0x1d78: // ?
+                case 0x1c08 ... 0x1d78: // XenoGears (?)
                     return accessMem(mem.hwr, ub);
             }
             break;

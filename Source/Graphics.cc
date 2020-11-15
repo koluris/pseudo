@@ -63,7 +63,6 @@ void CstrGraphics::redraw() {
     }
 #endif
     
-    ret.status ^= GPU_STAT_ODDLINES;
     draw.swapBuffers(ret.disabled);
 }
 
@@ -159,6 +158,7 @@ uw CstrGraphics::read(uw addr) {
             return ret.data;
             
         case 4: // Status
+            ret.status ^= GPU_STAT_ODDLINES;
             return ret.status | GPU_STAT_READYFORVRAM;
     }
     
