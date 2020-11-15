@@ -199,7 +199,6 @@ void parse(T *components, uw *packets, int points, int step) {
 }
 
 void CstrDraw::primitive(uw addr, uw *packets) {
-    //printf("0x%x\n", ((addr >> 24) & 0xff));
     switch((addr >> 5) & 7) {
         case GPU_TYPE_CMD:
             switch(addr) {
@@ -231,6 +230,9 @@ void CstrDraw::primitive(uw addr, uw *packets) {
 #endif
                         opaqueClipState(true);
                     }
+                    return;
+                    
+                default:
                     return;
             }
 #ifdef DEBUG
@@ -467,6 +469,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     printf("/// PSeudo GPU STP: 0x%x\n", packets[0]);
 #endif
                     return;
+                    
+                default: return;
             }
 #ifdef DEBUG
             printx("/// PSeudo GPU_TYPE_ENV: 0x%x", addr);

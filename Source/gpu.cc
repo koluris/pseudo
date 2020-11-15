@@ -195,7 +195,7 @@ uw  GPU_readStatus()
      GP1 ^= 0x80000000;                        // interlaced bit toggle... we do it on every 3 read status... needed by some games (like ChronoCross) with old epsxe versions (1.5.2 and older)
     //}
 
-	return (GP1 | 0x08000000);
+	return (GP1);
 }
 
 void GPU_writeData(uw data)
@@ -228,7 +228,6 @@ void GPU_writeData(uw data)
 		if (!PacketCount)
 		{
 			//gpu_sendPacket();
-            printf("0x%x\n", PacketBuffer.U4[0]);
             draw.primitive(GPU_COMMAND(PacketBuffer.U4[0]), (uw *)&PacketBuffer);
 		}
 	}
@@ -290,7 +289,6 @@ void GPU_writeDataMem(uw * dmaAddress, sw dmaCount)
 			if (!PacketCount)
 			{
 				//gpu_sendPacket();
-                printf("0x%x\n", GPU_COMMAND(PacketBuffer.U4[0]));
                 draw.primitive(GPU_COMMAND(PacketBuffer.U4[0]), (uw *)&PacketBuffer);
 			}
 		}
@@ -390,7 +388,6 @@ sw GPU_dmaChain(uw * baseAddr, uw dmaVAddr)
 			if (!PacketCount)
 			{
                 //gpu_sendPacket();
-                printf("0x%x\n", GPU_COMMAND(PacketBuffer.U4[0]));
                 draw.primitive(GPU_COMMAND(PacketBuffer.U4[0]), (uw *)&PacketBuffer);
 			}
 		}
@@ -425,7 +422,7 @@ void executeDMA(CstrBus::castDMA *dma) {
 //            while(dma->madr != 0xffffff);
             //uLONG *ram32 = (uLONG *)&RAM[madr & 0x1FFFFF];
             //GPUdmaChain((uLONG *)RAM, madr & 0x1FFFFF);
-            GPU_dmaChain((uw *)p, dma->madr & 0x1fffff);
+            GPU_dmaChain((uw *)mem.ram.ptr, dma->madr & 0x1fffff);
             return;
             
         /* unused */

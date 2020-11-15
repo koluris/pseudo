@@ -54,13 +54,13 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     switch((tp >> 7) & 3) {
         case TEX_04BIT: // 16 color palette
             for (int i = 0; i < 16; i++) {
-                tex.cc[i] = pixel2texel(gpu_pvram[tc.pos.cc]);
+                tex.cc[i] = pixel2texel(gpu_frame_buffer[tc.pos.cc]);
                 tc.pos.cc++;
             }
             
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < (256 / 4); w++) {
-                    const uh p = gpu_pvram[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
+                    const uh p = gpu_frame_buffer[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
                     tex.bfr[h][w*4 + 0] = tex.cc[(p >> 0x0) & 15];
                     tex.bfr[h][w*4 + 1] = tex.cc[(p >> 0x4) & 15];
                     tex.bfr[h][w*4 + 2] = tex.cc[(p >> 0x8) & 15];
@@ -71,13 +71,13 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             
         case TEX_08BIT: // 256 color palette
             for (int i = 0; i < 256; i++) {
-                tex.cc[i] = pixel2texel(gpu_pvram[tc.pos.cc]);
+                tex.cc[i] = pixel2texel(gpu_frame_buffer[tc.pos.cc]);
                 tc.pos.cc++;
             }
             
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < (256 / 2); w++) {
-                    const uh p = gpu_pvram[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
+                    const uh p = gpu_frame_buffer[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
                     tex.bfr[h][w*2 + 0] = tex.cc[(p >> 0) & 255];
                     tex.bfr[h][w*2 + 1] = tex.cc[(p >> 8) & 255];
                 }
@@ -88,7 +88,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
         case TEX_15BIT_2: // Seen on some rare cases
             for (int h = 0; h < 256; h++) {
                 for (int w = 0; w < 256; w++) {
-                    const uh p = gpu_pvram[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
+                    const uh p = gpu_frame_buffer[(tc.pos.h + h) * FRAME_W + tc.pos.w + w];
                     tex.bfr[h][w] = pixel2texel(p);
                 }
             }
