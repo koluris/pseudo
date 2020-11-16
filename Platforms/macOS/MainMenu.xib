@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,7 +16,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="136" y="163" width="320" height="240"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1536" height="935"/>
             <view key="contentView" id="QG3-5Z-1j1">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -39,7 +39,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="112" width="410" height="433"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1536" height="935"/>
             <view key="contentView" id="ChR-II-ggI">
                 <rect key="frame" x="0.0" y="0.0" width="410" height="433"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -110,13 +110,13 @@
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cWs-EW-cq1">
                         <rect key="frame" x="146" y="248" width="143" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="Compiler (Faster)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="bN4-h8-S80" id="zFG-k3-b4e">
+                        <popUpButtonCell key="cell" type="push" title="Compiler (Faster)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="bN4-h8-S80" id="zFG-k3-b4e">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" id="0Tv-e7-76C">
                                 <items>
-                                    <menuItem title="Compiler (Faster)" enabled="NO" id="bN4-h8-S80"/>
-                                    <menuItem title="Interpreter" state="on" id="qzV-hB-AdX"/>
+                                    <menuItem title="Compiler (Faster)" state="on" enabled="NO" id="bN4-h8-S80"/>
+                                    <menuItem title="Interpreter" id="qzV-hB-AdX"/>
                                 </items>
                             </menu>
                         </popUpButtonCell>
@@ -178,13 +178,13 @@
                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Lb2-AB-c0b">
                         <rect key="frame" x="146" y="129" width="102" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <popUpButtonCell key="cell" type="push" title="No" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="qak-Ts-hZW" id="5BZ-Kg-P1j">
+                        <popUpButtonCell key="cell" type="push" title="No" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="qak-Ts-hZW" id="5BZ-Kg-P1j">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="menu"/>
                             <menu key="menu" id="9pD-mg-sCz">
                                 <items>
-                                    <menuItem title="No" enabled="NO" id="qak-Ts-hZW"/>
-                                    <menuItem title="60 (NTSC)" state="on" id="Idj-Ed-hn8"/>
+                                    <menuItem title="No" state="on" enabled="NO" id="qak-Ts-hZW"/>
+                                    <menuItem title="60 (NTSC)" id="Idj-Ed-hn8"/>
                                     <menuItem title="50 (PAL)" id="PUj-6z-iNf"/>
                                 </items>
                             </menu>
@@ -400,7 +400,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="0.0" y="0.0" width="400" height="240"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1057"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1536" height="935"/>
             <view key="contentView" id="DNN-Yf-iEu">
                 <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -408,26 +408,26 @@
                     <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3tq-n3-hIB">
                         <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
                         <clipView key="contentView" id="WQF-ES-h1U">
-                            <rect key="frame" x="0.0" y="0.0" width="385" height="240"/>
+                            <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="jvQ-GN-lzn">
-                                    <rect key="frame" x="0.0" y="0.0" width="385" height="240"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" red="0.2195393458549223" green="0.2195393458549223" blue="0.2195393458549223" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <size key="minSize" width="385" height="240"/>
+                                    <size key="minSize" width="400" height="240"/>
                                     <size key="maxSize" width="463" height="10000000"/>
                                     <color key="insertionPointColor" red="0.8784313725490196" green="0.68033387008206803" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </textView>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </clipView>
-                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="XKE-td-Zhi">
+                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="XKE-td-Zhi">
                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
-                        <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="lxk-Xk-kMq">
+                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="lxk-Xk-kMq">
                             <rect key="frame" x="385" y="0.0" width="15" height="240"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
