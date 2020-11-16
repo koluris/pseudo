@@ -102,7 +102,6 @@ public:
     
     void reset();
     void update(uw);
-    void redraw();
     void write(uw, uw);
     uw read(uw);
     void photoMove(uw *);

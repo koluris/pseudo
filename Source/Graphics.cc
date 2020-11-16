@@ -27,16 +27,6 @@ void CstrGraphics::reset() {
     isVideo24Bit = false;
 }
 
-void CstrGraphics::update(uw frames) {
-    uw lines = (clock += frames) / 3413;
-    clock %= 3413;
-    
-    if ((scanline += lines) >= 262) { scanline = 0;
-         vs.redraw();
-        bus.interruptSet(CstrBus::INT_VSYNC);
-    }
-}
-
 #define NTSC \
     (CLOCKS_PER_SEC / 59.94)
 
@@ -52,18 +42,23 @@ void CstrGraphics::update(uw frames) {
 
 double then = 1.0;
 
-void CstrGraphics::redraw() {
-    // FPS throttle
+void CstrGraphics::update(uw frames) {
+    uw lines = (clock += frames) / 3413;
+    clock %= 3413;
+    
+    if ((scanline += lines) >= 262) { scanline = 0;
+        // FPS throttle
 #if 0
-    double now = mach_absolute_time() / 1000.0;
-    then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
-    
-    if (then > now) {
-        usleep(then - now);
-    }
+        double now = mach_absolute_time() / 1000.0;
+        then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
+        
+        if (then > now) {
+            usleep(then - now);
+        }
 #endif
-    
-    draw.swapBuffers(ret.disabled);
+        draw.swapBuffers(ret.disabled);
+        bus.interruptSet(CstrBus::INT_VSYNC);
+    }
 }
 
 void CstrGraphics::write(uw addr, uw data) {
