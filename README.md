@@ -4,7 +4,7 @@
 
 **PSeudo aims to be the world's simplest PSX emulator** both in terms of user experience and software implementation. It is coded in **C/C++** and is utilizing modern APIs such as **OpenGL** for visuals and **OpenAL** for audio. I have been developing this emulator on a Mac, so for the time being it works on **macOS** & **iOS**. Some experiments are complete on **Windows** platform as well, but still needs work. In time, more platforms will be supported, as I am aiming for a cross-platform solution.
 
-<a href="https://github.com/dkoluris/pseudo/releases/tag/version-0.8">>> Get the latest PSeudo 0.8 release for Mac <<</a>
+<a href="https://github.com/dkoluris/pseudo/releases/tag/version-0.87">>> Get the latest PSeudo 0.87 release for Mac <<</a>
 
 <h2>Showcase</h2>
 
