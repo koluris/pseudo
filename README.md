@@ -10,9 +10,9 @@
 
 <a href="http://www.youtube.com/watch?v=BFvLRjOE99E">Check out the video below, for a homebrew demo/cracktro showcase:<br/>
 
-<img alt="FF9" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/FF9.jpg" width="48.5%"/><img alt="Super Pox" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Pox.jpg" width="48.5%" align="right"/>
+<img alt="Gran Turismo 2" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/turismo.jpg" width="48.5%"/><img alt="WipEout 3" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/wipeout-3.jpg" width="48.5%" align="right"/>
 
-<img alt="Casper" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Casper.jpg" width="48.5%"/><img alt="Paradox Deadline" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/Deadline.jpg" width="48.5%" align="right"/>
+<img alt="Suikoden II" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/suikoden.jpg" width="48.5%"/><img alt="Crash Bandicoot" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/crash-bandicoot.jpg" width="48.5%" align="right"/>
 
 </a>
 
@@ -35,9 +35,13 @@ Here's a list with the overall progress of the emulator, broken down in distinct
 
 **PSeudo** can load some initial game screens, but nothing more for now. Also, for quite some time I will keep working on it with the provided slow CPU Interpreter.
 
+<img alt="Tekken 3" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/tekken.jpg" width="48.5%"/><img alt="Ridge Racer Type-4" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/racer.jpg" width="48.5%" align="right"/>
+
 <h2>Compile / Build</h2>
 
 In order to build the application on **macOS** & **iOS**, the prerequisite is Xcode 9+. For **Windows** install **Microsoft Visual Studio 2015** and on top of that a prebuilt version of **LLVM 6.0**, we will use that instead of MSVC. This is important in order to keep the source code identical between different platforms.
+
+<img alt="Gran Turismo 2" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/turismo-2.jpg" width="48.5%"/><img alt="WipEout XL" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/wipeout-xl.jpg" width="48.5%" align="right"/>
 
 <h2>License</h2>
 
