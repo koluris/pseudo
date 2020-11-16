@@ -8,13 +8,9 @@
 
 <h2>Showcase</h2>
 
-<a href="http://www.youtube.com/watch?v=BFvLRjOE99E">Check out the video below, for a homebrew demo/cracktro showcase:<br/>
-
 <img alt="Gran Turismo 2" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/turismo.jpg" width="48.5%"/><img alt="WipEout 3" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/wipeout-3.jpg" width="48.5%" align="right"/>
 
 <img alt="Suikoden II" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/suikoden.jpg" width="48.5%"/><img alt="Crash Bandicoot" src="https://raw.githubusercontent.com/dkoluris/pseudo/master/Resources/crash-bandicoot.jpg" width="48.5%" align="right"/>
-
-</a>
 
 <h2>Completion</h2>
 
