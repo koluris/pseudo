@@ -135,15 +135,11 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
             }
             
-#ifdef DEBUG
             printx("/// PSeudo GPU Write Status: 0x%x", (GPU_COMMAND(data)));
-#endif
             return;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo GPU Write: %d <- 0x%x", (addr & 0xf), data);
-#endif
 }
 
 uw CstrGraphics::read(uw addr) {
@@ -153,29 +149,22 @@ uw CstrGraphics::read(uw addr) {
             return ret.data;
             
         case 4: // Status
-            ret.status ^= GPU_STAT_ODDLINES;
-            return ret.status | GPU_STAT_READYFORVRAM;
+            return (ret.status ^ GPU_STAT_ODDLINES) | GPU_STAT_READYFORVRAM;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo GPU Read: %d", (addr & 0xf));
-#endif
     return 0;
 }
 
 void CstrGraphics::dataWrite(uw *ptr, sw size) {
-    int i = 0;
-    
-    while (i < size) {
+    for (int i = 0; i < size; i++) {
         if (modeDMA == GPU_DMA_MEM2VRAM) {
             if ((i += fetchMem((uh *)ptr, size - i)) >= size) {
                 continue;
             }
             ptr += i;
         }
-        
         ret.data = *ptr++;
-        i++;
         
         if (!pipe.size) {
             ub prim  = GPU_COMMAND(ret.data);
@@ -369,7 +358,5 @@ void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
             return;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo GPU DMA: 0x%x", dma->chcr);
-#endif
 }

@@ -1,9 +1,17 @@
 #undef s_addr
 
+#ifdef DEBUG
+
 #define printx(text, ...) \
     printf(text, __VA_ARGS__); \
     putchar('\n'); \
     exit(0)
+
+#else
+
+#define printx(text, ...)
+
+#endif
 
 // Low order bits
 #define LOW_BITS(addr) \

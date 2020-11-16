@@ -232,9 +232,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     }
                     return;
             }
-#ifdef DEBUG
+            
             printx("/// PSeudo GPU_TYPE_CMD: 0x%x", addr);
-#endif
             return;
             
         case GPU_TYPE_POLYGON:
@@ -460,18 +459,13 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     return;
                     
                 case 0xe6: // TODO: STP
-#ifdef DEBUG
                     printf("/// PSeudo GPU STP: 0x%x\n", packets[0]);
-#endif
                     return;
             }
-#ifdef DEBUG
+            
             printx("/// PSeudo GPU_TYPE_ENV: 0x%x", addr);
-#endif
             return;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo GPU Primitive: 0x%x / %d", packets[0], ((addr >> 5) & 7));
-#endif
 }

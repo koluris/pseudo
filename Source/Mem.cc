@@ -35,9 +35,7 @@ void CstrMem::write(uw addr, T data) {
         return;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo Mem Write(%u): 0x%x <- 0x%x", (uw)sizeof(T), addr, data);
-#endif
 }
 
 template void CstrMem::write<uw>(uw, uw);
@@ -66,9 +64,7 @@ T CstrMem::read(uw addr) {
         return 0;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo Mem Read(%u): 0x%x", (uw)sizeof(T), addr);
-#endif
     return 0;
 }
 

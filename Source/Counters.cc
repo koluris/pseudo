@@ -53,9 +53,7 @@ void CstrCounters::write(uw addr, uh data) {
         case 8: tmr->dest      = data; return;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo RTC Write: %d <- 0x%x", (addr & 0xf), data);
-#endif
 }
 
 uh CstrCounters::read(uw addr) {
@@ -67,8 +65,6 @@ uh CstrCounters::read(uw addr) {
         case 8: return tmr->dest;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo RTC Read: %d", (addr & 0xf));
-#endif
     return 0;
 }

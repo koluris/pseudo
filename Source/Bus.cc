@@ -42,9 +42,7 @@ void CstrBus::checkDMA(uw addr, uw data) {
             case 6:   mem.executeDMA(dma); break; // Clear OT
                 
             default:
-#ifdef DEBUG
                 printx("/// PSeudo DMA Channel: %d", chan);
-#endif
                 break;
         }
         dma->chcr = data & ~(0x01000000);

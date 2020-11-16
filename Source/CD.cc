@@ -309,9 +309,7 @@ void CstrCD::interrupt() {
                     break;
                     
                 default:
-#ifdef DEBUG
                     printx("/// PSeudo CD CdlTest 0x%x", param.data[0]);
-#endif
                     break;
             }
             break;
@@ -350,9 +348,7 @@ void CstrCD::interrupt() {
             break;
             
         default:
-#ifdef DEBUG
             printx("/// PSeudo CD irqCache: %d", irqCache);
-#endif
             break;
     }
     
@@ -478,9 +474,7 @@ void CstrCD::write(uw addr, ub data) {
                     break;
                     
                 default:
-#ifdef DEBUG
                     printx("/// PSeudo CD Write: %d <- %d", (addr & 0xf), data);
-#endif
                     break;
             }
             
@@ -542,18 +536,14 @@ void CstrCD::write(uw addr, ub data) {
                         return;
                         
                     default:
-#ifdef DEBUG
                         printx("/// PSeudo CD Write: %d switch 0x%x", (addr & 0xf), (ret.mode & 0x30));
-#endif
                         return;
                 }
             }
             return;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo CD Write: %d <- 0x%x", (addr & 0xf), data);
-#endif
 }
 
 ub CstrCD::read(uw addr) {
@@ -609,9 +599,7 @@ ub CstrCD::read(uw addr) {
             return CD_REG(3);
     }
     
-#ifdef DEBUG
     printx("/// PSeudo CD Read: %d", (addr & 0xf));
-#endif
     return 0;
 }
 
@@ -636,7 +624,5 @@ void CstrCD::executeDMA(CstrBus::castDMA *dma) {
             return;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo CD DMA: 0x%08x\n", dma->chcr);
-#endif
 }

@@ -219,9 +219,7 @@ void CstrMips::step(bool branched) {
                     return;
             }
             
-#ifdef DEBUG
             printx("/// PSeudo 0x%08x | Special opcode 0x%08x | %d", pc, code, (code & 63));
-#endif
             return;
             
         case 1: // REGIMM
@@ -245,9 +243,7 @@ void CstrMips::step(bool branched) {
                     return;
             }
             
-#ifdef DEBUG
             printx("/// PSeudo 0x%08x | Bcond opcode 0x%08x | %d", pc, code, rt);
-#endif
             return;
             
         case 3: // JAL
@@ -328,9 +324,7 @@ void CstrMips::step(bool branched) {
                     return;
             }
             
-#ifdef DEBUG
             printx("/// PSeudo 0x%08x | Cop0 opcode 0x%08x | %d", pc, code, rs);
-#endif
             return;
             
         case 18: // COP2
@@ -394,9 +388,7 @@ void CstrMips::step(bool branched) {
             return;
     }
     
-#ifdef DEBUG
     printx("/// PSeudo 0x%08x | Basic opcode 0x%08x | %d", pc, code, opcode);
-#endif
 }
 
 void CstrMips::branch(uw addr) {
@@ -407,9 +399,7 @@ void CstrMips::branch(uw addr) {
 
 void CstrMips::exception(uw code, bool branched) {
     if (branched) {
-#ifdef DEBUG
         printx("/// PSeudo Exception is %s", "branched");
-#endif
     }
     
     copr[12] = (copr[12] & (~(0x3f))) | ((copr[12] << 2) & 0x3f);

@@ -95,9 +95,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
             break;
             
         default:
-#ifdef DEBUG
             printx("/// PSeudo Texture Cache: %d", ((tp >> 7) & 3));
-#endif
             break;
     }
     
@@ -106,9 +104,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, tex.bfr);
     
     if ((index + 1) >= TCACHE_MAX) {
-#ifdef DEBUG
         printx("/// PSeudo Texture Cache Full: %d", (index + 1));
-#endif
     }
     
     // Advance cache counter

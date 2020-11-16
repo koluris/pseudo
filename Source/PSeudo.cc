@@ -15,17 +15,13 @@ void CstrPSeudo::init(const char *path) {
             reset();
         }
         else {
-#ifdef DEBUG
             printx("/// PSeudo BIOS incorrect file size: %d", fileSize(fp));
-#endif
         }
         
         fclose(fp);
     }
     else {
-#ifdef DEBUG
         printx("/// PSeudo BIOS %s", "file not found");
-#endif
     }
 }
 
@@ -89,17 +85,13 @@ void CstrPSeudo::executable(const char *path) {
             cpu.base[29] = header.s_addr;
         }
         else {
-#ifdef DEBUG
             printx("/// PSeudo EXE incorrect file size: %d", fileSize(fp));
-#endif
         }
         
         fclose(fp);
     }
     else {
-#ifdef DEBUG
         printx("/// PSeudo EXE file %s", "not found");
-#endif
     }
 }
 
