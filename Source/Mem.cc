@@ -78,9 +78,7 @@ void CstrMem::executeDMA(CstrBus::castDMA *dma) {
         uw addr = dma->madr;
         
         if (!addr) {
-#ifdef DEBUG
-            printf("/// PSeudo DMA OTC -> %d", 0);
-#endif
+            printf("/// PSeudo DMA OTC -> %d\n", 0);
             return;
         }
         

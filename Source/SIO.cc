@@ -160,10 +160,7 @@ void CstrSerial::write08(ub data) {
                     break;
                     
                 default:
-#ifdef DEBUG
-                    printf("/// PSeudo : [-] SIO control -> 0x%08x\n", control);
-                    exit(0);
-#endif
+                    printx("/// PSeudo : [-] SIO control -> 0x%08x\n", control);
                     break;
             }
         }

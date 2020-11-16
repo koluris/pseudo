@@ -44,7 +44,7 @@ class CstrMips {
         sw s32[2];
     } res;
     
-    uw *instCache, opcodeCount;
+    uw *instCache;
     
     void step(bool);
     void branch(uw);

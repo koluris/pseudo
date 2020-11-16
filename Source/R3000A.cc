@@ -41,7 +41,7 @@ void CstrMips::reset() {
     copr[15] = 0x2; // Co-processor Revision
     
     setpc(0xbfc00000);
-    res.s64 = opcodeCount = 0;
+    res.s64 = 0;
 }
 
 void CstrMips::setpc(uw addr) {
@@ -83,15 +83,15 @@ void CstrMips::run() {
 }
 
 void CstrMips::step(bool branched) {
-    base[0] = 0;
-    uw code = *instCache++;
+    const uw code = *instCache++;
     pc += 4;
+    base[0] = 0;
     
     switch(opcode) {
         case 0: // SPECIAL
             switch(code & 63) {
                 case 0: // SLL
-                    if (code) { // No operation?
+                    if (code) { // No operation
                         base[rd] = base[rt] << sa;
                     }
                     return;

@@ -243,7 +243,6 @@ void CstrCop2::execute(uw code) {
             printx("/// PSeudo GTE Basic %d", (rs & 7));
             return;
             
-        /* pdx-068, ff9, va */
         case 1: // RTPS
             {
                 FLAG = 0;
@@ -271,7 +270,6 @@ void CstrCop2::execute(uw code) {
             }
             return;
             
-        /* pdx-068, ff9, va */
         case 48: // RTPT
             {
                 sw quotient = -1;
@@ -302,7 +300,6 @@ void CstrCop2::execute(uw code) {
             }
             return;
             
-        /* pdx-068, anelic */
         case 6: // NCLIP
             {
                 FLAG = 0;
@@ -375,7 +372,6 @@ void CstrCop2::execute(uw code) {
             }
             return;
             
-        /* anelic */
         case 18: // MVMVA
             {
                 sw sh = _SF(op) * 12;
@@ -423,7 +419,6 @@ void CstrCop2::execute(uw code) {
             }
             return;
             
-        /* t-rex */
         case 22: // NCDT
             {
                 FLAG = 0;
@@ -476,7 +471,6 @@ void CstrCop2::execute(uw code) {
             }
             return;
             
-        /* mario-3d */
         case 27: // NCCS
             {
                 FLAG = 0;
@@ -503,7 +497,6 @@ void CstrCop2::execute(uw code) {
             }
             return;
             
-        /* deadline */
         case 63: // NCCT
             {
                 FLAG = 0;
@@ -637,7 +630,6 @@ void CstrCop2::execute(uw code) {
             }
             return;
             
-        /* pdx-068, trancetro */
         case 45: // AVSZ3
             {
                 FLAG = 0;
@@ -656,7 +648,6 @@ void CstrCop2::execute(uw code) {
             }
             return;
             
-        /* t-rex */
         case 61: // GPF
             {
                 sw sh = _SF(op) * 12;

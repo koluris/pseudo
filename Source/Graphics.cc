@@ -124,9 +124,7 @@ void CstrGraphics::write(uw addr, uw data) {
                             return;
                     }
                     
-#ifdef DEBUG
                     printf("/// PSeudo GPU info: %d\n", (data & 0xffffff));
-#endif
                     return;
                     
                 /* unused */
