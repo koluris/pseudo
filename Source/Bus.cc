@@ -12,7 +12,7 @@ void CstrBus::reset() {
 }
 
 void CstrBus::interruptSet(ub code) {
-    interrupts[code].queued = INT_ENABLED;
+    if (!interrupts[code].queued) { interrupts[code].queued = INT_ENABLED; }
 }
 
 void CstrBus::update() { // A method to schedule when IRQs should fire
