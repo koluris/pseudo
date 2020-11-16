@@ -21,32 +21,16 @@ void CstrGraphics::reset() {
     modeDMA      = GPU_DMA_NONE;
     vpos         = 0;
     vdiff        = 0;
-    clock        = 0;
     scanline     = 0;
     isVideoPAL   = false;
     isVideo24Bit = false;
 }
 
-#define NTSC \
-    (CLOCKS_PER_SEC / 59.94)
-
-#define PAL \
-    (CLOCKS_PER_SEC / 50.00)
-
-// Function "mach_absolute_time()" returns Nanoseconds
-
-// 1,000,000,000 Nano
-// 1,000,000     Micro
-// 1,000         Milli
-// 1             Base unit, 1 second
-
 double then = 1.0;
+uw stall = 0;
 
 void CstrGraphics::update(uw frames) {
-    uw lines = (clock += frames) / 3413;
-    clock %= 3413;
-    
-    if ((scanline += lines) >= 262) { scanline = 0;
+    if (!(++scanline % 2800)) {
         // FPS throttle
 #if 0
         double now = mach_absolute_time() / 1000.0;
@@ -56,7 +40,9 @@ void CstrGraphics::update(uw frames) {
             usleep(then - now);
         }
 #endif
-        draw.swapBuffers(ret.disabled);
+        if ((++stall % 2)) {
+            draw.swapBuffers(ret.disabled);
+        }
         bus.interruptSet(CstrBus::INT_VSYNC);
     }
 }
@@ -188,7 +174,6 @@ void CstrGraphics::dataWrite(uw *ptr, sw size) {
                     }
                 }
             }
-            
             pipe.row++;
         }
         

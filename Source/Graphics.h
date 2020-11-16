@@ -4,6 +4,12 @@
 #define FRAME_H \
     512
 
+#define NTSC \
+    (CLOCKS_PER_SEC / 59.94)
+
+#define PAL \
+    (CLOCKS_PER_SEC / 50.00)
+
 
 class CstrGraphics {
     // Constant enumerations
@@ -71,7 +77,7 @@ class CstrGraphics {
         } h, v;
     } vrop;
     
-    uw modeDMA, clock, scanline;
+    uw modeDMA, scanline;
     uh vpos, vdiff;
 
     void dataWrite(uw *, sw);

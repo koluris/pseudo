@@ -459,7 +459,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     return;
                     
                 case 0xe6: // TODO: STP
-                    printf("/// PSeudo GPU STP: 0x%x\n", packets[0]);
+                    //printf("/// PSeudo GPU STP: 0x%x\n", packets[0]);
                     return;
             }
             
