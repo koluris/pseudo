@@ -58,7 +58,7 @@ void CstrHardware::write(uw addr, T data) {
             
         case HWR_ACCESS_16:
             switch(LOW_BITS(addr)) {
-                case 0x1040 ... 0x104e: // SIO
+                case 0x1040 ... 0x104e: // SIO 0
                     sio.write16(addr, data);
                     return;
                     
@@ -87,8 +87,8 @@ void CstrHardware::write(uw addr, T data) {
             
         case HWR_ACCESS_08:
             switch(LOW_BITS(addr)) {
-                case 0x1040: // SIO Data
-                    sio.write08(data);
+                case 0x1040 ... 0x104e: // SIO 0
+                    sio.write08(addr, data);
                     return;
                     
                 case 0x1800 ... 0x1803: // CD-ROM
@@ -139,7 +139,7 @@ T CstrHardware::read(uw addr) {
             
         case HWR_ACCESS_16:
             switch(LOW_BITS(addr)) {
-                case 0x1040 ... 0x104e: // SIO
+                case 0x1040 ... 0x104e: // SIO 0
                     return sio.read16(addr);
                     
                 case 0x1100 ... 0x1128: // Rootcounters
@@ -162,8 +162,8 @@ T CstrHardware::read(uw addr) {
             
         case HWR_ACCESS_08:
             switch(LOW_BITS(addr)) {
-                case 0x1040: // SIO Data
-                    return sio.read08();
+                case 0x1040 ... 0x104e: // SIO 0
+                    return sio.read08(addr);
                     
                 case 0x1800 ... 0x1803: // CD-ROM
                     return cd.read(addr);
