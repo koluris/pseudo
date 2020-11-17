@@ -22,17 +22,16 @@ void CstrGraphics::reset() {
     vpos         = 0;
     vdiff        = 0;
     scanline     = 0;
+    stall        = 0;
     isVideoPAL   = false;
     isVideo24Bit = false;
 }
-
-double then = 1.0;
-uw stall = 0;
 
 void CstrGraphics::update(uw frames) {
     if (!(++scanline % 2800)) {
         // FPS throttle
 #if 0
+        static double then = 1.0;
         double now = mach_absolute_time() / 1000.0;
         then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
         
@@ -40,7 +39,7 @@ void CstrGraphics::update(uw frames) {
             usleep(then - now);
         }
 #endif
-        if ((++stall % 2)) {
+        if (!(++stall % 2)) {
             draw.swapBuffers(ret.disabled);
         }
         bus.interruptSet(CstrBus::INT_VSYNC);

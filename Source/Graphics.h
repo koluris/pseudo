@@ -77,7 +77,7 @@ class CstrGraphics {
         } h, v;
     } vrop;
     
-    uw modeDMA, scanline;
+    uw modeDMA, scanline, stall;
     uh vpos, vdiff;
 
     void dataWrite(uw *, sw);
