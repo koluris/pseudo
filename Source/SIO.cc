@@ -29,9 +29,6 @@ void CstrSerial::reset() {
     bfr[4] = 0xff;
 }
 
-#define control \
-    *(uh *)&mem.hwr.ptr[0x104a]
-
 void CstrSerial::pollController(ub data) {
     if ((index == 0 && data != 0x01) || (index == 1 && data != 0x42)) {
         return;
@@ -82,8 +79,6 @@ void CstrSerial::padListener(int code, bool pushed) {
     bfr[3] = (ub)(btnState);
     bfr[4] = (ub)(btnState >> 8);
 }
-
-//printx("/// PSeudo SIO write16 0x%x <- 0x%x", LOW_BITS(addr), data);
 
 void CstrSerial::write16(uw addr, uh data) {
     accessMem(mem.hwr, uh) = data;
