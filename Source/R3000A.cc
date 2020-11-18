@@ -25,10 +25,16 @@
     ((code & 0x3ffffff) << 2) | (pc & 0xf0000000)
 
 #define opcodeSWx(o, d) \
-    mem.write<uw>(ob & (~(3)), (base[rt] o shift[d][ob & 3]) | (mem.read<uw>(ob & (~(3))) & mask[d][ob & 3]))
+{ \
+    uw temp = ob; \
+    mem.write<uw>(temp & (~(3)), (base[rt] o shift[d][temp & 3]) | (mem.read<uw>(temp & (~(3))) & mask[d][temp & 3])); \
+}
 
 #define opcodeLWx(o, d) \
-    base[rt] = (base[rt] & mask[d][ob & 3]) | (mem.read<uw>(ob & (~(3))) o shift[d][ob & 3])
+{ \
+    uw temp = ob; \
+    base[rt] = (base[rt] & mask[d][temp & 3]) | (mem.read<uw>(temp & (~(3))) o shift[d][temp & 3]); \
+}
 
 
 CstrMips cpu;
@@ -41,7 +47,7 @@ void CstrMips::reset() {
     copr[15] = 0x2; // Co-processor Revision
     
     setpc(0xbfc00000);
-    res.s64 = 0;
+    res.u64 = 0;
 }
 
 void CstrMips::setpc(uw addr) {
@@ -91,6 +97,8 @@ void CstrMips::run() {
 void CstrMips::step(bool branched) {
     const uw code = *instCache++;
     pc += 4;
+    
+    // Needed
     base[0] = 0;
     
     switch(opcode) {

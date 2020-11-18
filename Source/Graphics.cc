@@ -29,8 +29,9 @@ void CstrGraphics::reset() {
 
 void CstrGraphics::update(uw frames) {
     if (!(++scanline % 2800)) {
-        // FPS throttle
+    
 #if 0
+        // FPS throttle
         static double then = 1.0;
         double now = mach_absolute_time() / 1000.0;
         then = now > (then + CLOCKS_PER_SEC) ? now : then + (isVideoPAL ? PAL : NTSC);
@@ -40,7 +41,9 @@ void CstrGraphics::update(uw frames) {
         }
 #endif
         if (!(++stall % 2)) {
-            draw.swapBuffers(ret.disabled);
+            if (modeDMA == GPU_DMA_NONE) {
+                draw.swapBuffers(ret.disabled);
+            }
         }
         bus.interruptSet(CstrBus::INT_VSYNC);
     }
