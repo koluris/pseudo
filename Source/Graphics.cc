@@ -41,9 +41,7 @@ void CstrGraphics::update(uw frames) {
         }
 #endif
         if (!(++stall % 2)) {
-            if (modeDMA == GPU_DMA_NONE) {
-                draw.swapBuffers(isDisabled);
-            }
+            draw.swapBuffers(isDisabled);
         }
         bus.interruptSet(CstrBus::INT_VSYNC);
     }
@@ -93,10 +91,6 @@ void CstrGraphics::write(uw addr, uw data) {
                         isVideo24Bit = data & 0x10;
                         isVideoPAL   = data & 0x08;
                         
-//                        isInterlaced = (data >> 5) & 1;
-//                        isVideo24Bit = (data >> 4) & 1;
-//                        isVideoPAL   = (data) & 8;
-                        
                         // Basic info
                         const uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];
                         const uh h = (data & 4) ? 480 : 240;
@@ -143,7 +137,7 @@ uw CstrGraphics::read(uw addr) {
             return ret.data;
             
         case 4: // Status
-            return (ret.status ^ GPU_STAT_ODDLINES) | GPU_STAT_READYFORVRAM;
+            return (ret.status ^= GPU_STAT_ODDLINES) | GPU_STAT_READYFORVRAM;
     }
     
     printx("/// PSeudo GPU Read: %d", (addr & 0xf));
