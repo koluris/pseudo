@@ -15,16 +15,16 @@ void CstrGraphics::reset() {
     ret  = { 0 };
     pipe = { 0 };
     
-    ret.disabled = true;
     ret.data     = 0x400;
     ret.status   = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA      = GPU_DMA_NONE;
-    vpos         = 0;
-    vdiff        = 0;
     scanline     = 0;
     stall        = 0;
-    isVideoPAL   = false;
+    vpos         = 0;
+    vdiff        = 0;
+    isDisabled   = true;
     isVideo24Bit = false;
+    isVideoPAL   = false;
 }
 
 void CstrGraphics::update(uw frames) {
@@ -42,7 +42,7 @@ void CstrGraphics::update(uw frames) {
 #endif
         if (!(++stall % 2)) {
             if (modeDMA == GPU_DMA_NONE) {
-                draw.swapBuffers(ret.disabled);
+                draw.swapBuffers(isDisabled);
             }
         }
         bus.interruptSet(CstrBus::INT_VSYNC);
@@ -59,9 +59,9 @@ void CstrGraphics::write(uw addr, uw data) {
             switch(GPU_COMMAND(data)) {
                 case 0x00:
                     ret.status   = 0x14802000;
-                    ret.disabled = true;
-                    isVideoPAL   = false;
+                    isDisabled   = true;
                     isVideo24Bit = false;
+                    isVideoPAL   = false;
                     return;
                     
                 case 0x01:
@@ -69,7 +69,7 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x03:
-                    ret.disabled = data & 1;
+                    isDisabled = data & 1;
                     return;
                     
                 case 0x04:
@@ -77,7 +77,10 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x05:
-                    vpos = MAX(vpos, (data >> 10) & 0x1ff);
+                    {
+                            uh temp = (data >> 10) & 0x1ff;
+                        vpos = temp ? temp : vpos;
+                    }
                     return;
                     
                 case 0x07:
@@ -85,22 +88,23 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x08:
-                    isVideoPAL   = (data) & 8;
-                    isVideo24Bit = (data >> 4) & 1;
-                    
                     {
-                        // Basic info
-                        uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];
-                        uh h = (data & 4) ? 480 : 240;
+                        isInterlaced = (data & 0x20) != 0;
+                        isVideo24Bit = (data & 0x10) != 0;
+                        isVideoPAL   = (data & 0x08) != 0;
                         
-                        if (((data >> 5) & 1) || h == vdiff) { // No distinction for interlaced or normal mode
-                            draw.resize(w, h);
-                            //printf("1 %d / %d\n", w, h);
+                        // Basic info
+                        const uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];
+                        const uh h = (data & 4) ? 480 : 240;
+                        
+                        if (isInterlaced) { // No distinction for interlaced or normal mode
+                            draw.resize(w, h); //printf("1 %d / %d\n", w, h);
                         }
                         else { // Special case
-                            vdiff = vdiff == 226 ? 240 : vdiff; // pdx-059, wurst2k
-                            draw.resize(w, vpos ? vpos : vdiff);
-                            //printf("2 %d / %d\n", w, (vpos ? vpos : vdiff));
+                            if (vdiff < 240) { // pdx-059, wurst2k
+                                vdiff = 240;
+                            }
+                            draw.resize(w, vpos ? vpos : vdiff); //printf("2 %d / %d\n", w, (vpos ? vpos : vdiff));
                         }
                     }
                     return;

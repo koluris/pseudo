@@ -100,11 +100,13 @@ public:
     
     // Data, Status
     struct {
-        bool disabled; uw data, status;
+        uw data, status;
     } ret;
     
-    bool isVideoPAL;
+    bool isDisabled;
+    bool isInterlaced;
     bool isVideo24Bit;
+    bool isVideoPAL;
     
     void reset();
     void update(uw);

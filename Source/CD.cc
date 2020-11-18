@@ -604,25 +604,20 @@ ub CstrCD::read(uw addr) {
 }
 
 void CstrCD::executeDMA(CstrBus::castDMA *dma) {
-    uw size = (dma->bcr & 0xffff) * 4;
-    
-    switch(dma->chcr) {
-        case 0x11000000:
-        case 0x11400100: // ?
-            if (!readed) {
-                return;
-            }
-            
-            for (int i = 0; i < size; i++) {
-                mem.ram.ptr[(dma->madr + i) & (mem.ram.size - 1)] = transfer.data[transfer.p + i];
-            }
-            
-            transfer.p += size;
+    if ((dma->chcr & 0x01000000) == 0x01000000) {
+        if (!readed) {
             return;
-            
-        case 0x00000000: // ?
-            return;
+        }
+        uw size = (dma->bcr & 0xffff) * 4;
+        
+        if (!size) {
+            printx("/// PSeudo CD DMA: Size is %d", 0);
+        }
+        
+        for (int i = 0; i < size; i++) {
+            mem.ram.ptr[(dma->madr + i) & (mem.ram.size - 1)] = transfer.data[transfer.p + i];
+        }
+        
+        transfer.p += size;
     }
-    
-    printx("/// PSeudo CD DMA: 0x%08x\n", dma->chcr);
 }
