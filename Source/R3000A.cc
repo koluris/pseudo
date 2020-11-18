@@ -69,10 +69,16 @@ void CstrMips::run() {
             step(false);
         }
         
-           cd.update();
+        // Tick psx
         rootc.update(threshold * 3);
            vs.update(threshold * 3);
+           cd.update();
           bus.update();
+        
+        // Skip exceptions for GTE's sake
+        if ((*instCache >> 26) == 0x12) {
+            continue;
+        }
         
         if (data32 & mask32) {
             if ((copr[12] & 0x401) == 0x401) {
