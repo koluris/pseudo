@@ -16,15 +16,21 @@ class CstrSerial {
         PAD_BTN_SQUARE
     };
     
-    struct {
-        bool enabled;
-        ub data;
-    } rx;
+    enum {
+        SIO_CTRL_DTR         = 0x002,
+        SIO_CTRL_RESET_ERROR = 0x010,
+        SIO_CTRL_RESET       = 0x040,
+    };
+    
+    enum {
+        SIO_STAT_TX_READY = 0x001,
+        SIO_STAT_RX_READY = 0x002,
+        SIO_STAT_TX_EMPTY = 0x004,
+        SIO_STAT_IRQ      = 0x200,
+    };
     
     uh btnState;
-    ub bfr[5], index;
-    
-    void pollController(ub);
+    ub bfr[5], padst, parp;
     
 public:
     void reset();

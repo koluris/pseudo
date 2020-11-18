@@ -78,8 +78,8 @@ void CstrGraphics::write(uw addr, uw data) {
                     
                 case 0x05:
                     {
-                            uh temp = (data >> 10) & 0x1ff;
-                        vpos = temp ? temp : vpos;
+                        const uh temp = (data >> 10) & 0x1ff;
+                          vpos = temp >= 200 ? temp : vpos;
                     }
                     return;
                     
@@ -89,15 +89,19 @@ void CstrGraphics::write(uw addr, uw data) {
                     
                 case 0x08:
                     {
-                        isInterlaced = (data & 0x20) != 0;
-                        isVideo24Bit = (data & 0x10) != 0;
-                        isVideoPAL   = (data & 0x08) != 0;
+                        isInterlaced = data & 0x20;
+                        isVideo24Bit = data & 0x10;
+                        isVideoPAL   = data & 0x08;
+                        
+//                        isInterlaced = (data >> 5) & 1;
+//                        isVideo24Bit = (data >> 4) & 1;
+//                        isVideoPAL   = (data) & 8;
                         
                         // Basic info
                         const uh w = resMode[(data & 3) | ((data & 0x40) >> 4)];
                         const uh h = (data & 4) ? 480 : 240;
                         
-                        if (isInterlaced) { // No distinction for interlaced or normal mode
+                        if (isInterlaced || h == vpos || h == vdiff) { // No distinction for interlaced or normal mode
                             draw.resize(w, h); //printf("1 %d / %d\n", w, h);
                         }
                         else { // Special case

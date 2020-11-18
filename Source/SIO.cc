@@ -3,42 +3,43 @@
 #include "Global.h"
 
 
+#define status \
+    *(uw *)&mem.hwr.ptr[0x1044]
+
+#define mode \
+    *(uh *)&mem.hwr.ptr[0x1048]
+
+#define control \
+    *(uh *)&mem.hwr.ptr[0x104a]
+
+#define baud \
+    *(uh *)&mem.hwr.ptr[0x104e]
+
 // Check for pushed button
 #define btnCheck(btn) \
     if (pushed) { \
-        btnState &= ( (0xffff ^ (1 << btn))); \
+        btnState &=  (0xffff ^ (1 << btn)); \
     } \
     else { \
-        btnState |= (~(0xffff ^ (1 << btn))); \
+        btnState |= ~(0xffff ^ (1 << btn)); \
     }
 
 
 CstrSerial sio;
 
 void CstrSerial::reset() {
-    rx.enabled = false;
-    rx.data    = 0;
-    
+    memset(&bfr, 0, sizeof(bfr));
     btnState = 0xffff;
-    index    = 0;
-
-    bfr[0] = 0xff;
+    status   = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+    padst    = 0;
+    parp     = 0;
+    
+    // Default pad buffer
+    bfr[0] = 0x00;
     bfr[1] = 0x41;
     bfr[2] = 0x5a;
     bfr[3] = 0xff;
     bfr[4] = 0xff;
-}
-
-void CstrSerial::pollController(ub data) {
-    if ((index == 0 && data != 0x01) || (index == 1 && data != 0x42)) {
-        return;
-    }
-    
-    rx.data = bfr[index];
-    
-    if (++index == sizeof(bfr)) {
-        index = 0;
-    }
 }
 
 void CstrSerial::padListener(int code, bool pushed) {
@@ -81,38 +82,120 @@ void CstrSerial::padListener(int code, bool pushed) {
 }
 
 void CstrSerial::write16(uw addr, uh data) {
+    switch(LOW_BITS(addr)) {
+        case 0x104a:
+            control = data;
+            
+            if (control & SIO_CTRL_RESET_ERROR) {
+                status  &= (~(SIO_STAT_IRQ));
+                control &= (~(SIO_CTRL_RESET_ERROR));
+            }
+            
+            if (control & SIO_CTRL_RESET || !control) {
+                status = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+                padst  = 0;
+                parp   = 0;
+            }
+            return;
+    }
+    
     accessMem(mem.hwr, uh) = data;
 }
 
 void CstrSerial::write08(uw addr, ub data) {
     switch(LOW_BITS(addr)) {
         case 0x1040:
-            rx.enabled = true;
-            pollController(data);
-            bus.interruptSet(CstrBus::INT_SIO0);
+            {
+                switch(padst) {
+                    case 1:
+                        if (data & 0x40) {
+                            padst = 2;
+                            parp  = 1;
+                            
+                            switch(data) {
+                                case 0x42:
+                                    bfr[1] = 0x41;
+                                    break;
+                                    
+                                case 0x43:
+                                    bfr[1] = 0x43;
+                                    break;
+                                    
+                                default:
+                                    printx("/// PSeudo SIO write08 data == 0x%0x", data);
+                                    break;
+                            }
+                        }
+                        else {
+                            padst = 0;
+                        }
+                        
+                        bus.interruptSet(CstrBus::INT_SIO0);
+                        return;
+                        
+                    case 2:
+                        if (++parp != 5) {
+                            bus.interruptSet(CstrBus::INT_SIO0);
+                        }
+                        else {
+                            padst = 0;
+                        }
+                        return;
+                }
+                
+                if (data == 1) {
+                    status &=!SIO_STAT_TX_EMPTY;
+                    status |= SIO_STAT_RX_READY;
+                    padst = 1;
+                    parp  = 0;
+                    
+                    if (control & SIO_CTRL_DTR) {
+                        switch(control) {
+                            case 0x1003:
+                                bus.interruptSet(CstrBus::INT_SIO0);
+                                break;
+                                
+                            case 0x3003:
+                                break;
+                                
+                            default:
+                                printx("/// PSeudo : [-] SIO control -> 0x%08x\n", control);
+                                break;
+                        }
+                    }
+                }
+            }
             return;
     }
-
+    
     accessMem(mem.hwr, ub) = data;
 }
 
 uh CstrSerial::read16(uw addr) {
-    switch(LOW_BITS(addr)) {
-        case 0x1044:
-            return 0b101 | (rx.enabled << 1);
-    }
-    
     return accessMem(mem.hwr, uh);
 }
 
 ub CstrSerial::read08(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1040:
-            if (rx.enabled) {
-                rx.enabled = false;
-                return rx.data;
+            {
+                if (!(status & SIO_STAT_RX_READY)) {
+                    return 0;
+                }
+                
+                ub data = bfr[parp];
+                
+                if (parp == 5) {
+                    status &= (~(SIO_STAT_RX_READY));
+                    status |= SIO_STAT_TX_EMPTY;
+                    
+                    if (padst == 2) {
+                        printx("/// PSeudo SIO read08 (padst == %d)", 2);
+                    }
+                }
+                
+                return data;
             }
-            return 0xff;
     }
     
     return accessMem(mem.hwr, ub);
