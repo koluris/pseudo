@@ -35,12 +35,12 @@
 typedef uint64_t ud; // uns doubleword
 typedef uint32_t uw; // uns word
 typedef uint16_t uh; // uns halfword
-typedef uint8_t  ub; // uns bite
+typedef uint8_t  ub; // uns byte
 
 typedef int64_t sd; // doubleword
 typedef int32_t sw; // word
 typedef int16_t sh; // halfword
-typedef int8_t  sb; // bite
+typedef int8_t  sb; // byte
 
 // Basic
 #define memcp               memcpy
