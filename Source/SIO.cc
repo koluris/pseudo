@@ -84,18 +84,12 @@ void CstrSerial::padListener(int code, bool pushed) {
 void CstrSerial::write16(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
         case 0x104a:
-            control = data;
-            
-            if (control & SIO_CTRL_RESET_ERROR) {
-                status  &= (~(SIO_STAT_IRQ));
-                control &= (~(SIO_CTRL_RESET_ERROR));
-            }
+            control = data & (~(SIO_CTRL_RESET_ERROR));
             
             if (control & SIO_CTRL_RESET || !control) {
                 status = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
                 index  = 0;
                 padst  = 0;
-                
             }
             return;
     }
