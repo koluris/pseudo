@@ -28,9 +28,9 @@
 CstrSerial sio;
 
 void CstrSerial::reset() {
-    status   = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
-    index    = 0;
-    padst    = 0;
+    status = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+    index  = 0;
+    step   = 0;
     btnState = 0xffff;
     
     // Default pad buffer
@@ -89,7 +89,7 @@ void CstrSerial::write16(uw addr, uh data) {
             if (control & SIO_CTRL_RESET || !control) {
                 status = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
                 index  = 0;
-                padst  = 0;
+                step   = 0;
             }
             return;
     }
@@ -101,11 +101,11 @@ void CstrSerial::write08(uw addr, ub data) {
     switch(LOW_BITS(addr)) {
         case 0x1040:
             {
-                switch(padst) {
+                switch(step) {
                     case 1:
                         if (data & 0x40) {
                             index = 1;
-                            padst = 2;
+                            step  = 2;
                             
                             switch(data) {
                                 case 0x42:
@@ -118,7 +118,7 @@ void CstrSerial::write08(uw addr, ub data) {
                             }
                         }
                         else {
-                            padst = 0;
+                            step = 0;
                         }
                         
                         bus.interruptSet(CstrBus::INT_SIO0);
@@ -126,7 +126,7 @@ void CstrSerial::write08(uw addr, ub data) {
                         
                     case 2:
                         if (++index == 5) {
-                            padst = 0;
+                            step = 0;
                             return;
                         }
                         
@@ -138,7 +138,7 @@ void CstrSerial::write08(uw addr, ub data) {
                     status &=!SIO_STAT_TX_EMPTY;
                     status |= SIO_STAT_RX_READY;
                     index = 0;
-                    padst = 1;
+                    step  = 1;
                     
                     if (control == 0x1003) {
                         bus.interruptSet(CstrBus::INT_SIO0);
