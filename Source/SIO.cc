@@ -153,7 +153,7 @@ ub CstrSerial::read08(uw addr) {
                 return 0;
             }
             
-            if (index == 5) {
+            if (index == sizeof(bfr)) {
                 status &= (~(SIO_STAT_RX_READY));
                 status |= ( (SIO_STAT_TX_EMPTY));
             }
