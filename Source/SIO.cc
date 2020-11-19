@@ -6,14 +6,8 @@
 #define status \
     *(uw *)&mem.hwr.ptr[0x1044]
 
-#define mode \
-    *(uh *)&mem.hwr.ptr[0x1048]
-
 #define control \
     *(uh *)&mem.hwr.ptr[0x104a]
-
-#define baud \
-    *(uh *)&mem.hwr.ptr[0x104e]
 
 // Check for pushed button
 #define btnCheck(btn) \
@@ -100,49 +94,45 @@ void CstrSerial::write16(uw addr, uh data) {
 void CstrSerial::write08(uw addr, ub data) {
     switch(LOW_BITS(addr)) {
         case 0x1040:
-            {
-                switch(step) {
-                    case 1:
-                        if (data & 0x40) {
-                            index = 1;
-                            step  = 2;
-                            
-                            switch(data) {
-                                case 0x42:
-                                    bfr[1] = 0x41;
-                                    break;
-                                    
-                                case 0x43:
-                                    bfr[1] = 0x43;
-                                    break;
-                            }
-                        }
-                        else {
-                            step = 0;
-                        }
+            switch(step) {
+                case 1:
+                    if (data & 0x40) {
+                        index = 1;
+                        step  = 2;
                         
-                        bus.interruptSet(CstrBus::INT_SIO0);
-                        return;
-                        
-                    case 2:
-                        if (++index == 5) {
-                            step = 0;
-                            return;
+                        if (data  == 0x42) {
+                            bfr[1] = 0x41;
                         }
-                        
-                        bus.interruptSet(CstrBus::INT_SIO0);
-                        return;
-                }
-                
-                if (data == 1) {
-                    status &=!SIO_STAT_TX_EMPTY;
-                    status |= SIO_STAT_RX_READY;
-                    index = 0;
-                    step  = 1;
-                    
-                    if (control == 0x1003) {
-                        bus.interruptSet(CstrBus::INT_SIO0);
+                        else
+                        if (data  == 0x43) {
+                            bfr[1] = 0x43;
+                        }
                     }
+                    else {
+                        step = 0;
+                    }
+                    
+                    bus.interruptSet(CstrBus::INT_SIO0);
+                    return;
+                    
+                case 2:
+                    if (++index == 5) {
+                        step = 0;
+                        return;
+                    }
+                    
+                    bus.interruptSet(CstrBus::INT_SIO0);
+                    return;
+            }
+            
+            if (data == 1) {
+                status &=!SIO_STAT_TX_EMPTY;
+                status |= SIO_STAT_RX_READY;
+                index = 0;
+                step  = 1;
+                
+                if (control == 0x1003) {
+                    bus.interruptSet(CstrBus::INT_SIO0);
                 }
             }
             return;
