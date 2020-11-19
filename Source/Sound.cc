@@ -292,7 +292,7 @@ uh CstrAudio::read(uw addr) {
         case 0x1db6: // ?
         case 0x1db8: // ?
         case 0x1dba: // ?
-        case 0x1e00 ... 0x1e0e: // ?
+        case 0x1e00 ... 0x1e3e: // ?
             return accessMem(mem.hwr, uh);
     }
     

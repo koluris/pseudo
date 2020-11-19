@@ -145,7 +145,7 @@ T CstrHardware::read(uw addr) {
                 case 0x1100 ... 0x1128: // Rootcounters
                     return rootc.read(addr);
                     
-                case 0x1c00 ... 0x1e0e: // Audio
+                case 0x1c00 ... 0x1e3e: // Audio
                     return audio.read(addr);
                     
                 /* unused */
