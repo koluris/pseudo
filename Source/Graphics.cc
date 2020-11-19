@@ -18,6 +18,7 @@ void CstrGraphics::reset() {
     ret.data     = 0x400;
     ret.status   = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA      = GPU_DMA_NONE;
+    clock        = 0;
     scanline     = 0;
     stall        = 0;
     vpos         = 0;
@@ -28,8 +29,10 @@ void CstrGraphics::reset() {
 }
 
 void CstrGraphics::update(uw frames) {
-    if (!(++scanline % 2800)) {
+    uw lines = (clock += frames) / 3413;
+    clock %= 3413;
     
+    if ((scanline += lines) >= 262) { scanline = 0;
 #if 0
         // FPS throttle
         static double then = 1.0;
@@ -40,7 +43,7 @@ void CstrGraphics::update(uw frames) {
             usleep(then - now);
         }
 #endif
-        if (!(++stall % 2)) {
+        if ((++stall % 2)) {
             draw.swapBuffers(isDisabled);
         }
         bus.interruptSet(CstrBus::INT_VSYNC);

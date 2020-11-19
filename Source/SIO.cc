@@ -148,8 +148,8 @@ uh CstrSerial::read16(uw addr) {
 ub CstrSerial::read08(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1040:
-            if (control == 0x3003 || !(status & SIO_STAT_RX_READY)) {
-                return 0xff;
+            if (!(status & SIO_STAT_RX_READY)) {
+                return 0;
             }
             
             if (index == sizeof(bfr)) {
