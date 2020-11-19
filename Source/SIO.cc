@@ -128,7 +128,6 @@ void CstrSerial::write08(uw addr, ub data) {
             if (data == 1) {
                 status &= (~(SIO_STAT_TX_EMPTY));
                 status |= ( (SIO_STAT_RX_READY));
-                
                 index = 0;
                 step  = 1;
                 
@@ -150,7 +149,7 @@ ub CstrSerial::read08(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1040:
             if (control == 0x3003 || !(status & SIO_STAT_RX_READY)) {
-                return 0;
+                return 0xff;
             }
             
             if (index == sizeof(bfr)) {
