@@ -70,18 +70,29 @@ void CstrSerial::padListener(int code, bool pushed) {
         btnCheck(PAD_BTN_CIRCLE);
     }
 #endif
-    
-    bfr[3] = (ub)(btnState);
-    bfr[4] = (ub)(btnState >> 8);
 }
 
 void CstrSerial::write16(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
         case 0x104a:
-            control = data & (~(SIO_CTRL_RESET_ERROR));
+//            control = data & (~(SIO_CTRL_RESET_ERROR));
+//
+//            if (control & SIO_CTRL_RESET || !control) {
+//                status  = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+//                index = 0;
+//                step  = 0;
+//            }
+            
+            control = data;
+            
+            if (control & SIO_CTRL_RESET_ERROR) {
+                status  &= ~SIO_STAT_IRQ;
+                control &= ~SIO_CTRL_RESET_ERROR;
+            }
             
             if (control & SIO_CTRL_RESET || !control) {
                 status  = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+                
                 index = 0;
                 step  = 0;
             }
@@ -107,6 +118,9 @@ void CstrSerial::write08(uw addr, ub data) {
                         if (data  == 0x43) {
                             bfr[1] = 0x43;
                         }
+                        else {
+                            printx("/// PSeudo SIO: Data == 0x%x", data);
+                        }
                     }
                     else {
                         step = 0;
@@ -116,7 +130,7 @@ void CstrSerial::write08(uw addr, ub data) {
                     return;
                     
                 case 2:
-                    if (++index == 5) {
+                    if (++index == sizeof(bfr) - 1) {
                         step = 0;
                         return;
                     }
@@ -128,10 +142,18 @@ void CstrSerial::write08(uw addr, ub data) {
             if (data == 1) {
                 status &= (~(SIO_STAT_TX_EMPTY));
                 status |= ( (SIO_STAT_RX_READY));
+                
                 index = 0;
                 step  = 1;
                 
-                if (control == 0x1003) {
+                if (control & SIO_CTRL_DTR) {
+                    if (control & 0x2000) { // Controller 2
+                        bfr[3] = 0xff;
+                        bfr[4] = 0xff;
+                    } else { // Controller 1
+                        bfr[3] = (ub)(btnState);
+                        bfr[4] = (ub)(btnState >> 8);
+                    }
                     bus.interruptSet(CstrBus::INT_SIO0);
                 }
             }
@@ -152,9 +174,13 @@ ub CstrSerial::read08(uw addr) {
                 return 0;
             }
             
-            if (index == sizeof(bfr)) {
+            if (index == sizeof(bfr) - 1) {
                 status &= (~(SIO_STAT_RX_READY));
                 status |= ( (SIO_STAT_TX_EMPTY));
+                
+                if (step == 2) {
+                    step  = 0;
+                }
             }
             return bfr[index];
     }

@@ -17,18 +17,20 @@ class CstrSerial {
     };
     
     enum {
-        SIO_STAT_TX_READY = 0x01,
-        SIO_STAT_RX_READY = 0x02,
-        SIO_STAT_TX_EMPTY = 0x04,
+        SIO_STAT_TX_READY = 0x001,
+        SIO_STAT_RX_READY = 0x002,
+        SIO_STAT_TX_EMPTY = 0x004,
+        SIO_STAT_IRQ      = 0x200,
     };
     
     enum {
-        SIO_CTRL_RESET_ERROR = 0x10,
-        SIO_CTRL_RESET       = 0x40,
+        SIO_CTRL_DTR         = 0x002,
+        SIO_CTRL_RESET_ERROR = 0x010,
+        SIO_CTRL_RESET       = 0x040,
     };
     
     uh btnState;
-    ub bfr[5], index, step;
+    ub bfr[5], index, step, bufcount;
     
 public:
     void reset();
