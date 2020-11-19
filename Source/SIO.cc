@@ -28,13 +28,13 @@
 CstrSerial sio;
 
 void CstrSerial::reset() {
-    memset(&bfr, 0, sizeof(bfr));
-    btnState = 0xffff;
     status   = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+    index    = 0;
     padst    = 0;
-    parp     = 0;
+    btnState = 0xffff;
     
     // Default pad buffer
+    memset(&bfr, 0, sizeof(bfr));
     bfr[0] = 0x00;
     bfr[1] = 0x41;
     bfr[2] = 0x5a;
@@ -93,8 +93,9 @@ void CstrSerial::write16(uw addr, uh data) {
             
             if (control & SIO_CTRL_RESET || !control) {
                 status = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+                index  = 0;
                 padst  = 0;
-                parp   = 0;
+                
             }
             return;
     }
@@ -109,8 +110,8 @@ void CstrSerial::write08(uw addr, ub data) {
                 switch(padst) {
                     case 1:
                         if (data & 0x40) {
+                            index = 1;
                             padst = 2;
-                            parp  = 1;
                             
                             switch(data) {
                                 case 0x42:
@@ -119,10 +120,6 @@ void CstrSerial::write08(uw addr, ub data) {
                                     
                                 case 0x43:
                                     bfr[1] = 0x43;
-                                    break;
-                                    
-                                default:
-                                    printx("/// PSeudo SIO write08 data == 0x%0x", data);
                                     break;
                             }
                         }
@@ -134,34 +131,23 @@ void CstrSerial::write08(uw addr, ub data) {
                         return;
                         
                     case 2:
-                        if (++parp != 5) {
-                            bus.interruptSet(CstrBus::INT_SIO0);
-                        }
-                        else {
+                        if (++index == 5) {
                             padst = 0;
+                            return;
                         }
+                        
+                        bus.interruptSet(CstrBus::INT_SIO0);
                         return;
                 }
                 
                 if (data == 1) {
                     status &=!SIO_STAT_TX_EMPTY;
                     status |= SIO_STAT_RX_READY;
+                    index = 0;
                     padst = 1;
-                    parp  = 0;
                     
-                    if (control & SIO_CTRL_DTR) {
-                        switch(control) {
-                            case 0x1003:
-                                bus.interruptSet(CstrBus::INT_SIO0);
-                                break;
-                                
-                            case 0x3003:
-                                break;
-                                
-                            default:
-                                printx("/// PSeudo : [-] SIO control -> 0x%08x\n", control);
-                                break;
-                        }
+                    if (control == 0x1003) {
+                        bus.interruptSet(CstrBus::INT_SIO0);
                     }
                 }
             }
@@ -179,19 +165,15 @@ ub CstrSerial::read08(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1040:
             {
-                if (!(status & SIO_STAT_RX_READY)) {
+                if (!(status & SIO_STAT_RX_READY) || control == 0x3003) {
                     return 0;
                 }
                 
-                ub data = bfr[parp];
+                ub data = bfr[index];
                 
-                if (parp == 5) {
+                if (index == 5) {
                     status &= (~(SIO_STAT_RX_READY));
                     status |= SIO_STAT_TX_EMPTY;
-                    
-                    if (padst == 2) {
-                        printx("/// PSeudo SIO read08 (padst == %d)", 2);
-                    }
                 }
                 
                 return data;

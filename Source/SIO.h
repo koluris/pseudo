@@ -30,7 +30,7 @@ class CstrSerial {
     };
     
     uh btnState;
-    ub bfr[5], padst, parp;
+    ub bfr[5], padst, index;
     
 public:
     void reset();
