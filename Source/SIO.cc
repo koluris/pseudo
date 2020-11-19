@@ -12,10 +12,10 @@
 // Check for pushed button
 #define btnCheck(btn) \
     if (pushed) { \
-        btnState &=  (0xffff ^ (1 << btn)); \
+        btnState &= ( (0xffff ^ (1 << btn))); \
     } \
     else { \
-        btnState |= ~(0xffff ^ (1 << btn)); \
+        btnState |= (~(0xffff ^ (1 << btn))); \
     }
 
 
@@ -81,9 +81,9 @@ void CstrSerial::write16(uw addr, uh data) {
             control = data & (~(SIO_CTRL_RESET_ERROR));
             
             if (control & SIO_CTRL_RESET || !control) {
-                status = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
-                index  = 0;
-                step   = 0;
+                status  = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
+                index = 0;
+                step  = 0;
             }
             return;
     }
@@ -126,8 +126,9 @@ void CstrSerial::write08(uw addr, ub data) {
             }
             
             if (data == 1) {
-                status &=!SIO_STAT_TX_EMPTY;
-                status |= SIO_STAT_RX_READY;
+                status &= (~(SIO_STAT_TX_EMPTY));
+                status |= ( (SIO_STAT_RX_READY));
+                
                 index = 0;
                 step  = 1;
                 
@@ -148,20 +149,15 @@ uh CstrSerial::read16(uw addr) {
 ub CstrSerial::read08(uw addr) {
     switch(LOW_BITS(addr)) {
         case 0x1040:
-            {
-                if (!(status & SIO_STAT_RX_READY) || control == 0x3003) {
-                    return 0;
-                }
-                
-                ub data = bfr[index];
-                
-                if (index == 5) {
-                    status &= (~(SIO_STAT_RX_READY));
-                    status |= SIO_STAT_TX_EMPTY;
-                }
-                
-                return data;
+            if (control == 0x3003 || !(status & SIO_STAT_RX_READY)) {
+                return 0;
             }
+            
+            if (index == 5) {
+                status &= (~(SIO_STAT_RX_READY));
+                status |= ( (SIO_STAT_TX_EMPTY));
+            }
+            return bfr[index];
     }
     
     return accessMem(mem.hwr, ub);
