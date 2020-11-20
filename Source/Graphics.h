@@ -85,6 +85,14 @@ class CstrGraphics {
     int fetchMem(uh *, sw);
     
 public:
+    enum {
+        GPU_INFO_TEX_WINDOW = 2,
+        GPU_INFO_DRAW_AREA_START,
+        GPU_INFO_DRAW_AREA_END,
+        GPU_INFO_DRAW_OFFSET,
+        GPU_INFO_VERSION = 7,
+    };
+    
     CstrGraphics() {
         vram.ptr = new uh[vram.size = FRAME_W * FRAME_H * 2];
     }
@@ -102,6 +110,8 @@ public:
     struct {
         uw data, status;
     } ret;
+    
+    uw info[8];
     
     bool isDisabled;
     bool isInterlaced;

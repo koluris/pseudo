@@ -441,21 +441,25 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 case 0xe2: // Texture Window
                     texWindow.startX = ((packets[0] >> 10) & 0x1f) << 3;
                     texWindow.startY = ((packets[0] >> 15) & 0x1f) << 3;
-                    texWindow.  endX = 255 - (((packets[0] >> 0) & 0x1f) << 3);
-                    texWindow.  endY = 255 - (((packets[0] >> 5) & 0x1f) << 3);
+                    texWindow.  endX = 256 - (((packets[0] >> 0) & 0x1f) << 3);
+                    texWindow.  endY = 256 - (((packets[0] >> 5) & 0x1f) << 3);
+                    vs.info[vs.GPU_INFO_TEX_WINDOW] = packets[0] & 0xfffff;
                     return;
                     
                 case 0xe3: // Draw Area Start
                     setDrawArea(0, packets[0]);
+                    vs.info[vs.GPU_INFO_DRAW_AREA_START] = packets[0] & 0x3fffff;
                     return;
                     
                 case 0xe4: // Draw Area End
                     setDrawArea(2, packets[0]);
+                    vs.info[vs.GPU_INFO_DRAW_AREA_END] = packets[0] & 0x3fffff;
                     return;
                     
                 case 0xe5: // Draw Offset
                     offset.h = ((sw)packets[0] << 21) >> 21;
                     offset.v = ((sw)packets[0] << 10) >> 21;
+                    vs.info[vs.GPU_INFO_DRAW_OFFSET] = packets[0] & 0x7fffff;
                     return;
                     
                 case 0xe6: // TODO: STP

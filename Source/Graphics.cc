@@ -11,10 +11,12 @@ CstrGraphics vs;
 
 void CstrGraphics::reset() {
     memset(vram.ptr, 0, vram.size);
+    memset(info, 0, sizeof(info));
     vrop = { 0 };
     ret  = { 0 };
     pipe = { 0 };
     
+    info[GPU_INFO_VERSION] = 0x2;
     ret.data     = 0x400;
     ret.status   = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000; // 0x14802000;
     modeDMA      = GPU_DMA_NONE;
@@ -112,12 +114,15 @@ void CstrGraphics::write(uw addr, uw data) {
                     
                 case 0x10: // TODO: Information
                     switch(data & 0xffffff) {
-                        case 7:
-                            ret.data = 2;
+                        case 0:
+                        case 1:
+                        case 6:
+                        case 8:
+                            printx("/// PSeudo GPU info: %d\n", (data & 0xffffff));
                             return;
                     }
                     
-                    printf("/// PSeudo GPU info: %d\n", (data & 0xffffff));
+                    ret.data = info[data & 0xffffff];
                     return;
                     
                 /* unused */
