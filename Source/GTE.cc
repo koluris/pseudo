@@ -704,8 +704,8 @@ uw CstrCop2::MFC2(uw addr) { // Cop2d read
             oooo(cop2d.uw, addr) = __oo(cop2d.uh, addr, 0);
             break;
             
-        case 15: // SXY3
-            printx("/// PSeudo GTE %s", "SXY3");
+        case 15: // SXY2
+            oooo(cop2d.uw, addr) = SXY2;
             break;
             
         case 28: // IRGB
