@@ -11,12 +11,8 @@ class CstrCache {
     };
     
     struct {
-        struct { // Mem position of texture and color lookup table
-            uw w, h, cc;
-        } pos;
-        
-        GLuint uid, tex;
-    } cache[TCACHE_MAX];
+        uw x, y, colormode;
+    } textureState;
     
     struct {
         // Texture and color lookup table buffer
@@ -32,11 +28,22 @@ public:
         }
     }
     
+    struct {
+        struct { // Mem position of texture and color lookup table
+            uw w, h, cc;
+        } pos;
+        
+        uw tp, clut;
+        bool update;
+        GLuint tex;
+    } cache[TCACHE_MAX];
+    
     void reset();
     uw pixel2texel(uh);
     void createTexture(GLuint *, int, int);
     void fetchTexture(uw, uw);
     void invalidate(sh, sh, sh, sh);
+    void updateTextureState(uw);
 };
 
-extern CstrCache cache;
+extern CstrCache tcache;

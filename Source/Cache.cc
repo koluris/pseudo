@@ -7,7 +7,7 @@
     (((ub)(a))<<24) | (((ub)(b))<<16) | (((ub)(c))<<8) | ((ub)(r))
 
 
-CstrCache cache;
+CstrCache tcache;
 
 void CstrCache::reset() {
     for (auto &tc : cache) {
@@ -15,9 +15,23 @@ void CstrCache::reset() {
         tc = { 0 };
         
         createTexture(&tc.tex, 256, 256);
+        
+        tc.clut = 1024 * 512 + 1;
+        tc.update = false;
     }
     
+    textureState = { 0 };
     index = 0;
+}
+
+void CstrCache::updateTextureState(uw data) {
+    textureState.x = (data << 6) & 0x3c0;
+    textureState.y = (data << 4) & 0x100;
+    textureState.colormode = (data >> 7) & 0x3;
+    
+    if (textureState.colormode == 3) {
+        textureState.colormode = 2;
+    }
 }
 
 uw CstrCache::pixel2texel(uh p) {
@@ -35,25 +49,58 @@ void CstrCache::createTexture(GLuint *tex, int w, int h) {
 }
 
 void CstrCache::fetchTexture(uw tp, uw clut) {
-    uw uid = (clut << 16) | tp;
+    //uw uid = (clut << 16) | tp;
+    //printf("0x%x 0x%x\n", clutP, uid);
     
-    for (auto &tc : cache) {
-        if (tc.uid == uid) { // Found cached texture
-            GLBindTexture(GL_TEXTURE_2D, tc.tex);
+//    for (auto &tc : cache) {
+//        //if (tc.uid == uid) { // Found cached texture
+//            if (tc.x == textureState.x && tc.y == textureState.y && tc.clut == clutP) {
+//                if (tc.update == true || tc.tp != textureState.colormode) {
+//                    //ctext = i;
+//                    break;
+//                }
+//                GLBindTexture(GL_TEXTURE_2D, tc.tex);
+//                return;
+//            }
+//        //}
+//    }
+    
+    if ((textureState.colormode & 2) == 2) {
+        clut = 1024 * 512 + 1;
+    }
+    
+    sw ctext = index;
+    for (int i = 0; i < TCACHE_MAX; i++) {
+        if (cache[i].pos.w == textureState.x && cache[i].pos.h == textureState.y && cache[i].clut == clut) {
+            if (cache[i].update == true || cache[i].tp != textureState.colormode) {
+                ctext = i;
+                break;
+            }
+            GLBindTexture(GL_TEXTURE_2D, cache[i].tex);
             return;
         }
     }
     
     // Basic info
-    auto &tc  = cache[index];
-    tc.pos.w  = (tp & 15) * 64;
-    tc.pos.h  = ((tp >> 4) & 1) * 256;
+    auto &tc  = cache[ctext];
+    tc.pos.w  = textureState.x; //(tp & 15) * 64;
+    tc.pos.h  = textureState.y; //((tp >> 4) & 1) * 256;
     tc.pos.cc = (clut & 0x7fff) * 16;
+    tc.tp = textureState.colormode;
+    tc.clut = clut;
+    tc.update = false;
+    
+    if (ctext == index) {
+        if ((index + 1) >= TCACHE_MAX) {
+            printx("/// PSeudo Texture Cache Full: %d", (index + 1));
+        }
+        index = (index + 1) & (TCACHE_MAX - 1);
+    }
     
     // Reset
     tex = { 0 };
     
-    switch((tp >> 7) & 3) {
+    switch(textureState.colormode) {
         case TEX_04BIT: // 16 color palette
             for (int i = 0; i < 16; i++) {
                 tex.cc[i] = pixel2texel(vs.vram.ptr[tc.pos.cc]);
@@ -104,21 +151,12 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
     // Attach texture
     GLBindTexture  (GL_TEXTURE_2D, tc.tex);
     GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, tex.bfr);
-    
-    if ((index + 1) >= TCACHE_MAX) {
-        printx("/// PSeudo Texture Cache Full: %d", (index + 1));
-    }
-    
-    // Advance cache counter
-    tc.uid = uid;
-    index = (index + 1) & (TCACHE_MAX - 1);
 }
 
-void CstrCache::invalidate(sh X, sh Y, sh W, sh H) {
+void CstrCache::invalidate(sh x, sh y, sh w, sh h) {
     for (auto &tc : cache) {
-        //if (((tc.pos.w + 255) >= X) && ((tc.pos.h + 255) >= Y) && ((tc.pos.w) <= W) && ((tc.pos.h) <= H)) {
-            tc.uid = 0;
-            //continue;
-        //}
+        if (((tc.pos.w + 255) >= x) && ((tc.pos.h + 255) >= y) && (tc.pos.w <= (x + w)) && (tc.pos.h <= (y + h))) {
+            tc.update = true;
+        }
     }
 }

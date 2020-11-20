@@ -28,18 +28,18 @@ void CstrPSeudo::init(const char *path) {
 void CstrPSeudo::reset() {
     suspended = false;
     
-    audio.reset();
-      bus.reset();
-    cache.reset();
-       cd.reset();
-     cop2.reset();
-      cpu.reset();
-     disc.reset();
-     mdec.reset();
-      mem.reset();
-    rootc.reset();
-      sio.reset();
-       vs.reset();
+     audio.reset();
+       bus.reset();
+    tcache.reset();
+        cd.reset();
+      cop2.reset();
+       cpu.reset();
+      disc.reset();
+      mdec.reset();
+       mem.reset();
+     rootc.reset();
+       sio.reset();
+        vs.reset();
     
     // BIOS version, ex: "ROM Version 4.1 12/16/97 E"
     ub version[0x1b];

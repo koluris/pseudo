@@ -46,10 +46,10 @@ void CstrDraw::reset() {
     swapBuffers(true);
     
     // 24-bit texture
-    cache.createTexture(&fb24tex, FRAME_W, FRAME_H);
+    tcache.createTexture(&fb24tex, FRAME_W, FRAME_H);
     
     // 16-bit texture
-    cache.createTexture(&fb16tex, FRAME_W, FRAME_H);
+    tcache.createTexture(&fb16tex, FRAME_W, FRAME_H);
 }
 
 void CstrDraw::swapBuffers(bool clear) {
@@ -264,7 +264,19 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 if (setup->texture) {
                     GLEnable(GL_TEXTURE_2D);
-                    cache.fetchTexture(tex[1]->tp, tex[0]->tp);
+                    //tcache.fetchTexture(tex[1]->tp, tex[0]->tp);
+                    if (setup->shade) {
+                        uh gpuDataX = (uh)(packets[5] >> 16);
+                        tcache.updateTextureState(gpuDataX);
+                        //sw clutP = (packets[2] >> 12) & 0x7fff0;
+                        tcache.fetchTexture(tex[1]->tp, tex[0]->tp);
+                    }
+                    else {
+                        uh gpuDataX = (uh)(packets[4] >> 16);
+                        tcache.updateTextureState(gpuDataX);
+                        //sw clutP = (packets[2] >> 12) & 0x7fff0;
+                        tcache.fetchTexture(tex[1]->tp, tex[0]->tp);
+                    }
                     
                     opaque = (tex[1]->tp >> 5) & 3;
                 }
@@ -384,7 +396,9 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 if (setup->texture) {
                     GLEnable(GL_TEXTURE_2D);
-                    cache.fetchTexture(spriteTP, tex[0]->tp);
+                    //tcache.fetchTexture(spriteTP, tex[0]->tp);
+                    //sw clutP = (packets[2] >> 12) & 0x7fff0;
+                    tcache.fetchTexture(spriteTP, tex[0]->tp);
                     
                     if (setup->exposure) { // This is not in specs?
                         hue[0]->r = COLOR_HALF;
@@ -436,6 +450,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     spriteTP = (packets[0]) & 0xffffff;
                     opaque   = (packets[0] >> 5) & 3;
                     GLBlendFunc(bit[opaque].src, bit[opaque].dst);
+                    tcache.updateTextureState(packets[0]);
                     return;
                     
                 case 0xe2: // Texture Window
