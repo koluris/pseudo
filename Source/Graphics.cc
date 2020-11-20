@@ -346,27 +346,9 @@ void CstrGraphics::photoRead(uw *packets) {
     modeDMA = GPU_DMA_MEM2VRAM;
     
     // Cache invalidation
-    //cache.invalidate(vrop.h.start, vrop.v.start, vrop.h.end, vrop.v.end);
+    tcache.invalidate(vrop.h.start, vrop.v.start, vrop.h.end, vrop.v.end);
     
-    sh *sgpuData = (sh *)packets;
-    
-    sh x = (sgpuData[2] << 21) >> 21;
-    sh y = (sgpuData[3] << 21) >> 21;
-    sh w = (sgpuData[4] << 21) >> 21;
-    sh h = (sgpuData[5] << 21) >> 21;
-
-    if (w == -1024) {
-        w = 1024;
-    }
-    if (h == -512) {
-        h = 512;
-    }
-    
-    if (x < 0 || y < 0 || w < 0 || h < 0 || x + w > 1024 || y + h > 512) {
-        return;
-    }
-    
-    tcache.invalidate(x, y, w, h);
+    //sh x = (p[2] << 21) >> 21;
 }
 
 void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {

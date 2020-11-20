@@ -11,8 +11,8 @@ class CstrCache {
     };
     
     struct {
-        uw x, y, colormode;
-    } textureState;
+        uw w, h, color;
+    } info;
     
     struct {
         // Texture and color lookup table buffer
@@ -33,9 +33,9 @@ public:
             uw w, h, cc;
         } pos;
         
-        uw tp, clut;
+        uw tp;
         bool update;
-        GLuint tex;
+        GLuint uid, tex;
     } cache[TCACHE_MAX];
     
     void reset();

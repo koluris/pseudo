@@ -1,3 +1,6 @@
+#define NORMALIZE_PT(a) \
+    (((a) << 21) >> 21)
+
 class CstrDraw {
     enum {
         COLOR_MAX  = 255,

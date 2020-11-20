@@ -3,10 +3,6 @@
 #include "Global.h"
 
 
-#define NORMALIZE_PT(a) \
-    (((a) << 21) >> 21)
-
-
 CstrDraw draw;
 
 void CstrDraw::init(sh w, sh h, int multiplier) {
@@ -264,19 +260,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 if (setup->texture) {
                     GLEnable(GL_TEXTURE_2D);
-                    //tcache.fetchTexture(tex[1]->tp, tex[0]->tp);
-                    if (setup->shade) {
-                        uh gpuDataX = (uh)(packets[5] >> 16);
-                        tcache.updateTextureState(gpuDataX);
-                        //sw clutP = (packets[2] >> 12) & 0x7fff0;
-                        tcache.fetchTexture(tex[1]->tp, tex[0]->tp);
-                    }
-                    else {
-                        uh gpuDataX = (uh)(packets[4] >> 16);
-                        tcache.updateTextureState(gpuDataX);
-                        //sw clutP = (packets[2] >> 12) & 0x7fff0;
-                        tcache.fetchTexture(tex[1]->tp, tex[0]->tp);
-                    }
+                    tcache.updateTextureState(tex[1]->tp);
+                    tcache.fetchTexture(tex[1]->tp, tex[0]->tp);
                     
                     opaque = (tex[1]->tp >> 5) & 3;
                 }
@@ -396,8 +381,6 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 if (setup->texture) {
                     GLEnable(GL_TEXTURE_2D);
-                    //tcache.fetchTexture(spriteTP, tex[0]->tp);
-                    //sw clutP = (packets[2] >> 12) & 0x7fff0;
                     tcache.fetchTexture(spriteTP, tex[0]->tp);
                     
                     if (setup->exposure) { // This is not in specs?
