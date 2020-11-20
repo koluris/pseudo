@@ -252,7 +252,7 @@ void CstrGraphics::dataRead(uw *ptr, sw size) {
         ret.status &= (~(0x14000000));
         
         do {
-            *ptr++ = *(uw *)&vram.ptr[vrop.pvram + vrop.h.p];
+            *ptr++ = *(uw *)&vram.ptr[vrop.pvram + vrop.h.p]; // Bad Access V8 2nd Offence
             
             if ((vrop.h.p += 2) >= vrop.h.end) {
                 vrop.h.p = vrop.h.start;

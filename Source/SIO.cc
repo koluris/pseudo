@@ -28,7 +28,6 @@ void CstrSerial::reset() {
     btnState = 0xffff;
     
     // Default pad buffer
-    memset(&bfr, 0, sizeof(bfr));
     bfr[0] = 0x00;
     bfr[1] = 0x41;
     bfr[2] = 0x5a;
@@ -75,20 +74,7 @@ void CstrSerial::padListener(int code, bool pushed) {
 void CstrSerial::write16(uw addr, uh data) {
     switch(LOW_BITS(addr)) {
         case 0x104a:
-//            control = data & (~(SIO_CTRL_RESET_ERROR));
-//
-//            if (control & SIO_CTRL_RESET || !control) {
-//                status  = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
-//                index = 0;
-//                step  = 0;
-//            }
-            
-            control = data;
-            
-            if (control & SIO_CTRL_RESET_ERROR) {
-                status  &= ~SIO_STAT_IRQ;
-                control &= ~SIO_CTRL_RESET_ERROR;
-            }
+            control = data & (~(SIO_CTRL_RESET_ERROR));
             
             if (control & SIO_CTRL_RESET || !control) {
                 status  = SIO_STAT_TX_READY | SIO_STAT_TX_EMPTY;
