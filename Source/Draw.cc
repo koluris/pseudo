@@ -122,7 +122,7 @@ void CstrDraw::updateTextureState(uw data) {
     texState.color = (data >> 7) & 3;
     texState.abr   = (data >> 5) & 3;
     
-    GLBlendFunc(bit[texState.abr].src, bit[texState.abr].dst);
+    //GLBlendFunc(bit[texState.abr].src, bit[texState.abr].dst);
 }
 
 void CstrDraw::setDrawArea(int plane, uw data) {

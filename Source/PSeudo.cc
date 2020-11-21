@@ -48,7 +48,7 @@ void CstrPSeudo::reset() {
     
 #ifdef APPLE_MACOS
     [app consoleClear];
-    [app consolePrint:[NSChars charsWithFormat:@"%s\n\nPSeudo™ : Alpha 0.84\n-> reset complete\n", version]];
+    [app consolePrint:[NSChars charsWithFormat:@"%s\n\nPSeudo™ : Alpha 0.89\n-> reset complete\n", version]];
 #elif  APPLE_IOS
     // TODO
 #endif
@@ -59,7 +59,7 @@ void CstrPSeudo::iso(const char *path) {
         // Prerequisite boot
         cpu.bootstrap();
         
-        if (0) { // Enable to skip BIOS boot
+        if (1) { // Enable to skip BIOS boot
             cpu.setpc(cpu.base[31]);
         }
     }
