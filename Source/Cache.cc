@@ -4,7 +4,7 @@
 
 
 #define COLOR_32BIT(a, b, c, r) \
-    (((ub)(a))<<24) | (((ub)(b))<<16) | (((ub)(c))<<8) | ((ub)(r))
+    (((ub)(a)) << 24) | (((ub)(b)) << 16) | (((ub)(c)) << 8) | ((ub)(r))
 
 
 CstrCache tcache;
@@ -21,9 +21,13 @@ void CstrCache::reset() {
 }
 
 void CstrCache::updateTextureState(uw data) {
-    info.w     = (data << 6) & 0x3c0;
-    info.h     = (data << 4) & 0x100;
-    info.color = (data >> 7) & 0x003;
+//    info.w = (data << 6) & 0x3c0; // 960
+//    info.h = (data << 4) & 0x100; // 256
+//    info.color = (data >> 7) & 3;
+    
+    info.w = (data & 15) * 64;
+    info.h = ((data >> 4) & 1) * 256;
+    info.color = (data >> 7) & 3;
 }
 
 uw CstrCache::pixel2texel(uh p) {
