@@ -91,17 +91,20 @@ class CstrDraw {
     
     GLuint fb24tex = 0;
     GLuint fb16tex = 0;
-    ub opaque;
-    uw spriteTP;
     
-    void reset();
     void keepAspectRatio(sh, sh, int);
     void opaqueClipState(bool);
     ub opaqueFunc(ub);
     void setDrawArea(int, uw);
+    void updateTextureState(uw);
     
 public:
+    struct TextureState {
+        uw tp, w, h, abr, color;
+    } texState;
+    
     void init(sh, sh, int);
+    void reset();
     void swapBuffers(bool);
     void resize(sh, sh);
     void outputVRAM(uw *, sh, sh, sh, sh);

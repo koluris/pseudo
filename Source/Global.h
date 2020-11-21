@@ -82,11 +82,11 @@ typedef int8_t  sb; // byte
 
 // User imports
 #include "Bus.h"
-#include "Cache.h"
 #include "CD.h"
 #include "Counters.h"
 #include "Disc.h"
 #include "Draw.h"
+#include "Cache.h"
 #include "Graphics.h"
 #include "GTE.h"
 #include "Hardware.h"

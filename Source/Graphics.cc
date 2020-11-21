@@ -301,11 +301,11 @@ void CstrGraphics::photoMove(uw *packets) {
     uh sx = (packets[3] >>  0) & 0xffff;
     uh sy = (packets[3] >> 16) & 0xffff;
 
-    for (int i = 0; i < 384; i++) {
-        if (((tcache.cache[i].pos.w + 255) >= x1) && ((tcache.cache[i].pos.h + 255) >= y1) && (tcache.cache[i].pos.w <= (x1 + sx)) && (tcache.cache[i].pos.h <= (y1 + sy))) {
-            tcache.cache[i].update = true;
-        }
-    }
+//    for (int i = 0; i < 384; i++) {
+//        if (((tcache.cache[i].w + 255) >= x1) && ((tcache.cache[i].h + 255) >= y1) && (tcache.cache[i].w <= (x1 + sx)) && (tcache.cache[i].h <= (y1 + sy))) {
+//            tcache.cache[i].update = true;
+//        }
+//    }
 
     if ((x0 + sx) > 1024) sx = 1024 - x0;
     if ((x1 + sx) > 1024) sx = 1024 - x1;

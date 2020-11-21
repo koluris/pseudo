@@ -30,14 +30,15 @@ void CstrPSeudo::reset() {
     
      audio.reset();
        bus.reset();
-    tcache.reset();
         cd.reset();
       cop2.reset();
        cpu.reset();
       disc.reset();
+      draw.reset();
       mdec.reset();
        mem.reset();
      rootc.reset();
+    tcache.reset();
        sio.reset();
         vs.reset();
     

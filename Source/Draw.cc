@@ -10,24 +10,13 @@ void CstrDraw::init(sh w, sh h, int multiplier) {
     window.v = h;
     window.multiplier = multiplier;
     
-    reset();
-}
-
-void CstrDraw::reset() {
-    res    = { 0 };
-    offset = { 0 };
-    
-    opaque   = 0;
-    spriteTP = 0;
-    
     // OpenGL
     GLViewport(0, 0, window.h * 2, window.v * 2);
+    GLClearColor(0.1, 0.1, 0.1, 0);
     
     if (window.multiplier > 1) { // Crap
         GLLineWidth(window.multiplier);
     }
-    
-    opaqueClipState(true);
     
     // Textures
     GLMatrixMode(GL_TEXTURE);
@@ -36,16 +25,21 @@ void CstrDraw::reset() {
     GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
     GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
     
+    tcache.createTexture(&fb24tex, FRAME_W, FRAME_H); // 24-bit texture
+    tcache.createTexture(&fb16tex, FRAME_W, FRAME_H); // 16-bit texture
+    
+    reset();
+}
+
+void CstrDraw::reset() {
+    res    = { 0 };
+    offset = { 0 };
+    
+    opaqueClipState(true);
+    
     // Redraw
     resize(window.h, window.v);
-    GLClearColor(0.1, 0.1, 0.1, 0);
     swapBuffers(true);
-    
-    // 24-bit texture
-    tcache.createTexture(&fb24tex, FRAME_W, FRAME_H);
-    
-    // 16-bit texture
-    tcache.createTexture(&fb16tex, FRAME_W, FRAME_H);
 }
 
 void CstrDraw::swapBuffers(bool clear) {
@@ -68,7 +62,7 @@ void CstrDraw::resize(sh w, sh h) {
     
     // Not current
     if (res.h != w || res.v != h) {
-        //keepAspectRatio(w, h, window.multiplier);
+        keepAspectRatio(w, h, window.multiplier);
         GLMatrixMode(GL_PROJECTION);
         GLID();
         
@@ -113,12 +107,22 @@ void CstrDraw::opaqueClipState(bool enable) {
 }
 
 ub CstrDraw::opaqueFunc(ub a) {
-    ub b1 = a ? opaque : 0;
-    ub b2 = a ? bit[opaque].trans : COLOR_MAX;
+    ub b1 = a ? texState.abr : 0;
+    ub b2 = a ? bit[texState.abr].trans : COLOR_MAX;
     
     GLBlendFunc(bit[b1].src, bit[b1].dst);
     
     return b2;
+}
+
+void CstrDraw::updateTextureState(uw data) {
+    texState.tp    = (data) & 0xffffff;
+    texState.w     = (data << 6) & 960;
+    texState.h     = (data << 4) & 256;
+    texState.color = (data >> 7) & 3;
+    texState.abr   = (data >> 5) & 3;
+    
+    GLBlendFunc(bit[texState.abr].src, bit[texState.abr].dst);
 }
 
 void CstrDraw::setDrawArea(int plane, uw data) {
@@ -260,10 +264,8 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 if (setup->texture) {
                     GLEnable(GL_TEXTURE_2D);
-                    tcache.updateTextureState(tex[1]->tp);
-                    tcache.fetchTexture(tex[1]->tp, tex[0]->tp);
-                    
-                    opaque = (tex[1]->tp >> 5) & 3;
+                    updateTextureState(tex[1]->tp);
+                    tcache.fetchTexture(texState, tex[0]->tp);
                 }
                 
                 const ub b = opaqueFunc(setup->transparent);
@@ -381,7 +383,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 
                 if (setup->texture) {
                     GLEnable(GL_TEXTURE_2D);
-                    tcache.fetchTexture(spriteTP, tex[0]->tp);
+                    tcache.fetchTexture(texState, tex[0]->tp);
                     
                     if (setup->exposure) { // This is not in specs?
                         hue[0]->r = COLOR_HALF;
@@ -430,10 +432,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
         case GPU_TYPE_ENV:
             switch(addr) {
                 case 0xe1: // Texture P.
-                    spriteTP = (packets[0]) & 0xffffff;
-                    opaque   = (packets[0] >> 5) & 3;
-                    GLBlendFunc(bit[opaque].src, bit[opaque].dst);
-                    tcache.updateTextureState(packets[0]);
+                    updateTextureState(packets[0]);
                     return;
                     
                 case 0xe2: // Texture Window
