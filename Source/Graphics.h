@@ -122,10 +122,12 @@ public:
     void update(uw);
     void write(uw, uw);
     uw read(uw);
-    void photoMove(uw *);
-    void photoWrite(uw *);
-    void photoRead(uw *);
     void executeDMA(CstrBus::castDMA *);
+    
+    // VRAM operations
+    void photoMoveWithin(uw *);
+    void photoSendTo    (uw *);
+    void photoReadFrom  (uw *);
 };
 
 extern CstrGraphics vs;

@@ -27,8 +27,6 @@ void CstrDraw::init(sh w, sh h, int multiplier) {
     
     tcache.createTexture(&fb24tex, FRAME_W, FRAME_H); // 24-bit texture
     tcache.createTexture(&fb16tex, FRAME_W, FRAME_H); // 16-bit texture
-    
-    reset();
 }
 
 void CstrDraw::reset() {
@@ -62,7 +60,7 @@ void CstrDraw::resize(sh w, sh h) {
     
     // Not current
     if (res.h != w || res.v != h) {
-        keepAspectRatio(w, h, window.multiplier);
+        //keepAspectRatio(w, h, window.multiplier);
         GLMatrixMode(GL_PROJECTION);
         GLID();
         
@@ -106,13 +104,15 @@ void CstrDraw::opaqueClipState(bool enable) {
     }
 }
 
-ub CstrDraw::opaqueFunc(ub a) {
-    ub b1 = a ? texState.abr : 0;
-    ub b2 = a ? bit[texState.abr].trans : COLOR_MAX;
-    
-    GLBlendFunc(bit[b1].src, bit[b1].dst);
-    
-    return b2;
+ub CstrDraw::opaqueFunc(ub enabled) {
+    if (enabled) {
+        GLBlendFunc(bit[texState.abr].src, bit[texState.abr].dst);
+        return bit[texState.abr].trans;
+    }
+    else {
+        GLBlendFunc(bit[0].src, bit[0].dst);
+        return COLOR_MAX;
+    }
 }
 
 void CstrDraw::updateTextureState(uw data) {
@@ -121,8 +121,6 @@ void CstrDraw::updateTextureState(uw data) {
     texState.h     = (data << 4) & 256;
     texState.color = (data >> 7) & 3;
     texState.abr   = (data >> 5) & 3;
-    
-    //GLBlendFunc(bit[texState.abr].src, bit[texState.abr].dst);
 }
 
 void CstrDraw::setDrawArea(int plane, uw data) {
@@ -418,15 +416,15 @@ void CstrDraw::primitive(uw addr, uw *packets) {
             return;
             
         case GPU_TYPE_IMG_MOVE:
-            vs.photoMove(packets);
+            vs.photoMoveWithin(packets);
             return;
             
         case GPU_TYPE_IMG_SEND:
-            vs.photoRead(packets);
+            vs.photoSendTo(packets);
             return;
             
         case GPU_TYPE_IMG_COPY:
-            vs.photoWrite(packets);
+            vs.photoReadFrom(packets);
             return;
             
         case GPU_TYPE_ENV:

@@ -89,8 +89,8 @@ class CstrDraw {
         { GL_SRC_ALPHA, GL_ONE,                  64 },
     };
     
-    GLuint fb24tex = 0;
-    GLuint fb16tex = 0;
+    GLuint fb24tex;
+    GLuint fb16tex;
     
     void keepAspectRatio(sh, sh, int);
     void opaqueClipState(bool);

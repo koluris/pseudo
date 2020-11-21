@@ -275,65 +275,32 @@ void CstrGraphics::dataRead(uw *ptr, sw size) {
     }
 }
 
-void CstrGraphics::photoMove(uw *packets) {
-//    uh h_0 = (packets[1]) & 0x03ff;
-//    uh v_0 = (packets[1] >> 16) & 0x01ff;
-//    uh h_1 = (packets[2]) & 0x03ff;
-//    uh v_1 = (packets[2] >> 16) & 0x01ff;
-//    uh h_t = (packets[3]) & 0xffff;
-//    uh v_t = (packets[3] >> 16) & 0xffff;
-//
-//    if ((h_0 + h_t) > FRAME_W) h_t = FRAME_W - h_0;
-//    if ((h_1 + h_t) > FRAME_W) h_t = FRAME_W - h_1;
-//    if ((v_0 + v_t) > FRAME_H) v_t = FRAME_H - v_0;
-//    if ((v_1 + v_t) > FRAME_H) v_t = FRAME_H - v_1;
-//
-//    for (int v = 0; v < v_t; v++) {
-//        for (int h = 0; h < h_t; h++) {
-//            vram.ptr[(FRAME_W * (v_1 + v)) + (h_1 + h)] = vram.ptr[(FRAME_W * (v_0 + v)) + (h_0 + h)];
-//        }
-//    }
+void CstrGraphics::photoMoveWithin(uw *packets) {
+    // Source
+    uh srcX = (packets[1] >>  0) & 0x03ff;
+    uh srcY = (packets[1] >> 16) & 0x01ff;
     
-    uh x0 = (packets[1] >>  0) & 0x03ff;
-    uh y0 = (packets[1] >> 16) & 0x01ff;
-    uh x1 = (packets[2] >>  0) & 0x03ff;
-    uh y1 = (packets[2] >> 16) & 0x01ff;
-    uh sx = (packets[3] >>  0) & 0xffff;
-    uh sy = (packets[3] >> 16) & 0xffff;
-
-//    for (int i = 0; i < 384; i++) {
-//        if (((tcache.cache[i].w + 255) >= x1) && ((tcache.cache[i].h + 255) >= y1) && (tcache.cache[i].w <= (x1 + sx)) && (tcache.cache[i].h <= (y1 + sy))) {
-//            tcache.cache[i].update = true;
-//        }
-//    }
-
-    if ((x0 + sx) > 1024) sx = 1024 - x0;
-    if ((x1 + sx) > 1024) sx = 1024 - x1;
-    if ((y0 + sy) >  512) sy =  512 - y0;
-    if ((y1 + sy) >  512) sy =  512 - y1;
+    // Destination
+    uh dstX = (packets[2] >>  0) & 0x03ff;
+    uh dstY = (packets[2] >> 16) & 0x01ff;
     
-    for (int j = 0; j < sy; j++) {
-        for (int i = 0; i < sx; i++) {
-            vram.ptr[((y1 + j) << 10) + x1 + i] = vram.ptr[((y0 + j) << 10) + x0 + i];
+    // W + H of transfer
+    uh   iW = (packets[3] >>  0) & 0xffff;
+    uh   iH = (packets[3] >> 16) & 0xffff;
+    
+    if ((srcX + iW) > FRAME_W) iW = FRAME_W - srcX;
+    if ((dstX + iW) > FRAME_W) iW = FRAME_W - dstX;
+    if ((srcY + iH) > FRAME_H) iH = FRAME_H - srcY;
+    if ((dstY + iH) > FRAME_H) iH = FRAME_H - dstY;
+    
+    for (int v = 0; v < iH; v++) {
+        for (int h = 0; h < iW; h++) {
+            vram.ptr[((dstY + v) << 10) + dstX + h] = vram.ptr[((srcY + v) << 10) + srcX + h];
         }
     }
 }
 
-void CstrGraphics::photoWrite(uw *packets) {
-    uh *p = (uh *)packets;
-    
-    vrop.h.start = vrop.h.p = p[2];
-    vrop.v.start = vrop.v.p = p[3];
-    vrop.h.end   = vrop.h.p + p[4];
-    vrop.v.end   = vrop.v.p + p[5];
-    
-    vrop.pvram = p[3] * FRAME_W;
-    modeDMA = GPU_DMA_VRAM2MEM;
-    
-    ret.status |= GPU_STAT_READYFORVRAM;
-}
-
-void CstrGraphics::photoRead(uw *packets) {
+void CstrGraphics::photoSendTo(uw *packets) {
     uh *p = (uh *)packets;
     
     vrop.h.start = vrop.h.p = p[2];
@@ -347,8 +314,20 @@ void CstrGraphics::photoRead(uw *packets) {
     
     // Cache invalidation
     tcache.invalidate(vrop.h.start, vrop.v.start, vrop.h.end, vrop.v.end);
+}
+
+void CstrGraphics::photoReadFrom(uw *packets) {
+    uh *p = (uh *)packets;
     
-    //sh x = (p[2] << 21) >> 21;
+    vrop.h.start = vrop.h.p = p[2];
+    vrop.v.start = vrop.v.p = p[3];
+    vrop.h.end   = vrop.h.p + p[4];
+    vrop.v.end   = vrop.v.p + p[5];
+    
+    vrop.pvram = p[3] * FRAME_W;
+    modeDMA = GPU_DMA_VRAM2MEM;
+    
+    ret.status |= GPU_STAT_READYFORVRAM;
 }
 
 void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
