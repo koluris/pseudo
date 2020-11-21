@@ -11,7 +11,7 @@
 		420D65E520CD7DCD00EA04BD /* OpenGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 420D65E420CD7DCD00EA04BD /* OpenGLView.mm */; };
 		422B0A192538BABA003A019E /* Disc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 422B0A182538BABA003A019E /* Disc.cc */; };
 		422B0A252538ECC3003A019E /* MDEC.cc in Sources */ = {isa = PBXBuildFile; fileRef = 422B0A242538ECC3003A019E /* MDEC.cc */; };
-		425720D220BB4FF00081114F /* Cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 425720D020BB4FF00081114F /* Cache.cc */; };
+		425720D220BB4FF00081114F /* TextureCache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 425720D020BB4FF00081114F /* TextureCache.cc */; };
 		427C2EB5253C54DA00D04064 /* GTE.cc in Sources */ = {isa = PBXBuildFile; fileRef = 427C2EB3253C54DA00D04064 /* GTE.cc */; };
 		428D389620B5B549002856FC /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D389520B5B549002856FC /* OpenAL.framework */; };
 		428EAF2F207376EF003BC141 /* Bus.cc in Sources */ = {isa = PBXBuildFile; fileRef = 428EAF2D207376EF003BC141 /* Bus.cc */; };
@@ -44,8 +44,8 @@
 		422B0A1D2538BAD1003A019E /* Disc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Disc.h; sourceTree = "<group>"; };
 		422B0A242538ECC3003A019E /* MDEC.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = MDEC.cc; sourceTree = "<group>"; };
 		422B0A282538ECCC003A019E /* MDEC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MDEC.h; sourceTree = "<group>"; };
-		425720D020BB4FF00081114F /* Cache.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = Cache.cc; sourceTree = "<group>"; };
-		425720D120BB4FF00081114F /* Cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cache.h; sourceTree = "<group>"; };
+		425720D020BB4FF00081114F /* TextureCache.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = TextureCache.cc; sourceTree = "<group>"; };
+		425720D120BB4FF00081114F /* TextureCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextureCache.h; sourceTree = "<group>"; };
 		42587A872068BEFF0054BEC8 /* Hardware.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Hardware.h; sourceTree = "<group>"; };
 		427C2EB3253C54DA00D04064 /* GTE.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = GTE.cc; sourceTree = "<group>"; };
 		427C2EB4253C54DA00D04064 /* GTE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTE.h; sourceTree = "<group>"; };
@@ -162,13 +162,13 @@
 			name = MDEC;
 			sourceTree = "<group>";
 		};
-		425720CF20BB4FE00081114F /* Cache */ = {
+		425720CF20BB4FE00081114F /* TextureCache */ = {
 			isa = PBXGroup;
 			children = (
-				425720D020BB4FF00081114F /* Cache.cc */,
-				425720D120BB4FF00081114F /* Cache.h */,
+				425720D020BB4FF00081114F /* TextureCache.cc */,
+				425720D120BB4FF00081114F /* TextureCache.h */,
 			);
-			name = Cache;
+			name = TextureCache;
 			sourceTree = "<group>";
 		};
 		42587A892068BF040054BEC8 /* Hardware */ = {
@@ -295,7 +295,7 @@
 		42DB696D2070DEEC00000D08 /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
-				425720CF20BB4FE00081114F /* Cache */,
+				425720CF20BB4FE00081114F /* TextureCache */,
 				42032C1920B483E300B032A8 /* Draw */,
 				42DB696E2070DF0800000D08 /* Graphics.cc */,
 				42DB696F2070DF0800000D08 /* Graphics.h */,
@@ -406,7 +406,7 @@
 			files = (
 				427C2EB5253C54DA00D04064 /* GTE.cc in Sources */,
 				429C3EBD206500B500915293 /* Mem.cc in Sources */,
-				425720D220BB4FF00081114F /* Cache.cc in Sources */,
+				425720D220BB4FF00081114F /* TextureCache.cc in Sources */,
 				42B6B61A20B57D5700D70027 /* Sound.cc in Sources */,
 				428EAF2F207376EF003BC141 /* Bus.cc in Sources */,
 				42EBBCD32062482200824B95 /* Main.mm in Sources */,

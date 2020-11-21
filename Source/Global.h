@@ -86,7 +86,6 @@ typedef int8_t  sb; // byte
 #include "Counters.h"
 #include "Disc.h"
 #include "Draw.h"
-#include "Cache.h"
 #include "Graphics.h"
 #include "GTE.h"
 #include "Hardware.h"
@@ -96,3 +95,4 @@ typedef int8_t  sb; // byte
 #include "R3000A.h"
 #include "SIO.h"
 #include "Sound.h"
+#include "TextureCache.h"

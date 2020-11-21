@@ -1,4 +1,4 @@
-class CstrCache {
+class CstrTextureCache {
     enum {
         // Texture modes
         TEX_04BIT,
@@ -24,7 +24,7 @@ class CstrCache {
     uh index;
     
 public:
-    ~CstrCache() {
+    ~CstrTextureCache() {
         for (auto &tc : cache) {
             GLDeleteTextures(1, &tc.tex);
         }
@@ -37,4 +37,4 @@ public:
     void invalidate(sh, sh, sh, sh);
 };
 
-extern CstrCache tcache;
+extern CstrTextureCache tcache;

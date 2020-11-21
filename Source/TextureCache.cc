@@ -7,9 +7,9 @@
     (((ub)(a)) << 24) | (((ub)(b)) << 16) | (((ub)(c)) << 8) | ((ub)(r))
 
 
-CstrCache tcache;
+CstrTextureCache tcache;
 
-void CstrCache::reset() {
+void CstrTextureCache::reset() {
     for (auto &tc : cache) {
         GLDeleteTextures(1, &tc.tex);
         tc = { 0 };
@@ -20,11 +20,11 @@ void CstrCache::reset() {
     index = 0;
 }
 
-uw CstrCache::pixel2texel(uh p) {
+uw CstrTextureCache::pixel2texel(uh p) {
     return COLOR_32BIT(p ? 255 : 0, (p >> 10) << 3, (p >> 5) << 3, p << 3);
 }
 
-void CstrCache::createTexture(GLuint *tex, int w, int h) {
+void CstrTextureCache::createTexture(GLuint *tex, int w, int h) {
     GLGenTextures(1, tex);
     GLBindTexture  (GL_TEXTURE_2D, *tex);
     GLTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -34,7 +34,7 @@ void CstrCache::createTexture(GLuint *tex, int w, int h) {
     GLTexPhoto2D   (GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 }
 
-void CstrCache::fetchTexture(CstrDraw::TextureState info, uw clut) {
+void CstrTextureCache::fetchTexture(CstrDraw::TextureState info, uw clut) {
     uw uid = (clut << 16) | info.tp;
     
     for (auto &tc : cache) {
@@ -122,7 +122,7 @@ void CstrCache::fetchTexture(CstrDraw::TextureState info, uw clut) {
     index = (index + 1) & (TCACHE_MAX - 1);
 }
 
-void CstrCache::invalidate(sh iX, sh iY, sh iW, sh iH) {
+void CstrTextureCache::invalidate(sh iX, sh iY, sh iW, sh iH) {
     //printf("(%d %d) (%d %d)\n", iX, iY, iW, iH);
     for (auto &tc : cache) {
         //if (((tc.w + 255) >= iX) && (tc.w <= (iW + iX)) &&
