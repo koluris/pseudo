@@ -27,6 +27,7 @@ void CstrCache::updateTextureState(uw data) {
     
     info.w = (data & 15) * 64;
     info.h = ((data >> 4) & 1) * 256;
+    info.abr = (data >> 5) & 3;
     info.color = (data >> 7) & 3;
 }
 
@@ -55,7 +56,7 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
                 tc.pos.h = 0;
                 break;
             }
-            
+
             GLBindTexture(GL_TEXTURE_2D, tc.tex);
             return;
         }
@@ -133,11 +134,12 @@ void CstrCache::fetchTexture(uw tp, uw clut) {
 }
 
 void CstrCache::invalidate(sh iX, sh iY, sh iW, sh iH) {
+    //printf("(%d %d) (%d %d)\n", iX, iY, iW, iH);
     for (auto &tc : cache) {
-        if (((tc.pos.w + 255) >= iX) && (tc.pos.w <= iW) &&
-            ((tc.pos.h + 255) >= iY) && (tc.pos.h <= iH)) {
+        //if (((tc.pos.w + 255) >= iX) && (tc.pos.w <= (iW + iX)) &&
+        //    ((tc.pos.h + 255) >= iY) && (tc.pos.h <= (iH + iY))) {
             
             tc.update = true;
-        }
+        //}
     }
 }

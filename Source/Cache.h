@@ -11,7 +11,7 @@ class CstrCache {
     };
     
     struct {
-        uw w, h, color;
+        uw w, h, color, abr;
     } info;
     
     struct {
