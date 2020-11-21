@@ -6,25 +6,31 @@
 #define GPU_COMMAND(x) \
     (x >> 24) & 0xff
 
+#define GPU_INFO(x) \
+    (x & 0xffffff)
+
 
 CstrGraphics vs;
 
 void CstrGraphics::reset() {
     memset(vram.ptr, 0, vram.size);
-    memset(info, 0, sizeof(info));
+    
     vrop = { 0 };
     ret  = { 0 };
     pipe = { 0 };
     
+    memset(info, 0, sizeof(info));
     info[GPU_INFO_VERSION] = 0x2;
-    ret.data     = 0x400;
-    ret.status   = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000; // 0x14802000;
-    modeDMA      = GPU_DMA_NONE;
-    clock        = 0;
-    scanline     = 0;
-    stall        = 0;
-    vpos         = 0;
-    vdiff        = 0;
+    
+    ret.data   = 0x400;
+    ret.status = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000; // 0x14802000;
+    modeDMA    = GPU_DMA_NONE;
+    clock      = 0;
+    scanline   = 0;
+    stall      = 0;
+    vpos       = 0;
+    vdiff      = 0;
+    
     isDisabled   = true;
     isVideo24Bit = false;
     isVideoPAL   = false;
@@ -113,16 +119,16 @@ void CstrGraphics::write(uw addr, uw data) {
                     return;
                     
                 case 0x10: // TODO: Information
-                    switch(data & 0xffffff) {
-                        case 0:
-                        case 1:
-                        case 6:
-                        case 8:
-                            printx("/// PSeudo GPU info: %d\n", (data & 0xffffff));
+                    switch(GPU_INFO(data)) {
+                        case 0x0:
+                        case 0x1:
+                        case 0x6:
+                        case 0x8 ... 0xf:
+                            printx("/// PSeudo GPU info: %d", GPU_INFO(data));
                             return;
                     }
                     
-                    ret.data = info[data & 0xffffff];
+                    ret.data = info[GPU_INFO(data)];
                     return;
                     
                 /* unused */
@@ -227,21 +233,30 @@ int CstrGraphics::fetchMem(uh *ptr, sw size) {
                     vrop.h.p  = vrop.h.start;
                     vrop.v.p++;
                 }
-                
-                redirect VRAM_END;
+                return fetchMemEnd(count);
             }
         }
         
         vrop.h.p = vrop.h.start;
         vrop.v.p++;
     }
-    
-VRAM_END:
+    return fetchMemEnd(count);
+}
+
+int CstrGraphics::fetchMemEnd(int count) {
     if (vrop.v.p >= vrop.v.end) {
-        draw.outputVRAM(vrop.raw, vrop.h.start, vrop.v.start, vrop.h.end - vrop.h.start, vrop.v.end - vrop.v.start);
+        // Draw buffer on screen
+        draw.outputVRAM(
+            vrop.raw,
+            vrop.h.start,
+            vrop.v.start,
+            vrop.h.end - vrop.h.start,
+            vrop.v.end - vrop.v.start,
+            isVideo24Bit
+        );
         
-        delete[] vrop.raw;
         vrop.enabled = false;
+        delete[] vrop.raw;
         
         modeDMA = GPU_DMA_NONE;
     }
@@ -331,7 +346,7 @@ void CstrGraphics::photoReadFrom(uw *packets) {
 }
 
 void CstrGraphics::executeDMA(CstrBus::castDMA *dma) {
-    uw *p   = (uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
+    uw *p = (uw *)&mem.ram.ptr[dma->madr & (mem.ram.size - 1)];
     uw size = (dma->bcr >> 16) * (dma->bcr & 0xffff);
     
     switch(dma->chcr) {

@@ -107,7 +107,7 @@ public:
     void reset();
     void swapBuffers(bool);
     void resize(sh, sh);
-    void outputVRAM(uw *, sh, sh, sh, sh);
+    void outputVRAM(uw *, sh, sh, sh, sh, bool);
     void primitive(uw, uw *);
 };
 

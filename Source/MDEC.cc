@@ -46,7 +46,7 @@ void CstrMotionDecoder::write(uw addr, uw data) {
             return;
     }
     
-    printx("/// PSeudo MDEC write: 0x%08x <- 0x%08x\n", addr, data);
+    printx("/// PSeudo MDEC write: 0x%08x <- 0x%08x", addr, data);
 }
 
 uw CstrMotionDecoder::read(uw addr) {
@@ -58,7 +58,7 @@ uw CstrMotionDecoder::read(uw addr) {
             return status;
     }
     
-    printx("/// PSeudo MDEC read: 0x%08x\n", addr);
+    printx("/// PSeudo MDEC read: 0x%08x", addr);
     return 0;
 }
 

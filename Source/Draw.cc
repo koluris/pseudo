@@ -145,7 +145,7 @@ void CstrDraw::setDrawArea(int plane, uw data) {
 #endif
 }
 
-void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
+void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H, bool video24Bit) {
     // Disable state
     opaqueClipState(false);
     
@@ -157,7 +157,7 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H) {
     GLEnable(GL_TEXTURE_2D);
     GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
     
-    if (vs.isVideo24Bit) {
+    if (video24Bit) {
         X = (X * 2) / 3;
         W = (W * 2) / 3;
         GLBindTexture  (GL_TEXTURE_2D, fb24tex);

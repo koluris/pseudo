@@ -62,6 +62,11 @@ class CstrGraphics {
         0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
     };
     
+    // Data, Status
+    struct {
+        uw data, status;
+    } ret;
+    
     // Command buffer
     struct {
         uw data[256], prim, size, row;
@@ -79,10 +84,17 @@ class CstrGraphics {
     
     uw modeDMA, clock, scanline, stall;
     uh vpos, vdiff;
-
+    
+    bool isDisabled;
+    bool isInterlaced;
+    bool isVideo24Bit;
+    bool isVideoPAL;
+    
     void dataWrite(uw *, sw);
-    void dataRead (uw *, sw);
+    void dataRead(uw *, sw);
+    
     int fetchMem(uh *, sw);
+    int fetchMemEnd(int);
     
 public:
     enum {
@@ -94,7 +106,8 @@ public:
     };
     
     CstrGraphics() {
-        vram.ptr = new uh[vram.size = FRAME_W * FRAME_H * 2];
+        vram.size = FRAME_W * FRAME_H * 2;
+        vram.ptr  = new uh[vram.size];
     }
     
     ~CstrGraphics() {
@@ -106,17 +119,7 @@ public:
         uh *ptr; uw size;
     } vram;
     
-    // Data, Status
-    struct {
-        uw data, status;
-    } ret;
-    
     uw info[8];
-    
-    bool isDisabled;
-    bool isInterlaced;
-    bool isVideo24Bit;
-    bool isVideoPAL;
     
     void reset();
     void update(uw);
@@ -126,8 +129,8 @@ public:
     
     // VRAM operations
     void photoMoveWithin(uw *);
-    void photoSendTo    (uw *);
-    void photoReadFrom  (uw *);
+    void photoSendTo(uw *);
+    void photoReadFrom(uw *);
 };
 
 extern CstrGraphics vs;
