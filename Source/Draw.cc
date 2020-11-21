@@ -218,9 +218,9 @@ void primLoadImage(ub *baseAddr) {
     vs.imageTransfer = 1;
 
     for (int i = 0; i < 384; i++) {
-        if (((vs.texture[i].x + 255) >= x) &&((vs.texture[i].y + 255) >= y) && (vs.texture[i].x <= (x + w)) && (vs.texture[i].y <= (y + h))) {
+        //if (((vs.texture[i].x + 255) >= x) &&((vs.texture[i].y + 255) >= y) && (vs.texture[i].x <= (x + w)) && (vs.texture[i].y <= (y + h))) {
             vs.texture[i].update = true;
-        }
+        //}
     }
 }
 
@@ -253,9 +253,9 @@ void primMoveImage(ub *baseAddr) {
     uh sy = (p[3] >> 16) & 0xffff;
 
     for (int i = 0; i < 384; i++) {
-        if (((vs.texture[i].x + 255) >= x1) && ((vs.texture[i].y + 255) >= y1) && (vs.texture[i].x <= (x1 + sx)) && (vs.texture[i].y <= (y1 + sy))) {
+        //if (((vs.texture[i].x + 255) >= x1) && ((vs.texture[i].y + 255) >= y1) && (vs.texture[i].x <= (x1 + sx)) && (vs.texture[i].y <= (y1 + sy))) {
             vs.texture[i].update = true;
-        }
+        //}
     }
 
     if ((x0 + sx) > 1024) sx = 1024 - x0;
