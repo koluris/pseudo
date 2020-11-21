@@ -145,50 +145,6 @@ void CstrDraw::setDrawArea(int plane, uw data) {
 #endif
 }
 
-void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H, bool video24Bit) {
-    // Disable state
-    opaqueClipState(false);
-    
-    // Accommodate VRAM's texture size
-    GLMatrixMode(GL_TEXTURE);
-    GLID();
-    GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
-    
-    GLEnable(GL_TEXTURE_2D);
-    GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
-    
-    if (video24Bit) {
-        X = (X * 2) / 3;
-        W = (W * 2) / 3;
-        GLBindTexture  (GL_TEXTURE_2D, fb24tex);
-        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGB , GL_UNSIGNED_BYTE, raw);
-    }
-    else {
-        GLBindTexture  (GL_TEXTURE_2D, fb16tex);
-        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
-    }
-    
-#if defined(APPLE_MACOS) || defined(_WIN32)
-    GLStart(GL_TRIANGLE_STRIP);
-        GLTexCoord2s(0, 0); GLVertex2s(X,     Y);
-        GLTexCoord2s(W, 0); GLVertex2s(X + W, Y);
-        GLTexCoord2s(0, H); GLVertex2s(X,     Y + H);
-        GLTexCoord2s(W, H); GLVertex2s(X + W, Y + H);
-    GLEnd();
-#elif APPLE_IOS
-    // TODO
-#endif
-    
-    GLDisable(GL_TEXTURE_2D);
-    
-    // Revert to normal texture mode
-    GLID();
-    GLScalef(1.0 / 256, 1.0 / 256, 1.0);
-    
-    // Enable state
-    opaqueClipState(true);
-}
-
 template <class T>
 void parse(T *components, uw *packets, int points, int step) {
     for (uw i = 0, *p = packets; i < points; i++, p += step) {
@@ -207,9 +163,9 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 case 0x02: // Rect
                     {
                         // Basic packet components
-                        Chromatic *hue[1];
-                        Coords    *vx [1];
-                        Coords    *sz [1];
+                        Color  *hue[1];
+                        Coords *vx [1];
+                        Coords *sz [1];
                         
                         parse(hue, &packets[0], 1, 0);
                         parse( vx, &packets[1], 1, 0);
@@ -239,15 +195,15 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 POLY *setup = (POLY *)&addr;
                 
                 // Options
-                int step   = setup->texture  ? 2 : 1; // The offset to fetch specific data from packets
-                int points = setup->vertices ? 4 : 3;
+                int step   = setup->textured   ? 2 : 1; // The offset to fetch specific data from packets
+                int points = setup->four_point ? 4 : 3;
                 
                 // Basic packet components
-                Chromatic *hue[points];
-                Coords    *vx [points];
-                Texture   *tex[points];
+                Color   *hue[points];
+                Coords  *vx [points];
+                Texture *tex[points];
                 
-                if (setup->shade) {
+                if (setup->shaded) {
                     // Gouraud
                     parse(hue, &packets[0], points, step + 1);
                     parse( vx, &packets[1], points, step + 1);
@@ -260,18 +216,18 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     parse(tex, &packets[2], points, step);
                 }
                 
-                if (setup->texture) {
+                if (setup->textured) {
                     GLEnable(GL_TEXTURE_2D);
                     updateTextureState(tex[1]->tp);
                     tcache.fetchTexture(texState, tex[0]->tp);
                 }
                 
-                const ub b = opaqueFunc(setup->transparent);
+                const ub b = opaqueFunc(setup->semi_trans);
                 
 #if defined(APPLE_MACOS) || defined(_WIN32)
                 GLStart(GL_TRIANGLE_STRIP);
                 for (int i = 0; i < points; i++) {
-                    if (setup->texture && setup->exposure) {
+                    if (setup->textured && setup->raw_tex) {
                         hue[i]->r = COLOR_HALF;
                         hue[i]->c = COLOR_HALF;
                         hue[i]->b = COLOR_HALF;
@@ -301,10 +257,10 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 int points = setup->multiline ? 256 : 2; // eurasia-001, fuzzion, mups-016, pdx-030, pdx-074, pop-n-pop
                 
                 // Basic packet components
-                Chromatic *hue[points];
-                Coords    *vx [points];
+                Color  *hue[points];
+                Coords *vx [points];
                 
-                if (setup->shade) {
+                if (setup->shaded) {
                     // Gouraud
                     parse(hue, &packets[0], points, 2);
                     parse( vx, &packets[1], points, 2);
@@ -315,7 +271,7 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     parse( vx, &packets[1], points, 1);
                 }
                 
-                const ub b = opaqueFunc(setup->transparent);
+                const ub b = opaqueFunc(setup->semi_trans);
                 
 #if defined(APPLE_MACOS) || defined(_WIN32)
                 GLStart(GL_LINE_STRIP);
@@ -345,15 +301,15 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                 SPRT *setup = (SPRT *)&addr;
                 
                 // Basic packet components
-                Chromatic *hue[1];
-                Coords    *vx [1];
-                Texture   *tex[1];
-                Coords    *sz [1];
+                Color   *hue[1];
+                Coords  *vx [1];
+                Texture *tex[1];
+                Coords  *sz [1];
                 
                 parse(hue, &packets[0], 1, 0);
                 parse( vx, &packets[1], 1, 0);
                 parse(tex, &packets[2], 1, 0);
-                parse( sz, &packets[setup->texture ? 3 : 2], 1, 0);
+                parse( sz, &packets[setup->textured ? 3 : 2], 1, 0);
                 
                 // Square size
                 int size = spriteSize[setup->size];
@@ -379,18 +335,18 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     pos.txh = MIN(texWindow.endY, pos.vxh);
                 }
                 
-                if (setup->texture) {
+                if (setup->textured) {
                     GLEnable(GL_TEXTURE_2D);
                     tcache.fetchTexture(texState, tex[0]->tp);
                     
-                    if (setup->exposure) { // This is not in specs?
+                    if (setup->raw_tex) { // This is not in specs?
                         hue[0]->r = COLOR_HALF;
                         hue[0]->c = COLOR_HALF;
                         hue[0]->b = COLOR_HALF;
                     }
                 }
                 
-                const ub b = opaqueFunc(setup->transparent);
+                const ub b = opaqueFunc(setup->semi_trans);
                 GLColor4ub(hue[0]->r, hue[0]->c, hue[0]->b, b);
                 
 #if defined(APPLE_MACOS) || defined(_WIN32)
@@ -467,4 +423,48 @@ void CstrDraw::primitive(uw addr, uw *packets) {
     }
     
     printx("/// PSeudo GPU Primitive: 0x%x / %d", packets[0], ((addr >> 5) & 7));
+}
+
+void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H, bool video24Bit) {
+    // Disable state
+    opaqueClipState(false);
+    
+    // Accommodate VRAM's texture size
+    GLMatrixMode(GL_TEXTURE);
+    GLID();
+    GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
+    
+    GLEnable(GL_TEXTURE_2D);
+    GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
+    
+    if (video24Bit) {
+        X = (X * 2) / 3;
+        W = (W * 2) / 3;
+        GLBindTexture  (GL_TEXTURE_2D, fb24tex);
+        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGB , GL_UNSIGNED_BYTE, raw);
+    }
+    else {
+        GLBindTexture  (GL_TEXTURE_2D, fb16tex);
+        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, W, H, GL_RGBA, GL_UNSIGNED_BYTE, raw);
+    }
+    
+#if defined(APPLE_MACOS) || defined(_WIN32)
+    GLStart(GL_TRIANGLE_STRIP);
+        GLTexCoord2s(0, 0); GLVertex2s(X,     Y);
+        GLTexCoord2s(W, 0); GLVertex2s(X + W, Y);
+        GLTexCoord2s(0, H); GLVertex2s(X,     Y + H);
+        GLTexCoord2s(W, H); GLVertex2s(X + W, Y + H);
+    GLEnd();
+#elif APPLE_IOS
+    // TODO
+#endif
+    
+    GLDisable(GL_TEXTURE_2D);
+    
+    // Revert to normal texture mode
+    GLID();
+    GLScalef(1.0 / 256, 1.0 / 256, 1.0);
+    
+    // Enable state
+    opaqueClipState(true);
 }

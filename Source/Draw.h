@@ -22,32 +22,32 @@ class CstrDraw {
     };
     
     struct POLY {
-        ub exposure    : 1;
-        ub transparent : 1;
-        ub texture     : 1;
-        ub vertices    : 1;
-        ub shade       : 1;
-        ub             : 3;
+        ub raw_tex    : 1;
+        ub semi_trans : 1;
+        ub textured   : 1;
+        ub four_point : 1;
+        ub shaded     : 1;
+        ub            : 3;
     };
     
     struct LINE {
-        ub             : 1;
-        ub transparent : 1;
-        ub             : 1;
-        ub multiline   : 1;
-        ub shade       : 1;
-        ub             : 3;
+        ub            : 1;
+        ub semi_trans : 1;
+        ub            : 1;
+        ub multiline  : 1;
+        ub shaded     : 1;
+        ub            : 3;
     };
     
     struct SPRT {
-        ub exposure    : 1;
-        ub transparent : 1;
-        ub texture     : 1;
-        ub size        : 2;
-        ub             : 3;
+        ub raw_tex    : 1;
+        ub semi_trans : 1;
+        ub textured   : 1;
+        ub size       : 2;
+        ub            : 3;
     };
     
-    struct Chromatic {
+    struct Color {
         ub r, c, b, a;
     };
     
@@ -107,8 +107,8 @@ public:
     void reset();
     void swapBuffers(bool);
     void resize(sh, sh);
-    void outputVRAM(uw *, sh, sh, sh, sh, bool);
     void primitive(uw, uw *);
+    void outputVRAM(uw *, sh, sh, sh, sh, bool);
 };
 
 extern CstrDraw draw;
