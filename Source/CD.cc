@@ -46,7 +46,7 @@ void CstrCD::reset() {
 
 void CstrCD::update() {
     if (interruptSet) {
-        if (interruptSet++ >= 16) {
+        if (interruptSet++ >= 8) {
             interruptSet = 0;
             interrupt();
         }

@@ -316,15 +316,21 @@ void CstrGraphics::photoMoveWithin(uw *packets) {
 }
 
 void CstrGraphics::photoSendTo(uw *packets) {
-    uh *p = (uh *)packets;
+    // Source
+    uh srcX = (packets[1] >>  0) & 0x03ff;
+    uh srcY = (packets[1] >> 16) & 0x01ff;
     
-    vrop.h.start = vrop.h.p = p[2];
-    vrop.v.start = vrop.v.p = p[3];
-    vrop.h.end   = vrop.h.p + p[4];
-    vrop.v.end   = vrop.v.p + p[5];
+    // W + H of transfer
+    uh   iW = (packets[2] >>  0) & 0xffff;
+    uh   iH = (packets[2] >> 16) & 0xffff;
+    
+    vrop.h.start = vrop.h.p = srcX;
+    vrop.v.start = vrop.v.p = srcY;
+    vrop.h.end   = vrop.h.p +   iW;
+    vrop.v.end   = vrop.v.p +   iH;
     
     vrop.enabled = true;
-    vrop.raw = new uw[p[4] * p[5]];
+    vrop.raw = new uw[iW * iH];
     modeDMA = GPU_DMA_MEM2VRAM;
     
     // Cache invalidation
@@ -332,14 +338,20 @@ void CstrGraphics::photoSendTo(uw *packets) {
 }
 
 void CstrGraphics::photoReadFrom(uw *packets) {
-    uh *p = (uh *)packets;
+    // Source
+    uh srcX = (packets[1] >>  0) & 0x03ff;
+    uh srcY = (packets[1] >> 16) & 0x01ff;
     
-    vrop.h.start = vrop.h.p = p[2];
-    vrop.v.start = vrop.v.p = p[3];
-    vrop.h.end   = vrop.h.p + p[4];
-    vrop.v.end   = vrop.v.p + p[5];
+    // W + H of transfer
+    uh   iW = (packets[2] >>  0) & 0xffff;
+    uh   iH = (packets[2] >> 16) & 0xffff;
     
-    vrop.pvram = p[3] * FRAME_W;
+    vrop.h.start = vrop.h.p = srcX;
+    vrop.v.start = vrop.v.p = srcY;
+    vrop.h.end   = vrop.h.p +   iW;
+    vrop.v.end   = vrop.v.p +   iH;
+    
+    vrop.pvram = srcY * FRAME_W;
     modeDMA = GPU_DMA_VRAM2MEM;
     
     ret.status |= GPU_STAT_READYFORVRAM;
