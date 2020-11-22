@@ -13,6 +13,7 @@ void CstrDraw::init(sh w, sh h, int multiplier) {
     // OpenGL
     GLViewport(0, 0, window.h * 2, window.v * 2);
     GLClearColor(0.1, 0.1, 0.1, 0);
+    GLClear(GL_COLOR_BUFFER_BIT);
     
     if (window.multiplier > 1) { // Crap
         GLLineWidth(window.multiplier);
@@ -37,14 +38,10 @@ void CstrDraw::reset() {
     
     // Redraw
     resize(window.h, window.v);
-    swapBuffers(true);
+    swapBuffers();
 }
 
-void CstrDraw::swapBuffers(bool clear) {
-    if (clear) {
-        GLClear(GL_COLOR_BUFFER_BIT);
-    }
-    
+void CstrDraw::swapBuffers() {
 #ifdef APPLE_MACOS
     [[app.openGLView openGLContext] flushBuffer];
 #elif  APPLE_IOS

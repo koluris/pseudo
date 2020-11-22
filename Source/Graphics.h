@@ -119,7 +119,7 @@ public:
         uh *ptr; uw size;
     } vram;
     
-    uw info[8];
+    uw info[16];
     
     void reset();
     void update(uw);

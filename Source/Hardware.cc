@@ -51,7 +51,7 @@ void CstrHardware::write(uw addr, T data) {
                 case 0x1060: // RAM Size
                 case 0x1074: // iMask
                 case 0x10f0: // DPCR
-                case 0x1c00: // V8 2nd Offence (?)
+                case 0x1c00 ... 0x1c40: // V8 2nd Offence (?)
                     accessMem(mem.hwr, uw) = data;
                     return;
             }

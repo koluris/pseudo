@@ -14,26 +14,21 @@ CstrGraphics vs;
 
 void CstrGraphics::reset() {
     memset(vram.ptr, 0, vram.size);
-    
-    vrop = { 0 };
     ret  = { 0 };
-    pipe = { 0 };
+    vrop = { 0 };
     
     memset(info, 0, sizeof(info));
     info[GPU_INFO_VERSION] = 0x2;
     
     ret.data   = 0x400;
-    ret.status = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000; // 0x14802000;
-    modeDMA    = GPU_DMA_NONE;
     clock      = 0;
     scanline   = 0;
     stall      = 0;
     vpos       = 0;
     vdiff      = 0;
     
-    isDisabled   = true;
-    isVideo24Bit = false;
-    isVideoPAL   = false;
+    // Reset
+    write(0x1014, 0);
 }
 
 void CstrGraphics::update(uw frames) {
@@ -52,7 +47,7 @@ void CstrGraphics::update(uw frames) {
         }
 #endif
         if ((++stall % 2)) {
-            draw.swapBuffers(isDisabled);
+            draw.swapBuffers();
         }
         bus.interruptSet(CstrBus::INT_VSYNC);
     }
@@ -67,10 +62,12 @@ void CstrGraphics::write(uw addr, uw data) {
         case 4: // Status
             switch(GPU_COMMAND(data)) {
                 case 0x00:
-                    ret.status   = 0x14802000;
+                    ret.status   = GPU_STAT_READYFORCOMMANDS | GPU_STAT_IDLE | GPU_STAT_DISPLAYDISABLED | 0x2000;
+                    modeDMA      = GPU_DMA_NONE;
                     isDisabled   = true;
                     isVideo24Bit = false;
                     isVideoPAL   = false;
+                    pipe = { 0 };
                     return;
                     
                 case 0x01:
