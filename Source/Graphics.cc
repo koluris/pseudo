@@ -26,6 +26,7 @@ void CstrGraphics::reset() {
     stall      = 0;
     vpos       = 0;
     vdiff      = 0;
+    verticalStart = 0;
     
     // Reset
     write(0x1014, 0);
@@ -87,10 +88,13 @@ void CstrGraphics::write(uw addr, uw data) {
                         const uh temp = (data >> 10) & 0x1ff;
                           vpos = temp >= 200 ? temp : vpos;
                     }
+                    
+                    verticalStart = (data >> 10) & 0x1ff;
                     return;
                     
                 case 0x07:
                     vdiff = ((data >> 10) & 0x3ff) - (data & 0x3ff);
+                    //printf("%d %d\n", ((data >> 10) & 0x3ff), (data & 0x3ff));
                     return;
                     
                 case 0x08:

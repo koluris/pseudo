@@ -57,6 +57,7 @@ typedef int8_t  sb; // byte
 #define GLDisable           glDisable
 #define GLEnable            glEnable
 #define GLEnd               glEnd
+#define GLFlush             glFlush
 #define GLGenTextures       glGenTextures
 #define GLID                glLoadIdentity
 #define GLLineWidth         glLineWidth

@@ -43,7 +43,11 @@ void CstrDraw::reset() {
 
 void CstrDraw::swapBuffers() {
 #ifdef APPLE_MACOS
-    [[app.openGLView openGLContext] flushBuffer];
+    //GLMatrixMode(GL_PROJECTION);
+    //GLID();
+    //GLOrtho (0, res.h, res.v + vs.verticalStart, vs.verticalStart, 1, -1);
+    GLFlush();
+    //[[app.openGLView openGLContext] flushBuffer];
 #elif  APPLE_IOS
     // TODO
 #endif
@@ -62,6 +66,7 @@ void CstrDraw::resize(sh w, sh h) {
         GLID();
         
 #ifdef APPLE_MACOS
+        //GLOrtho (0, w, h + vs.verticalStart, vs.verticalStart, 1, -1);
         GLOrtho (0, w, h, 0, 1, -1);
         GLClear(GL_COLOR_BUFFER_BIT);
 #elif  APPLE_IOS
@@ -327,11 +332,11 @@ void CstrDraw::primitive(uw addr, uw *packets) {
                     pos.vxw = sz[0]->w;
                     pos.vxh = sz[0]->h;
                     
-                    tex[0]->u += texWindow.startX;
-                    tex[0]->v += texWindow.startY;
+                    //tex[0]->u += texWindow.startX;
+                    //tex[0]->v += texWindow.startY;
                     
-                    pos.txw = MIN(texWindow.endX, pos.vxw);
-                    pos.txh = MIN(texWindow.endY, pos.vxh);
+                    pos.txw = pos.vxw;//MIN(texWindow.endX, pos.vxw);
+                    pos.txh = pos.vxh;//MIN(texWindow.endY, pos.vxh);
                 }
                 
                 if (setup->textured) {

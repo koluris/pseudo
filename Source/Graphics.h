@@ -131,6 +131,8 @@ public:
     void photoMoveWithin(uw *);
     void photoSendTo(uw *);
     void photoReadFrom(uw *);
+    
+    uh verticalStart;
 };
 
 extern CstrGraphics vs;
