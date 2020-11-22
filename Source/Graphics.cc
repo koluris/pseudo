@@ -47,7 +47,7 @@ void CstrGraphics::update(uw frames) {
             usleep(then - now);
         }
 #endif
-        if ((++stall % 2)) {
+        if (!(++stall % 2)) {
             draw.swapBuffers();
         }
         bus.interruptSet(CstrBus::INT_VSYNC);

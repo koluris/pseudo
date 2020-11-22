@@ -43,9 +43,9 @@ void CstrDraw::reset() {
 
 void CstrDraw::swapBuffers() {
 #ifdef APPLE_MACOS
-    //GLMatrixMode(GL_PROJECTION);
-    //GLID();
-    //GLOrtho (0, res.h, res.v + vs.verticalStart, vs.verticalStart, 1, -1);
+    GLMatrixMode(GL_PROJECTION);
+    GLID();
+    GLOrtho (0, res.h, res.v + vs.verticalStart, vs.verticalStart, 1, -1);
     GLFlush();
     //[[app.openGLView openGLContext] flushBuffer];
 #elif  APPLE_IOS
