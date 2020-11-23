@@ -166,22 +166,11 @@
         draw.updateVRAMView();
     }]];
     
-//    [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
-    
     // Audio
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         audio.decodeStream();
     }]];
 }
-
-//- (void) methodB:(NSTimer *)timer
-//{
-//    GLint swapInterval = 0;
-//    [[self.vramOpenGLView openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
-//    [[self.vramOpenGLView openGLContext] makeCurrentContext];
-//
-//    draw.updateVRAMView();
-//}
 
 - (void)emulatorStopAndReset:(BOOL)reset {
     psx.suspended = true;

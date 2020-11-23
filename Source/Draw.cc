@@ -47,12 +47,6 @@ void CstrDraw::swapBuffers() {
     //GLID();
     //GLOrtho (0, res.h, res.v + vs.verticalStart, vs.verticalStart, 1, -1);
     GLFlush();
-    //GLMatrixMode(GL_MODELVIEW);
-    //GLID();
-    //glFinish();
-    //GLMatrixMode(GL_PROJECTION);
-    //GLID();
-    //GLOrtho (0, res.h, res.v, 0, 1, -1);
     //[[app.openGLView openGLContext] flushBuffer];
 #elif  APPLE_IOS
     // TODO
