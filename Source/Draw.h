@@ -91,6 +91,7 @@ class CstrDraw {
     
     GLuint fb24tex;
     GLuint fb16tex;
+    GLuint fbVram;
     
     void keepAspectRatio(sh, sh, int);
     void opaqueClipState(bool);
@@ -109,6 +110,7 @@ public:
     void resize(sh, sh);
     void primitive(uw, uw *);
     void outputVRAM(uw *, sh, sh, sh, sh, bool);
+    void updateVRAMView();
 };
 
 extern CstrDraw draw;

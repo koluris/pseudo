@@ -16,7 +16,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="136" y="163" width="320" height="240"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1536" height="935"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
             <view key="contentView" id="QG3-5Z-1j1">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="240"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -32,14 +32,14 @@
                     <constraint firstAttribute="trailing" secondItem="gyI-cr-EPE" secondAttribute="trailing" id="w1V-x8-ZBE"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-991" y="-112"/>
+            <point key="canvasLocation" x="-1644" y="-43"/>
         </window>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="gn3-gZ-vsZ" customClass="Options">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="112" width="410" height="433"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1536" height="935"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
             <view key="contentView" id="ChR-II-ggI">
                 <rect key="frame" x="0.0" y="0.0" width="410" height="433"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -275,7 +275,7 @@
                 <outlet property="smoothTextures" destination="6b7-QL-fYG" id="Xhq-3s-v8e"/>
                 <outlet property="windowResolution" destination="Z1q-2r-EsE" id="65s-cX-GWU"/>
             </connections>
-            <point key="canvasLocation" x="-589" y="-577.5"/>
+            <point key="canvasLocation" x="-1123" y="-140"/>
         </window>
         <customObject id="mgR-F7-Tr3" customClass="Main">
             <connections>
@@ -285,6 +285,8 @@
                 <outlet property="menuShell" destination="c5s-Xh-2Pr" id="KP0-zG-ZD9"/>
                 <outlet property="openGLView" destination="gyI-cr-EPE" id="6OB-hR-rkh"/>
                 <outlet property="options" destination="gn3-gZ-vsZ" id="WDE-5b-AwL"/>
+                <outlet property="vramOpenGLView" destination="d1W-n1-52i" id="Hwn-L2-9i1"/>
+                <outlet property="vramPanel" destination="dzs-wf-Lzr" id="8Sr-1H-3aF"/>
                 <outlet property="window" destination="gP8-RP-mk9" id="Eg8-im-bE7"/>
             </connections>
         </customObject>
@@ -366,6 +368,9 @@
                                     <action selector="menuConsole:" target="mgR-F7-Tr3" id="oN9-p0-Oab"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="VRAM" state="on" id="xJv-Zr-B68" userLabel="VRAM">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
@@ -394,13 +399,13 @@
                     </menu>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-1066" y="-415"/>
+            <point key="canvasLocation" x="-1168" y="-460"/>
         </menu>
         <window title="Console" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" frameAutosaveName="" animationBehavior="default" id="EYa-DY-fTg" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="0.0" y="0.0" width="400" height="240"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1536" height="935"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
             <view key="contentView" id="DNN-Yf-iEu">
                 <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -408,15 +413,15 @@
                     <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3tq-n3-hIB">
                         <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
                         <clipView key="contentView" id="WQF-ES-h1U">
-                            <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <rect key="frame" x="0.0" y="0.0" width="385" height="240"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" usesFontPanel="YES" findStyle="panel" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" quoteSubstitution="YES" dashSubstitution="YES" smartInsertDelete="YES" id="jvQ-GN-lzn">
-                                    <rect key="frame" x="0.0" y="0.0" width="400" height="240"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="385" height="240"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" red="0.2195393458549223" green="0.2195393458549223" blue="0.2195393458549223" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <size key="minSize" width="400" height="240"/>
+                                    <size key="minSize" width="385" height="240"/>
                                     <size key="maxSize" width="463" height="10000000"/>
                                     <color key="insertionPointColor" red="0.8784313725490196" green="0.68033387008206803" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </textView>
@@ -440,7 +445,29 @@
                     <constraint firstItem="3tq-n3-hIB" firstAttribute="top" secondItem="DNN-Yf-iEu" secondAttribute="top" id="gs3-Mr-5uq"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="-548" y="-67"/>
+            <point key="canvasLocation" x="-1604" y="-395"/>
+        </window>
+        <window title="VRAM" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" frameAutosaveName="" animationBehavior="default" id="dzs-wf-Lzr" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="0.0" y="0.0" width="1024" height="512"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1055"/>
+            <view key="contentView" id="bgZ-Qs-xGF">
+                <rect key="frame" x="0.0" y="0.0" width="1024" height="512"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <openGLView wantsLayer="YES" useAuxiliaryDepthBufferStencil="NO" allowOffline="YES" wantsBestResolutionOpenGLSurface="YES" translatesAutoresizingMaskIntoConstraints="NO" id="d1W-n1-52i" customClass="OpenGLView">
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="512"/>
+                    </openGLView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="d1W-n1-52i" firstAttribute="leading" secondItem="bgZ-Qs-xGF" secondAttribute="leading" id="H1V-OB-jIo"/>
+                    <constraint firstAttribute="bottom" secondItem="d1W-n1-52i" secondAttribute="bottom" id="df3-cc-nbh"/>
+                    <constraint firstAttribute="trailing" secondItem="d1W-n1-52i" secondAttribute="trailing" id="l1d-Mp-P2u"/>
+                    <constraint firstItem="d1W-n1-52i" firstAttribute="top" secondItem="bgZ-Qs-xGF" secondAttribute="top" id="mkt-u2-EJg"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="-1292" y="441"/>
         </window>
     </objects>
 </document>

@@ -6,15 +6,20 @@
 
 // Executed first
 - (void)awakeFromNib {
-    const NSRect screenFrame = [[NSScreen mainScreen] frame];
-    const NSSize size = [self.console frame].size;
-    
-    // Window
-    [self.window center];
-    
-    // Console
-    [self.console setFrame:CGRectMake(screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
-    [self.consoleView setTextContainerInset:NSMakeSize(5.0f, 8.0f)];
+//    const NSRect screenFrame = [[NSScreen mainScreen] frame];
+//    const NSSize size = [self.console frame].size;
+//    const NSSize vramPanelSize = [self.vramPanel frame].size;
+//
+//    // Window
+//    [self.window center];
+//
+//    // Console
+//    [self.console setFrame:CGRectMake(screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
+//    [self.consoleView setTextContainerInset:NSMakeSize(5.0f, 8.0f)];
+//
+//    // VRAM
+//    [self.vramPanel setFrame:CGRectMake(0, 0, vramPanelSize.width, vramPanelSize.hei) disp:YES];
+//    [self.vramPanel setFrameTopLeftPoint:CGPointMake(0, 0)];
 }
 
 - (void)applicationDidFinishLaunch:(NSNotification *)aNotification {
@@ -44,6 +49,22 @@
     else {
         [self menuPreferences:nil];
     }
+    
+    const NSRect screenFrame = [[NSScreen mainScreen] frame];
+    const NSSize size = [self.console frame].size;
+    const NSSize vramPanelSize = [self.vramPanel frame].size;
+    
+    // Window
+    [self.window center];
+    [self.vramPanel setLevel:NSNormalWindowLevel];
+    [self.console setLevel:NSNormalWindowLevel];
+    
+    // Console
+    [self.console setFrame:CGRectMake(screenFrame.size.width - size.width, 0, size.width, size.hei) disp:YES];
+    [self.consoleView setTextContainerInset:NSMakeSize(5.0f, 8.0f)];
+    
+    // VRAM
+    [self.vramPanel setFrame:CGRectMake(0, screenFrame.size.width - vramPanelSize.hei, vramPanelSize.width, vramPanelSize.hei) disp:YES];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
@@ -136,11 +157,31 @@
         cpu.run();
     }]];
     
+    // VRAM
+    [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
+        GLint swapInterval = 0;
+        [[self.vramOpenGLView openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
+        [[self.vramOpenGLView openGLContext] makeCurrentContext];
+
+        draw.updateVRAMView();
+    }]];
+    
+//    [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
+    
     // Audio
     [self.queue addOperation:[NSBlockOperation blockOperationWithBlock:^{
         audio.decodeStream();
     }]];
 }
+
+//- (void) methodB:(NSTimer *)timer
+//{
+//    GLint swapInterval = 0;
+//    [[self.vramOpenGLView openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
+//    [[self.vramOpenGLView openGLContext] makeCurrentContext];
+//
+//    draw.updateVRAMView();
+//}
 
 - (void)emulatorStopAndReset:(BOOL)reset {
     psx.suspended = true;

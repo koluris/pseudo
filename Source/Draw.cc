@@ -43,10 +43,16 @@ void CstrDraw::reset() {
 
 void CstrDraw::swapBuffers() {
 #ifdef APPLE_MACOS
-    GLMatrixMode(GL_PROJECTION);
-    GLID();
-    GLOrtho (0, res.h, res.v + vs.verticalStart, vs.verticalStart, 1, -1);
+    //GLMatrixMode(GL_PROJECTION);
+    //GLID();
+    //GLOrtho (0, res.h, res.v + vs.verticalStart, vs.verticalStart, 1, -1);
     GLFlush();
+    //GLMatrixMode(GL_MODELVIEW);
+    //GLID();
+    //glFinish();
+    //GLMatrixMode(GL_PROJECTION);
+    //GLID();
+    //GLOrtho (0, res.h, res.v, 0, 1, -1);
     //[[app.openGLView openGLContext] flushBuffer];
 #elif  APPLE_IOS
     // TODO
@@ -471,4 +477,46 @@ void CstrDraw::outputVRAM(uw *raw, sh X, sh Y, sh W, sh H, bool video24Bit) {
     
     // Enable state
     opaqueClipState(true);
+}
+
+void CstrDraw::updateVRAMView() {
+    // OpenGL
+    GLViewport(0, 0, FRAME_W * 2, FRAME_H * 2);
+    GLClearColor(0.0, 0.0, 0.0, 0);
+    GLClear(GL_COLOR_BUFFER_BIT);
+    
+    // Textures
+    GLMatrixMode(GL_TEXTURE);
+    GLID();
+    GLScalef(1.0 / FRAME_W, 1.0 / FRAME_H, 1.0);
+    GLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+    GLTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE, 2);
+    
+    GLEnable(GL_TEXTURE_2D);
+    tcache.createTexture(&fbVram, FRAME_W, FRAME_H);
+    
+    // Ortho 2D
+    GLMatrixMode(GL_PROJECTION);
+    GLID();
+    GLOrtho(0, FRAME_W, FRAME_H, 0, 1, -1);
+    
+    while(!psx.suspended) {
+        GLColor4ub(COLOR_HALF, COLOR_HALF, COLOR_HALF, COLOR_MAX);
+        
+        GLBindTexture  (GL_TEXTURE_2D, fbVram);
+        GLTexSubPhoto2D(GL_TEXTURE_2D, 0, 0, 0, FRAME_W, FRAME_H, GL_RGBA, GL_UNSIGNED_SHORT_1_5_5_5_REV, (GLvoid *)&vs.vram.ptr[0]);
+        
+#if defined(APPLE_MACOS) || defined(_WIN32)
+        GLStart(GL_TRIANGLE_STRIP);
+            GLTexCoord2s(0,             0); GLVertex2s(0,       0);
+            GLTexCoord2s(FRAME_W,       0); GLVertex2s(FRAME_W, 0);
+            GLTexCoord2s(0,       FRAME_H); GLVertex2s(0,       FRAME_H);
+            GLTexCoord2s(FRAME_W, FRAME_H); GLVertex2s(FRAME_W, FRAME_H);
+        GLEnd();
+#elif APPLE_IOS
+        // TODO
+#endif
+        
+        GLFlush();
+    }
 }
