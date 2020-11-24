@@ -132,7 +132,7 @@ public:
     void photoSendTo(uw *);
     void photoReadFrom(uw *);
     
-    uh verticalStart;
+    uh dispOffsetX, dispOffsetY, rx_l, rx_u;
 };
 
 extern CstrGraphics vs;

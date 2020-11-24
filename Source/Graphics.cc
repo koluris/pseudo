@@ -26,7 +26,8 @@ void CstrGraphics::reset() {
     stall      = 0;
     vpos       = 0;
     vdiff      = 0;
-    verticalStart = 0;
+    dispOffsetX= 0;
+    dispOffsetY= 0;
     
     // Reset
     write(0x1014, 0);
@@ -89,7 +90,14 @@ void CstrGraphics::write(uw addr, uw data) {
                           vpos = temp >= 200 ? temp : vpos;
                     }
                     
-                    verticalStart = (data >> 10) & 0x1ff;
+                    dispOffsetX = (data >>  0) & 0x3ff;
+                    dispOffsetY = (data >> 10) & 0x1ff;
+                    //printf("%d\n", dispOffsetX);
+                    return;
+                    
+                case 0x06:
+                    rx_l = data & 0x7ff;
+                    rx_u = (data >> 12) & 0xfff;
                     return;
                     
                 case 0x07:
@@ -134,7 +142,6 @@ void CstrGraphics::write(uw addr, uw data) {
                     
                 /* unused */
                 case 0x02:
-                case 0x06:
                     return;
             }
             

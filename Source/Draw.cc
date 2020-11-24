@@ -28,6 +28,8 @@ void CstrDraw::init(sh w, sh h, int multiplier) {
     
     tcache.createTexture(&fb24tex, FRAME_W, FRAME_H); // 24-bit texture
     tcache.createTexture(&fb16tex, FRAME_W, FRAME_H); // 16-bit texture
+    
+    //tcache.createTexture(&display, 320, 240); // 16-bit texture
 }
 
 void CstrDraw::reset() {
@@ -42,15 +44,12 @@ void CstrDraw::reset() {
 }
 
 void CstrDraw::swapBuffers() {
-#ifdef APPLE_MACOS
-    //GLMatrixMode(GL_PROJECTION);
-    //GLID();
-    //GLOrtho (0, res.h, res.v + vs.verticalStart, vs.verticalStart, 1, -1);
-    GLFlush();
-    //[[app.openGLView openGLContext] flushBuffer];
-#elif  APPLE_IOS
-    // TODO
-#endif
+    GLMatrixMode(GL_PROJECTION);
+    GLID();
+    //int sx = ((int)(vs.rx_u - vs.rx_l) * res.h) / 2560;
+    GLOrtho(vs.dispOffsetX * 2, res.h + vs.dispOffsetX * 2, res.v + vs.dispOffsetY, vs.dispOffsetY, 1, -1);
+//    GLFlush();
+    glFinish();
 }
 
 void CstrDraw::resize(sh w, sh h) {
@@ -60,15 +59,15 @@ void CstrDraw::resize(sh w, sh h) {
 #endif
     
     // Not current
-    if (res.h != w || res.v != h) {
+    //if (res.h != w || res.v != h) {
         //keepAspectRatio(w, h, window.multiplier);
-        GLMatrixMode(GL_PROJECTION);
-        GLID();
+        //GLMatrixMode(GL_PROJECTION);
+        //GLID();
         
 #ifdef APPLE_MACOS
         //GLOrtho (0, w, h + vs.verticalStart, vs.verticalStart, 1, -1);
-        GLOrtho (0, w, h, 0, 1, -1);
-        GLClear(GL_COLOR_BUFFER_BIT);
+        //GLOrtho (0, w, h, 0, 1, -1);
+        //GLClear(GL_COLOR_BUFFER_BIT);
 #elif  APPLE_IOS
         GLOrthof(0, w, h, 0, 1, -1);
 #endif
@@ -76,7 +75,7 @@ void CstrDraw::resize(sh w, sh h) {
         // Make current
         res.h = w;
         res.v = h;
-    }
+    //}
 }
 
 void CstrDraw::keepAspectRatio(sh w, sh h, int multiplier) {
